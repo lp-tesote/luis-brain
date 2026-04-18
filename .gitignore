@@ -1,0 +1,15 @@
+# Scratch pads are ephemeral — don't track them
+.scratch/
+
+# Secrets
+.env
+.claude/settings.local.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+*.swp
+*.swo
+*~
