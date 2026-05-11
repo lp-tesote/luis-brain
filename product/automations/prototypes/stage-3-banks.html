@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tesote — Connect Banks (Stage 3)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{font-family:'Inter',system-ui,sans-serif}</style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <header class="bg-white border-b border-gray-200">
+    <div class="flex items-center h-14 px-6 gap-6">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-md bg-gray-900 flex items-center justify-center text-white font-semibold text-sm">T</div>
+        <span class="font-semibold">Tesote</span>
+      </div>
+      <div class="flex items-center gap-2 text-sm border-l border-gray-200 pl-6">
+        <span class="text-gray-500">Workspace:</span>
+        <button class="font-medium hover:bg-gray-100 px-2 py-1 rounded">El Dorado, C.A. ▾</button>
+      </div>
+      <div class="flex-1"></div>
+      <a href="index.html" class="text-xs text-gray-500 hover:text-gray-900">← All prototypes</a>
+      <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium text-sm">MG</div>
+    </div>
+  </header>
+
+  <div class="bg-blue-50 border-b border-blue-100 px-8 py-2.5 flex items-center gap-3 text-xs">
+    <span class="font-medium text-blue-900">Onboarding · Day 5 of 30</span>
+    <div class="flex-1 max-w-xl bg-blue-100 rounded-full h-1.5 overflow-hidden">
+      <div class="bg-blue-600 h-full" style="width: 42%"></div>
+    </div>
+    <span class="text-blue-700">Stage 3 of 8 · Connect banks</span>
+  </div>
+
+  <div class="max-w-5xl mx-auto px-8 py-8">
+    <h1 class="text-2xl font-semibold">Connect your banks</h1>
+    <p class="text-sm text-gray-500 mt-1 max-w-2xl">Each bank feeds clean transaction data into Tesote, which then maps to the right Odoo bank account. We use Tesote Connect for the heavy lifting — you'll only enter credentials once per bank.</p>
+
+    <!-- Status strip -->
+    <div class="mt-6 bg-white border border-gray-200 rounded-md p-4 grid grid-cols-4 gap-6 text-sm">
+      <div>
+        <div class="text-xs text-gray-500 uppercase tracking-wide">Banks connected</div>
+        <div class="font-semibold mt-1 text-lg">4 <span class="text-base text-gray-400 font-normal">/ 6</span></div>
+      </div>
+      <div>
+        <div class="text-xs text-gray-500 uppercase tracking-wide">90-day history pulled</div>
+        <div class="font-semibold mt-1 text-lg">3 <span class="text-base text-gray-400 font-normal">/ 6</span></div>
+      </div>
+      <div>
+        <div class="text-xs text-gray-500 uppercase tracking-wide">Bank-to-Odoo mapping</div>
+        <div class="font-semibold mt-1 text-lg">7 <span class="text-base text-gray-400 font-normal">/ 10 accts</span></div>
+      </div>
+      <div>
+        <div class="text-xs text-gray-500 uppercase tracking-wide">Est. completion</div>
+        <div class="font-semibold mt-1 text-lg">Today</div>
+      </div>
+    </div>
+
+    <div class="mt-6 space-y-3">
+      <!-- BNC — connected, mapping done -->
+      <div class="bg-white border border-gray-200 rounded-md overflow-hidden">
+        <div class="flex items-center gap-4 px-5 py-4">
+          <div class="w-10 h-10 rounded bg-blue-100 text-blue-700 flex items-center justify-center font-semibold text-sm">BNC</div>
+          <div class="flex-1">
+            <div class="font-medium">BNC — Banco Nacional de Crédito</div>
+            <div class="text-xs text-gray-500 mt-0.5">3 accounts · USD + Bs · last sync 12 min ago</div>
+          </div>
+          <span class="text-xs px-2 py-0.5 rounded-full bg-green-50 text-green-700 font-medium">✓ Connected</span>
+          <span class="text-xs px-2 py-0.5 rounded-full bg-green-50 text-green-700 font-medium">✓ History pulled</span>
+        </div>
+        <div class="bg-gray-50 border-t border-gray-100 px-5 py-3">
+          <div class="text-[11px] uppercase tracking-wider text-gray-500 mb-2">Bank → Odoo mapping</div>
+          <div class="grid grid-cols-3 gap-3 text-xs">
+            <div class="bg-white border border-gray-200 rounded px-3 py-2"><div class="font-medium">BNC 0191-XXXX-1234 (USD)</div><div class="text-gray-500 mt-0.5">→ Odoo: <strong>1.1.1.02 Banco BNC USD</strong></div></div>
+            <div class="bg-white border border-gray-200 rounded px-3 py-2"><div class="font-medium">BNC 0191-XXXX-5678 (Bs)</div><div class="text-gray-500 mt-0.5">→ Odoo: <strong>1.1.1.03 Banco BNC Bs</strong></div></div>
+            <div class="bg-white border border-gray-200 rounded px-3 py-2"><div class="font-medium">BNC 0191-XXXX-9012 (Bs)</div><div class="text-gray-500 mt-0.5">→ Odoo: <strong>1.1.1.04 BNC Recaudación</strong></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Banesco -->
+      <div class="bg-white border border-gray-200 rounded-md overflow-hidden">
+        <div class="flex items-center gap-4 px-5 py-4">
+          <div class="w-10 h-10 rounded bg-green-100 text-green-700 flex items-center justify-center font-semibold text-sm">BAN</div>
+          <div class="flex-1">
+            <div class="font-medium">Banesco</div>
+            <div class="text-xs text-gray-500 mt-0.5">2 accounts · Bs · last sync 8 min ago</div>
+          </div>
+          <span class="text-xs px-2 py-0.5 rounded-full bg-green-50 text-green-700 font-medium">✓ Connected</span>
+          <span class="text-xs px-2 py-0.5 rounded-full bg-green-50 text-green-700 font-medium">✓ History pulled</span>
+        </div>
+        <div class="bg-gray-50 border-t border-gray-100 px-5 py-3">
+          <div class="text-[11px] uppercase tracking-wider text-gray-500 mb-2">Bank → Odoo mapping</div>
+          <div class="grid grid-cols-3 gap-3 text-xs">
+            <div class="bg-white border border-gray-200 rounded px-3 py-2"><div class="font-medium">Banesco 0134-XXXX-3456 (Bs)</div><div class="text-gray-500 mt-0.5">→ Odoo: <strong>1.1.1.05 Banco Banesco</strong></div></div>
+            <div class="bg-white border border-gray-200 rounded px-3 py-2"><div class="font-medium">Banesco 0134-XXXX-7890 (Bs)</div><div class="text-gray-500 mt-0.5">→ Odoo: <strong>1.1.1.06 Banesco AP</strong></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Provincial -->
+      <div class="bg-white border border-gray-200 rounded-md overflow-hidden">
+        <div class="flex items-center gap-4 px-5 py-4">
+          <div class="w-10 h-10 rounded bg-purple-100 text-purple-700 flex items-center justify-center font-semibold text-sm">BBV</div>
+          <div class="flex-1">
+            <div class="font-medium">Banco Provincial (BBVA)</div>
+            <div class="text-xs text-gray-500 mt-0.5">1 account · Bs · last sync 1 hr ago</div>
+          </div>
+          <span class="text-xs px-2 py-0.5 rounded-full bg-green-50 text-green-700 font-medium">✓ Connected</span>
+          <span class="text-xs px-2 py-0.5 rounded-full bg-green-50 text-green-700 font-medium">✓ History pulled</span>
+        </div>
+        <div class="bg-gray-50 border-t border-gray-100 px-5 py-3">
+          <div class="text-[11px] uppercase tracking-wider text-gray-500 mb-2">Bank → Odoo mapping</div>
+          <div class="grid grid-cols-3 gap-3 text-xs">
+            <div class="bg-white border border-gray-200 rounded px-3 py-2"><div class="font-medium">Provincial 0108-XXXX-2345 (Bs)</div><div class="text-gray-500 mt-0.5">→ Odoo: <strong>1.1.1.07 Provincial Nómina</strong></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mercantil — connected, history pulling -->
+      <div class="bg-white border border-gray-200 rounded-md overflow-hidden">
+        <div class="flex items-center gap-4 px-5 py-4">
+          <div class="w-10 h-10 rounded bg-amber-100 text-amber-700 flex items-center justify-center font-semibold text-sm">MER</div>
+          <div class="flex-1">
+            <div class="font-medium">Mercantil</div>
+            <div class="text-xs text-gray-500 mt-0.5">2 accounts · USD + Bs</div>
+          </div>
+          <span class="text-xs px-2 py-0.5 rounded-full bg-green-50 text-green-700 font-medium">✓ Connected</span>
+          <span class="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 font-medium flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>Pulling 90-day history (62%)
+          </span>
+        </div>
+        <div class="bg-gray-50 border-t border-gray-100 px-5 py-3">
+          <div class="text-[11px] uppercase tracking-wider text-gray-500 mb-2">Bank → Odoo mapping <span class="text-amber-700">— action needed</span></div>
+          <div class="grid grid-cols-3 gap-3 text-xs">
+            <div class="bg-white border border-gray-200 rounded px-3 py-2"><div class="font-medium">Mercantil 0105-XXXX-4567 (USD)</div><div class="text-gray-500 mt-0.5">→ Odoo: <strong>1.1.1.08 Mercantil USD</strong></div></div>
+            <div class="bg-white border border-amber-300 rounded px-3 py-2">
+              <div class="font-medium">Mercantil 0105-XXXX-8901 (Bs)</div>
+              <div class="mt-1">
+                <select class="w-full text-xs border border-amber-300 rounded px-2 py-1 bg-amber-50">
+                  <option>— Select Odoo bank account —</option>
+                  <option>1.1.1.09 Mercantil Bs Operativo</option>
+                  <option>1.1.1.10 Mercantil Bs Reserva</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Banco Exterior — not connected -->
+      <div class="bg-white border border-gray-200 rounded-md overflow-hidden">
+        <div class="flex items-center gap-4 px-5 py-4">
+          <div class="w-10 h-10 rounded bg-gray-100 text-gray-500 flex items-center justify-center font-semibold text-sm">EXT</div>
+          <div class="flex-1">
+            <div class="font-medium">Banco Exterior</div>
+            <div class="text-xs text-gray-500 mt-0.5">1 account · Bs · for POS settlement</div>
+          </div>
+          <span class="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 font-medium">Not connected</span>
+          <button class="text-xs px-3 py-1.5 rounded bg-blue-600 text-white font-medium hover:bg-blue-700">Connect →</button>
+        </div>
+      </div>
+
+      <!-- Bancaribe — error -->
+      <div class="bg-white border border-red-200 rounded-md overflow-hidden">
+        <div class="flex items-center gap-4 px-5 py-4">
+          <div class="w-10 h-10 rounded bg-red-100 text-red-700 flex items-center justify-center font-semibold text-sm">BCB</div>
+          <div class="flex-1">
+            <div class="font-medium">Bancaribe</div>
+            <div class="text-xs text-gray-500 mt-0.5">1 account · Bs · POS settlement</div>
+          </div>
+          <span class="text-xs px-2 py-0.5 rounded-full bg-red-50 text-red-700 font-medium">⚠ Credentials expired</span>
+          <button class="text-xs px-3 py-1.5 rounded border border-gray-200 hover:bg-gray-50">Re-authenticate</button>
+        </div>
+        <div class="bg-red-50/40 border-t border-red-100 px-5 py-2 text-xs text-red-800">
+          Token expired 3 days ago. Tesote CS notified — María Pérez (your CS) will reach out today.
+        </div>
+      </div>
+    </div>
+
+    <!-- Next step -->
+    <div class="mt-8 border-t border-gray-200 pt-5 flex items-center gap-3">
+      <a href="stage-2-mapping.html" class="text-sm text-gray-600 hover:text-gray-900">← Mapping</a>
+      <div class="flex-1"></div>
+      <span class="text-xs text-gray-500">You can continue once all 6 banks are connected. Mercantil mapping needs one selection.</span>
+      <a href="stage-4-rules.html" class="px-4 py-2 rounded bg-gray-900 text-white text-sm font-medium hover:bg-black">Continue to Auto-rules →</a>
+    </div>
+
+    <div class="mt-10 border border-dashed border-gray-300 bg-white rounded-md p-4 text-xs text-gray-600">
+      <div class="font-medium text-gray-900 mb-2">Demo notes</div>
+      <ul class="space-y-1 list-disc pl-4">
+        <li>Six VE banks shown — realistic mid-market spread. BNC primary, Banesco for AP, Provincial for payroll, Mercantil for USD reserves, Exterior + Bancaribe for POS settlement.</li>
+        <li>Three states visible: fully done (BNC, Banesco, Provincial), in-progress (Mercantil — history pulling, one mapping unset), and error (Bancaribe credentials expired).</li>
+        <li>The bank → Odoo bank account binding is the "new" piece on top of existing Connect. It maps each Tesote bank account to its destination <code class="text-[10px] bg-gray-100 px-1 py-0.5 rounded">account.bank.statement</code>.</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>

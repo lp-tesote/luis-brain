@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tesote — Bank Reconciliation (Cap #3)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  body{font-family:'Inter',system-ui,sans-serif}
+  .ai-glow { background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%); }
+  .confidence-high { background: #dcfce7; color: #15803d; }
+  .confidence-med { background: #fef3c7; color: #b45309; }
+  .confidence-low { background: #fee2e2; color: #b91c1c; }
+</style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <header class="bg-white border-b border-gray-200">
+    <div class="flex items-center h-14 px-6 gap-6">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-md bg-gray-900 flex items-center justify-center text-white font-semibold text-sm">T</div>
+        <span class="font-semibold">Tesote</span>
+      </div>
+      <div class="flex items-center gap-2 text-sm border-l border-gray-200 pl-6">
+        <span class="text-gray-500">Workspace:</span>
+        <button class="font-medium hover:bg-gray-100 px-2 py-1 rounded">El Dorado, C.A. ▾</button>
+      </div>
+      <div class="flex-1"></div>
+      <a href="index.html" class="text-xs text-gray-500 hover:text-gray-900">← All prototypes</a>
+      <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium text-sm">MG</div>
+    </div>
+  </header>
+
+  <div class="flex" style="height: calc(100vh - 56px)">
+    <!-- Sidebar -->
+    <aside class="w-60 bg-white border-r border-gray-200 overflow-y-auto py-3 px-2 relative">
+      <nav class="space-y-0.5 text-sm">
+        <a href="stage-7-dashboard.html" class="flex items-center px-3 py-2 rounded hover:bg-gray-100 text-gray-700">Dashboard</a>
+        <a href="stage-5-queue.html" class="flex items-center justify-between px-3 py-2 rounded hover:bg-gray-100 text-gray-700">
+          <span>Coding Queue</span>
+          <span class="bg-gray-100 text-gray-600 text-xs px-1.5 py-0.5 rounded">47</span>
+        </a>
+        <a href="stage-6-ap-inbox.html" class="flex items-center justify-between px-3 py-2 rounded hover:bg-gray-100 text-gray-700">
+          <span>AP Inbox</span>
+          <span class="bg-gray-100 text-gray-600 text-xs px-1.5 py-0.5 rounded">14</span>
+        </a>
+        <a href="#" class="flex items-center justify-between px-3 py-2 rounded bg-gray-900 text-white font-medium">
+          <span>Bank Reconciliation</span>
+          <span class="bg-white/20 text-xs px-1.5 py-0.5 rounded">23</span>
+        </a>
+        <div class="pt-3 pb-1 px-3 text-xs uppercase tracking-wide text-gray-400">Master data</div>
+        <a href="stage-2-mapping.html" class="flex items-center px-3 py-2 rounded hover:bg-gray-100 text-gray-700">Counterparties</a>
+        <a href="stage-2-mapping.html" class="flex items-center px-3 py-2 rounded hover:bg-gray-100 text-gray-700">Categories &amp; Mapping</a>
+        <a href="stage-4-rules.html" class="flex items-center px-3 py-2 rounded hover:bg-gray-100 text-gray-700">Auto-rules</a>
+        <a href="stage-8-autopilot.html" class="flex items-center px-3 py-2 rounded hover:bg-gray-100 text-gray-700">Auto-pilot</a>
+        <div class="pt-3 pb-1 px-3 text-xs uppercase tracking-wide text-gray-400">Account</div>
+        <a href="#" class="flex items-center px-3 py-2 rounded hover:bg-gray-100 text-gray-700">Health</a>
+        <a href="#" class="flex items-center px-3 py-2 rounded hover:bg-gray-100 text-gray-700">Settings</a>
+      </nav>
+      <div class="absolute bottom-4 left-3 right-3">
+        <div class="border-t border-gray-200 pt-3 text-xs">
+          <div class="font-medium text-gray-900">María González</div>
+          <div class="text-gray-500">Controller · El Dorado</div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="flex-1 overflow-y-auto">
+      <div class="px-8 py-6">
+        <div class="flex items-baseline justify-between mb-1">
+          <div>
+            <h1 class="text-2xl font-semibold">Bank Reconciliation</h1>
+            <p class="text-sm text-gray-500 mt-1 max-w-2xl">Tesote auto-matches incoming bank lines against open Odoo journal entries. Review and confirm high-confidence matches. Unmatched items become exceptions you investigate.</p>
+          </div>
+          <div class="text-xs text-gray-500">All banks · Last sync 4 min ago</div>
+        </div>
+
+        <!-- Stats strip -->
+        <div class="mt-5 bg-white border border-gray-200 rounded-md p-4 grid grid-cols-5 gap-6 text-sm">
+          <div>
+            <div class="text-xs text-gray-500 uppercase tracking-wide">Reconciled today</div>
+            <div class="font-semibold mt-1 text-lg">142</div>
+            <div class="text-xs text-green-700 mt-0.5">↑ 18% vs avg</div>
+          </div>
+          <div>
+            <div class="text-xs text-gray-500 uppercase tracking-wide">Pending confirm</div>
+            <div class="font-semibold mt-1 text-lg">23</div>
+            <div class="text-xs text-gray-500 mt-0.5">high confidence</div>
+          </div>
+          <div>
+            <div class="text-xs text-gray-500 uppercase tracking-wide">Exceptions</div>
+            <div class="font-semibold mt-1 text-lg text-amber-700">3</div>
+            <div class="text-xs text-gray-500 mt-0.5">need investigation</div>
+          </div>
+          <div>
+            <div class="text-xs text-gray-500 uppercase tracking-wide">Reconciliation rate</div>
+            <div class="font-semibold mt-1 text-lg">97.4%</div>
+            <div class="text-xs text-green-700 mt-0.5">↑ target 95%</div>
+          </div>
+          <div>
+            <div class="text-xs text-gray-500 uppercase tracking-wide">Time saved today</div>
+            <div class="font-semibold mt-1 text-lg">~6 hrs</div>
+            <div class="text-xs text-gray-500 mt-0.5">vs manual recon</div>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="mt-5 flex items-center gap-3 text-sm">
+          <div class="flex items-center bg-white border border-gray-200 rounded-md p-0.5">
+            <button class="px-3 py-1 rounded text-xs font-medium bg-gray-900 text-white">All banks</button>
+            <button class="px-3 py-1 rounded text-xs text-gray-600 hover:text-gray-900">BNC</button>
+            <button class="px-3 py-1 rounded text-xs text-gray-600 hover:text-gray-900">Banesco</button>
+            <button class="px-3 py-1 rounded text-xs text-gray-600 hover:text-gray-900">Mercantil</button>
+          </div>
+          <div class="flex-1"></div>
+          <button class="text-xs px-3 py-1.5 border border-gray-200 rounded hover:bg-gray-50 bg-white">Date range: today</button>
+        </div>
+
+        <!-- Tabs -->
+        <div class="mt-4 border-b border-gray-200 flex gap-6 text-sm">
+          <button class="pb-2 border-b-2 border-gray-900 font-medium">Pending confirm <span class="text-gray-400">23</span></button>
+          <button class="pb-2 border-b-2 border-transparent text-gray-500 hover:text-gray-900">Exceptions <span class="text-red-500">3</span></button>
+          <button class="pb-2 border-b-2 border-transparent text-gray-500 hover:text-gray-900">Reconciled <span class="text-gray-400">142</span></button>
+        </div>
+
+        <!-- Bulk action -->
+        <div class="mt-4 flex items-center gap-3 bg-white border border-gray-200 rounded-md px-3 py-2 text-sm">
+          <input type="checkbox" class="rounded">
+          <span class="text-gray-500 text-xs">Select all</span>
+          <div class="flex-1"></div>
+          <span class="text-xs text-gray-500">19 selected · 4 unselected</span>
+          <button class="px-3 py-1 text-xs rounded bg-blue-600 text-white font-medium hover:bg-blue-700">Confirm 19 matches</button>
+        </div>
+
+        <!-- List with expanded match panel -->
+        <div class="mt-3 space-y-2">
+          <!-- Match #1: high confidence, expanded -->
+          <div class="bg-white border border-blue-300 rounded-md overflow-hidden shadow-sm">
+            <div class="flex items-center gap-3 px-4 py-3">
+              <input type="checkbox" class="rounded" checked>
+              <div class="flex-1 grid grid-cols-12 gap-3 text-sm items-center">
+                <div class="col-span-2 text-gray-600 text-xs">10 May · BNC</div>
+                <div class="col-span-5">TRANSF — DISTRIBUIDORA CARACAS</div>
+                <div class="col-span-3 text-right font-medium">$ 4.890,00</div>
+                <div class="col-span-2 flex justify-end">
+                  <span class="confidence-high px-2 py-0.5 rounded-full text-xs font-medium">98% match</span>
+                </div>
+              </div>
+              <button class="text-xs text-gray-400 hover:text-gray-700">▼</button>
+            </div>
+            <div class="bg-gray-50 border-t border-gray-100 px-4 py-3">
+              <div class="grid grid-cols-2 gap-4">
+                <!-- Bank side -->
+                <div class="bg-white border border-gray-200 rounded p-3">
+                  <div class="text-[10px] uppercase tracking-wider text-blue-700 font-medium">From bank (BNC)</div>
+                  <div class="mt-2 text-sm font-medium">TRANSF — DISTRIBUIDORA CARACAS</div>
+                  <div class="mt-1 text-xs text-gray-600 space-y-0.5">
+                    <div>Date: 10 May 2026</div>
+                    <div>Amount: $ 4.890,00 (USD)</div>
+                    <div>Reference: REF-8329401</div>
+                    <div>Counterparty: Distribuidora Caracas, C.A.</div>
+                  </div>
+                </div>
+                <!-- Odoo side -->
+                <div class="bg-white border border-gray-200 rounded p-3">
+                  <div class="text-[10px] uppercase tracking-wider text-purple-700 font-medium">Open in Odoo</div>
+                  <div class="mt-2 text-sm font-medium">Bill #DC-2398</div>
+                  <div class="mt-1 text-xs text-gray-600 space-y-0.5">
+                    <div>account.move ID: 18472 · type: in_invoice</div>
+                    <div>Due: 10 May 2026 (today)</div>
+                    <div>Amount due: $ 4.890,00</div>
+                    <div>Partner: Distribuidora Caracas, C.A. (#1845)</div>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-3 ai-glow border border-purple-200 rounded p-3 text-xs flex items-start gap-2">
+                <svg class="w-3 h-3 text-purple-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.539 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.783.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                <span class="text-purple-900"><strong>Match signals:</strong> Exact amount, exact date, counterparty match (Distribuidora Caracas), open bill due today. No other open bills for this partner within ±5 days.</span>
+              </div>
+              <div class="mt-3 flex items-center gap-2">
+                <button class="px-3 py-1.5 text-xs rounded bg-blue-600 text-white font-medium hover:bg-blue-700">Confirm &amp; post reconciliation</button>
+                <button class="px-3 py-1.5 text-xs rounded border border-gray-200 hover:bg-gray-50">Find different match</button>
+                <button class="px-3 py-1.5 text-xs rounded border border-gray-200 hover:bg-gray-50">Not a match (create new)</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Match #2: collapsed, high confidence -->
+          <div class="bg-white border border-gray-200 rounded-md">
+            <div class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer">
+              <input type="checkbox" class="rounded" checked>
+              <div class="flex-1 grid grid-cols-12 gap-3 text-sm items-center">
+                <div class="col-span-2 text-gray-600 text-xs">10 May · BNC</div>
+                <div class="col-span-5">PAGO MOVISTAR — FAC-2026-04829 <span class="ml-1 inline-block px-1.5 py-0.5 text-[10px] font-medium bg-blue-50 text-blue-700 rounded align-middle">→ Bill #MV-04829</span></div>
+                <div class="col-span-3 text-right font-medium">$ 1.247,00</div>
+                <div class="col-span-2 flex justify-end">
+                  <span class="confidence-high px-2 py-0.5 rounded-full text-xs font-medium">99% match</span>
+                </div>
+              </div>
+              <button class="text-xs text-blue-600 hover:underline">Confirm</button>
+            </div>
+          </div>
+
+          <div class="bg-white border border-gray-200 rounded-md">
+            <div class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer">
+              <input type="checkbox" class="rounded" checked>
+              <div class="flex-1 grid grid-cols-12 gap-3 text-sm items-center">
+                <div class="col-span-2 text-gray-600 text-xs">10 May · Provincial</div>
+                <div class="col-span-5">NOMINA QUINCENA 1 — MAY 2026 <span class="ml-1 inline-block px-1.5 py-0.5 text-[10px] font-medium bg-blue-50 text-blue-700 rounded align-middle">→ JE #18654</span></div>
+                <div class="col-span-3 text-right font-medium">$ 38.420,00</div>
+                <div class="col-span-2 flex justify-end">
+                  <span class="confidence-high px-2 py-0.5 rounded-full text-xs font-medium">100% match</span>
+                </div>
+              </div>
+              <button class="text-xs text-blue-600 hover:underline">Confirm</button>
+            </div>
+          </div>
+
+          <div class="bg-white border border-gray-200 rounded-md">
+            <div class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer">
+              <input type="checkbox" class="rounded" checked>
+              <div class="flex-1 grid grid-cols-12 gap-3 text-sm items-center">
+                <div class="col-span-2 text-gray-600 text-xs">10 May · BNC</div>
+                <div class="col-span-5">COMISION TRANSFERENCIA BNC <span class="ml-1 inline-block px-1.5 py-0.5 text-[10px] font-medium bg-blue-50 text-blue-700 rounded align-middle">→ JE #18661</span></div>
+                <div class="col-span-3 text-right font-medium">Bs 14.500,00</div>
+                <div class="col-span-2 flex justify-end">
+                  <span class="confidence-high px-2 py-0.5 rounded-full text-xs font-medium">100% match</span>
+                </div>
+              </div>
+              <button class="text-xs text-blue-600 hover:underline">Confirm</button>
+            </div>
+          </div>
+
+          <!-- Medium confidence: ambiguous -->
+          <div class="bg-white border border-amber-200 rounded-md">
+            <div class="flex items-center gap-3 px-4 py-3 hover:bg-amber-50/40 cursor-pointer">
+              <input type="checkbox" class="rounded">
+              <div class="flex-1 grid grid-cols-12 gap-3 text-sm items-center">
+                <div class="col-span-2 text-gray-600 text-xs">9 May · Mercantil</div>
+                <div class="col-span-5">PAGO PROVEEDOR — REF 9483772 <span class="ml-1 inline-block px-1.5 py-0.5 text-[10px] font-medium bg-amber-50 text-amber-700 rounded align-middle">3 possible matches</span></div>
+                <div class="col-span-3 text-right font-medium">$ 2.400,00</div>
+                <div class="col-span-2 flex justify-end">
+                  <span class="confidence-med px-2 py-0.5 rounded-full text-xs font-medium">71% match</span>
+                </div>
+              </div>
+              <button class="text-xs text-amber-700 hover:underline">Review</button>
+            </div>
+          </div>
+
+          <!-- Exception: unmatched -->
+          <div class="bg-white border border-red-200 rounded-md">
+            <div class="flex items-center gap-3 px-4 py-3 hover:bg-red-50/40 cursor-pointer">
+              <input type="checkbox" class="rounded">
+              <div class="flex-1 grid grid-cols-12 gap-3 text-sm items-center">
+                <div class="col-span-2 text-gray-600 text-xs">9 May · BNC</div>
+                <div class="col-span-5">PAGO TRANSF — REF 8203492 <span class="ml-1 inline-block px-1.5 py-0.5 text-[10px] font-medium bg-red-50 text-red-700 rounded align-middle">No Odoo match found</span></div>
+                <div class="col-span-3 text-right font-medium">$ 12.000,00</div>
+                <div class="col-span-2 flex justify-end">
+                  <span class="confidence-low px-2 py-0.5 rounded-full text-xs font-medium">No match</span>
+                </div>
+              </div>
+              <button class="text-xs text-red-600 hover:underline">Investigate</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 text-xs text-gray-500 flex items-center gap-4">
+          <span>Showing 6 of 23 pending</span>
+          <span class="text-gray-300">·</span>
+          <span>Tesote rec rate vs Odoo alone: <strong class="text-gray-900">97% → ~62%</strong></span>
+        </div>
+
+        <div class="mt-8 border border-dashed border-gray-300 bg-white rounded-md p-4 text-xs text-gray-600">
+          <div class="font-medium text-gray-900 mb-2">Demo notes</div>
+          <ul class="space-y-1 list-disc pl-4">
+            <li>The first row is expanded to show the side-by-side bank/Odoo comparison plus match signals. This is the "investigation in 5 seconds" moment.</li>
+            <li>Match signals include amount, date, counterparty, open bill state, and uniqueness ("no other matching bills in ±5 days"). High-confidence matches default to one-click confirm.</li>
+            <li>The "reconciliation rate vs Odoo alone" stat is a competitive wedge — Odoo's native recon rules are weaker than Tesote's because we have cleaner bank data + counterparty mapping.</li>
+          </ul>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

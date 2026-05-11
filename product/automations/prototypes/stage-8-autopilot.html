@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tesote — Auto-pilot Graduation (Stage 8)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  body{font-family:'Inter',system-ui,sans-serif}
+  .ai-glow { background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%); }
+</style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <header class="bg-white border-b border-gray-200">
+    <div class="flex items-center h-14 px-6 gap-6">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-md bg-gray-900 flex items-center justify-center text-white font-semibold text-sm">T</div>
+        <span class="font-semibold">Tesote</span>
+      </div>
+      <div class="flex items-center gap-2 text-sm border-l border-gray-200 pl-6">
+        <span class="text-gray-500">Workspace:</span>
+        <button class="font-medium hover:bg-gray-100 px-2 py-1 rounded">El Dorado, C.A. ▾</button>
+      </div>
+      <div class="flex-1"></div>
+      <a href="index.html" class="text-xs text-gray-500 hover:text-gray-900">← All prototypes</a>
+      <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium text-sm">MG</div>
+    </div>
+  </header>
+
+  <div class="flex" style="min-height: calc(100vh - 56px)">
+    <aside class="w-60 bg-white border-r border-gray-200 overflow-y-auto py-3 px-2 relative">
+      <nav class="space-y-0.5 text-sm">
+        <a href="stage-7-dashboard.html" class="flex items-center px-3 py-2 rounded hover:bg-gray-100 text-gray-700">Dashboard</a>
+        <a href="stage-5-queue.html" class="flex items-center justify-between px-3 py-2 rounded hover:bg-gray-100 text-gray-700">
+          <span>Coding Queue</span>
+          <span class="bg-gray-100 text-gray-600 text-xs px-1.5 py-0.5 rounded">47</span>
+        </a>
+        <a href="stage-6-ap-inbox.html" class="flex items-center justify-between px-3 py-2 rounded hover:bg-gray-100 text-gray-700">
+          <span>AP Inbox</span>
+          <span class="bg-gray-100 text-gray-600 text-xs px-1.5 py-0.5 rounded">14</span>
+        </a>
+        <a href="cap-3-recon.html" class="flex items-center justify-between px-3 py-2 rounded hover:bg-gray-100 text-gray-700">
+          <span>Bank Reconciliation</span>
+          <span class="bg-gray-100 text-gray-600 text-xs px-1.5 py-0.5 rounded">23</span>
+        </a>
+        <div class="pt-3 pb-1 px-3 text-xs uppercase tracking-wide text-gray-400">Master data</div>
+        <a href="stage-2-mapping.html" class="flex items-center px-3 py-2 rounded hover:bg-gray-100 text-gray-700">Counterparties</a>
+        <a href="stage-2-mapping.html" class="flex items-center px-3 py-2 rounded hover:bg-gray-100 text-gray-700">Categories &amp; Mapping</a>
+        <a href="stage-4-rules.html" class="flex items-center px-3 py-2 rounded hover:bg-gray-100 text-gray-700">Auto-rules</a>
+        <a href="#" class="flex items-center px-3 py-2 rounded bg-gray-900 text-white font-medium">Auto-pilot</a>
+        <div class="pt-3 pb-1 px-3 text-xs uppercase tracking-wide text-gray-400">Account</div>
+        <a href="#" class="flex items-center px-3 py-2 rounded hover:bg-gray-100 text-gray-700">Health</a>
+        <a href="#" class="flex items-center px-3 py-2 rounded hover:bg-gray-100 text-gray-700">Settings</a>
+      </nav>
+      <div class="absolute bottom-4 left-3 right-3">
+        <div class="border-t border-gray-200 pt-3 text-xs">
+          <div class="font-medium text-gray-900">María González</div>
+          <div class="text-gray-500">Controller · El Dorado</div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="flex-1 overflow-y-auto">
+      <div class="px-8 py-6 max-w-5xl">
+        <div>
+          <h1 class="text-2xl font-semibold">Auto-pilot</h1>
+          <p class="text-sm text-gray-500 mt-1 max-w-2xl">Graduate trusted patterns from <strong>Assist</strong> (you approve every one) to <strong>Auto-with-review</strong> (Tesote posts, you skim a daily digest) to <strong>Autonomous</strong> (handled end-to-end, you only see exceptions).</p>
+        </div>
+
+        <!-- Mode legend -->
+        <div class="mt-6 grid grid-cols-3 gap-3 text-xs">
+          <div class="bg-white border border-gray-200 rounded-md p-4">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-gray-400"></span>
+              <span class="font-semibold text-sm">Assist (default)</span>
+            </div>
+            <p class="mt-2 text-gray-600 leading-relaxed">AI suggests, you approve every one. Used for new patterns and anything that hasn't earned trust yet.</p>
+          </div>
+          <div class="bg-white border border-blue-200 rounded-md p-4">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+              <span class="font-semibold text-sm">Auto-with-review</span>
+            </div>
+            <p class="mt-2 text-gray-600 leading-relaxed">Tesote posts automatically. You skim a daily digest and can revoke anything that looks off.</p>
+          </div>
+          <div class="bg-white border border-purple-200 rounded-md p-4">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+              <span class="font-semibold text-sm">Autonomous</span>
+            </div>
+            <p class="mt-2 text-gray-600 leading-relaxed">Fully automated. You only see exceptions and a weekly summary. Used for high-volume, low-variance flows.</p>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="mt-6 bg-white border border-gray-200 rounded-md p-4 grid grid-cols-4 gap-6 text-sm">
+          <div>
+            <div class="text-xs text-gray-500 uppercase tracking-wide">Active autonomous patterns</div>
+            <div class="font-semibold mt-1 text-lg">3</div>
+          </div>
+          <div>
+            <div class="text-xs text-gray-500 uppercase tracking-wide">Auto-with-review</div>
+            <div class="font-semibold mt-1 text-lg">12</div>
+          </div>
+          <div>
+            <div class="text-xs text-gray-500 uppercase tracking-wide">Ready to graduate</div>
+            <div class="font-semibold mt-1 text-lg text-purple-700">8</div>
+          </div>
+          <div>
+            <div class="text-xs text-gray-500 uppercase tracking-wide">Clerk hours saved (last 7d)</div>
+            <div class="font-semibold mt-1 text-lg">~14 hrs</div>
+            <div class="text-xs text-gray-500 mt-0.5">0 errors</div>
+          </div>
+        </div>
+
+        <!-- Ready to graduate -->
+        <div class="mt-6">
+          <div class="flex items-baseline justify-between mb-3">
+            <h2 class="text-sm font-semibold">Patterns ready to graduate</h2>
+            <button class="text-xs text-blue-700 hover:underline">Approve all 8 →</button>
+          </div>
+
+          <div class="space-y-3">
+            <div class="bg-white border border-gray-200 rounded-md p-4">
+              <div class="flex items-center gap-4">
+                <div>
+                  <div class="font-medium text-sm">Netflix Inc. → Software › Subscripciones › Streaming</div>
+                  <div class="text-xs text-gray-500 mt-1">47 approvals · 0 edits · last 90 days · uses analytic: shared services</div>
+                </div>
+                <div class="flex-1"></div>
+                <div class="text-xs text-purple-700 font-medium ai-glow px-2 py-1 rounded border border-purple-200">99% confidence</div>
+                <button class="text-xs px-3 py-1.5 rounded bg-purple-600 text-white font-medium hover:bg-purple-700">Promote to Autonomous</button>
+                <button class="text-xs px-2 py-1.5 rounded border border-gray-200 hover:bg-gray-50">Auto-w/-review only</button>
+              </div>
+            </div>
+
+            <div class="bg-white border border-gray-200 rounded-md p-4">
+              <div class="flex items-center gap-4">
+                <div>
+                  <div class="font-medium text-sm">BNC commissions → Gastos Bancarios › Comisiones</div>
+                  <div class="text-xs text-gray-500 mt-1">311 approvals · 0 edits · 3 banks · always under Bs 50,000</div>
+                </div>
+                <div class="flex-1"></div>
+                <div class="text-xs text-purple-700 font-medium ai-glow px-2 py-1 rounded border border-purple-200">100% confidence</div>
+                <button class="text-xs px-3 py-1.5 rounded bg-purple-600 text-white font-medium hover:bg-purple-700">Promote to Autonomous</button>
+                <button class="text-xs px-2 py-1.5 rounded border border-gray-200 hover:bg-gray-50">Auto-w/-review only</button>
+              </div>
+            </div>
+
+            <div class="bg-white border border-gray-200 rounded-md p-4">
+              <div class="flex items-center gap-4">
+                <div>
+                  <div class="font-medium text-sm">Movistar Venezuela → Operaciones › Servicios › Internet</div>
+                  <div class="text-xs text-gray-500 mt-1">142 approvals · 0 edits · recurring monthly · ~$1,200 USD/mo</div>
+                </div>
+                <div class="flex-1"></div>
+                <div class="text-xs text-purple-700 font-medium ai-glow px-2 py-1 rounded border border-purple-200">98% confidence</div>
+                <button class="text-xs px-3 py-1.5 rounded bg-purple-600 text-white font-medium hover:bg-purple-700">Promote to Autonomous</button>
+                <button class="text-xs px-2 py-1.5 rounded border border-gray-200 hover:bg-gray-50">Auto-w/-review only</button>
+              </div>
+            </div>
+
+            <div class="bg-white border border-gray-200 rounded-md p-4">
+              <div class="flex items-center gap-4">
+                <div>
+                  <div class="font-medium text-sm">Nómina recurrente (quincenal) → Personal › Sueldos y Salarios</div>
+                  <div class="text-xs text-gray-500 mt-1">26 approvals · 0 edits · ~$38K USD per cycle · low variance vs prior</div>
+                </div>
+                <div class="flex-1"></div>
+                <div class="text-xs text-amber-700 font-medium bg-amber-50 px-2 py-1 rounded border border-amber-200">95% — high $ value</div>
+                <button class="text-xs px-3 py-1.5 rounded border border-gray-200 hover:bg-gray-50">Promote to Auto-with-review</button>
+              </div>
+            </div>
+
+            <div class="bg-white border border-gray-200 rounded-md p-4">
+              <div class="flex items-center gap-4">
+                <div>
+                  <div class="font-medium text-sm">SENIAT IVA pago mensual → Impuestos › IVA Pagado</div>
+                  <div class="text-xs text-gray-500 mt-1">19 approvals · 0 edits · always 3rd of month</div>
+                </div>
+                <div class="flex-1"></div>
+                <div class="text-xs text-purple-700 font-medium ai-glow px-2 py-1 rounded border border-purple-200">97% confidence</div>
+                <button class="text-xs px-3 py-1.5 rounded bg-purple-600 text-white font-medium hover:bg-purple-700">Promote to Autonomous</button>
+                <button class="text-xs px-2 py-1.5 rounded border border-gray-200 hover:bg-gray-50">Auto-w/-review only</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active autonomous -->
+        <div class="mt-8">
+          <h2 class="text-sm font-semibold mb-3">Currently autonomous</h2>
+          <div class="bg-white border border-gray-200 rounded-md overflow-hidden">
+            <table class="w-full text-sm">
+              <thead class="bg-gray-50 border-b border-gray-200 text-xs text-gray-500 uppercase tracking-wider">
+                <tr>
+                  <th class="px-3 py-2 text-left">Pattern</th>
+                  <th class="px-3 py-2 text-left">Mode</th>
+                  <th class="px-3 py-2 text-right">Posted this week</th>
+                  <th class="px-3 py-2 text-right">Errors</th>
+                  <th class="px-3 py-2 text-right">Clerk hrs saved</th>
+                  <th class="px-3 py-2"></th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+                <tr>
+                  <td class="px-3 py-3">
+                    <div class="font-medium">AWS USD subscriptions → Software › Infraestructura Cloud</div>
+                    <div class="text-xs text-gray-500">Active since 28 Apr</div>
+                  </td>
+                  <td class="px-3 py-3"><span class="text-xs px-2 py-0.5 rounded-full bg-purple-50 text-purple-700 font-medium">Autonomous</span></td>
+                  <td class="px-3 py-3 text-right">14</td>
+                  <td class="px-3 py-3 text-right">0</td>
+                  <td class="px-3 py-3 text-right">~2.1 hrs</td>
+                  <td class="px-3 py-3 text-right"><button class="text-xs text-gray-500 hover:text-gray-900">⋯</button></td>
+                </tr>
+                <tr>
+                  <td class="px-3 py-3">
+                    <div class="font-medium">CANTV pagos mensuales → Operaciones › Servicios › Internet</div>
+                    <div class="text-xs text-gray-500">Active since 2 May</div>
+                  </td>
+                  <td class="px-3 py-3"><span class="text-xs px-2 py-0.5 rounded-full bg-purple-50 text-purple-700 font-medium">Autonomous</span></td>
+                  <td class="px-3 py-3 text-right">31</td>
+                  <td class="px-3 py-3 text-right">0</td>
+                  <td class="px-3 py-3 text-right">~3.6 hrs</td>
+                  <td class="px-3 py-3 text-right"><button class="text-xs text-gray-500 hover:text-gray-900">⋯</button></td>
+                </tr>
+                <tr>
+                  <td class="px-3 py-3">
+                    <div class="font-medium">Banesco comisiones → Gastos Bancarios › Comisiones</div>
+                    <div class="text-xs text-gray-500">Active since 5 May</div>
+                  </td>
+                  <td class="px-3 py-3"><span class="text-xs px-2 py-0.5 rounded-full bg-purple-50 text-purple-700 font-medium">Autonomous</span></td>
+                  <td class="px-3 py-3 text-right">87</td>
+                  <td class="px-3 py-3 text-right">0</td>
+                  <td class="px-3 py-3 text-right">~4.8 hrs</td>
+                  <td class="px-3 py-3 text-right"><button class="text-xs text-gray-500 hover:text-gray-900">⋯</button></td>
+                </tr>
+                <tr class="bg-blue-50/30">
+                  <td class="px-3 py-3">
+                    <div class="font-medium">Distribuidora Caracas → Inventario › Compras › Materia Prima</div>
+                    <div class="text-xs text-gray-500">Active since 7 May</div>
+                  </td>
+                  <td class="px-3 py-3"><span class="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 font-medium">Auto-with-review</span></td>
+                  <td class="px-3 py-3 text-right">8</td>
+                  <td class="px-3 py-3 text-right">0</td>
+                  <td class="px-3 py-3 text-right">~1.4 hrs</td>
+                  <td class="px-3 py-3 text-right"><button class="text-xs text-gray-500 hover:text-gray-900">⋯</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Trust controls -->
+        <div class="mt-8 bg-white border border-gray-200 rounded-md p-5">
+          <h2 class="text-sm font-semibold mb-3">Trust guardrails</h2>
+          <p class="text-xs text-gray-500 mb-4 max-w-2xl">Global rules that hold even for autonomous patterns. If any of these fire, the transaction comes back to your queue regardless of mode.</p>
+          <div class="space-y-2 text-sm">
+            <div class="flex items-center gap-3">
+              <input type="checkbox" class="rounded" checked>
+              <span class="flex-1">Transaction amount &gt; <strong>$10,000 USD</strong> always requires manual approval</span>
+              <button class="text-xs text-gray-500 hover:text-gray-900">Edit</button>
+            </div>
+            <div class="flex items-center gap-3">
+              <input type="checkbox" class="rounded" checked>
+              <span class="flex-1">New counterparty (first seen in last 30 days) always requires manual approval</span>
+              <button class="text-xs text-gray-500 hover:text-gray-900">Edit</button>
+            </div>
+            <div class="flex items-center gap-3">
+              <input type="checkbox" class="rounded" checked>
+              <span class="flex-1">Period close (after day 20 of month) pauses all autonomous posting</span>
+              <button class="text-xs text-gray-500 hover:text-gray-900">Edit</button>
+            </div>
+            <div class="flex items-center gap-3">
+              <input type="checkbox" class="rounded">
+              <span class="flex-1 text-gray-700">Variance from rolling average &gt; <strong>40%</strong> for this pattern</span>
+              <button class="text-xs text-gray-500 hover:text-gray-900">Edit</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-8 border border-dashed border-gray-300 bg-white rounded-md p-4 text-xs text-gray-600">
+          <div class="font-medium text-gray-900 mb-2">Demo notes</div>
+          <ul class="space-y-1 list-disc pl-4">
+            <li>This is where the "Assist → Auto-with-review → Autonomous" PRD philosophy becomes concrete UI. Controllers earn their leverage here, one pattern at a time.</li>
+            <li>"Promote to Autonomous" is the controller's choice — Tesote never moves patterns up modes without explicit approval.</li>
+            <li>High-$$ patterns (payroll) get a yellow flag and only let you graduate to Auto-with-review, not Autonomous.</li>
+            <li>"Trust guardrails" are the global escape hatches — even Autonomous patterns get bounced back to the queue if any guardrail fires. This is the defense against the "AI errors are catastrophic in accounting" risk in the PRD.</li>
+          </ul>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

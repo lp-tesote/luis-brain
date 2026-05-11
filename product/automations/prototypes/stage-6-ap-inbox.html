@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tesote — AP Inbox (Stage 6)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  body{font-family:'Inter',system-ui,sans-serif}
+  .ai-glow { background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%); }
+  .confidence-high { background: #dcfce7; color: #15803d; }
+  .confidence-med { background: #fef3c7; color: #b45309; }
+</style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <header class="bg-white border-b border-gray-200">
+    <div class="flex items-center h-14 px-6 gap-6">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-md bg-gray-900 flex items-center justify-center text-white font-semibold text-sm">T</div>
+        <span class="font-semibold">Tesote</span>
+      </div>
+      <div class="flex items-center gap-2 text-sm border-l border-gray-200 pl-6">
+        <span class="text-gray-500">Workspace:</span>
+        <button class="font-medium hover:bg-gray-100 px-2 py-1 rounded">El Dorado, C.A. ▾</button>
+      </div>
+      <div class="flex-1"></div>
+      <a href="index.html" class="text-xs text-gray-500 hover:text-gray-900">← All prototypes</a>
+      <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium text-sm">JP</div>
+    </div>
+  </header>
+
+  <div class="flex" style="height: calc(100vh - 56px)">
+    <!-- Sidebar -->
+    <aside class="w-60 bg-white border-r border-gray-200 overflow-y-auto py-3 px-2 relative">
+      <nav class="space-y-0.5 text-sm">
+        <a href="stage-7-dashboard.html" class="flex items-center px-3 py-2 rounded hover:bg-gray-100 text-gray-700">Dashboard</a>
+        <a href="stage-5-queue.html" class="flex items-center justify-between px-3 py-2 rounded hover:bg-gray-100 text-gray-700">
+          <span>Coding Queue</span>
+          <span class="bg-gray-100 text-gray-600 text-xs px-1.5 py-0.5 rounded">47</span>
+        </a>
+        <a href="#" class="flex items-center justify-between px-3 py-2 rounded bg-gray-900 text-white font-medium">
+          <span>AP Inbox</span>
+          <span class="bg-white/20 text-xs px-1.5 py-0.5 rounded">14</span>
+        </a>
+        <a href="cap-3-recon.html" class="flex items-center justify-between px-3 py-2 rounded hover:bg-gray-100 text-gray-700">
+          <span>Bank Reconciliation</span>
+          <span class="bg-gray-100 text-gray-600 text-xs px-1.5 py-0.5 rounded">23</span>
+        </a>
+        <div class="pt-3 pb-1 px-3 text-xs uppercase tracking-wide text-gray-400">Master data</div>
+        <a href="stage-2-mapping.html" class="flex items-center px-3 py-2 rounded hover:bg-gray-100 text-gray-700">Counterparties</a>
+        <a href="stage-2-mapping.html" class="flex items-center px-3 py-2 rounded hover:bg-gray-100 text-gray-700">Categories &amp; Mapping</a>
+        <a href="stage-4-rules.html" class="flex items-center px-3 py-2 rounded hover:bg-gray-100 text-gray-700">Auto-rules</a>
+        <a href="stage-8-autopilot.html" class="flex items-center px-3 py-2 rounded hover:bg-gray-100 text-gray-700">Auto-pilot</a>
+        <div class="pt-3 pb-1 px-3 text-xs uppercase tracking-wide text-gray-400">Account</div>
+        <a href="#" class="flex items-center px-3 py-2 rounded hover:bg-gray-100 text-gray-700">Health</a>
+        <a href="#" class="flex items-center px-3 py-2 rounded hover:bg-gray-100 text-gray-700">Settings</a>
+      </nav>
+      <div class="absolute bottom-4 left-3 right-3">
+        <div class="border-t border-gray-200 pt-3 text-xs">
+          <div class="font-medium text-gray-900">José Pérez</div>
+          <div class="text-gray-500">AP Clerk · El Dorado</div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="flex-1 overflow-y-auto">
+      <div class="px-8 py-6">
+        <div class="flex items-baseline justify-between mb-1">
+          <div>
+            <h1 class="text-2xl font-semibold">AP Inbox</h1>
+            <p class="text-sm text-gray-500 mt-1 max-w-2xl">Forward vendor invoices to <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded text-gray-700">ap-eldorado@tesote.com</code> — Tesote OCRs, extracts, matches against your vendors, and drafts the <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded text-gray-700">account.move</code>. You approve, we post.</p>
+          </div>
+          <button class="text-xs px-3 py-1.5 border border-gray-200 rounded bg-white hover:bg-gray-50">+ Upload invoice manually</button>
+        </div>
+
+        <!-- Stats strip -->
+        <div class="mt-5 bg-white border border-gray-200 rounded-md p-4 grid grid-cols-4 gap-6 text-sm">
+          <div>
+            <div class="text-xs text-gray-500 uppercase tracking-wide">Pending review</div>
+            <div class="font-semibold mt-1 text-lg">14</div>
+          </div>
+          <div>
+            <div class="text-xs text-gray-500 uppercase tracking-wide">Posted today</div>
+            <div class="font-semibold mt-1 text-lg">38</div>
+            <div class="text-xs text-gray-500 mt-0.5">$ 84,290 total</div>
+          </div>
+          <div>
+            <div class="text-xs text-gray-500 uppercase tracking-wide">OCR accuracy</div>
+            <div class="font-semibold mt-1 text-lg">93%</div>
+            <div class="text-xs text-gray-500 mt-0.5">last 30 days</div>
+          </div>
+          <div>
+            <div class="text-xs text-gray-500 uppercase tracking-wide">Avg time-to-post</div>
+            <div class="font-semibold mt-1 text-lg">2:14 min</div>
+            <div class="text-xs text-gray-500 mt-0.5">↓ from 11 min manual</div>
+          </div>
+        </div>
+
+        <div class="mt-5 grid gap-4" style="grid-template-columns: minmax(0, 1fr) 480px;">
+          <!-- Left: invoice list -->
+          <div>
+            <div class="border-b border-gray-200 flex gap-6 text-sm">
+              <button class="pb-2 border-b-2 border-gray-900 font-medium">Pending <span class="text-gray-400">14</span></button>
+              <button class="pb-2 border-b-2 border-transparent text-gray-500 hover:text-gray-900">Posted <span class="text-gray-400">38</span></button>
+              <button class="pb-2 border-b-2 border-transparent text-gray-500 hover:text-gray-900">Rejected <span class="text-gray-400">2</span></button>
+            </div>
+
+            <div class="mt-3 space-y-2">
+              <!-- Selected -->
+              <div class="bg-white border border-blue-400 rounded-md px-4 py-3 shadow-sm">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <div class="font-medium text-sm">Distribuidora Caracas, C.A.</div>
+                    <div class="text-xs text-gray-500 mt-0.5">Invoice DC-2398 · received via email · 9 May, 4:21 PM</div>
+                  </div>
+                  <div class="text-right">
+                    <div class="font-semibold text-sm">$ 4.890,00</div>
+                    <span class="confidence-high px-2 py-0.5 rounded-full text-[10px] font-medium mt-1 inline-block">96% extracted</span>
+                  </div>
+                </div>
+                <div class="mt-2 flex items-center gap-2 text-xs">
+                  <span class="px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded font-medium">PO #1234 matched</span>
+                  <span class="px-1.5 py-0.5 bg-green-50 text-green-700 rounded font-medium">Vendor known</span>
+                </div>
+              </div>
+
+              <div class="bg-white border border-gray-200 rounded-md px-4 py-3 hover:border-gray-400 cursor-pointer">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <div class="font-medium text-sm">Movistar Venezuela</div>
+                    <div class="text-xs text-gray-500 mt-0.5">FAC-2026-04829 · received via email · 9 May, 9:12 AM</div>
+                  </div>
+                  <div class="text-right">
+                    <div class="font-semibold text-sm">$ 1.247,00</div>
+                    <span class="confidence-high px-2 py-0.5 rounded-full text-[10px] font-medium mt-1 inline-block">99% extracted</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bg-white border border-gray-200 rounded-md px-4 py-3 hover:border-gray-400 cursor-pointer">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <div class="font-medium text-sm">Servicios Eléctricos San Bernardino</div>
+                    <div class="text-xs text-gray-500 mt-0.5">FACT-2026-118 · uploaded via UI · 9 May, 10:48 AM</div>
+                  </div>
+                  <div class="text-right">
+                    <div class="font-semibold text-sm">Bs 8.420.000,00</div>
+                    <span class="confidence-med px-2 py-0.5 rounded-full text-[10px] font-medium mt-1 inline-block">81% extracted</span>
+                  </div>
+                </div>
+                <div class="mt-2 flex items-center gap-2 text-xs">
+                  <span class="px-1.5 py-0.5 bg-amber-50 text-amber-700 rounded font-medium">New vendor — create?</span>
+                </div>
+              </div>
+
+              <div class="bg-white border border-gray-200 rounded-md px-4 py-3 hover:border-gray-400 cursor-pointer">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <div class="font-medium text-sm">Polar — Distribuidora</div>
+                    <div class="text-xs text-gray-500 mt-0.5">DP-78432 · WhatsApp forward · 9 May, 11:30 AM</div>
+                  </div>
+                  <div class="text-right">
+                    <div class="font-semibold text-sm">$ 12.840,00</div>
+                    <span class="confidence-high px-2 py-0.5 rounded-full text-[10px] font-medium mt-1 inline-block">97% extracted</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bg-white border border-gray-200 rounded-md px-4 py-3 hover:border-gray-400 cursor-pointer">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <div class="font-medium text-sm">Inversiones Tropical Foods</div>
+                    <div class="text-xs text-gray-500 mt-0.5">ITF-2026-441 · email · 9 May, 2:15 PM</div>
+                  </div>
+                  <div class="text-right">
+                    <div class="font-semibold text-sm">$ 6.300,00</div>
+                    <span class="confidence-high px-2 py-0.5 rounded-full text-[10px] font-medium mt-1 inline-block">94% extracted</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="text-xs text-gray-500 text-center py-2">9 more invoices below…</div>
+            </div>
+          </div>
+
+          <!-- Right: detail / draft -->
+          <div class="bg-white border border-gray-200 rounded-md">
+            <div class="px-5 py-4 border-b border-gray-100">
+              <div class="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Invoice preview &amp; draft</div>
+              <div class="font-semibold">Distribuidora Caracas, C.A. — DC-2398</div>
+              <div class="text-xs text-gray-500 mt-0.5">Will post as <code class="bg-gray-100 px-1 py-0.5 rounded">account.move</code> type <code class="bg-gray-100 px-1 py-0.5 rounded">in_invoice</code> to Odoo</div>
+            </div>
+
+            <!-- Extracted fields -->
+            <div class="px-5 py-4 space-y-3 text-sm">
+              <div class="flex justify-between items-baseline">
+                <span class="text-xs text-gray-500">Vendor (counterparty)</span>
+                <span class="font-medium">Distribuidora Caracas, C.A. <span class="text-xs text-gray-500">→ res.partner #1845</span></span>
+              </div>
+              <div class="flex justify-between items-baseline">
+                <span class="text-xs text-gray-500">Invoice number</span>
+                <span class="font-medium">DC-2398</span>
+              </div>
+              <div class="flex justify-between items-baseline">
+                <span class="text-xs text-gray-500">Invoice date</span>
+                <span class="font-medium">9 May 2026</span>
+              </div>
+              <div class="flex justify-between items-baseline">
+                <span class="text-xs text-gray-500">Due date</span>
+                <span class="font-medium">10 May 2026 <span class="text-amber-700 text-xs">(tomorrow)</span></span>
+              </div>
+              <div class="flex justify-between items-baseline">
+                <span class="text-xs text-gray-500">PO match</span>
+                <span class="font-medium">PO #1234 <span class="text-green-700 text-xs">(3-way match OK)</span></span>
+              </div>
+
+              <div class="border-t border-gray-100 pt-3">
+                <div class="text-xs text-gray-500 mb-2">Line items</div>
+                <table class="w-full text-xs">
+                  <tbody class="divide-y divide-gray-100">
+                    <tr>
+                      <td class="py-1.5">Harina trigo — 50kg ×40</td>
+                      <td class="py-1.5 text-right">$ 2.400,00</td>
+                    </tr>
+                    <tr>
+                      <td class="py-1.5">Aceite vegetal — 1L ×600</td>
+                      <td class="py-1.5 text-right">$ 1.890,00</td>
+                    </tr>
+                    <tr>
+                      <td class="py-1.5">Azúcar refinada — 25kg ×24</td>
+                      <td class="py-1.5 text-right">$ 600,00</td>
+                    </tr>
+                  </tbody>
+                  <tfoot class="border-t border-gray-200">
+                    <tr>
+                      <td class="pt-2 text-gray-500">Subtotal</td>
+                      <td class="pt-2 text-right">$ 4.890,00</td>
+                    </tr>
+                    <tr>
+                      <td class="pt-1 text-gray-500">IVA (16%)</td>
+                      <td class="pt-1 text-right">$ 782,40</td>
+                    </tr>
+                    <tr>
+                      <td class="pt-1 font-semibold">Total</td>
+                      <td class="pt-1 text-right font-semibold">$ 5.672,40</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+
+              <div class="border-t border-gray-100 pt-3">
+                <div class="text-xs text-gray-500">Tesote category (AI)</div>
+                <span class="mt-1 inline-block px-2 py-0.5 rounded text-xs ai-glow text-purple-700 font-medium">Inventario › Compras › Materia Prima</span>
+                <span class="ml-2 text-[11px] text-gray-500">→ Odoo 1.1.4.02 Inventario en Tránsito</span>
+              </div>
+
+              <div class="border-t border-gray-100 pt-3">
+                <div class="text-xs text-gray-500 mb-2">Cost center (analytic)</div>
+                <span class="inline-block px-2 py-0.5 rounded text-xs bg-blue-50 text-blue-700 font-medium">Sucursal 04 — Las Mercedes</span>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="px-5 py-4 bg-gray-50 border-t border-gray-100 flex items-center gap-2">
+              <button class="px-3 py-1.5 text-xs rounded bg-blue-600 text-white font-medium hover:bg-blue-700">Approve &amp; post to Odoo</button>
+              <button class="px-3 py-1.5 text-xs rounded border border-gray-200 hover:bg-gray-100">Edit</button>
+              <div class="flex-1"></div>
+              <button class="text-xs text-red-600 hover:underline">Reject</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-8 border border-dashed border-gray-300 bg-white rounded-md p-4 text-xs text-gray-600">
+          <div class="font-medium text-gray-900 mb-2">Demo notes</div>
+          <ul class="space-y-1 list-disc pl-4">
+            <li>The forwarding address <code class="bg-gray-100 px-1 py-0.5 rounded">ap-eldorado@tesote.com</code> is provisioned per client. Vendors send invoices there; clerks forward emails into it; WhatsApp forwards work too.</li>
+            <li>Three-way match flag appears when a PO is found and amounts agree. This is the AP wedge — most VE mid-market clients have no PO matching today.</li>
+            <li>Counterparty mapping is invisible here — the AP clerk just sees "Distribuidora Caracas, C.A." (the clean Tesote counterparty from Stage 2 dedup). Odoo res.partner ID shown for reference.</li>
+            <li>"New vendor — create?" flag appears when OCR extracts a vendor not in Tesote's counterparty list. Clerk decides whether to create or assign to existing.</li>
+          </ul>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

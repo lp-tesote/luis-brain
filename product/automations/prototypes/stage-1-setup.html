@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tesote — Setup Wizard (Stage 1)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{font-family:'Inter',system-ui,sans-serif}</style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <!-- Top bar -->
+  <header class="bg-white border-b border-gray-200">
+    <div class="flex items-center h-14 px-6 gap-6">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-md bg-gray-900 flex items-center justify-center text-white font-semibold text-sm">T</div>
+        <span class="font-semibold">Tesote</span>
+      </div>
+      <div class="flex items-center gap-2 text-sm border-l border-gray-200 pl-6">
+        <span class="text-gray-500">Workspace:</span>
+        <button class="font-medium hover:bg-gray-100 px-2 py-1 rounded">El Dorado, C.A. ▾</button>
+      </div>
+      <div class="flex-1"></div>
+      <a href="index.html" class="text-xs text-gray-500 hover:text-gray-900">← All prototypes</a>
+      <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium text-sm">MG</div>
+    </div>
+  </header>
+
+  <!-- Progress -->
+  <div class="bg-blue-50 border-b border-blue-100 px-8 py-2.5 flex items-center gap-3 text-xs">
+    <span class="font-medium text-blue-900">Onboarding · Day 1 of 30</span>
+    <div class="flex-1 max-w-xl bg-blue-100 rounded-full h-1.5 overflow-hidden">
+      <div class="bg-blue-600 h-full" style="width: 14%"></div>
+    </div>
+    <span class="text-blue-700">Stage 1 of 8 · Connect Odoo</span>
+  </div>
+
+  <div class="max-w-4xl mx-auto px-8 py-8">
+    <h1 class="text-2xl font-semibold">Connect your Odoo</h1>
+    <p class="text-sm text-gray-500 mt-1 max-w-2xl">We'll pull everything Tesote needs to start working with your books — chart of accounts, vendors, journal entries, bank statements, taxes. This takes about 5 minutes.</p>
+
+    <!-- Wizard step indicator -->
+    <div class="mt-8 flex items-center gap-2 text-xs">
+      <div class="flex items-center gap-2">
+        <div class="w-6 h-6 rounded-full bg-green-100 text-green-700 flex items-center justify-center font-medium">✓</div>
+        <span class="font-medium text-gray-900">1. Credentials</span>
+      </div>
+      <div class="flex-1 h-px bg-gray-300 mx-2"></div>
+      <div class="flex items-center gap-2">
+        <div class="w-6 h-6 rounded-full bg-green-100 text-green-700 flex items-center justify-center font-medium">✓</div>
+        <span class="font-medium text-gray-900">2. Validate</span>
+      </div>
+      <div class="flex-1 h-px bg-blue-400 mx-2"></div>
+      <div class="flex items-center gap-2">
+        <div class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center font-medium animate-pulse">3</div>
+        <span class="font-medium text-blue-900">3. Initial pull</span>
+      </div>
+      <div class="flex-1 h-px bg-gray-300 mx-2"></div>
+      <div class="flex items-center gap-2">
+        <div class="w-6 h-6 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center font-medium">4</div>
+        <span class="text-gray-500">Done</span>
+      </div>
+    </div>
+
+    <!-- Validate (collapsed) -->
+    <div class="mt-8 bg-white border border-gray-200 rounded-md p-5">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="w-5 h-5 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-xs font-medium">✓</span>
+        <h2 class="font-semibold text-sm">Connection validated</h2>
+        <span class="text-xs text-gray-500">Step 2 · completed in 12 seconds</span>
+        <div class="flex-1"></div>
+        <button class="text-xs text-gray-500 hover:text-gray-900">View details</button>
+      </div>
+      <div class="grid grid-cols-2 gap-2 text-xs">
+        <div class="flex items-center gap-2"><span class="text-green-600">✓</span><span class="text-gray-600">Reached <code class="bg-gray-100 px-1 py-0.5 rounded">https://eldorado.odoo.com</code></span></div>
+        <div class="flex items-center gap-2"><span class="text-green-600">✓</span><span class="text-gray-600">API key authenticated as <strong>tesote_api</strong></span></div>
+        <div class="flex items-center gap-2"><span class="text-green-600">✓</span><span class="text-gray-600">Odoo <strong>18.0 Enterprise</strong> detected</span></div>
+        <div class="flex items-center gap-2"><span class="text-green-600">✓</span><span class="text-gray-600">Accounting module installed</span></div>
+        <div class="flex items-center gap-2"><span class="text-green-600">✓</span><span class="text-gray-600">Required API permissions present</span></div>
+        <div class="flex items-center gap-2"><span class="text-green-600">✓</span><span class="text-gray-600">Tesote module v0.3.6 installed</span></div>
+      </div>
+    </div>
+
+    <!-- Initial pull (active) -->
+    <div class="mt-4 bg-white border border-blue-400 rounded-md p-5 shadow-sm">
+      <div class="flex items-center gap-3 mb-1">
+        <div class="w-6 h-6 rounded-full border-2 border-blue-400 border-t-transparent animate-spin"></div>
+        <h2 class="font-semibold text-sm">Pulling your Odoo data</h2>
+        <span class="text-xs text-blue-700 font-medium">Step 3 · 4 of 6 complete</span>
+      </div>
+      <p class="text-xs text-gray-500 ml-9 mb-4">We're pulling the last 90 days of activity plus all current master data. You can leave this page — we'll email María when it's done.</p>
+
+      <div class="space-y-2">
+        <!-- Done -->
+        <div class="flex items-center gap-3 px-3 py-2 bg-gray-50 rounded">
+          <span class="w-5 h-5 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-xs">✓</span>
+          <span class="text-sm flex-1">Chart of accounts</span>
+          <span class="text-xs text-gray-500">245 accounts</span>
+        </div>
+        <div class="flex items-center gap-3 px-3 py-2 bg-gray-50 rounded">
+          <span class="w-5 h-5 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-xs">✓</span>
+          <span class="text-sm flex-1">Partners (vendors + customers)</span>
+          <span class="text-xs text-gray-500">1,247 res.partner records</span>
+        </div>
+        <div class="flex items-center gap-3 px-3 py-2 bg-gray-50 rounded">
+          <span class="w-5 h-5 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-xs">✓</span>
+          <span class="text-sm flex-1">Taxes &amp; jurisdictions</span>
+          <span class="text-xs text-gray-500">18 taxes</span>
+        </div>
+        <div class="flex items-center gap-3 px-3 py-2 bg-gray-50 rounded">
+          <span class="w-5 h-5 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-xs">✓</span>
+          <span class="text-sm flex-1">Analytic accounts</span>
+          <span class="text-xs text-gray-500">31 cost centers (1 per sucursal)</span>
+        </div>
+        <!-- Active -->
+        <div class="flex items-center gap-3 px-3 py-2 bg-blue-50 rounded border border-blue-200">
+          <div class="w-5 h-5 rounded-full border-2 border-blue-500 border-t-transparent animate-spin flex-shrink-0"></div>
+          <span class="text-sm flex-1">Journal entries (last 90 days)</span>
+          <span class="text-xs text-blue-700 font-medium">7,842 of ~8,400 (93%)</span>
+        </div>
+        <!-- Pending -->
+        <div class="flex items-center gap-3 px-3 py-2 bg-gray-50 rounded opacity-60">
+          <span class="w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center text-xs">·</span>
+          <span class="text-sm flex-1">Bank statements (last 90 days)</span>
+          <span class="text-xs text-gray-500">Waiting</span>
+        </div>
+      </div>
+
+      <div class="mt-4 ml-9 text-[11px] text-gray-500">
+        Est. remaining: <strong class="text-gray-700">~1 min</strong>
+      </div>
+    </div>
+
+    <!-- After-pull preview -->
+    <div class="mt-6 bg-purple-50/50 border border-purple-200 rounded-md p-5 opacity-60">
+      <div class="flex items-center gap-3">
+        <div class="w-6 h-6 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center text-xs font-medium">4</div>
+        <h2 class="font-semibold text-sm">Next: Map the world</h2>
+        <span class="text-xs text-gray-500">Locked until pull completes</span>
+      </div>
+      <p class="text-xs text-gray-600 ml-9 mt-2 max-w-xl">Once your data is loaded, we'll walk you through mapping Tesote's categories and counterparties to your Odoo setup. Estimated time: about 6 hours of your controller's attention over 3 sessions, including counterparty cleanup.</p>
+    </div>
+
+    <!-- Demo notes -->
+    <div class="mt-10 border border-dashed border-gray-300 bg-white rounded-md p-4 text-xs text-gray-600">
+      <div class="font-medium text-gray-900 mb-2">Demo notes</div>
+      <ul class="space-y-1 list-disc pl-4">
+        <li>Showing Step 3 (initial pull) in progress — most visually interesting state. Step 1 (form) and Step 4 (done) are simpler.</li>
+        <li>The customer's only real input on this stage is entering credentials in Step 1. Everything else is automated. Total customer effort: ~30 minutes.</li>
+        <li>Pulling 90 days of history is what powers the auto-rules suggestion engine in Stage 4 and the AI's cold-start training.</li>
+      </ul>
+    </div>
+
+    <div class="mt-6 flex items-center gap-3">
+      <a href="stage-0-preflight.html" class="text-sm text-gray-600 hover:text-gray-900">← Stage 0</a>
+      <div class="flex-1"></div>
+      <a href="stage-2-mapping.html" class="text-sm text-blue-700 hover:underline">Next: Stage 2 — Map the world →</a>
+    </div>
+  </div>
+</body>
+</html>

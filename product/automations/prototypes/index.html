@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tesote × Odoo Cockpit — Prototypes</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{font-family:'Inter',system-ui,sans-serif}</style>
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen">
+  <div class="max-w-4xl mx-auto px-6 py-12">
+    <div class="mb-10">
+      <div class="flex items-center gap-2 mb-4">
+        <div class="w-8 h-8 rounded-md bg-gray-900 flex items-center justify-center text-white font-semibold text-sm">T</div>
+        <span class="font-semibold">Tesote</span>
+        <span class="text-gray-400">×</span>
+        <span class="font-semibold">Odoo</span>
+      </div>
+      <h1 class="text-3xl font-semibold tracking-tight">Cockpit prototypes — end-to-end flow</h1>
+      <p class="text-gray-600 mt-2 text-sm max-w-2xl">Working HTML mockups for the 30-day onboarding journey and the four v1 daily-work surfaces, scoped to Odoo. Each screen renders a representative moment in the customer's experience. Source: <code class="text-xs bg-gray-100 px-1 py-0.5 rounded">odoo-prd.md</code>.</p>
+    </div>
+
+    <!-- Onboarding -->
+    <div class="mb-8">
+      <h2 class="text-xs uppercase tracking-wider text-gray-500 font-medium mb-3">Onboarding flow · 30 days</h2>
+      <div class="space-y-2">
+        <a href="stage-0-preflight.html" class="bg-white border border-gray-200 rounded-md px-4 py-3 flex items-center gap-3 hover:border-gray-400 hover:shadow-sm transition-all">
+          <span class="w-14 text-xs text-gray-700 font-medium">Stage 0</span>
+          <div class="flex-1">
+            <div class="text-sm font-medium">Pre-flight discovery</div>
+            <div class="text-xs text-gray-500">Internal CS console — auto-generated kickoff brief, pre-flight checklist</div>
+          </div>
+          <span class="text-xs text-gray-400">Day -7 → 0</span>
+          <span class="text-xs px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-medium">Open →</span>
+        </a>
+
+        <a href="stage-1-setup.html" class="bg-white border border-gray-200 rounded-md px-4 py-3 flex items-center gap-3 hover:border-gray-400 hover:shadow-sm transition-all">
+          <span class="w-14 text-xs text-gray-700 font-medium">Stage 1</span>
+          <div class="flex-1">
+            <div class="text-sm font-medium">Connect Odoo — Setup Wizard</div>
+            <div class="text-xs text-gray-500">Credentials, validation, initial pull of 90 days of Odoo data</div>
+          </div>
+          <span class="text-xs text-gray-400">Day 0 → 1</span>
+          <span class="text-xs px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-medium">Open →</span>
+        </a>
+
+        <a href="stage-2-mapping.html" class="bg-white border border-gray-200 rounded-md px-4 py-3 flex items-center gap-3 hover:border-gray-400 hover:shadow-sm transition-all">
+          <span class="w-14 text-xs text-gray-700 font-medium">Stage 2</span>
+          <div class="flex-1">
+            <div class="text-sm font-medium">Map the world — counterparty dedup</div>
+            <div class="text-xs text-gray-500">Categories, counterparties (the messy hero), tax, analytic. ~6 hours of controller time.</div>
+          </div>
+          <span class="text-xs text-gray-400">Day 1 → 5</span>
+          <span class="text-xs px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-medium">Open →</span>
+        </a>
+
+        <a href="stage-3-banks.html" class="bg-white border border-gray-200 rounded-md px-4 py-3 flex items-center gap-3 hover:border-gray-400 hover:shadow-sm transition-all">
+          <span class="w-14 text-xs text-gray-700 font-medium">Stage 3</span>
+          <div class="flex-1">
+            <div class="text-sm font-medium">Connect banks</div>
+            <div class="text-xs text-gray-500">Via existing Tesote Connect + per-bank-to-Odoo-account binding</div>
+          </div>
+          <span class="text-xs text-gray-400">Day 3 → 7</span>
+          <span class="text-xs px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-medium">Open →</span>
+        </a>
+
+        <a href="stage-4-rules.html" class="bg-white border border-gray-200 rounded-md px-4 py-3 flex items-center gap-3 hover:border-gray-400 hover:shadow-sm transition-all">
+          <span class="w-14 text-xs text-gray-700 font-medium">Stage 4</span>
+          <div class="flex-1">
+            <div class="text-sm font-medium">Seed auto-rules from 90-day history</div>
+            <div class="text-xs text-gray-500">Tesote proposes starter rule library; controller batch-reviews</div>
+          </div>
+          <span class="text-xs text-gray-400">Day 5 → 10</span>
+          <span class="text-xs px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-medium">Open →</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- v1 daily-work surfaces -->
+    <div class="mb-8">
+      <h2 class="text-xs uppercase tracking-wider text-gray-500 font-medium mb-3">v1 capabilities — daily work surfaces (Stage 5+)</h2>
+      <div class="space-y-2">
+        <a href="stage-5-queue.html" class="bg-white border border-gray-200 rounded-md px-4 py-3 flex items-center gap-3 hover:border-gray-400 hover:shadow-sm transition-all">
+          <span class="w-14 text-xs text-purple-700 font-semibold">Cap #1</span>
+          <div class="flex-1">
+            <div class="text-sm font-medium">Daily Coding Queue <span class="ml-1 text-[10px] uppercase tracking-wide text-purple-700 bg-purple-50 px-1.5 py-0.5 rounded font-medium align-middle">centerpiece</span></div>
+            <div class="text-xs text-gray-500">AI Transaction Coding · role-aware columns · AI reasoning · auto-pilot graduation</div>
+          </div>
+          <span class="text-xs px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-medium">Open →</span>
+        </a>
+
+        <a href="stage-6-ap-inbox.html" class="bg-white border border-gray-200 rounded-md px-4 py-3 flex items-center gap-3 hover:border-gray-400 hover:shadow-sm transition-all">
+          <span class="w-14 text-xs text-purple-700 font-semibold">Cap #2</span>
+          <div class="flex-1">
+            <div class="text-sm font-medium">AP Inbox — Invoice Processing</div>
+            <div class="text-xs text-gray-500">Email/WhatsApp invoice forwarding · OCR · PO match · draft account.move · post to Odoo</div>
+          </div>
+          <span class="text-xs px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-medium">Open →</span>
+        </a>
+
+        <a href="cap-3-recon.html" class="bg-white border border-gray-200 rounded-md px-4 py-3 flex items-center gap-3 hover:border-gray-400 hover:shadow-sm transition-all">
+          <span class="w-14 text-xs text-purple-700 font-semibold">Cap #3</span>
+          <div class="flex-1">
+            <div class="text-sm font-medium">Bank Reconciliation</div>
+            <div class="text-xs text-gray-500">Side-by-side bank ↔ Odoo match · one-click confirm · exceptions queue</div>
+          </div>
+          <span class="text-xs px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-medium">Open →</span>
+        </a>
+
+        <a href="stage-2-mapping.html" class="bg-white border border-gray-200 rounded-md px-4 py-3 flex items-center gap-3 hover:border-gray-400 hover:shadow-sm transition-all">
+          <span class="w-14 text-xs text-purple-700 font-semibold">Cap #5</span>
+          <div class="flex-1">
+            <div class="text-sm font-medium">Counterparty Management</div>
+            <div class="text-xs text-gray-500">Tesote-native counterparties · M:N mapping to Odoo res.partner · dedup engine (shown in Stage 2)</div>
+          </div>
+          <span class="text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-600 font-medium">→ See Stage 2</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Operational -->
+    <div class="mb-8">
+      <h2 class="text-xs uppercase tracking-wider text-gray-500 font-medium mb-3">Steady-state surfaces</h2>
+      <div class="space-y-2">
+        <a href="stage-7-dashboard.html" class="bg-white border border-gray-200 rounded-md px-4 py-3 flex items-center gap-3 hover:border-gray-400 hover:shadow-sm transition-all">
+          <span class="w-14 text-xs text-gray-700 font-medium">Stage 7</span>
+          <div class="flex-1">
+            <div class="text-sm font-medium">Controller Dashboard — health &amp; first close</div>
+            <div class="text-xs text-gray-500">North-star KPIs · close checklist · AI learning curve · cockpit health</div>
+          </div>
+          <span class="text-xs text-gray-400">Day 20+</span>
+          <span class="text-xs px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-medium">Open →</span>
+        </a>
+
+        <a href="stage-8-autopilot.html" class="bg-white border border-gray-200 rounded-md px-4 py-3 flex items-center gap-3 hover:border-gray-400 hover:shadow-sm transition-all">
+          <span class="w-14 text-xs text-gray-700 font-medium">Stage 8</span>
+          <div class="flex-1">
+            <div class="text-sm font-medium">Auto-pilot graduation</div>
+            <div class="text-xs text-gray-500">Assist → Auto-with-review → Autonomous · trust guardrails · clerk hours saved</div>
+          </div>
+          <span class="text-xs text-gray-400">Month 2+</span>
+          <span class="text-xs px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-medium">Open →</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Recommended demo path -->
+    <div class="mt-10 bg-white border border-gray-200 rounded-md p-5">
+      <h2 class="text-sm font-semibold mb-3">Recommended demo path</h2>
+      <ol class="space-y-2 text-sm list-decimal pl-5 text-gray-700">
+        <li><strong>Stage 0</strong> — show CS what a kickoff brief looks like before they ever pick up the phone</li>
+        <li><strong>Stage 1 → 2 → 3 → 4</strong> — walk the controller's onboarding experience in 30 days</li>
+        <li><strong>Stage 5 (Queue)</strong> — toggle role between Controller and Clerk; flip the CoA column; expand the Netflix row</li>
+        <li><strong>Cap #3 (Recon)</strong> — expand the Distribuidora Caracas row; show match signals</li>
+        <li><strong>Stage 6 (AP)</strong> — show three-way match callout on Distribuidora Caracas invoice</li>
+        <li><strong>Stage 7 (Dashboard)</strong> — north-star KPI and close checklist with post-v1 capabilities clearly marked</li>
+        <li><strong>Stage 8 (Auto-pilot)</strong> — the graduation flywheel + trust guardrails</li>
+      </ol>
+    </div>
+
+    <div class="mt-8 pt-6 border-t border-gray-200 text-xs text-gray-500 space-y-2">
+      <p>HTML + Tailwind + Inter. Self-contained — no build step. Lightweight JS only for the role toggle and CoA column on the queue. Realistic VE data throughout (RIFs, USD/Bs amounts, Spanish vendor names).</p>
+      <p>Each prototype has a "Demo notes" footer with reviewer guidance — delete before showing to clients.</p>
+    </div>
+  </div>
+</body>
+</html>

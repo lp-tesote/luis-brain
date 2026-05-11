@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tesote — Mapping (Stage 2)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{font-family:'Inter',system-ui,sans-serif}</style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <!-- Top bar -->
+  <header class="bg-white border-b border-gray-200">
+    <div class="flex items-center h-14 px-6 gap-6">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-md bg-gray-900 flex items-center justify-center text-white font-semibold text-sm">T</div>
+        <span class="font-semibold">Tesote</span>
+      </div>
+      <div class="flex items-center gap-2 text-sm border-l border-gray-200 pl-6">
+        <span class="text-gray-500">Workspace:</span>
+        <button class="font-medium hover:bg-gray-100 px-2 py-1 rounded">El Dorado, C.A. ▾</button>
+      </div>
+      <div class="flex-1"></div>
+      <a href="index.html" class="text-xs text-gray-500 hover:text-gray-900">← All prototypes</a>
+      <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium text-sm">MG</div>
+    </div>
+  </header>
+
+  <!-- Onboarding progress bar -->
+  <div class="bg-blue-50 border-b border-blue-100 px-8 py-2.5 flex items-center gap-3 text-xs">
+    <span class="font-medium text-blue-900">Onboarding · Day 3 of 30</span>
+    <div class="flex-1 max-w-xl bg-blue-100 rounded-full h-1.5 overflow-hidden">
+      <div class="bg-blue-600 h-full" style="width: 28%"></div>
+    </div>
+    <span class="text-blue-700">Stage 2 of 8 · Map the world</span>
+    <span class="text-blue-500">·</span>
+    <button class="text-blue-700 hover:underline">View full journey</button>
+  </div>
+
+  <div class="px-8 py-6 max-w-[1400px] mx-auto">
+    <h1 class="text-2xl font-semibold">Map the world</h1>
+    <p class="text-sm text-gray-500 mt-1 max-w-3xl">Configure how Tesote's operational data maps to your Odoo setup. This is the one-time setup that powers everything downstream — coding suggestions, reconciliation, journal posting. The mapping is versioned and editable forever.</p>
+
+    <!-- Sub-tabs -->
+    <div class="mt-6 border-b border-gray-200 flex gap-6 text-sm">
+      <button class="pb-2 border-b-2 border-transparent text-gray-500 hover:text-gray-900">
+        <span>1.</span> Categories
+        <span class="ml-1 inline-flex items-center justify-center w-5 h-5 rounded-full bg-green-100 text-green-700 text-[10px] font-medium align-middle">✓</span>
+      </button>
+      <button class="pb-2 border-b-2 border-gray-900 font-medium">
+        <span class="text-gray-400 font-normal">2.</span> Counterparties
+        <span class="ml-1 text-gray-400 font-normal">31 left</span>
+      </button>
+      <button class="pb-2 border-b-2 border-transparent text-gray-500 hover:text-gray-900">
+        <span>3.</span> Tax <span class="ml-1 text-gray-400">5</span>
+      </button>
+      <button class="pb-2 border-b-2 border-transparent text-gray-500 hover:text-gray-900">
+        <span>4.</span> Analytic <span class="ml-1 text-gray-400">12</span>
+      </button>
+    </div>
+
+    <!-- Header strip with progress -->
+    <div class="mt-5 bg-white border border-gray-200 rounded-md p-4 flex items-center gap-4">
+      <div class="flex-1">
+        <div class="text-sm font-medium">Counterparty cleanup &amp; dedup</div>
+        <div class="text-xs text-gray-500 mt-1 max-w-2xl">Tesote analyzed 1,247 <code class="text-[10px] bg-gray-100 px-1 py-0.5 rounded">res.partner</code> records pulled from your Odoo. Found <strong>47 likely duplicate groups</strong> (about 38% of partners). Resolve each group below — these become clean Tesote counterparties.</div>
+      </div>
+      <div class="text-right">
+        <div class="text-2xl font-semibold text-gray-900">16 <span class="text-base text-gray-400 font-normal">/ 47</span></div>
+        <div class="text-xs text-gray-500">groups resolved</div>
+      </div>
+      <div class="border-l border-gray-200 pl-4">
+        <button class="px-3 py-1.5 text-xs rounded border border-gray-200 hover:bg-gray-50 bg-white font-medium">Auto-resolve 12 high-confidence groups</button>
+      </div>
+    </div>
+
+    <!-- Group 1 — Movistar (the hero example) -->
+    <div class="mt-4 bg-white border border-gray-200 rounded-md overflow-hidden">
+      <div class="flex items-center px-4 py-3 border-b border-gray-100 gap-3">
+        <span class="text-xs font-medium text-amber-700 bg-amber-50 px-2 py-0.5 rounded">98% likely duplicates</span>
+        <span class="text-sm font-medium">Movistar</span>
+        <span class="text-xs text-gray-500">3 Odoo partners · 142 transactions in last 90 days</span>
+        <div class="flex-1"></div>
+        <button class="text-xs px-3 py-1.5 rounded border border-gray-200 hover:bg-gray-50">Keep separate</button>
+        <button class="text-xs px-3 py-1.5 rounded bg-blue-600 text-white font-medium hover:bg-blue-700">Merge all into one</button>
+      </div>
+      <div class="px-4 py-4 grid grid-cols-3 gap-3">
+        <label class="border border-blue-500 bg-blue-50/30 rounded-md p-3 text-xs cursor-pointer">
+          <div class="flex items-start justify-between">
+            <div>
+              <div class="font-medium text-sm">Movistar</div>
+              <div class="text-gray-500 text-[11px]">res.partner #2104</div>
+            </div>
+            <input type="radio" name="movistar-master" checked>
+          </div>
+          <div class="mt-3 space-y-1 text-gray-700">
+            <div>RIF: <strong class="text-gray-900">J-30341596-0</strong></div>
+            <div>Email: <em class="text-gray-400">(none)</em></div>
+            <div>Used in: <strong>86</strong> txs</div>
+            <div>Created: 2019-04-12</div>
+          </div>
+          <div class="mt-3 pt-2 border-t border-blue-100 text-[11px] text-blue-700 font-medium">⚡ Selected as master record</div>
+        </label>
+        <label class="border border-gray-200 rounded-md p-3 text-xs cursor-pointer hover:border-gray-400">
+          <div class="flex items-start justify-between">
+            <div>
+              <div class="font-medium text-sm">MOVISTAR C.A.</div>
+              <div class="text-gray-500 text-[11px]">res.partner #4291</div>
+            </div>
+            <input type="radio" name="movistar-master">
+          </div>
+          <div class="mt-3 space-y-1 text-gray-700">
+            <div>RIF: <strong class="text-gray-900">J-30341596-0</strong> <span class="text-amber-700 text-[10px] font-medium">(MATCH)</span></div>
+            <div>Email: contacto@movistar.com.ve</div>
+            <div>Used in: <strong>41</strong> txs</div>
+            <div>Created: 2021-08-22</div>
+          </div>
+        </label>
+        <label class="border border-gray-200 rounded-md p-3 text-xs cursor-pointer hover:border-gray-400">
+          <div class="flex items-start justify-between">
+            <div>
+              <div class="font-medium text-sm">Movistar Venezuela</div>
+              <div class="text-gray-500 text-[11px]">res.partner #5882</div>
+            </div>
+            <input type="radio" name="movistar-master">
+          </div>
+          <div class="mt-3 space-y-1 text-gray-700">
+            <div>RIF: <em class="text-gray-400">(blank)</em></div>
+            <div>Email: facturacion@movistar.com.ve</div>
+            <div>Used in: <strong>15</strong> txs</div>
+            <div>Created: 2023-11-04</div>
+          </div>
+        </label>
+      </div>
+      <div class="bg-purple-50 border-t border-purple-100 px-4 py-3 text-xs text-purple-900 flex items-start gap-2">
+        <svg class="w-3.5 h-3.5 text-purple-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.539 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.783.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+        <span><strong>Tesote's read:</strong> RIF matches exactly between #2104 and #4291 — same legal entity. #5882 was likely created later by a different user, never linked. After merge, all 142 historical transactions will reference a single Tesote counterparty "Movistar Venezuela", mapped to all three <code class="text-[10px] bg-white px-1 py-0.5 rounded">res.partner</code> records in Odoo for backwards-compatibility.</span>
+      </div>
+    </div>
+
+    <!-- Group 2 — Distribuidora Caracas -->
+    <div class="mt-3 bg-white border border-gray-200 rounded-md overflow-hidden">
+      <div class="flex items-center px-4 py-3 border-b border-gray-100 gap-3">
+        <span class="text-xs font-medium text-amber-700 bg-amber-50 px-2 py-0.5 rounded">76% likely duplicates</span>
+        <span class="text-sm font-medium">Distribuidora Caracas</span>
+        <span class="text-xs text-gray-500">2 partners · 38 transactions</span>
+        <div class="flex-1"></div>
+        <button class="text-xs px-3 py-1.5 rounded border border-gray-200 hover:bg-gray-50">Keep separate</button>
+        <button class="text-xs px-3 py-1.5 rounded bg-blue-600 text-white font-medium hover:bg-blue-700">Merge</button>
+      </div>
+      <div class="px-4 py-4 grid grid-cols-3 gap-3">
+        <label class="border border-blue-500 bg-blue-50/30 rounded-md p-3 text-xs cursor-pointer">
+          <div class="flex items-start justify-between">
+            <div>
+              <div class="font-medium text-sm">Distribuidora Caracas, C.A.</div>
+              <div class="text-gray-500 text-[11px]">res.partner #1845</div>
+            </div>
+            <input type="radio" name="dc-master" checked>
+          </div>
+          <div class="mt-3 space-y-1 text-gray-700">
+            <div>RIF: <strong class="text-gray-900">J-40872103-2</strong></div>
+            <div>Email: ventas@distcaracas.com</div>
+            <div>Used in: <strong>32</strong> txs</div>
+            <div>Created: 2018-02-08</div>
+          </div>
+        </label>
+        <label class="border border-gray-200 rounded-md p-3 text-xs cursor-pointer hover:border-gray-400">
+          <div class="flex items-start justify-between">
+            <div>
+              <div class="font-medium text-sm">Dist. Caracas</div>
+              <div class="text-gray-500 text-[11px]">res.partner #3014</div>
+            </div>
+            <input type="radio" name="dc-master">
+          </div>
+          <div class="mt-3 space-y-1 text-gray-700">
+            <div>RIF: <em class="text-gray-400">(blank)</em></div>
+            <div>Email: <em class="text-gray-400">(none)</em></div>
+            <div>Used in: <strong>6</strong> txs</div>
+            <div>Created: 2024-03-15</div>
+            <div class="mt-1 text-[11px] text-gray-500 italic">Likely a quick-typed dup</div>
+          </div>
+        </label>
+        <div class="flex items-center justify-center text-xs text-gray-400 border border-dashed border-gray-200 rounded-md">
+          <button class="px-3 py-2 hover:bg-gray-50 w-full h-full">+ Add other partner to this group</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Group 3 — already resolved -->
+    <div class="mt-3 bg-green-50/60 border border-green-200 rounded-md px-4 py-3 flex items-center gap-3">
+      <svg class="w-4 h-4 text-green-700" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+      <div class="flex-1 text-sm">
+        <span class="font-medium">Netflix</span>
+        <span class="text-gray-600 text-xs ml-2">· merged 2 partners into 1 Tesote counterparty</span>
+      </div>
+      <button class="text-xs text-green-700 hover:underline font-medium">Undo</button>
+    </div>
+
+    <!-- Group 4 — pending, BNC -->
+    <div class="mt-3 bg-white border border-gray-200 rounded-md px-4 py-3 flex items-center gap-3">
+      <span class="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-0.5 rounded">62% likely</span>
+      <span class="text-sm font-medium">Banco Nacional de Crédito</span>
+      <span class="text-xs text-gray-500">2 partners · 89 transactions</span>
+      <div class="flex-1"></div>
+      <button class="text-xs text-blue-700 hover:underline font-medium">Review →</button>
+    </div>
+
+    <!-- Bulk callout -->
+    <div class="mt-6 bg-purple-50 border border-purple-200 rounded-md p-4 flex items-center gap-4">
+      <div class="w-9 h-9 rounded-full bg-purple-100 flex items-center justify-center text-purple-700">✨</div>
+      <div class="flex-1 text-sm">
+        <div class="font-medium text-purple-900">12 more groups have 95%+ confidence and identical RIFs.</div>
+        <div class="text-purple-700 text-xs mt-1">Auto-resolve them in one click. You'll see the result and can undo any merge.</div>
+      </div>
+      <button class="text-xs px-3 py-2 rounded bg-purple-600 text-white font-medium hover:bg-purple-700">Auto-resolve 12 groups</button>
+    </div>
+
+    <!-- Mapping preview (after dedup) -->
+    <div class="mt-8">
+      <h2 class="text-sm font-semibold text-gray-700">Preview: clean Tesote counterparties → Odoo partners</h2>
+      <p class="text-xs text-gray-500 mt-1">This is the mapping that gets written. Each Tesote counterparty can map to multiple Odoo <code class="text-[10px] bg-gray-100 px-1 py-0.5 rounded">res.partner</code> records — Tesote handles the M:N invisibly going forward.</p>
+      <div class="mt-3 bg-white border border-gray-200 rounded-md overflow-hidden">
+        <table class="w-full text-sm">
+          <thead class="bg-gray-50 border-b border-gray-200 text-xs text-gray-500 uppercase tracking-wider">
+            <tr>
+              <th class="px-3 py-2 text-left">Tesote counterparty</th>
+              <th class="px-3 py-2 text-left">→ Odoo res.partner(s)</th>
+              <th class="px-3 py-2 text-left">RIF / VAT</th>
+              <th class="px-3 py-2 text-right">Txs (90 day)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100 text-sm">
+            <tr>
+              <td class="px-3 py-2.5 font-medium">Movistar Venezuela</td>
+              <td class="px-3 py-2.5 text-gray-600 text-xs">#2104, #4291, #5882</td>
+              <td class="px-3 py-2.5 text-gray-600">J-30341596-0</td>
+              <td class="px-3 py-2.5 text-right text-gray-700">142</td>
+            </tr>
+            <tr>
+              <td class="px-3 py-2.5 font-medium">Netflix Inc.</td>
+              <td class="px-3 py-2.5 text-gray-600 text-xs">#3201, #8847</td>
+              <td class="px-3 py-2.5 text-gray-600 italic text-gray-400">(foreign)</td>
+              <td class="px-3 py-2.5 text-right text-gray-700">47</td>
+            </tr>
+            <tr>
+              <td class="px-3 py-2.5 font-medium">Distribuidora Caracas, C.A.</td>
+              <td class="px-3 py-2.5 text-gray-600 text-xs">#1845 (pending merge w/ #3014)</td>
+              <td class="px-3 py-2.5 text-gray-600">J-40872103-2</td>
+              <td class="px-3 py-2.5 text-right text-gray-700">38</td>
+            </tr>
+            <tr>
+              <td class="px-3 py-2.5 font-medium">BNC</td>
+              <td class="px-3 py-2.5 text-gray-600 text-xs">#0987, #4412</td>
+              <td class="px-3 py-2.5 text-gray-600">G-20009997-3</td>
+              <td class="px-3 py-2.5 text-right text-gray-700">89</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Next step bar -->
+    <div class="mt-10 border-t border-gray-200 pt-5 flex items-center gap-3">
+      <button class="text-sm text-gray-600 hover:text-gray-900">← Back to categories</button>
+      <span class="text-xs text-gray-400">Auto-saved 2 min ago</span>
+      <div class="flex-1"></div>
+      <span class="text-xs text-gray-500">31 groups still to resolve — but you can continue and come back.</span>
+      <button class="px-4 py-2 rounded bg-gray-900 text-white text-sm font-medium hover:bg-black">Continue to Tax mapping →</button>
+    </div>
+
+    <!-- Demo annotation -->
+    <div class="mt-10 border border-dashed border-gray-300 bg-white rounded-md p-4 text-xs text-gray-600">
+      <div class="font-medium text-gray-900 mb-2">Demo notes (delete before client)</div>
+      <ul class="space-y-1 list-disc pl-4">
+        <li>The dedup screen is the messiest moment in onboarding — most VE clients have 30–40% duplicate counterparties in Odoo. This is the wow moment ("we cleaned 38% of your vendor list").</li>
+        <li>RIF (legal tax ID) match is the strongest dedup signal. The UI calls it out explicitly.</li>
+        <li>The "Auto-resolve N groups" CTA is critical — we should never make controllers click through dozens of obvious merges one by one.</li>
+        <li>The bottom mapping table is the *result* the controller takes away — clean counterparties they'll see in daily work, with Odoo partners hidden but preserved for the mapping layer.</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>
