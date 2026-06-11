@@ -9,7 +9,17 @@ Build a weekly digest of every call the team had, from two sources, into one sca
 ## Step 1 — Resolve the window
 
 - Default window: the current week, **Monday 00:00 → Friday 23:59** in `America/Caracas` (the business tz; Roam timestamps come back `-04:00`).
-- Today's date is in system context. Compute the Monday of the current week as `<MONDAY>` (YYYY-MM-DD); the Friday is `<MONDAY>+4`.
+- **Compute `<MONDAY>`/`<FRIDAY>` with a shell command — do NOT hand-calculate the weekday (mental date math is error-prone and has produced off-by-one Mondays).** Run via Bash, set `TZ=America/Caracas`:
+  ```sh
+  export TZ=America/Caracas
+  DOW=$(date +%u)                                   # 1=Mon .. 7=Sun
+  MONDAY=$(date -d "-$((DOW-1)) days" +%F 2>/dev/null) \
+    || MONDAY=$(date -v-$((DOW-1))d +%F)            # GNU first, BSD/macOS fallback
+  FRIDAY=$(date -d "$MONDAY +4 days" +%F 2>/dev/null) \
+    || FRIDAY=$(date -j -v+4d -f %F "$MONDAY" +%F)
+  echo "MONDAY=$MONDAY ($(date -d "$MONDAY" +%A 2>/dev/null || date -j -f %F "$MONDAY" +%A)) FRIDAY=$FRIDAY"
+  ```
+  **Assert the echo prints `Monday`** before continuing. If it doesn't, stop and fix — a wrong Monday silently drops a day of calls.
 - If `$ARGUMENTS` gives an explicit range (`YYYY-MM-DD..YYYY-MM-DD`), use that instead; the file's `week-of` date is the range start.
 - Target file: `~/Programming/tesote/luis-brain/daily/team-calls-week-of-<MONDAY>.md` (absolute path).
 
