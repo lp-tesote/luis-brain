@@ -1,153 +1,203 @@
 ---
 title: Team calls — week of 2026-06-08
 tags: [team-calls, weekly-digest, fireflies, roam]
-updated: 2026-06-11
+updated: 2026-06-12
 window: 2026-06-08 .. 2026-06-12
 ---
 
 ## Needs Luis's attention
 
-- [ ] Prepare and send mass communication to clients re: bank-connection changes — from "Operational Bottlenecks, Client Strategy & Team Morale" (2026-06-10)
-- [ ] Write Gustavo to close Broward implementation fee this month — from "Actualización comercial y técnica Tesote" (2026-06-10)
-- [ ] Schedule in-person meeting with Grupo Rica for upsell + banking migration proposal — from "Arranque y estrategia de transición bancaria para clientes" (2026-06-10)
-- [ ] Define communication channel for banking API integrations (new vs. existing channel) — from "Arranque y estrategia de transición bancaria para clientes" (2026-06-10)
-- [ ] Lock AI launch date with Dan, Sebastian, and Majo — from "Lanzamiento y estrategia de Tesote AI" (2026-06-09) *(Jul 1 target confirmed in Jun 10 all-hands)*
-- [ ] Share AI launch planning doc so each dept identifies its key tasks — from "Lanzamiento y estrategia de Tesote AI" (2026-06-09)
-- [ ] Organize banking API transition meeting (define batch 1 clients + banks) — from "Lanzamiento y estrategia de Tesote AI" (2026-06-09) *(Jun 10 kickoff meeting likely covered this)*
-- [ ] Coordinate all-teams alignment meeting for launch — from "Lanzamiento AI: Estrategia, Deals y Coordinación" (2026-06-08) *(Jun 10 all-hands likely covered this)*
-- [ ] Send Conozoil support video — from "Lanzamiento AI: Estrategia, Deals y Coordinación" (2026-06-08)
-- [ ] Review mobile web feedback and apply design improvements — from "Feedback web, nombre AAE y propuesta cliente" (2026-06-08)
-- [ ] Send La Oriental de Seguros a staged grow-with-them proposal + full demo — from "Tesote // La Oriental de Seguros" (2026-06-10)
-- [ ] Send La Sante two SAP integration proposals before Wednesday: (1) API-only, (2) Tesote-managed translation — from "La Sante // Tesote API - SAP" (2026-06-08)
+- [ ] Revisar y aprobar correo para clientes sobre transición a APIs (Estefany drafts, Luis approves) — from "CX Meeting" (2026-06-12)
+- [ ] Preparar y enviar video explicativo de automatización bancaria para prospecto (cliente con interés en SAP) — from "Bots bancarios, migración a SAP" (2026-06-12)
+- [ ] Preparar documento explicativo de casos de uso del portal de pagos con Farmatodo — from "Intro: Farmatodo // Tesote" (2026-06-12)
+- [ ] Coordinar reunión con Banco Néstor para evaluar integración de pagos (request de Farmatodo) — from "Intro: Farmatodo // Tesote" (2026-06-12)
+- [ ] Prep Kalox re-engagement discovery call — understand churn, map recovery path — from "Bank Integrations, Pricing, and Client Recovery" (2026-06-12)
+- [ ] Definir fecha de lanzamiento Reverón y plan de teasers — from "Plan de lanzamiento y naming de producto IA" (2026-06-11)
+- [ ] Enviar documentos y contexto del lanzamiento a Verónica — from "Plan de lanzamiento y naming de producto IA" (2026-06-11)
+- [ ] Draft y enviar comunicación masiva a clientes sobre cambios en conexiones bancarias — from "Operational Bottlenecks, Client Strategy & Team Morale" (2026-06-10)
+- [ ] Escribir a Gustavo para cerrar fee de implementación Broward este mes — from "Actualización comercial y técnica Tesote" (2026-06-10)
+- [ ] Reunión presencial con Grupo Rica — upsell y pitch transición a API bancaria — from "Arranque y estrategia de transición bancaria" (2026-06-10)
+- [ ] Organizar canal de comunicación para integraciones bancarias vía API (nuevo o el existente) — from "Arranque y estrategia de transición bancaria" (2026-06-10)
+- [ ] Definir fecha tentativa de lanzamiento y alinear con Dan, Sebastian, Majo — from "Lanzamiento y estrategia de Tesote AI" (2026-06-09)
+- [ ] Preparar y compartir documento de planificación del lanzamiento (cada área define sus tareas) — from "Lanzamiento y estrategia de Tesote AI" (2026-06-09)
+- [ ] Organizar reunión para batch inicial de clientes/bancos en transición a APIs — from "Lanzamiento y estrategia de Tesote AI" (2026-06-09)
+- [ ] Coordinar reunión de alineación de todos los equipos para el lanzamiento — from "Lanzamiento AI: Estrategia, Deals y Coordinación" (2026-06-08)
+- [ ] Enviar video de apoyo para deal Conozoil — from "Lanzamiento AI: Estrategia, Deals y Coordinación" (2026-06-08)
+- [ ] ⚠️ Dos propuestas formales de integración SAP a La Sante (deadline era miércoles 2026-06-10 — vencido) — from "La Sante // Tesote API – SAP" (2026-06-08)
+- [ ] Enviar propuesta escalonada (3–6 meses) a La Oriental de Seguros — from "Tesote // La Oriental de Seguros" (2026-06-10)
+- [ ] Revisar feedback de la web en móvil y aplicar mejoras de diseño — from "Feedback web, nombre AAE y propuesta cliente" (2026-06-08)
+- [ ] Reunión con dueño de la oficina el martes — from "CX Meeting" (2026-06-12)
+- [ ] Llevar audífonos a la oficina para nuevos empleados — from "CX Meeting" (2026-06-12)
 
 ## By workstream
 
-### AI Launch & Web Redesign
+### Product / AI Launch (Reverón)
 
-- **Lanzamiento AI: Estrategia, Deals y Coordinación** — 2026-06-08, Luis + Esteban (2 pax, Roam)
-  Launch strategy, client segmentation, upsell plays. Decisions: simplify contracts/subscription terms; run teaser + free-trial campaign. Deal support discussed (Sana, Cructísimo). Sales/post-sales staffing gap flagged. Office TV/streaming setup for coordination.
+Heavy week — 8 Roam alignment calls, converging on **July 1 launch**. Name "Reverón" confirmed (cultural ref: Armando Reverón). Web + dashboard redesign ready. Gaps: formal launch date not yet locked, FAQ doc for clients not yet written.
 
-- **Feedback web, nombre AAE y propuesta cliente** — 2026-06-08, Luis + Estefany + 1 (3 pax, Roam)
-  Mobile UX feedback on new web (visual layout + numbers flagged). "Reverón" proposed as AAE product name. Client proposal discussed with pricing + automation tokens. Luis to action mobile feedback.
+- **Lanzamiento AI: Estrategia, Deals y Coordinación** — Mon 2026-06-08, Luis + Esteban (2 pax, Roam)
+  Launch strategy overview, contract simplification, teaser + free-trial campaigns, role assignments for launch day. Deal reviews: Sana, Krustísimo. HR decision on Gabriel. Office TV/streaming for coordination.
 
-- **Lanzamiento y estrategia de Tesote AI** — 2026-06-09, Luis + Esteban + Majo + Estefany + Verónica + Roberto (6 pax, Roam)
-  Cross-functional AI launch alignment. Decision: initial launch scoped to Tesote data queries only; aggressive marketing + dashboard redesign together. QA is gating. AI infrastructure separated to avoid impacting core. Pricing: usage-based with limits.
+- **Feedback web, nombre AAE y propuesta cliente** — Mon 2026-06-08, 3 ppl (Roam)
+  Mobile UX feedback: visual layout + number formatting flagged. "Reverón" proposed as product name. Client proposal discussed with pricing + automation tokens.
 
-- **Prioridades de marketing y lanzamiento de nueva web** — 2026-06-09, Luis + Verónica (2 pax, Roam)
-  Email deliverability issue → Esteban to set up new domain + warming. Onboarding PDF reused for sales. Verónica to write employee onboarding doc. Push toward data-driven marketing with case studies.
+- **Lanzamiento y estrategia de Tesote AI** — Tue 2026-06-09, 6 ppl — Luis + core team (Roam)
+  Full strategy session: independent product rebuild, aggressive Day 1 marketing, QA as gating condition, usage-limit–based pricing. Bank data incident list to pull before launch. Fireflies tech separation confirmed to avoid impact on core.
 
-- **Lanzamiento Tesote AI y transición a APIs bancarias** — 2026-06-10, company all-hands (12 pax, Roam)
-  Company-wide brief. Jul 1 target confirmed for AI + new web launch together. Bank API migration plan and client communication strategy presented. Legal contracts in progress; Mercantil + Provincial flagged as critical for sales + implementation. Office presence emphasized around launch.
+- **Prioridades de marketing y lanzamiento de nueva web** — Tue 2026-06-09, Luis + Verónica (Roam)
+  Email deliverability → new domain + warming (Esteban). Onboarding PDF reused for sales. Verónica to create employee onboarding doc. Push toward data-driven marketing with case studies.
 
-- **Actualización comercial y técnica Tesote** — 2026-06-10, Luis + commercial/tech team (7 pax, Roam)
-  Penetration test completed with good results; SOC 2 cited as trust lever. Active pipeline swept: Ragnar (contract done), Broward (close impl fee), El Dorado, Grupo Rica, Net 1, Grupo Abreu, Leiros, Canaima, Kanguro, San Ignacio, Grupo Paraguas. FedEx at last follow-up or drop. New intro: José Ernesto Núñez (FiveX). Yomi + Banesco as new opportunities.
+- **Lanzamiento Tesote AI y transición a APIs bancarias** — Wed 2026-06-10, 12 ppl — all-hands (Roam)
+  Company-wide brief. July 1 target confirmed for AI + new web launch together. Bank migration plan + client comms strategy presented. Legal contracts in progress; Mercantil + Provincial key for sales + implementation.
 
-- **Lanzamiento y rediseño de Tesote: estrategia y comunicación** — 2026-06-10, Luis + Estefany + partner (3 pax, Roam)
-  User-facing comms strategy for Jul 1. Value prop transition framing. Estefany to draft communication + build targeted list of power users/project leads. Last session with John + Dan to be scheduled after Jun 15.
+- **Lanzamiento y rediseño de Tesote: estrategia y comunicación** — Wed 2026-06-10, 3 ppl (Luis, John, Dan) (Roam)
+  Dashboard walkthrough: saldo views by bank/account, AI summaries, intercompany transfers, cash flow categorization. Client comms plan for July 1 defined; power-user targeted rollout. Last session with John + Dan to schedule after Jun 15.
 
-### Finance & Fundraising
+- **Plan de lanzamiento y naming de producto IA** — Thu 2026-06-11, Luis + Verónica (Roam)
+  Verónica leads launch comms. Staggered teaser plan: emails + WhatsApp (not same-day blast). Checklist in Notion. Domain availability confirmed for Reverón. Pricing to simplify.
 
-- **Planificación financiera y opciones de financiamiento** — 2026-06-10, Luis + Mariel (2 pax, Roam)
-  Break-even analysis: ~$100K more to burn to break-even; target $300–400K cash reserve. Investors willing to add $150–200K; preference is credit lines over dilution; ideal facility $200–300K. Tools: Mercury, Rogue, Stripe, partner lines. Mariel to project cash flow + P&L to year-end. Four pillars for July: implementation, banking migration, finance, new product launch. Finance headcount gap flagged.
+- **Alineación de roles, prioridades y estructura interna** — Fri 2026-06-12, Luis + Majo (Roam)
+  CX structure: Joan role definition, Keyla workload review. 3 strategic pillars: API banking, AI/ERPs, payments. KPIs still undefined. Farmatodo API success flagged as case study. Web redesign: basic UX details need care before launch.
 
-### Ops & Team
+- **Preguntas frecuentes y preparación para lanzamiento IA** — Fri 2026-06-12, Luis + Esteban (Roam)
+  FAQ doc needed before launch (AI accuracy, hallucinations, data usage for training, certifications, regulations). Farmatodo deal status + Dominicana deals reviewed. San Simón conversation to document in CloudCode.
 
-- **Operational Bottlenecks, Client Strategy & Team Morale** — 2026-06-10, Luis + Esteban (2 pax, Roam)
-  Candid 1:1. Bank connection failures driving major client complaints; collections role gap. Incentives for successful implementations under consideration. Pivot toward fewer, higher-value accounts. Finance process bottlenecks → internal automation project. SAP integration proposal in progress (Esteban). Caracas office communication/leadership issues flagged.
+---
 
-- **Joan - PTP** — 2026-06-10, Estefany + Keyla (internal, 112 min, Fireflies)
-  Joan González onboarded to MCP + Cursor. Technical blockers resolved (PowerShell + Node). Joan to prepare questions for next session with Dan (CTO).
+### Banking Migration (API Transition)
 
-### Banking Migration
+- **Arranque y estrategia de transición bancaria para clientes** — Wed 2026-06-10, 5 ppl (Roam)
+  Formal project kickoff. Priority banks: Provincial BBVA, Mercantil, Banesco, Bancaribe. Priority clients: Kasea, Kangur, Grupo Rica, JUMPY, Grupo Abreu, Yomi, Leiros. T-1 data confirmed OK for most. Decision: charge for complex operational migration work. Grupo Rica in-person upsell first. Luis to define comms channel; Estefany to automate bank form fill.
 
-- **Arranque y estrategia de transición bancaria para clientes** — 2026-06-10, Luis + team (5 pax, Roam)
-  Formal kickoff of API migration project. Priority banks: Provincial BBVA, Mercantil, Banesco, Bancaribe. Priority clients: Kasea, Kangur, Grupo Rica, JUMPY, Grupo Abreu, Yomi, Leiros. Grupo Rica needs in-person upsell first. T-1 data confirmed acceptable for most. Subscription adjustments for complex clients discussed. Luis to define comms channel; Estefany to automate bank form fill-in.
+- **Bank Integrations, Pricing, and Client Recovery** — Fri 2026-06-12, 3 ppl (Luis + Esteban + 1) (Roam)
+  BancoPlapso + Banco Plus integrations in discussion. Pending: Van Plus, R4, Fondo Común. Cripto (Odoo shop) identified as opportunity. Kalox re-engagement: discovery call to map churn cause (AppSight/SAP partner conflict was likely factor).
 
-- **Marcas Propias // Tesote** — 2026-06-10, Keyla (36 min, Fireflies)
-  Critical incident: Vanesco dropped SMS auth → token-based only (broke automation). Mercantil permissions also blocking sync. Keyla to escalate both to engineering + update status tracker.
+---
 
-- **Configuración de Conexiones: Prevaler // Tesote** — 2026-06-10, Keyla (71 min, Fireflies)
-  Exterior + Mercantil connected. Pending: BdV, Bancamiga, Vanesco, Bancaribe. Afiliación underway; Marlon involved for permissions. Read-only user creation in progress.
+### Sales / New Business
 
-- **Consultoría: Besser Solutions // Tesote** — 2026-06-10, Keyla (78 min, Fireflies)
-  BNC pending client's banker confirmation; Mercantil needs final authorization; Banplus needs security questions. Auto-sync scheduled per bank once users validated.
+- **Intro: Farmatodo // Tesote** — Thu 2026-06-12, ~54 min, Carlos Melian (Luis present) (Fireflies)
+  Financial transformation initiative. Strong product-market fit: payment portals, API bank integrations, AI conciliation. Sponsor: Vanesa Jaua (Gerente de Transformación Financiera). **Luis**: send payments portal doc + coordinate with Banco Néstor. Pilot on priority-payments with multiple banks proposed.
 
-- **Fivenca <> Tesote** — 2026-06-10, Estefany (18 min, Fireflies)
-  Internal FX rate (7,562 USD/VES) applied to transactions. Still needed: extend to balances module, historical data, and consistent application in AI + reports.
+- **Discovery: Grupo San Simón // Tesote** — Thu 2026-06-12, ~48 min, Esteban (Fireflies)
+  200+ bank accounts, ~2 hrs/day wasted manually. SOC 2 cert question raised (still in process). Proposal to follow after security Q&A addressed.
 
-- **Customer Success Meeting: Viva Super Centro // Tesote (API)** — 2026-06-10, Estefany (55 min, Fireflies)
-  SAP Business One + Power BI read-only API integration. Rebeca to decide: proceed with current API path or wait for native SAP module. Estefany to send test token + updated docs.
+- **Intro: Calox // Tesote** — Thu 2026-06-12, ~46 min, Luisana (Fireflies)
+  SAP + bot replacement. Client wants full bank→SAP flow + AI reporting. In-person Caracas working session needed (~Jun 23, Luis + Roberto + Emilio Rosamilia).
 
-- **Tesote <> Grupo Landa: CS Meeting** — 2026-06-10, Yorleny (73 min, Fireflies)
-  Conciliation module (beta) reviewed. Dynamics API integration discussed. Grupo Landa to send category list + accounting codes + Juan Carlos contact for technical integration.
+- **Conversación Comercial: Tesote // Intexus** — Thu 2026-06-12, ~24 min, Nicolás (Fireflies)
+  3-month paid pilot agreed. Nicolás to send detailed proposal; follow-up meeting Wed Jun 17.
 
-- **Reunión de Kick Off: Corporación Inveca // Tesote** — 2026-06-09, Keyla (43 min, Fireflies)
-  Implementation kickoff. Five banks validated. BOFA replaced by Vanesco USA. Dennys to confirm secondary user permissions + token phones + sign bank forms.
+- **Tesote // La Oriental de Seguros** — Wed 2026-06-10, ~42 min, Nicolás (Luis present) (Fireflies)
+  Insurance co, $10–15K/month revenue. Tight budget + macro uncertainty. Luis to send phased proposal (grow-with-them, 3–6 months). Promising.
 
-- **CS Meeting: Cencozotti // Tesote (PRESENCIAL)** — 2026-06-09, Yorleny (161 min, in-person, Fireflies)
-  Token automation for Mercantil + BdV: Android-only app on user phones; background permissions required to prevent auto-close. Estefany to share install guides + configure Android background mode.
+- **Propuesta: Tesote // Brilux** — Wed 2026-06-10, ~39 min, Nicolás (Fireflies)
+  70+ accounts, Dynamics 365 API integration requested. $7K implementation + $3.5K/month. Client wants ROI blueprint with scenarios before committing.
 
-- **La Sante // Tesote API - SAP** — 2026-06-08, Estefany (26 min, Fireflies)
-  Agreed: Tesote for bank reconciliation within SAP only (not e-commerce). **Luis to send two proposals before Wednesday.** Migration alignment with parallel SAP workstream needed.
+- **Tesote - Proveedor (KOF)** — Tue 2026-06-09, ~49 min, Esteban (Fireflies)
+  KOF IT + Treasury teams included. No Dynamics 365 integration yet; security docs required. Esteban to send full proposal + deck; Roberto to provide security/architecture docs.
 
-- **Control de Avances: FSI // Tesote** — 2026-06-08, Keyla (36 min, Fireflies)
-  Categorization rules cut 190 → 96; targets latency reduction from 30–40 min. Nine pharmacies still pending BNC connection. Provincial mobile-payment rules validated.
+- **Propuesta: Tesote // Solinvet** — Mon 2026-06-08, ~31 min, Nicolás (Fireflies)
+  Profit AU migration pain. Proposal + blueprint + contract sent. Verónica at Solinvet to review internally.
 
-- **Tesote // Mimesa (Conexiones Bancarias)** — 2026-06-08, Keyla (85 min, Fireflies)
-  Vanesco Panama + Mercantil Panama auto-sync (no token) — operational. Other banks working through manual sync + security questions + user creation.
+- **Intro: Cidata // Tesote** — Mon 2026-06-08, ~39 min, Carlos Melián (Fireflies)
+  ~26K transactions/month; Odoo integration. $15–24K/year + $5K+ implementation. Daily unmatched orders: 300 → 12–20 with Tesote. Carlos to send account inventory.
 
-- **Implementación: Inquiport, S.A // Tesote** — 2026-06-08, Keyla (27 min, Fireflies)
-  SAP integration: Tesote sends transactions with categories + counterparts using prefixes/suffixes to avoid duplicates. Alys to send clean category list with accounting codes.
+- **La Sante // Tesote API – SAP** — Mon 2026-06-08, ~26 min, Estefany (Luis present) (Fireflies)
+  SAP bank reconciliation integration agreed (not e-commerce). **Luis**: two proposals before Wed Jun 10 — (1) API-only, (2) Tesote-managed translation. ⚠️ Deadline passed.
 
-- **(PRESENCIAL) Customer Success Meeting: Hispana de Seguros // Tesote** — 2026-06-08, Estefany (12 min, in-person, Fireflies)
-  No transcript captured.
+- Other pipeline: Envases CHC discovery ×2 (Jun 8 + Jun 11, Rafael in Caracas Jun 23), Blindcorp proposal (Jun 11, adjusted proposal next week after receiving real statements), Discusión Comercial Ragnar (Jun 10 — contract done, kick-off Mon Jun 15 at 11:30), Robin Agency intro (Jun 10), Esimeca intro (Jun 10), Grupo AG Vicson discovery (Jun 10), Nicolás untitled demo ×2 (Jun 10–11), Vepaco intro (Jun 11).
 
-### Sales Pipeline
+---
 
-- **Discovery: Envases CHC // Tesote** — 2026-06-11, Esteban (53 min, Fireflies) — *full discovery*
-  Multi-system pain (SAP HANA + Profit, no formal support → discrepancies + manual reconciliation). Pilot to start with Servidane (smaller entity), 3–4 weeks. Rafael Araujo in Caracas Jun 23 for in-person implementation. Indira to send bank account inventory + user list.
+### CX / Implementation
 
-- **Propuesta: Tesote // Blindcorp** — 2026-06-11, Nicolás (18 min, Fireflies)
-  29 accounts, 1,352 transactions/month — all manual. Initial proposal overestimated accounts (entity duplicates). Adjusted proposal to follow next week after reviewing real bank statements Jan–May.
+High-volume week. Keyla, Estefany, Yorleny carrying the load. Pattern: Vanesco token change + Mercantil UI change causing widespread sync failures across multiple clients.
 
-- **Tesote // La Oriental de Seguros** — 2026-06-10, Nicolás (42 min, Fireflies)
-  Insurance co., $10–15K/month revenue, cautious on macro/regulation. **Luis assigned**: send staged grow-with-them proposal (modules added over time) + full demo of current + future features.
+- **Control de Avances: Promaker // Tesote** — Thu 2026-06-12, ~26 min, Keyla (Fireflies)
+  Month 1 since kickoff. Daily rules + active conciliation running. Only BNC pending; Bancaribe still manual. Ready for CS handoff.
 
-- **Propuesta: Tesote // Brilux** — 2026-06-10, Nicolás (39 min, Fireflies)
-  70+ accounts; Dynamics 365 API integration explored. Nicolás to correct account count, build ROI blueprint with multiple scenarios, research comparable client integrations.
+- **Configuración de Conexiones: Corporación Inveca** — Thu 2026-06-11, ~50 min, Keyla (Fireflies)
+  Post-kickoff config. Mercantil + Inveca credentials in progress; tokens needed for automation. Next: BFC + Bancoplaza.
 
-- **Discusión Comercial: Consorcio Ragnar // Tesote** — 2026-06-10, Esteban (14 min, Fireflies) — *contract closed*
-  $1,750/quarter indexed to BCB rate. Implementation kick-off Monday 11:30am; Keyla leads, Alexander is technical contact.
+- **Reunión de Kick Off: Corporación Inveca** — Tue 2026-06-09, ~43 min, Keyla (Fireflies)
+  5 banks validated. Contract signed, invoice sent. BNC form pending from Dennys.
 
-- **nicolas.rossini — Untitled (Odoo prospect)** — 2026-06-10, Nicolás (16 min, Fireflies)
-  Odoo implementation starting Jun 16, target finish mid-October aligned with Tesote integration. Demo shown to María Alejandra. Orlando to provide budget in 1–2 days; Nicolás to send full proposal package.
+- **Configuración de Conexiones: Covencaucho** — Thu 2026-06-11, ~63 min, Keyla (Fireflies)
+  11 BNC + Banca Amiga accounts connected. Vanesco, Mercantil, Venezuela still pending (user/token issues).
 
-- **Discovery: Grupo AG Vicson // Tesote** — 2026-06-10, Esteban (34 min, Fireflies)
-  Replacing manual Mercantil + Vanesco extract process. Giancarlo to complete account inventory; Alexander to review API docs. Esteban to send commercial proposal.
+- **Configuración de Conexiones: Clínica Fénix Salud** — Thu 2026-06-11, ~141 min, Keyla (Fireflies)
+  Long session. Ban Plus + Banca Amiga + Banesco Panamá + Provincial connected. Venezuela + Mercantil blocked by bank maintenance. BNC user creation still needed.
 
-- **Intro: Robin Agency // Tesote** — 2026-06-10, Luisana (30 min, Fireflies)
-  Balance auto-updates 8am/noon/EOD presented. Andrés Ochoa to send full account inventory; Esteban to prepare formal proposal.
+- **CS Meeting Mensual: Molina Viajes** — Thu 2026-06-11, ~118 min, Yorleny (Fireflies)
+  SMS Forward app for automated token forwarding. Mercantil + Venezuela connections established (Mercantil can take up to 8 min to sync). User/phone mapping issues being resolved.
 
-- **Intro: Esimeca // Tesote** — 2026-06-10, Luisana + Nicolás (15 min, Fireflies)
-  Metalworking company. Vicente to review with admin + IT teams; Nicolás to follow up with admin meeting.
+- **Discovery: Envases CHC** — Thu 2026-06-11, ~53 min, Esteban (Fireflies)
+  SAP HANA + Profit pain; no formal support → discrepancies + manual reconciliation. Pilot at Servidane (3–4 weeks). Rafael in Caracas Jun 23 for in-person session.
 
-- **Tesote - Proveedor** — 2026-06-09, Esteban (49 min, Fireflies)
-  Full company intro to unnamed prospect (IT + Tesorería). Esteban to send complete proposal with all phases (including non-Dynamics components), full deck + demo.
+- **Tesote <> Grupo Landa: CS Meeting** — Wed 2026-06-10, ~73 min, Yorleny (Fireflies)
+  Conciliation module (beta) shown. Sync issues with Provincial, Vanesco, Mercantil, Venezuela triaged. Moving from WhatsApp to formal support channel. Dynamics API integration discussed.
 
-- **Propuesta: Tesote // Solinvet** — 2026-06-08, Nicolás (31 min, Fireflies)
-  Migrating Profit AU → Odoo; Tesote to solve sync + reconciliation gaps. Nicolás to send proposal + operational blueprint + demo + contract to Milagros.
+- **Customer Success Meeting: Viva Super Centro (API)** — Wed 2026-06-10, ~55 min, Estefany (Fireflies)
+  API integration for SAP B1 + Power BI. Client deciding: use current API now or wait for native SAP module.
 
-- **Intro: Cidata // Tesote** — 2026-06-08, Carlos Melián (39 min, Fireflies)
-  Odoo integration; daily unmatched orders reduced 300 → 12–20 via automated pre-classification. Rafael to review internally. Carlos to send account inventory.
+- **Consultoría: Besser Solutions** — Wed 2026-06-10, ~78 min, Keyla (Fireflies)
+  Initial config. BNC + Mercantil pending approvals. Auto-sync set 8am/1pm/5pm. Contrapartes + category list to upload.
 
-- **Discovery: Envases CHC // Tesote** — 2026-06-08, Esteban (13 min, Fireflies) — *preliminary call*
-  No transcript captured. Preceded the full Jun 11 discovery.
+- **Configuración de Conexiones: Prevaler** — Wed 2026-06-10, ~71 min, Keyla (Fireflies)
+  Exterior + Mercantil connected. BdV, Bancamiga, Vanesco, Bancaribe pending. Provincial permissions issue escalated to engineering.
+
+- **Marcas Propias // Tesote** — Wed 2026-06-10, ~36 min, Keyla (Fireflies)
+  ⚠️ Vanesco dropped SMS auth (now token-only) — broke automation. Mercantil UI change also broke connection. Both escalated to engineering.
+
+- **Fivenca <> Tesote** — Wed 2026-06-10, ~18 min, Estefany (Fireflies)
+  Custom internal FX rate (non-BCV) applied to transactions. Still needed: extend to balances module + historical load + AI/reports consistency.
+
+- **Discusión Comercial: Consorcio Ragnar** — Wed 2026-06-10, ~14 min, Esteban (Fireflies)
+  Contract done: $1,750/quarter BCB-indexed. Kick-off Mon Jun 15 at 11:30. Keyla leads; Alexander is technical contact.
+
+- **CS Meeting: Cencozotti // Tesote (PRESENCIAL)** — Tue 2026-06-09, ~161 min, Yorleny (Fireflies)
+  Token automation for Mercantil + BdV — Android-only, background-permission setup required. Odoo integration in roadmap. AI categorization improvements presented.
+
+- **Tesote // Mimesa (Conexiones Bancarias)** — Mon 2026-06-08, ~85 min, Keyla (Fireflies)
+  Vanesco Panamá + Mercantil Panamá auto-sync working (no token needed). Vanesco VZ token issues. Sage categories alignment in progress.
+
+- **Control de Avances: FSI** — Mon 2026-06-08, ~36 min, Keyla (Fireflies)
+  Rule optimization: 190 → 96 rules to cut 30–40 min categorization latency. Nine pharmacies still pending BNC. BdV credential update needed (device change from iPhone).
+
+- **Implementación: Inquiport S.A** — Mon 2026-06-08, ~27 min, Keyla (Fireflies)
+  SAP integration config: unique external IDs, prefix convention for contrapartes to avoid duplicates. Alys to send clean category list with accounting codes.
+
+- **Joan - PTP (MCP training)** — Wed 2026-06-10, ~112 min, Estefany (Fireflies)
+  Joan González onboarding to MCP + Cursor. PowerShell + Node issues resolved. Final session with Dan (CTO) scheduled Fri Jun 12 after 4:30pm.
+
+- Nicolás Rossini untitled sessions ×2 (Jun 10 + Jun 11): internal sales demos. Odoo + Tesote framing; $5K + $2.5K/month pricing tested. Orlando to send budget in 1–2 days.
+- (PRESENCIAL) Hispana de Seguros — Mon 2026-06-08 — silent, no transcript.
+
+---
+
+### Finance
+
+- **Planificación financiera y opciones de financiamiento** — Wed 2026-06-10, Luis + Mariel (Roam)
+  Break-even: ~$100K more to burn; target $300–400K cash reserve. Investors willing to add $150–200K; preference is credit line (avoid dilution), ideal facility $200–300K. Tools: Mercury, Rogue, Stripe + partner lines. Mariel building cash flow + P&L projections to year-end. 4 pillars for next month: implementation, bank migration, finance ops, product launch. Finance headcount gap flagged.
+
+---
+
+### Ops / Internal
+
+- **Operational Bottlenecks, Client Strategy & Team Morale** — Wed 2026-06-10, Luis + Esteban (Roam)
+  Candid 1:1: both overwhelmed. Bank connection failures driving client complaints. Collections person needed. Implementation incentives under discussion. Pivot toward fewer, higher-value accounts (upward pricing). Finance automation project in progress. Caracas office comms + leadership gap flagged.
+
+- **CX Meeting — Transición a APIs y lanzamiento de AI Reverón** — Fri 2026-06-12, 6 ppl (Roam)
+  Coordination: Grupo Rica in-person confirmed. Promaker → CS handoff done. Client email on transition: Estefany drafts, Luis approves. API process diagram + owner assignment next week. Product (Reverón) naming + domain purchase discussed. MacBook Airs for security compliance. Logistics: headphones for new hires, office meeting with building owner Tuesday.
+
+---
 
 ## Coverage
 
-Roam = Luis's calls only (personal token — only meetings Luis attended). Fireflies = org-wide (admin token, all team calls). Gap: purely internal syncs between teammates that Luis wasn't in are not captured here.
+Roam = Luis's calls only (personal token — meetings Luis hosted or attended in the Roam platform). Fireflies = org-wide admin view (every call Fireflies bot joined across the team). Gap: purely internal syncs between teammates Luis wasn't in are not captured here; any call where Fireflies wasn't invited is also missed.
 
-- Roam: 11 calls (10 substantive + 1 trivial 2-min scheduling call, omitted from digest)
-- Fireflies: 27 calls (2 in-person sessions with no transcript)
-- Deduped: 0 (Roam = internal strategy/planning; Fireflies = client-facing and implementation — disjoint this week)
-- Total unique calls captured: 38
+- **Roam**: 17 calls (16 substantive + 1 trivial 2-min scheduling call)
+- **Fireflies**: 38 calls (2 in-person/silent with no transcript)
+- **Deduped across sources**: 0 (Roam = internal strategy/planning calls; Fireflies = client-facing + team implementation — disjoint this week)
+- **Total unique calls this week**: 55
