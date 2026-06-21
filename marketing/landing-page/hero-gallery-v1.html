@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Hero gallery v1 — 10 conceptos de imagen para el hero</title>
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="preload" href="current/assets/inter/inter-latin-0555e090.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="current/assets/aspekta/AspektaVF-36354009.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="current/assets/fontawesome/css/all.min-8e150040.css">
+  <link rel="stylesheet" href="current/assets/admin-1f3f92b5.css">
+  <link rel="stylesheet" href="current/assets/application-23a5d970.css">
+
+  <style>
+    /* ===== Lunour light tokens (same block as v13) ===== */
+    :root {
+      --bg-base: #FFFFFF;
+      --bg-surface-1: var(--tesote-gray-25);
+      --bg-surface-2: var(--tesote-gray-50);
+      --bg-surface-3: var(--tesote-gray-100);
+      --border-subtle: #E8E3DA;
+      --border-strong: #DCD6CB;
+      --text-primary: #12110F;
+      --text-secondary: var(--tesote-gray-600);
+      --text-muted: #635D55;
+      --text-subtle: #857D73;
+      --accent: #1661E2;
+      --accent-hover: #184EB5;
+      --accent-soft: #EEF8FF;
+      --shadow-sm: 0 1px 2px rgba(18, 17, 15, 0.04);
+      --shadow-md: 0 4px 12px rgba(18, 17, 15, 0.08);
+      --shadow-lg: 0 24px 48px rgba(18, 17, 15, 0.12);
+    }
+    body { background: #FFFFFF; color: var(--text-primary); }
+
+    /* ===== Gallery layout ===== */
+    .gal { max-inline-size: 1280px; margin-inline: auto; padding: var(--space-12) var(--space-6) var(--space-20); }
+    .gal__header { max-inline-size: 70ch; margin-bottom: var(--space-10); }
+    .gal__title { font-family: var(--font-display); font-size: var(--fs-3xl); font-weight: var(--fw-semi); letter-spacing: var(--tracking-tight); margin: 0 0 var(--space-3); }
+    .gal__sub { color: var(--text-muted); line-height: var(--lh-normal); margin: 0; }
+    .gal__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-8); }
+    @media (max-width: 1100px) { .gal__grid { grid-template-columns: 1fr; } }
+    .variant__meta { display: flex; align-items: baseline; gap: var(--space-3); margin-bottom: var(--space-3); }
+    .variant__num {
+      flex: none; inline-size: 28px; block-size: 28px; border-radius: var(--radius-pill);
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--text-primary); color: #fff;
+      font-family: var(--font-mono); font-size: var(--fs-sm); position: relative; top: 5px;
+    }
+    .variant__name { font-family: var(--font-display); font-size: var(--fs-lg); font-weight: var(--fw-semi); }
+    .variant__story { font-size: var(--fs-sm); color: var(--text-muted); margin: 0 0 var(--space-4); line-height: var(--lh-normal); }
+    .stage {
+      background: #FCFBF7; border: 1px solid var(--border-subtle); border-radius: var(--radius-2xl);
+      padding: var(--space-10) var(--space-8); display: flex; align-items: center; justify-content: center;
+      min-block-size: 440px;
+    }
+
+    /* ===== Shared mini-UI primitives (panel language from v13) ===== */
+    .hp {
+      position: relative; inline-size: 100%; max-inline-size: 500px;
+      background: #FFFFFF; border: 1px solid var(--border-subtle); border-radius: var(--radius-2xl);
+      box-shadow: var(--shadow-lg); padding: var(--space-6);
+      display: flex; flex-direction: column; gap: var(--space-4);
+    }
+    .hp-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding-bottom: var(--space-3); border-bottom: 1px solid var(--border-subtle); }
+    .hp-bar--plain { border-bottom: 0; padding-bottom: 0; }
+    .hp-title { font-family: var(--font-display); font-size: var(--fs-sm); font-weight: var(--fw-semi); color: var(--text-primary); }
+    .hp-live { display: inline-flex; align-items: center; gap: var(--space-2); font-size: var(--fs-xs); font-weight: var(--fw-medium); color: #0F6E45; white-space: nowrap; }
+    .hp-dot { inline-size: 6px; block-size: 6px; border-radius: var(--radius-pill); background: #1A8C5B; flex: none; }
+    .hp-label { font-size: var(--fs-xs); color: var(--text-subtle); }
+    .hp-figure { font-family: var(--font-mono); font-size: var(--fs-3xl); line-height: var(--lh-tight); color: var(--text-primary); font-variant-numeric: tabular-nums; }
+    .hp-cents { font-size: var(--fs-lg); color: var(--text-subtle); }
+    .hp-deltas { display: flex; gap: var(--space-3); font-size: var(--fs-xs); font-family: var(--font-mono); font-variant-numeric: tabular-nums; color: var(--text-subtle); margin-top: var(--space-1); }
+    .hp-delta--in { color: #0F6E45; }
+    .hp-delta--out { color: var(--text-muted); }
+    .hp-deltas i { font-size: 0.6rem; position: relative; top: -1px; }
+    .hp-chip {
+      display: flex; align-items: center; gap: var(--space-2);
+      background: var(--bg-surface-2); border: 1px solid var(--border-subtle); border-radius: var(--radius-md);
+      padding: var(--space-2) var(--space-3); font-size: var(--fs-xs); color: var(--text-secondary);
+    }
+    .hp-chip--card { background: #FFFFFF; box-shadow: var(--shadow-sm); }
+    .hp-chip-label { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .hp-chip-value { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--text-primary); font-variant-numeric: tabular-nums; }
+    .hp-pill {
+      font-size: 0.65rem; font-weight: var(--fw-semi); letter-spacing: var(--tracking-wide); text-transform: uppercase;
+      color: #0F6E45; background: #D6E8D5; border-radius: var(--radius-pill); padding: 1px var(--space-2); flex: none; white-space: nowrap;
+    }
+    .hp-pill--accent { color: #184EB5; background: #E4ECF7; }
+    .hp-pill--warn { color: #8A6400; background: #F7EDD0; }
+    .hp-rows { display: flex; flex-direction: column; }
+    .hp-row { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-2) 0; border-bottom: 1px solid var(--bg-surface-2); font-size: var(--fs-sm); }
+    .hp-row:last-child { border-bottom: 0; }
+    .hp-avatar {
+      inline-size: 24px; block-size: 24px; flex: none; display: inline-flex; align-items: center; justify-content: center;
+      background: var(--bg-surface-2); border: 1px solid var(--border-subtle); border-radius: var(--radius-md);
+      font-size: var(--fs-xs); font-weight: var(--fw-semi); color: var(--text-secondary);
+    }
+    .hp-name { flex: 1; min-width: 0; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .hp-meta { color: var(--text-subtle); font-size: var(--fs-xs); }
+    .hp-value { font-family: var(--font-mono); font-size: var(--fs-sm); color: var(--text-primary); font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .hp-actions { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+    .hp-action {
+      display: inline-flex; align-items: center; gap: var(--space-2);
+      font-size: var(--fs-xs); font-weight: var(--fw-medium); color: var(--text-secondary);
+      background: #FFFFFF; border: 1px solid var(--border-strong); border-radius: var(--radius-pill);
+      padding: var(--space-2) var(--space-3); box-shadow: var(--shadow-sm); white-space: nowrap;
+    }
+    .hp-action--primary { color: #FFFFFF; background: var(--accent); border-color: var(--accent); }
+    .hp-bubble { font-size: var(--fs-xs); line-height: var(--lh-normal); border-radius: var(--radius-md); padding: var(--space-2) var(--space-3); max-inline-size: 92%; }
+    .hp-bubble--user { align-self: flex-end; background: var(--accent); color: #fff; border-end-end-radius: var(--radius-xs); }
+    .hp-bubble--ai { align-self: flex-start; background: var(--bg-surface-2); border: 1px solid var(--border-subtle); color: var(--text-secondary); border-end-start-radius: var(--radius-xs); }
+    .hp-bubble--ai .hp-chip-value { display: inline; }
+    .hp-float {
+      position: absolute; left: calc(var(--space-8) * -1); bottom: var(--space-8);
+      background: #FFFFFF !important; box-shadow: var(--shadow-md); max-inline-size: calc(100% - var(--space-4));
+    }
+    .hp-spark { inline-size: 120px; block-size: 44px; flex: none; }
+    .hp-figrow { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-4); }
+
+    /* V2 big chart */
+    .hp-bigchart { inline-size: 100%; block-size: auto; display: block; }
+    .hp-axis { display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--text-subtle); font-family: var(--font-mono); margin-top: var(--space-1); }
+    .hp-chiprow { display: flex; gap: var(--space-2); }
+    .hp-chiprow .hp-chip { flex: 1; min-width: 0; }
+
+    /* V4 agent feed */
+    .hp-feed { display: flex; flex-direction: column; gap: var(--space-2); }
+    .hp-feed-item { display: flex; align-items: baseline; gap: var(--space-3); font-size: var(--fs-xs); color: var(--text-secondary); }
+    .hp-feed-item i { color: #1A8C5B; font-size: var(--fs-xs); flex: none; position: relative; top: 1px; }
+    .hp-feed-item i.is-spin { color: var(--accent); }
+    .hp-feed-text { flex: 1; min-width: 0; }
+    .hp-feed-time { color: var(--text-subtle); font-family: var(--font-mono); font-size: 0.65rem; white-space: nowrap; }
+    .hp-input {
+      display: flex; align-items: center; gap: var(--space-2);
+      border: 1px solid var(--border-strong); border-radius: var(--radius-pill);
+      padding: var(--space-2) var(--space-4); font-size: var(--fs-xs); color: var(--text-subtle);
+    }
+    .hp-input i { color: var(--accent); }
+
+    /* V5 match connector + progress */
+    .hp-match { display: flex; justify-content: center; padding: 1px 0; }
+    .hp-progress { block-size: 6px; border-radius: var(--radius-pill); background: var(--bg-surface-3); overflow: hidden; }
+    .hp-progress > span { display: block; block-size: 100%; inline-size: 98%; background: #1A8C5B; border-radius: var(--radius-pill); }
+
+    /* V6 entity cards */
+    .hp-entities { display: grid; grid-template-columns: 1fr; gap: var(--space-2); }
+    .hp-entity {
+      display: flex; align-items: center; gap: var(--space-3);
+      background: var(--bg-surface-1); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg);
+      padding: var(--space-3) var(--space-4);
+    }
+    .hp-entity-name { flex: 1; min-width: 0; }
+    .hp-entity-name b { display: block; font-size: var(--fs-sm); font-weight: var(--fw-semi); color: var(--text-primary); }
+    .hp-entity-name span { font-size: var(--fs-xs); color: var(--text-subtle); }
+    .hp-entity .hp-value { font-size: var(--fs-base); }
+    .hp-entity-spark { inline-size: 64px; block-size: 24px; flex: none; }
+
+    /* V7 steps */
+    .hp-steps { display: flex; flex-direction: column; gap: var(--space-2); }
+    .hp-step { display: flex; align-items: baseline; gap: var(--space-3); font-size: var(--fs-xs); color: var(--text-secondary); }
+    .hp-step i { flex: none; font-size: var(--fs-xs); color: #1A8C5B; position: relative; top: 1px; }
+    .hp-step--pending i { color: var(--text-subtle); }
+    .hp-step--pending { color: var(--text-subtle); }
+
+    /* V8 invoice card */
+    .hp-invoice {
+      background: var(--bg-surface-1); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg);
+      padding: var(--space-4); display: flex; flex-direction: column; gap: var(--space-3);
+    }
+    .hp-invoice-head { display: flex; justify-content: space-between; align-items: baseline; }
+    .hp-paybtn {
+      display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+      background: var(--accent); color: #FFFFFF; border-radius: var(--radius-md);
+      font-size: var(--fs-sm); font-weight: var(--fw-medium); padding: var(--space-2) var(--space-4);
+    }
+
+    /* V9 collage */
+    .collage { position: relative; inline-size: 100%; max-inline-size: 520px; block-size: 380px; }
+    .collage .hp { position: absolute; box-shadow: var(--shadow-lg); }
+    .collage__back { inset-block-start: 0; inset-inline-end: 0; max-inline-size: 400px; transform: rotate(1.5deg); }
+    .collage__mid { inset-block-end: 64px; inset-inline-start: 0; max-inline-size: 320px; padding: var(--space-4); transform: rotate(-1.5deg); }
+    .collage__front { inset-block-end: 0; inset-inline-end: 24px; max-inline-size: 340px; padding: var(--space-4); }
+
+    /* V10 app frame */
+    .app { inline-size: 100%; max-inline-size: 540px; background: #FFFFFF; border: 1px solid var(--border-subtle); border-radius: var(--radius-2xl); box-shadow: var(--shadow-lg); overflow: hidden; }
+    .app__chrome { display: flex; align-items: center; gap: 6px; padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--border-subtle); background: var(--bg-surface-1); }
+    .app__dot { inline-size: 8px; block-size: 8px; border-radius: 50%; background: var(--bg-surface-3); }
+    .app__url { flex: 1; text-align: center; font-size: 0.65rem; font-family: var(--font-mono); color: var(--text-subtle); }
+    .app__body { display: grid; grid-template-columns: 132px 1fr; min-block-size: 300px; }
+    .app__side { border-inline-end: 1px solid var(--border-subtle); background: var(--bg-surface-1); padding: var(--space-3); display: flex; flex-direction: column; gap: var(--space-1); }
+    .app__group { font-size: 0.55rem; letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--text-subtle); margin: var(--space-2) 0 2px; font-weight: var(--fw-semi); }
+    .app__item { display: flex; align-items: center; gap: var(--space-2); font-size: 0.7rem; color: var(--text-secondary); padding: 3px var(--space-2); border-radius: var(--radius-sm); }
+    .app__item i { font-size: 0.6rem; inline-size: 12px; text-align: center; color: var(--text-subtle); }
+    .app__item--active { background: #FFFFFF; border: 1px solid var(--border-subtle); color: var(--text-primary); font-weight: var(--fw-medium); box-shadow: var(--shadow-sm); }
+    .app__main { padding: var(--space-4) var(--space-5); display: flex; flex-direction: column; gap: var(--space-3); }
+  </style>
+</head>
+<body>
+  <div class="gal">
+    <header class="gal__header">
+      <h1 class="gal__title">Hero — 10 conceptos de imagen</h1>
+      <p class="gal__sub">Todos en el mismo lenguaje (Lunour, HTML/CSS, sin screenshots). Cada uno cuenta una historia distinta debajo de «El centro de inteligencia financiera de tu empresa.» Elige uno — o pide un injerto (p. ej. «el 2 con la bandeja del 3»).</p>
+    </header>
+
+    <div class="gal__grid">
+
+      <!-- ============ 1 ============ -->
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__num">1</span><span class="variant__name">Centro de comando (v13 actual)</span></div>
+        <p class="variant__story">La referencia: acciones + saldo + cuentas + bandeja. Historia: «desde aquí se opera todo».</p>
+        <div class="stage">
+          <div class="hp" aria-hidden="true">
+            <div class="hp-bar">
+              <div class="hp-actions">
+                <span class="hp-action hp-action--primary"><i class="fa-solid fa-arrow-up"></i>Pagar</span>
+                <span class="hp-action">Cobrar</span>
+                <span class="hp-action">Transferir</span>
+                <span class="hp-action">Conciliar</span>
+              </div>
+              <span class="hp-live"><span class="hp-dot"></span>En vivo</span>
+            </div>
+            <div class="hp-figrow">
+              <div>
+                <div class="hp-label">Saldo total · Todas las entidades</div>
+                <div class="hp-figure">Bs. 37.428.916<span class="hp-cents">,40</span></div>
+                <div class="hp-deltas">
+                  <span>Últimos 30 días</span>
+                  <span class="hp-delta--in"><i class="fa-solid fa-caret-up"></i> Bs. 4,2M</span>
+                  <span class="hp-delta--out"><i class="fa-solid fa-caret-down"></i> Bs. 1,1M</span>
+                </div>
+              </div>
+              <svg class="hp-spark" viewBox="0 0 120 44" fill="none" preserveAspectRatio="none">
+                <defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1661E2" stop-opacity="0.35"/><stop offset="100%" stop-color="#1661E2" stop-opacity="0"/></linearGradient></defs>
+                <path d="M0 32 L15 29 L30 33 L45 24 L60 27 L75 18 L90 21 L105 11 L120 7 L120 44 L0 44 Z" fill="url(#g1)"/>
+                <path d="M0 32 L15 29 L30 33 L45 24 L60 27 L75 18 L90 21 L105 11 L120 7" stroke="#3B7CF5" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="hp-rows">
+              <div class="hp-row"><span class="hp-avatar">B</span><span class="hp-name">BNC · Operaciones <span class="hp-meta">··0297</span></span><span class="hp-value">Bs. 18.245.709,12</span></div>
+              <div class="hp-row"><span class="hp-avatar">M</span><span class="hp-name">Mercantil · Nómina <span class="hp-meta">··1038</span></span><span class="hp-value">Bs. 6.420.330,00</span></div>
+              <div class="hp-row"><span class="hp-avatar">P</span><span class="hp-name">Provincial · Proveedores <span class="hp-meta">··4296</span></span><span class="hp-value">Bs. 9.128.660,84</span></div>
+            </div>
+            <div class="hp-chip"><i class="fa-solid fa-wand-magic-sparkles" style="color: var(--accent);"></i><span class="hp-chip-label">Bandeja · 8 documentos extraídos por IA</span><span class="hp-pill hp-pill--accent">Revisar</span></div>
+            <div class="hp-chip hp-float"><span class="hp-chip-label">Cobro recibido · Factura #1042</span><span class="hp-chip-value">Bs. 48.300</span><span class="hp-pill">Conciliado</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 2 ============ -->
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__num">2</span><span class="variant__name">El gran saldo</span></div>
+        <p class="variant__story">Un solo número enorme + gráfico protagonista. Historia: «por fin veo TODO, en una sola cifra viva». La más limpia y la que mejor respira.</p>
+        <div class="stage">
+          <div class="hp" aria-hidden="true">
+            <div class="hp-bar hp-bar--plain">
+              <div>
+                <div class="hp-label">Saldo total · Todas las entidades</div>
+                <div class="hp-figure">Bs. 37.428.916<span class="hp-cents">,40</span></div>
+                <div class="hp-deltas">
+                  <span>Últimos 30 días</span>
+                  <span class="hp-delta--in"><i class="fa-solid fa-caret-up"></i> Bs. 4,2M</span>
+                  <span class="hp-delta--out"><i class="fa-solid fa-caret-down"></i> Bs. 1,1M</span>
+                </div>
+              </div>
+              <span class="hp-live"><span class="hp-dot"></span>En vivo</span>
+            </div>
+            <div>
+              <svg class="hp-bigchart" viewBox="0 0 440 140" fill="none" preserveAspectRatio="none">
+                <defs><linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1661E2" stop-opacity="0.3"/><stop offset="100%" stop-color="#1661E2" stop-opacity="0"/></linearGradient></defs>
+                <path d="M0 35 H440 M0 70 H440 M0 105 H440" stroke="#E8E3DA" stroke-width="1" stroke-dasharray="3 4"/>
+                <path d="M0 104 L40 96 L80 108 L120 84 L160 92 L200 66 L240 74 L280 48 L320 56 L360 30 L400 36 L440 18 L440 140 L0 140 Z" fill="url(#g2)"/>
+                <path d="M0 104 L40 96 L80 108 L120 84 L160 92 L200 66 L240 74 L280 48 L320 56 L360 30 L400 36 L440 18" stroke="#3B7CF5" stroke-width="2.5" stroke-linejoin="round"/>
+                <circle cx="440" cy="18" r="4" fill="#1661E2" stroke="#FFFFFF" stroke-width="2"/>
+              </svg>
+              <div class="hp-axis"><span>29 mar</span><span>5 abr</span><span>12 abr</span><span>19 abr</span><span>hoy</span></div>
+            </div>
+            <div class="hp-chiprow">
+              <div class="hp-chip"><span class="hp-dot"></span><span class="hp-chip-label">BNC</span><span class="hp-chip-value">Bs. 18,2M</span></div>
+              <div class="hp-chip"><span class="hp-dot"></span><span class="hp-chip-label">Mercantil</span><span class="hp-chip-value">Bs. 6,4M</span></div>
+              <div class="hp-chip"><span class="hp-dot"></span><span class="hp-chip-label">Provincial</span><span class="hp-chip-value">Bs. 9,1M</span></div>
+              <div class="hp-chip"><span class="hp-dot"></span><span class="hp-chip-label">Banesco</span><span class="hp-chip-value">Bs. 3,6M</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 3 ============ -->
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__num">3</span><span class="variant__name">La bandeja inteligente</span></div>
+        <p class="variant__story">Documentos que llegan, la IA extrae, tú solo das el visto bueno. Historia: «reemplaza trabajo» — la promesa más visceral para el contador.</p>
+        <div class="stage">
+          <div class="hp" aria-hidden="true">
+            <div class="hp-bar">
+              <span class="hp-title"><i class="fa-solid fa-wand-magic-sparkles" style="color: var(--accent); margin-right: 6px;"></i>Bandeja · Documentos por revisar</span>
+              <span class="hp-pill hp-pill--warn">8 sin procesar</span>
+            </div>
+            <div class="hp-label">Tesote extrajo los datos. Solo falta tu visto bueno.</div>
+            <div class="hp-rows">
+              <div class="hp-row"><span class="hp-avatar"><i class="fa-regular fa-file-lines"></i></span><span class="hp-name">Factura de proveedor · Avodon, C.A. <span class="hp-meta">hace 2 min</span></span><span class="hp-value">Bs. 4.250.000</span><span class="hp-pill hp-pill--accent">Extraída</span></div>
+              <div class="hp-row"><span class="hp-avatar"><i class="fa-regular fa-file-lines"></i></span><span class="hp-name">Comprobante de retención · Maralak <span class="hp-meta">hace 9 min</span></span><span class="hp-value">Bs. 181.500</span><span class="hp-pill hp-pill--accent">Extraída</span></div>
+              <div class="hp-row"><span class="hp-avatar"><i class="fa-regular fa-file-lines"></i></span><span class="hp-name">Recibo de gasto · Aragua, C.A. <span class="hp-meta">hace 21 min</span></span><span class="hp-value">Bs. 96.200</span><span class="hp-pill hp-pill--accent">Extraída</span></div>
+              <div class="hp-row"><span class="hp-avatar"><i class="fa-regular fa-file-lines"></i></span><span class="hp-name">Factura de proveedor · Inversiones Tuy <span class="hp-meta">procesando</span></span><span class="hp-value"><i class="fa-solid fa-circle-notch fa-spin" style="color: var(--accent); font-size: 11px;"></i></span></div>
+            </div>
+            <div class="hp-actions">
+              <span class="hp-action hp-action--primary"><i class="fa-solid fa-check-double"></i>Aprobar todo</span>
+              <span class="hp-action">Ver bandeja</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 4 ============ -->
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__num">4</span><span class="variant__name">El agente trabajando</span></div>
+        <p class="variant__story">Feed de lo que el agente ya hizo + tú preguntando encima. Historia: «agentes que ejecutan y concilian por ti» — literal al subtítulo.</p>
+        <div class="stage">
+          <div class="hp" aria-hidden="true">
+            <div class="hp-bar">
+              <span class="hp-title">Tesote IA · Asistente</span>
+              <span class="hp-live"><span class="hp-dot"></span>Trabajando</span>
+            </div>
+            <div class="hp-feed">
+              <div class="hp-feed-item"><i class="fa-solid fa-circle-check"></i><span class="hp-feed-text">Conciliados <b>142 movimientos</b> de Mercantil y BNC</span><span class="hp-feed-time">hace 2 min</span></div>
+              <div class="hp-feed-item"><i class="fa-solid fa-circle-check"></i><span class="hp-feed-text">Emitidas <b>3 facturas</b> de suscripciones · Bs. 8.560.000</span><span class="hp-feed-time">hace 14 min</span></div>
+              <div class="hp-feed-item"><i class="fa-solid fa-circle-check"></i><span class="hp-feed-text">Extraídos <b>8 documentos</b> de la bandeja, listos para revisar</span><span class="hp-feed-time">hace 1 h</span></div>
+              <div class="hp-feed-item"><i class="fa-solid fa-circle-notch fa-spin is-spin"></i><span class="hp-feed-text">Preparando el <b>cierre del día</b>…</span><span class="hp-feed-time">ahora</span></div>
+            </div>
+            <div class="hp-bubble hp-bubble--user">¿Cómo cerramos la semana?</div>
+            <div class="hp-bubble hp-bubble--ai">Cobraste <span class="hp-chip-value">Bs. 12.480.000</span> en 64 operaciones — 18% más que la semana pasada. Todo conciliado.</div>
+            <div class="hp-input"><i class="fa-solid fa-wand-magic-sparkles"></i>Pregúntale a tus finanzas…</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 5 ============ -->
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__num">5</span><span class="variant__name">La conciliación en vivo</span></div>
+        <p class="variant__story">El villano de la página, derrotado en primer plano: banco ↔ ERP cruzándose solos. Historia: el refrán «se concilia solo» desde el segundo cero.</p>
+        <div class="stage">
+          <div class="hp" aria-hidden="true">
+            <div class="hp-bar">
+              <span class="hp-title">Conciliación automática · Hoy</span>
+              <span class="hp-live"><span class="hp-dot"></span>En vivo</span>
+            </div>
+            <div>
+              <div class="hp-deltas" style="justify-content: space-between; margin-bottom: var(--space-2);"><span class="hp-label">142 de 145 movimientos conciliados</span><span class="hp-chip-value">98%</span></div>
+              <div class="hp-progress"><span></span></div>
+            </div>
+            <div class="hp-chip hp-chip--card"><span class="hp-chip-label">Banco · Transferencia recibida · BNC</span><span class="hp-chip-value">Bs. 4.520.000</span></div>
+            <div class="hp-match">
+              <svg width="18" height="16" viewBox="0 0 18 16" fill="none">
+                <path d="M9 0v16" stroke="#1A8C5B" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <circle cx="9" cy="8" r="6" fill="#FFFFFF" stroke="#1A8C5B" stroke-width="1.5"/>
+                <path d="M6.4 8l1.8 1.8L11.8 6.2" stroke="#1A8C5B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="hp-chip hp-chip--card"><span class="hp-chip-label">ERP · Factura #1042 · Avodon, C.A.</span><span class="hp-pill">Conciliado</span></div>
+            <div class="hp-rows" style="margin-top: var(--space-1);">
+              <div class="hp-row"><span class="hp-name"><span class="hp-meta">Pago móvil · Cliente Maralak</span></span><span class="hp-value">Bs. 96.200</span><span class="hp-pill">Conciliado</span></div>
+              <div class="hp-row"><span class="hp-name"><span class="hp-meta">Nómina · Lote #88 · 23 personas</span></span><span class="hp-value">Bs. 2.420.000</span><span class="hp-pill">Conciliado</span></div>
+              <div class="hp-row"><span class="hp-name"><span class="hp-meta">Cobro · Suscripción Aragua, C.A.</span></span><span class="hp-value">Bs. 1.890.000</span><span class="hp-pill hp-pill--accent">Cruzando…</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 6 ============ -->
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__num">6</span><span class="variant__name">El grupo completo</span></div>
+        <p class="variant__story">Multi-entidad: tres empresas, un solo vistazo. Historia: «esto es para mi grupo, no para una cuentica» — habla al CFO de holding, sube el ACV percibido.</p>
+        <div class="stage">
+          <div class="hp" aria-hidden="true">
+            <div class="hp-bar">
+              <span class="hp-title">Todas las entidades</span>
+              <span class="hp-live"><span class="hp-dot"></span>En vivo</span>
+            </div>
+            <div>
+              <div class="hp-label">Posición consolidada del grupo</div>
+              <div class="hp-figure">Bs. 37.428.916<span class="hp-cents">,40</span></div>
+            </div>
+            <div class="hp-entities">
+              <div class="hp-entity">
+                <span class="hp-avatar">A</span>
+                <span class="hp-entity-name"><b>Avodon, C.A.</b><span>5 cuentas · 3 bancos</span></span>
+                <svg class="hp-entity-spark" viewBox="0 0 64 24" fill="none" preserveAspectRatio="none"><path d="M0 18 L10 16 L21 19 L32 12 L43 14 L54 7 L64 4" stroke="#3B7CF5" stroke-width="1.5"/></svg>
+                <span class="hp-value">Bs. 21,4M</span>
+              </div>
+              <div class="hp-entity">
+                <span class="hp-avatar">A</span>
+                <span class="hp-entity-name"><b>Aragua Distribución</b><span>4 cuentas · 2 bancos</span></span>
+                <svg class="hp-entity-spark" viewBox="0 0 64 24" fill="none" preserveAspectRatio="none"><path d="M0 14 L10 16 L21 11 L32 13 L43 8 L54 10 L64 6" stroke="#3B7CF5" stroke-width="1.5"/></svg>
+                <span class="hp-value">Bs. 9,1M</span>
+              </div>
+              <div class="hp-entity">
+                <span class="hp-avatar">M</span>
+                <span class="hp-entity-name"><b>Maralak Industrial</b><span>3 cuentas · 2 bancos · USD</span></span>
+                <svg class="hp-entity-spark" viewBox="0 0 64 24" fill="none" preserveAspectRatio="none"><path d="M0 19 L10 15 L21 17 L32 10 L43 12 L54 6 L64 8" stroke="#3B7CF5" stroke-width="1.5"/></svg>
+                <span class="hp-value">Bs. 6,8M</span>
+              </div>
+            </div>
+            <div class="hp-chip"><span class="hp-chip-label">12 cuentas · 6 bancos · Bs y USD nativo</span><span class="hp-pill">Todo conciliado</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 7 ============ -->
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__num">7</span><span class="variant__name">El pago en vuelo</span></div>
+        <p class="variant__story">Un lote de pagos a proveedores moviéndose solo por su pipeline. Historia: «puedo actuar desde aquí» + «conciliado al ejecutarse» — Pagos como protagonista.</p>
+        <div class="stage">
+          <div class="hp" aria-hidden="true">
+            <div class="hp-bar">
+              <span class="hp-title">Pago a proveedores · Lote #88</span>
+              <span class="hp-pill hp-pill--accent">Programado</span>
+            </div>
+            <div class="hp-figrow">
+              <div>
+                <div class="hp-label">23 proveedores · BNC Operaciones</div>
+                <div class="hp-figure" style="font-size: var(--fs-2xl);">Bs. 12.480.000<span class="hp-cents">,00</span></div>
+              </div>
+            </div>
+            <div class="hp-steps">
+              <div class="hp-step"><i class="fa-solid fa-circle-check"></i><span>Validado contra factura y retenciones</span></div>
+              <div class="hp-step"><i class="fa-solid fa-circle-check"></i><span>Aprobado por María F. · Directora de Finanzas</span></div>
+              <div class="hp-step"><i class="fa-solid fa-circle-check"></i><span>Ejecutado por API bancaria · hoy 3:00 pm</span></div>
+              <div class="hp-step hp-step--pending"><i class="fa-regular fa-circle"></i><span>Asiento contable en tu ERP — se registra solo</span></div>
+            </div>
+            <div class="hp-chip"><span class="hp-chip-label">Cada pago llega al libro como partida</span><span class="hp-pill">Conciliado</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 8 ============ -->
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__num">8</span><span class="variant__name">Te pagaron</span></div>
+        <p class="variant__story">El link de cobro con la factura adentro + la notificación de pago. Historia: la magia de Negocios — «te pagan y no hay nada que conciliar».</p>
+        <div class="stage">
+          <div class="hp" aria-hidden="true">
+            <div class="hp-bar">
+              <span class="hp-title">Cobros · Link de pago</span>
+              <span class="hp-live"><span class="hp-dot"></span>Activo</span>
+            </div>
+            <div class="hp-invoice">
+              <div class="hp-invoice-head">
+                <div>
+                  <div class="hp-label">Factura #1042 · Avodon, C.A.</div>
+                  <div class="hp-figure" style="font-size: var(--fs-2xl);">Bs. 48.300<span class="hp-cents">,00</span></div>
+                </div>
+                <span class="hp-avatar" style="inline-size: 32px; block-size: 32px;"><i class="fa-solid fa-link"></i></span>
+              </div>
+              <div class="hp-meta">Vence 15 jun · Pago móvil, transferencia o tarjeta</div>
+              <span class="hp-paybtn">Pagar ahora</span>
+            </div>
+            <div class="hp-chip hp-chip--card"><i class="fa-solid fa-bell" style="color: var(--accent);"></i><span class="hp-chip-label">Te pagaron · Avodon, C.A. · hace 2 min</span><span class="hp-chip-value">Bs. 48.300</span></div>
+            <div class="hp-chip"><span class="hp-chip-label">Factura cobrada y registrada en tu ERP</span><span class="hp-pill">Conciliado</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 9 ============ -->
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__num">9</span><span class="variant__name">El collage</span></div>
+        <p class="variant__story">Tres capas superpuestas: saldo atrás, conciliación al medio, IA al frente. Menos «app literal», más energía de afiche — la composición más editorial de las diez.</p>
+        <div class="stage">
+          <div class="collage" aria-hidden="true">
+            <div class="hp collage__back">
+              <div>
+                <div class="hp-label">Saldo total · Todas las entidades</div>
+                <div class="hp-figure" style="font-size: var(--fs-2xl);">Bs. 37.428.916<span class="hp-cents">,40</span></div>
+              </div>
+              <svg class="hp-bigchart" viewBox="0 0 340 80" fill="none" preserveAspectRatio="none">
+                <defs><linearGradient id="g9" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1661E2" stop-opacity="0.3"/><stop offset="100%" stop-color="#1661E2" stop-opacity="0"/></linearGradient></defs>
+                <path d="M0 60 L34 54 L68 62 L102 46 L136 52 L170 36 L204 42 L238 26 L272 32 L306 14 L340 10 L340 80 L0 80 Z" fill="url(#g9)"/>
+                <path d="M0 60 L34 54 L68 62 L102 46 L136 52 L170 36 L204 42 L238 26 L272 32 L306 14 L340 10" stroke="#3B7CF5" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="hp collage__mid">
+              <div class="hp-chip hp-chip--card"><span class="hp-chip-label">Banco · Bs. 4.520.000</span></div>
+              <div class="hp-match">
+                <svg width="16" height="14" viewBox="0 0 16 14" fill="none">
+                  <path d="M8 0v14" stroke="#1A8C5B" stroke-width="1.5" stroke-dasharray="2 2"/>
+                  <circle cx="8" cy="7" r="5" fill="#FFFFFF" stroke="#1A8C5B" stroke-width="1.5"/>
+                  <path d="M5.8 7l1.5 1.5L10.2 5.6" stroke="#1A8C5B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="hp-chip hp-chip--card"><span class="hp-chip-label">ERP · Factura #1042</span><span class="hp-pill">Conciliado</span></div>
+            </div>
+            <div class="hp collage__front">
+              <div class="hp-bubble hp-bubble--user">¿Cómo cerramos la semana?</div>
+              <div class="hp-bubble hp-bubble--ai">Cobraste <span class="hp-chip-value">Bs. 12,4M</span>, 18% más. Todo conciliado.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 10 ============ -->
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__num">10</span><span class="variant__name">La app en miniatura</span></div>
+        <p class="variant__story">El producto completo encogido: sidebar con toda la suite + home. Historia: «mira cuánto producto hay aquí» — amplitud como argumento, el screenshot hecho CSS.</p>
+        <div class="stage">
+          <div class="app" aria-hidden="true">
+            <div class="app__chrome">
+              <span class="app__dot"></span><span class="app__dot"></span><span class="app__dot"></span>
+              <span class="app__url">app.tesote.com</span>
+            </div>
+            <div class="app__body">
+              <div class="app__side">
+                <div class="app__group">Tesote Connect</div>
+                <div class="app__item app__item--active"><i class="fa-solid fa-house"></i>Inicio</div>
+                <div class="app__item"><i class="fa-solid fa-wallet"></i>Saldos</div>
+                <div class="app__item"><i class="fa-solid fa-list"></i>Transacciones</div>
+                <div class="app__group">Automatizaciones</div>
+                <div class="app__item"><i class="fa-solid fa-book"></i>Contabilidad</div>
+                <div class="app__item"><i class="fa-solid fa-chart-line"></i>Reportes</div>
+                <div class="app__group">Negocios</div>
+                <div class="app__item"><i class="fa-solid fa-arrow-up"></i>Pagos</div>
+                <div class="app__item"><i class="fa-solid fa-arrow-down"></i>Cobros</div>
+                <div class="app__group">Tesote IA</div>
+                <div class="app__item"><i class="fa-solid fa-wand-magic-sparkles"></i>Asistente</div>
+              </div>
+              <div class="app__main">
+                <div class="hp-actions">
+                  <span class="hp-action hp-action--primary" style="font-size: 0.65rem; padding: 4px 10px;"><i class="fa-solid fa-arrow-up"></i>Pagar</span>
+                  <span class="hp-action" style="font-size: 0.65rem; padding: 4px 10px;">Cobrar</span>
+                  <span class="hp-action" style="font-size: 0.65rem; padding: 4px 10px;">Conciliar</span>
+                </div>
+                <div>
+                  <div class="hp-label">Saldo total</div>
+                  <div class="hp-figure" style="font-size: var(--fs-2xl);">Bs. 37.428.916<span class="hp-cents">,40</span></div>
+                </div>
+                <svg class="hp-bigchart" viewBox="0 0 300 60" fill="none" preserveAspectRatio="none">
+                  <defs><linearGradient id="g10" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1661E2" stop-opacity="0.3"/><stop offset="100%" stop-color="#1661E2" stop-opacity="0"/></linearGradient></defs>
+                  <path d="M0 45 L30 40 L60 47 L90 34 L120 39 L150 26 L180 31 L210 18 L240 23 L270 10 L300 7 L300 60 L0 60 Z" fill="url(#g10)"/>
+                  <path d="M0 45 L30 40 L60 47 L90 34 L120 39 L150 26 L180 31 L210 18 L240 23 L270 10 L300 7" stroke="#3B7CF5" stroke-width="2" stroke-linejoin="round"/>
+                </svg>
+                <div class="hp-rows">
+                  <div class="hp-row" style="font-size: var(--fs-xs);"><span class="hp-name">BNC · Operaciones</span><span class="hp-value" style="font-size: var(--fs-xs);">Bs. 18.245.709</span></div>
+                  <div class="hp-row" style="font-size: var(--fs-xs);"><span class="hp-name">Mercantil · Nómina</span><span class="hp-value" style="font-size: var(--fs-xs);">Bs. 6.420.330</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</body>
+</html>

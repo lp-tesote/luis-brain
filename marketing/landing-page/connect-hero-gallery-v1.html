@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Connect hero — galería v1 (10 opciones)</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preload" href="current/assets/inter/inter-latin-0555e090.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="current/assets/fontawesome/css/all.min-8e150040.css">
+<link rel="stylesheet" href="current/assets/admin-1f3f92b5.css">
+<link rel="stylesheet" href="current/assets/application-23a5d970.css">
+<style id="light-theme-overrides">
+    /* ===== Light theme — Lunour palette (Saldos/Movimientos new UI) ===== */
+    /* Remap semantic tokens; the warm-gray ramp already exists in the site CSS. */
+    :root {
+      --bg-base: #FFFFFF;
+      --bg-surface-1: var(--tesote-gray-25);   /* #FCFBF7 */
+      --bg-surface-2: var(--tesote-gray-50);   /* #F7F5F0 */
+      --bg-surface-3: var(--tesote-gray-100);  /* #E7E5E0 */
+      --bg-hero: #FCFBF7;
+
+      --border-subtle: #E8E3DA;                /* Lunour --border */
+      --border-strong: #DCD6CB;
+
+      --text-primary: #12110F;                 /* Lunour --text */
+      --text-secondary: var(--tesote-gray-600);
+      --text-muted: #635D55;                   /* Lunour --text-2 */
+      --text-subtle: #857D73;                  /* Lunour --text-3 */
+
+      --accent: #1661E2;
+      --accent-hover: #184EB5;                 /* Lunour --primary-hover */
+      --accent-soft: #EEF8FF;                  /* Lunour --primary-light */
+      --link: var(--tesote-blue-600);
+      --link-hover: var(--tesote-blue-700);
+
+      --shadow-sm: 0 1px 2px rgba(18, 17, 15, 0.04);
+      --shadow-md: 0 4px 12px rgba(18, 17, 15, 0.08);
+      --shadow-lg: 0 24px 48px rgba(18, 17, 15, 0.12);
+      --shadow-dropdown: 0 8px 24px rgba(18, 17, 15, 0.12);
+      --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    }
+
+    /* Navbar: dark glass -> warm light glass */
+    .site-navbar { background-color: rgba(252, 251, 247, 0.92); }
+
+    /* Wordmark assets are white SVGs — invert to ink */
+    .site-navbar__brand-wordmark,
+    .site-footer__logo { filter: invert(1); }
+
+    /* Client logos: were grayscale+brightness(2) for dark bg */
+    .logo-strip__img { filter: grayscale(1) brightness(0.25) opacity(0.75); }
+
+    /* v42: CTA buttons -> brand blue (#1661E2 / --accent). The compiled app CSS forces
+       .btn-primary to --tesote-blue-800 (#07286B, dark navy) via a later non-media rule;
+       this inline block loads after the linked CSS, so it restores the brand blue. */
+    .btn-primary { background-color: var(--accent); border-color: var(--accent); }
+    .btn-primary:hover, .btn-primary:focus-visible, .btn-primary:active {
+      background-color: var(--accent-hover); border-color: var(--accent-hover);
+    }
+
+    /* v12: dark hero video removed — visual is now an HTML/CSS mini-UI panel (see #hero-pass-v15) */
+
+    /* Product cards (v2 section): dark gradient + inset chips -> Lunour card language */
+    .pcard {
+      background: #FFFFFF;
+      border-color: var(--border-subtle);
+      box-shadow: var(--shadow-sm);
+    }
+    .pcard:hover { border-color: var(--border-strong); }
+    .pcard__chip {
+      background: var(--bg-surface-2);
+      border-color: var(--border-subtle);
+      box-shadow: none;
+    }
+    .pcard__match circle { fill: #FFFFFF; }
+    .pcard__dot { background: #1A8C5B; }
+    .pcard__pill { color: #0F6E45; background: #D6E8D5; }       /* Lunour pill-paid */
+    .pcard__pill--accent { color: #184EB5; background: #E4ECF7; } /* Lunour pill-new */
+    .pcard__bubble--user { background: var(--tesote-blue-500); }
+    .pcard__bubble--ai { background: var(--bg-surface-2); border-color: var(--border-subtle); }
+    .pcard__figure-label { color: #857D73; }
+  </style>
+<style>
+  /* ===== Story chapters (argument doc §4-8, Brex split-row pattern) — prototype styles ===== */
+  html { scroll-behavior: smooth; } /* v24: rail cards anchor-jump to chapters */
+  .chapter { padding-block: var(--space-20); scroll-margin-top: var(--header-height, 64px); }
+  .chapter__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-16);
+    align-items: center;
+  }
+  .chapter--flip .chapter__row > .chapter__panel { order: -1; }
+  @media (max-width: 900px) {
+    .chapter__row { grid-template-columns: 1fr; gap: var(--space-8); }
+    .chapter--flip .chapter__row > .chapter__panel { order: 0; }
+  }
+
+  .chapter__eyebrow {
+    display: block;
+    font-family: var(--font-display);
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-semi);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: var(--space-3);
+  }
+  .chapter__title {
+    font-family: var(--font-display);
+    font-size: var(--fs-3xl);
+    font-weight: var(--fw-semi);
+    line-height: var(--lh-tight);
+    letter-spacing: var(--tracking-tight);
+    color: var(--text-primary);
+    margin: 0 0 var(--space-4);
+  }
+  .chapter__body { font-size: var(--fs-lg); color: var(--text-muted); line-height: var(--lh-normal); margin: 0 0 var(--space-5); }
+  .chapter__list { list-style: none; margin: 0 0 var(--space-6); padding: 0; display: flex; flex-direction: column; gap: var(--space-3); }
+  .chapter__list li { display: flex; gap: var(--space-3); align-items: baseline; color: var(--text-secondary); line-height: var(--lh-normal); }
+  .chapter__list i { color: var(--tesote-success); font-size: var(--fs-sm); flex: none; position: relative; top: 1px; }
+  .chapter__link { display: inline-flex; align-items: center; gap: var(--space-2); font-weight: var(--fw-medium); color: var(--link); text-decoration: none; }
+  .chapter__link:hover { color: var(--link-hover); }
+
+  .chapter__panel {
+    background: var(--bg-surface-2);
+    border-radius: var(--radius-2xl);
+    padding: var(--space-10);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    justify-content: center;
+    min-height: 320px;
+  }
+  .ui-card {
+    background: #FFFFFF;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .ui-card__label { font-size: var(--fs-xs); color: var(--text-subtle); }
+  .ui-card__figure { font-family: var(--font-mono); font-size: var(--fs-2xl); color: var(--text-primary); font-variant-numeric: tabular-nums; margin-bottom: var(--space-2); }
+  .ui-card .pcard__chip { background: var(--bg-surface-1); }
+  .ui-card__pills { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+  .chapter__panel-note { font-size: var(--fs-xs); color: var(--text-subtle); text-align: center; }
+
+  /* v22: shared step list for panel stories (Pagos pipeline, Cobros timeline) */
+  .chapter-steps { display: flex; flex-direction: column; gap: var(--space-2); }
+  .chapter-step { display: flex; align-items: baseline; gap: var(--space-3); font-size: var(--fs-xs); color: var(--text-secondary); }
+  .chapter-step i { flex: none; font-size: var(--fs-xs); color: #1A8C5B; inline-size: 14px; text-align: center; position: relative; top: 1px; }
+  .chapter-step--working i { color: var(--accent); }
+  .chapter-step--pending { color: var(--text-subtle); }
+  .chapter-step--pending i { color: var(--text-subtle); }
+  /* v22: mini cash-flow chart + deltas (Connect panel) */
+  .chapter-flow-deltas { display: flex; gap: var(--space-4); font-size: var(--fs-xs); font-family: var(--font-mono); font-variant-numeric: tabular-nums; color: var(--text-subtle); flex-wrap: wrap; }
+  .chapter-flow-deltas i { font-size: 0.6rem; position: relative; top: -1px; }
+  .chapter-flow--in { color: #0F6E45; }
+  .chapter-flow--out { color: var(--text-muted); }
+  .chapter-flow-chart { inline-size: 100%; block-size: 56px; display: block; }
+
+  /* Mueve dinero — two doors */
+  .chapter__header-center { text-align: center; max-inline-size: 70ch; margin-inline: auto; margin-bottom: var(--space-12); }
+  .doors { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+  @media (max-width: 900px) { .doors { grid-template-columns: 1fr; } }
+  .door {
+    background: var(--bg-surface-2);
+    border-radius: var(--radius-2xl);
+    padding: var(--space-8);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  .door .ui-card { box-shadow: var(--shadow-sm); }
+  .door__title { font-family: var(--font-display); font-size: var(--fs-xl); font-weight: var(--fw-semi); color: var(--text-primary); margin: var(--space-2) 0 0; }
+  .door__body { color: var(--text-muted); line-height: var(--lh-normal); margin: 0; flex: 1; }
+
+  /* AI crescendo — the page's one dark register */
+  .chapter--dark { background: #12110F; }
+  .chapter--dark .chapter__title { color: #FFFFFF; }
+  .chapter--dark .chapter__body { color: #C7C0B5; }
+  .chapter--dark .chapter__link { color: var(--tesote-blue-300); }
+  .chapter--dark .chapter__link:hover { color: var(--tesote-blue-200); }
+  .chapter--dark .chapter__panel { background: #1A1917; border: 1px solid #34322E; }
+  .chapter--dark .pcard__bubble--ai { background: #232220; border-color: #34322E; color: #E7E5E0; }
+  .chapter--dark .pcard__bubble--ai .pcard__chip-value { color: #FFFFFF; }
+  .chapter--dark .ui-card { background: #232220; border-color: #34322E; box-shadow: none; }
+  .chapter--dark .ui-card__label { color: #857D73; }
+  .ai-actions { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+  .ai-action {
+    display: inline-flex; align-items: center; gap: var(--space-2);
+    font-size: var(--fs-xs); color: #E7E5E0;
+    background: #232220; border: 1px solid #4A4843;
+    border-radius: var(--radius-pill); padding: var(--space-2) var(--space-3);
+  }
+  .ai-action i { color: var(--tesote-blue-300); }
+
+  /* v38: AI weekly digest bubble — structured, bulleted */
+  .pcard__bubble--ai.ai-digest { max-inline-size: 100%; align-self: stretch; display: flex; flex-direction: column; gap: var(--space-2); }
+  .ai-digest__lead { margin: 0; color: #C7C0B5; }
+  .ai-digest__neto { display: flex; flex-direction: column; gap: 1px; padding-block: var(--space-2); border-block: 1px solid #34322E; }
+  .ai-digest__neto-value { font-family: var(--font-mono); font-size: var(--fs-lg); color: var(--tesote-success); }
+  .ai-digest__neto-sub { font-size: var(--fs-xs); color: #857D73; }
+  .ai-digest__label { margin: var(--space-1) 0 0; font-family: var(--font-display); font-size: 0.7rem; font-weight: var(--fw-semi); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--tesote-blue-300); }
+  .ai-digest__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 3px; }
+  .ai-digest__list li { position: relative; padding-inline-start: var(--space-3); font-size: var(--fs-xs); line-height: var(--lh-normal); color: #E7E5E0; }
+  .ai-digest__list li::before { content: "·"; position: absolute; inset-inline-start: 2px; color: var(--tesote-blue-300); }
+
+  /* Seguridad */
+  .sec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); }
+  @media (max-width: 1100px) { .sec-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 640px)  { .sec-grid { grid-template-columns: 1fr; } }
+  .sec-card {
+    background: #FFFFFF;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-sm);
+  }
+  .sec-card__icon { color: #12110F; font-size: var(--fs-xl); margin-bottom: var(--space-3); } /* v44: black-forward */
+  .sec-card__title { font-family: var(--font-display); font-size: var(--fs-base); font-weight: var(--fw-semi); color: var(--text-primary); margin: 0 0 var(--space-2); }
+  .sec-card__body { font-size: var(--fs-sm); color: var(--text-muted); line-height: var(--lh-normal); margin: 0; }
+  .sec-card__verify {
+    display: inline-block; margin-top: var(--space-3);
+    font-size: 0.65rem; font-weight: var(--fw-semi); letter-spacing: var(--tracking-wide); text-transform: uppercase;
+    color: #CC9500; background: #F7EDD0;
+    border-radius: var(--radius-pill); padding: 1px var(--space-2);
+  }
+</style>
+<style id="hero-pass-v15">
+  /* ===== Hero mini-UI panel (v15) — comando + agente final (hero-gallery-v5 #1, Luis 2026-06-07):
+     clean panel (no floating chips, no BCV rate), USD-only consolidated figure, Tesote-derivative
+     entities with equal-weight dual amounts, IA box = mix equilibrado (4 lines) ===== */
+  .hero-panel {
+    position: relative;
+    inline-size: 100%;
+    max-inline-size: 540px;
+    margin-inline: auto;
+    background: #FFFFFF;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-lg);
+    padding: var(--space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  .hero-panel__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .hero-panel__title {
+    font-family: var(--font-display);
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-semi);
+    color: var(--text-primary);
+  }
+  .hero-panel__live {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-medium);
+    color: #0F6E45;
+  }
+  .hero-panel__figure-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+  .hero-panel__figure {
+    font-family: var(--font-mono);
+    font-size: var(--fs-3xl);
+    line-height: var(--lh-tight);
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+  }
+  .hero-panel__spark { inline-size: 120px; block-size: 44px; flex: none; }
+  .hero-panel__rows { display: flex; flex-direction: column; }
+  .hero-panel__row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--bg-surface-2);
+    font-size: var(--fs-sm);
+  }
+  .hero-panel__row:last-child { border-bottom: 0; }
+  .hero-panel__avatar {
+    inline-size: 24px;
+    block-size: 24px;
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-surface-2);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-semi);
+    color: var(--text-secondary);
+  }
+  .hero-panel__bank { flex: 1; min-width: 0; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .hero-panel__acct { color: var(--text-subtle); font-size: var(--fs-xs); }
+  .hero-panel__value { font-family: var(--font-mono); font-size: var(--fs-sm); color: var(--text-primary); font-variant-numeric: tabular-nums; }
+  /* v15: dual-currency column per entity row — USD and Bs at EQUAL size/color (Luis 2026-06-07) */
+  .hero-panel__values { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; flex: none; }
+
+  /* v13: action bar — belief #4, actuar no solo mirar */
+  .hero-panel__actions { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+  .hero-panel__action {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-medium);
+    color: var(--text-secondary);
+    background: #FFFFFF;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md); /* v14: squarer, less pill */
+    padding: var(--space-2) var(--space-3);
+    box-shadow: var(--shadow-sm);
+  }
+  .hero-panel__action--primary {
+    color: #FFFFFF;
+    background: #12110F;        /* v43: product-UI buttons -> Tesote black (CTAs stay brand blue) */
+    border-color: #12110F;
+  }
+  /* v13: saldo figure decimals + 30-day deltas */
+  .hero-panel__cents { font-size: var(--fs-lg); color: var(--text-subtle); }
+  .hero-panel__deltas {
+    display: flex;
+    gap: var(--space-3);
+    font-size: var(--fs-xs);
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    color: var(--text-subtle);
+    margin-top: var(--space-1);
+  }
+  .hero-panel__delta--in { color: #0F6E45; }
+  .hero-panel__delta--out { color: var(--text-muted); }
+  .hero-panel__deltas i { font-size: 0.6rem; position: relative; top: -1px; }
+  /* v14: Tesote IA subcard — the agent feed (replaces v13 bandeja chip) */
+  .hero-panel__subcard {
+    background: var(--bg-surface-1);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: var(--space-3) var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .hero-panel__subhead { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
+  .hero-panel__subtitle { font-size: var(--fs-xs); font-weight: var(--fw-semi); color: var(--text-primary); }
+  .hero-panel__subtitle i { color: var(--accent); margin-right: 6px; }
+  /* v14: Stripe-style badge — rectangular, sentence case */
+  .hero-panel__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: 0.7rem;
+    font-weight: var(--fw-medium);
+    color: #184EB5;
+    background: #E4ECF7;
+    border-radius: 4px;
+    padding: 1px var(--space-2);
+    flex: none;
+    white-space: nowrap;
+  }
+  .hero-panel__feed { display: flex; flex-direction: column; gap: var(--space-2); }
+  .hero-panel__feed-item { display: flex; align-items: baseline; gap: var(--space-3); font-size: var(--fs-xs); color: var(--text-secondary); }
+  .hero-panel__feed-item i { color: #1A8C5B; font-size: var(--fs-xs); flex: none; position: relative; top: 1px; inline-size: 14px; text-align: center; }
+  .hero-panel__feed-item i.is-working { color: var(--accent); }
+  .hero-panel__feed-item i.is-guard { color: #B45309; } /* v15: protection lines (duplicada detenida) */
+  .hero-panel__feed-text { flex: 1; min-width: 0; }
+  .hero-panel__feed-time { color: var(--text-subtle); font-family: var(--font-mono); font-size: 0.65rem; white-space: nowrap; }
+  /* v15: floating chips removed — clean panel (Luis 2026-06-07) */
+</style>
+<style id="connect-render-v1">
+.app-render { max-width: 1080px; margin: -8px auto 0; border: 1px solid var(--border-primary); border-radius: 14px; background: var(--bg-surface-1); box-shadow: 0 24px 48px -24px rgba(18,17,15,.18), 0 4px 12px rgba(18,17,15,.05); overflow: hidden; }
+.app-render__bar { display: flex; align-items: center; gap: 6px; padding: 10px 16px; border-bottom: 1px solid var(--border-primary); background: var(--bg-surface-2); }
+.app-render__dot { inline-size: 9px; block-size: 9px; border-radius: 50%; background: var(--border-primary); }
+.app-render__url { margin-inline: auto; font-size: 12px; color: var(--text-tertiary); letter-spacing: .01em; }
+.app-render__body { display: grid; grid-template-columns: 1.55fr 1fr; gap: 16px; padding: 20px; }
+.cr-box { border: 1px solid var(--border-primary); border-radius: 10px; background: #FFFFFF; padding: 18px 20px; }
+.cr-label { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text-tertiary); margin-block-end: 6px; }
+.cr-headrow { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.cr-figure { font-size: 34px; font-weight: 600; letter-spacing: -0.02em; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+.cr-delta { font-size: 13px; font-weight: 600; color: var(--accent); }
+.cr-chart { display: block; inline-size: 100%; block-size: auto; margin-block: 12px 4px; }
+.cr-band { display: grid; grid-template-columns: repeat(4, 1fr); border-block: 1px solid var(--border-primary); margin-block: 10px 14px; }
+.cr-band__cell { padding: 10px 12px; border-inline-start: 1px solid var(--border-primary); }
+.cr-band__cell:first-child { border-inline-start: 0; padding-inline-start: 0; }
+.cr-band__k { font-size: 11px; color: var(--text-tertiary); margin-block-end: 2px; }
+.cr-band__v { font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--text-primary); }
+.cr-band__v.is-in { color: #24AD72; } .cr-band__v.is-out { color: var(--text-secondary); } .cr-band__v.is-net { color: var(--accent); }
+.cr-monedas { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-block-end: 14px; }
+.cr-moneda { border: 1px solid var(--border-primary); border-radius: 8px; padding: 10px 12px; }
+.cr-moneda__k { font-size: 11px; color: var(--text-tertiary); } .cr-moneda__v { font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.cr-moneda__sub { font-size: 12px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+.cr-row { display: flex; align-items: center; gap: 10px; padding-block: 8px; border-block-start: 1px solid var(--border-primary); font-size: 13px; min-inline-size: 0; }
+.cr-row__name { color: var(--text-primary); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-inline-size: 0; } .cr-row__meta { color: var(--text-tertiary); font-size: 12px; white-space: nowrap; flex: none; }
+.cr-row__vals { margin-inline-start: auto; display: flex; gap: 14px; font-variant-numeric: tabular-nums; color: var(--text-secondary); white-space: nowrap; flex: none; }
+.cr-cf { display: flex; flex-direction: column; }
+.cf-neto { font-size: 24px; font-weight: 600; letter-spacing: -0.01em; color: var(--accent); font-variant-numeric: tabular-nums; margin-block-end: 2px; }
+.cf-neto__k { font-size: 12px; color: var(--text-secondary); margin-block-end: 12px; }
+.cf-group { font-size: 10.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text-tertiary); margin-block: 10px 4px; }
+.cf-row { display: flex; align-items: center; gap: 10px; padding-block: 5px; font-size: 13px; }
+.cf-row__name { flex: none; inline-size: 132px; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cf-row__track { flex: 1; block-size: 6px; border-radius: 3px; background: var(--bg-surface-2); overflow: hidden; }
+.cf-row__bar { display: block; block-size: 100%; border-radius: 3px; background: #24AD72; }
+.cf-row--out .cf-row__bar { background: var(--tesote-gray-100, #E7E5E0); background: #B7B2A7; }
+.cf-row__amt { flex: none; inline-size: 76px; text-align: end; font-variant-numeric: tabular-nums; color: var(--text-secondary); }
+.cf-row--out .cf-row__amt { color: var(--text-secondary); } .cf-row__amt.is-in { color: #1B8A5A; }
+.cr-minis { margin-block-start: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-block-start: 12px; }
+.cr-mini { border: 1px solid var(--border-primary); border-radius: 8px; padding: 9px 12px; }
+.cr-mini__k { font-size: 11px; color: var(--text-tertiary); } .cr-mini__v { font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--text-primary); }
+.app-render__foot { padding: 0 20px 16px; }
+.fmock-pills { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.fpill { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--border-primary); border-radius: 8px; padding: 5px 10px; font-size: 12.5px; color: var(--text-primary); background: var(--bg-primary); }
+.fpill b { font-weight: 600; } .fpill .fpill__x { color: var(--text-tertiary); font-size: 11px; }
+.fpill--add { border-style: dashed; color: var(--text-secondary); }
+.fpill--views { color: var(--text-secondary); }
+@media (max-width: 991.98px) { .app-render__body { grid-template-columns: 1fr; } }
+@media (max-width: 639.98px) { .cr-band { grid-template-columns: 1fr 1fr; } .cr-band__cell:nth-child(3) { border-inline-start: 0; padding-inline-start: 0; } .cr-monedas { grid-template-columns: 1fr; } }
+.gh-bleedwrap .cr-figure { font-size: 30px; }
+.gh-bleedwrap .cf-row__name { inline-size: 110px; }
+.gh-bleedwrap .cf-row__amt { inline-size: 64px; font-size: 12px; }
+.gh-bleedwrap .cr-row__vals { font-size: 12px; gap: 8px; }
+</style>
+<style id="gallery-shell">
+body { background: #FCFBF7; margin: 0; }
+.gal-wrap { max-width: 1400px; margin: 0 auto; padding: 48px 24px 96px; }
+.gal-head h1 { font-size: 28px; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 6px; }
+.gal-head p { color: var(--text-secondary, #6B675E); margin: 0 0 40px; font-size: 14px; max-width: 70ch; }
+.opt { margin-block-end: 56px; }
+.opt__head { display: flex; gap: 14px; align-items: baseline; margin-block-end: 12px; }
+.opt__num { flex: none; inline-size: 30px; block-size: 30px; border-radius: 8px; background: #12110F; color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; }
+.opt__head h2 { font-size: 16px; font-weight: 600; margin: 0; }
+.opt__head p { font-size: 13px; color: var(--text-secondary, #6B675E); margin: 2px 0 0; max-width: 90ch; }
+.opt__canvas { border: 1px solid #E7E5E0; border-radius: 14px; background: #FCFBF7; overflow: hidden; padding: 56px 48px; }
+.gh-grid { display: grid; grid-template-columns: 0.95fr 1.05fr; gap: 48px; align-items: center; }
+.gh-grid--bleed { grid-template-columns: 0.78fr 1.22fr; align-items: center; }
+.gh-eyebrow { display: block; font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--accent, #1661E2); margin-block-end: 14px; }
+.gh-title { font-size: clamp(30px, 2.9vw, 42px); line-height: 1.12; font-weight: 600; letter-spacing: -0.02em; color: #12110F; margin: 0 0 16px; }
+.gh-sub { font-size: 16.5px; line-height: 1.55; color: var(--text-secondary, #55524B); margin: 0 0 24px; max-width: 46ch; }
+.gh-bleedwrap { min-inline-size: 0; }
+.gh-bleedwrap .app-render { inline-size: 126%; max-width: none; margin: 0; }
+.gh-matte { background: #D8D4CB; border-radius: 18px; padding: 30px 0 0 30px; overflow: hidden; inline-size: 126%; }
+.gh-matte .app-render { inline-size: 100%; max-width: none; margin: 0; border-radius: 14px 0 0 0; box-shadow: none; border-inline-end: 0; border-block-end: 0; }
+.gh-cropbottom { max-block-size: 470px; overflow: hidden; }
+.pos-strip { display: flex; align-items: baseline; gap: 14px; }
+.pos-strip .cr-figure { font-size: 26px; }
+.app-render--solo .app-render__body { grid-template-columns: 1fr; }
+.opt__canvas--center { text-align: center; }
+.opt__canvas--center .gh-sub { margin-inline: auto; }
+</style>
+</head>
+<body>
+<div class="gal-wrap">
+<header class="gal-head"><h1>Connect hero — 10 opciones</h1><p>Texto izquierda / imagen derecha (1–2, 7–9), sangrado Brex (3–6) y el control centrado actual (10). Los rellenos bajo el flujo de caja varían en 3–6: minis · top movimientos · saldos por cuenta · atención. Todos los números reconcilian con la banda de 30 días (84.200 − 31.500 = 52.700). El ganador se hornea en build-pages-v1.py.</p></header>
+<section class="opt"><div class="opt__head"><span class="opt__num">1</span><div><h2>División 50/50 · Posición sola</h2><p>Texto a la izquierda, render a la derecha mostrando solo la caja Posición (completa: chart, banda, monedas, entidades). La más limpia; el flujo de caja no aparece.</p></div></div><div class="opt__canvas"><div class="gh-grid"><div><span class="gh-eyebrow">Producto · Connect</span><h1 class="gh-title">Saldos y movimientos de todos tus bancos, en tiempo real.</h1><p class="gh-sub">Más de 120 bancos — Venezuela, Panamá, RD y EE.&nbsp;UU. — consolidados en Bs y USD, sin entrar a ningún portal.</p><a href="#" class="btn btn-primary">Agenda una demo <i class="fa-solid fa-arrow-right ms-2" aria-hidden="true"></i></a></div><div class="gh-bleedwrap"><div class="app-render app-render--solo"><div class="app-render__bar"><span class="app-render__dot"></span><span class="app-render__dot"></span><span class="app-render__dot"></span><span class="app-render__url">app.tesote.com · Inicio</span></div><div class="app-render__body"><div class="cr-box"><div class="cr-label">Posición total · USD consolidado · En vivo</div><div class="cr-headrow"><span class="cr-figure">$1.545.220,80</span><span class="cr-delta"><i class="fa-solid fa-caret-up" aria-hidden="true"></i> +$34.300 · 30 días</span></div><svg class="cr-chart" viewBox="0 0 640 130" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+<defs><linearGradient id="cr-area-o1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1661E2" stop-opacity="0.22"/><stop offset="100%" stop-color="#1661E2" stop-opacity="0"/></linearGradient></defs>
+<path d="M8 84 L72 78 L136 92 L200 64 L264 72 L328 46 L392 56 L456 30 L520 38 L632 18 L632 130 L8 130 Z" fill="url(#cr-area-o1)"/>
+<path d="M8 84 L72 78 L136 92 L200 64 L264 72 L328 46 L392 56 L456 30 L520 38 L632 18" stroke="#1661E2" stroke-width="2.5" stroke-linejoin="round"/>
+<circle cx="8" cy="84" r="4.5" fill="#FFFFFF" stroke="#1661E2" stroke-width="2"/><circle cx="632" cy="18" r="5" fill="#1661E2"/></svg><div class="cr-row__meta" style="margin-block-end:4px">Inicio del período · $1.510.920,80</div><div class="cr-band">
+<div class="cr-band__cell"><div class="cr-band__k">Entró</div><div class="cr-band__v is-in">+$84.200</div></div>
+<div class="cr-band__cell"><div class="cr-band__k">Salió</div><div class="cr-band__v is-out">−$31.500</div></div>
+<div class="cr-band__cell"><div class="cr-band__k">Variación neta</div><div class="cr-band__v is-net">+$52.700</div></div>
+<div class="cr-band__cell"><div class="cr-band__k">Devaluación</div><div class="cr-band__v is-out">−$18.400</div></div></div><div class="cr-monedas">
+<div class="cr-moneda"><div class="cr-moneda__k">Dólares</div><div class="cr-moneda__v">$592.670,30</div></div>
+<div class="cr-moneda"><div class="cr-moneda__k">Bolívares</div><div class="cr-moneda__v">Bs. 540.096.133,50</div><div class="cr-moneda__sub">≈ $952.550,50</div></div></div><div class="cr-label">Por entidad</div>
+<div class="cr-row"><span class="cr-row__name">Tesote Tecnología, C.A.</span><span class="cr-row__meta">6 cuentas</span><span class="cr-row__vals"><span>$215.300,00</span><span>Bs. 364.070.700,00</span></span></div>
+<div class="cr-row"><span class="cr-row__name">Tesote IA, C.A.</span><span class="cr-row__meta">4 cuentas</span><span class="cr-row__vals"><span>$84.620,00</span><span>Bs. 176.025.433,50</span></span></div>
+<div class="cr-row"><span class="cr-row__name">Tesote Tech, Inc.</span><span class="cr-row__meta">2 cuentas · solo USD</span><span class="cr-row__vals"><span>$292.750,30</span></span></div></div></div></div></div></div></div></section>
+<section class="opt"><div class="opt__head"><span class="opt__num">2</span><div><h2>División · Posición compacta + Flujo apilados</h2><p>Columna derecha = Posición compacta (sin monedas/entidades) con la caja de flujo debajo (relleno: minis). Las dos historias caben sin sangrado.</p></div></div><div class="opt__canvas"><div class="gh-grid"><div><span class="gh-eyebrow">Producto · Connect</span><h1 class="gh-title">Saldos y movimientos de todos tus bancos, en tiempo real.</h1><p class="gh-sub">Más de 120 bancos — Venezuela, Panamá, RD y EE.&nbsp;UU. — consolidados en Bs y USD, sin entrar a ningún portal.</p><a href="#" class="btn btn-primary">Agenda una demo <i class="fa-solid fa-arrow-right ms-2" aria-hidden="true"></i></a></div><div class="gh-bleedwrap"><div class="app-render app-render--solo"><div class="app-render__bar"><span class="app-render__dot"></span><span class="app-render__dot"></span><span class="app-render__dot"></span><span class="app-render__url">app.tesote.com · Inicio</span></div><div class="app-render__body"><div class="cr-box"><div class="cr-label">Posición total · USD consolidado · En vivo</div><div class="cr-headrow"><span class="cr-figure">$1.545.220,80</span><span class="cr-delta"><i class="fa-solid fa-caret-up" aria-hidden="true"></i> +$34.300 · 30 días</span></div><svg class="cr-chart" viewBox="0 0 640 130" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+<defs><linearGradient id="cr-area-o2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1661E2" stop-opacity="0.22"/><stop offset="100%" stop-color="#1661E2" stop-opacity="0"/></linearGradient></defs>
+<path d="M8 84 L72 78 L136 92 L200 64 L264 72 L328 46 L392 56 L456 30 L520 38 L632 18 L632 130 L8 130 Z" fill="url(#cr-area-o2)"/>
+<path d="M8 84 L72 78 L136 92 L200 64 L264 72 L328 46 L392 56 L456 30 L520 38 L632 18" stroke="#1661E2" stroke-width="2.5" stroke-linejoin="round"/>
+<circle cx="8" cy="84" r="4.5" fill="#FFFFFF" stroke="#1661E2" stroke-width="2"/><circle cx="632" cy="18" r="5" fill="#1661E2"/></svg><div class="cr-row__meta" style="margin-block-end:4px">Inicio del período · $1.510.920,80</div><div class="cr-band">
+<div class="cr-band__cell"><div class="cr-band__k">Entró</div><div class="cr-band__v is-in">+$84.200</div></div>
+<div class="cr-band__cell"><div class="cr-band__k">Salió</div><div class="cr-band__v is-out">−$31.500</div></div>
+<div class="cr-band__cell"><div class="cr-band__k">Variación neta</div><div class="cr-band__v is-net">+$52.700</div></div>
+<div class="cr-band__cell"><div class="cr-band__k">Devaluación</div><div class="cr-band__v is-out">−$18.400</div></div></div></div><div class="cr-box cr-cf"><div class="cr-label">Flujo de caja por categoría · 30 días</div><div class="cf-neto">+$52.700</div><div class="cf-neto__k">entradas $84.200 · salidas $31.500</div><div class="cf-group">Entradas</div>
+<div class="cf-row"><span class="cf-row__name">Cobros de clientes</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:100%"></span></span><span class="cf-row__amt is-in">+$76.800</span></div>
+<div class="cf-row"><span class="cf-row__name">Otros ingresos</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:10%"></span></span><span class="cf-row__amt is-in">+$7.400</span></div>
+<div class="cf-group">Salidas</div>
+<div class="cf-row cf-row--out"><span class="cf-row__name">Nómina</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:18%"></span></span><span class="cf-row__amt">−$14.200</span></div>
+<div class="cf-row cf-row--out"><span class="cf-row__name">Proveedores</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:13%"></span></span><span class="cf-row__amt">−$9.800</span></div>
+<div class="cf-row cf-row--out"><span class="cf-row__name">Impuestos</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:6%"></span></span><span class="cf-row__amt">−$4.300</span></div>
+<div class="cf-row cf-row--out"><span class="cf-row__name">Servicios bancarios</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:4%"></span></span><span class="cf-row__amt">−$3.200</span></div><div class="cr-minis"><div class="cr-mini"><div class="cr-mini__k">Categorización automática</div><div class="cr-mini__v">90%</div></div>
+<div class="cr-mini"><div class="cr-mini__k">Contrapartes nuevas · 30 d</div><div class="cr-mini__v">5</div></div></div></div></div></div></div></div></div></section>
+<section class="opt"><div class="opt__head"><span class="opt__num">3</span><div><h2>Sangrado Brex 1:1 · Inicio completo en marco gris</h2><p>El render completo de dos columnas (relleno: minis), sobredimensionado y recortado por el borde derecho, dentro de un marco gris cálido — la referencia Brex tal cual.</p></div></div><div class="opt__canvas"><div class="gh-grid gh-grid--bleed"><div><span class="gh-eyebrow">Producto · Connect</span><h1 class="gh-title">Saldos y movimientos de todos tus bancos, en tiempo real.</h1><p class="gh-sub">Más de 120 bancos — Venezuela, Panamá, RD y EE.&nbsp;UU. — consolidados en Bs y USD, sin entrar a ningún portal.</p><a href="#" class="btn btn-primary">Agenda una demo <i class="fa-solid fa-arrow-right ms-2" aria-hidden="true"></i></a></div><div class="gh-bleedwrap"><div class="gh-matte"><div class="app-render"><div class="app-render__bar"><span class="app-render__dot"></span><span class="app-render__dot"></span><span class="app-render__dot"></span><span class="app-render__url">app.tesote.com · Inicio</span></div></div><div class="app-render__body"><div class="cr-box"><div class="cr-label">Posición total · USD consolidado · En vivo</div><div class="cr-headrow"><span class="cr-figure">$1.545.220,80</span><span class="cr-delta"><i class="fa-solid fa-caret-up" aria-hidden="true"></i> +$34.300 · 30 días</span></div><svg class="cr-chart" viewBox="0 0 640 130" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+<defs><linearGradient id="cr-area-o3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1661E2" stop-opacity="0.22"/><stop offset="100%" stop-color="#1661E2" stop-opacity="0"/></linearGradient></defs>
+<path d="M8 84 L72 78 L136 92 L200 64 L264 72 L328 46 L392 56 L456 30 L520 38 L632 18 L632 130 L8 130 Z" fill="url(#cr-area-o3)"/>
+<path d="M8 84 L72 78 L136 92 L200 64 L264 72 L328 46 L392 56 L456 30 L520 38 L632 18" stroke="#1661E2" stroke-width="2.5" stroke-linejoin="round"/>
+<circle cx="8" cy="84" r="4.5" fill="#FFFFFF" stroke="#1661E2" stroke-width="2"/><circle cx="632" cy="18" r="5" fill="#1661E2"/></svg><div class="cr-row__meta" style="margin-block-end:4px">Inicio del período · $1.510.920,80</div><div class="cr-band">
+<div class="cr-band__cell"><div class="cr-band__k">Entró</div><div class="cr-band__v is-in">+$84.200</div></div>
+<div class="cr-band__cell"><div class="cr-band__k">Salió</div><div class="cr-band__v is-out">−$31.500</div></div>
+<div class="cr-band__cell"><div class="cr-band__k">Variación neta</div><div class="cr-band__v is-net">+$52.700</div></div>
+<div class="cr-band__cell"><div class="cr-band__k">Devaluación</div><div class="cr-band__v is-out">−$18.400</div></div></div><div class="cr-monedas">
+<div class="cr-moneda"><div class="cr-moneda__k">Dólares</div><div class="cr-moneda__v">$592.670,30</div></div>
+<div class="cr-moneda"><div class="cr-moneda__k">Bolívares</div><div class="cr-moneda__v">Bs. 540.096.133,50</div><div class="cr-moneda__sub">≈ $952.550,50</div></div></div><div class="cr-label">Por entidad</div>
+<div class="cr-row"><span class="cr-row__name">Tesote Tecnología, C.A.</span><span class="cr-row__meta">6 cuentas</span><span class="cr-row__vals"><span>$215.300,00</span><span>Bs. 364.070.700,00</span></span></div>
+<div class="cr-row"><span class="cr-row__name">Tesote IA, C.A.</span><span class="cr-row__meta">4 cuentas</span><span class="cr-row__vals"><span>$84.620,00</span><span>Bs. 176.025.433,50</span></span></div>
+<div class="cr-row"><span class="cr-row__name">Tesote Tech, Inc.</span><span class="cr-row__meta">2 cuentas · solo USD</span><span class="cr-row__vals"><span>$292.750,30</span></span></div></div><div class="cr-box cr-cf"><div class="cr-label">Flujo de caja por categoría · 30 días</div><div class="cf-neto">+$52.700</div><div class="cf-neto__k">entradas $84.200 · salidas $31.500</div><div class="cf-group">Entradas</div>
+<div class="cf-row"><span class="cf-row__name">Cobros de clientes</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:100%"></span></span><span class="cf-row__amt is-in">+$76.800</span></div>
+<div class="cf-row"><span class="cf-row__name">Otros ingresos</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:10%"></span></span><span class="cf-row__amt is-in">+$7.400</span></div>
+<div class="cf-group">Salidas</div>
+<div class="cf-row cf-row--out"><span class="cf-row__name">Nómina</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:18%"></span></span><span class="cf-row__amt">−$14.200</span></div>
+<div class="cf-row cf-row--out"><span class="cf-row__name">Proveedores</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:13%"></span></span><span class="cf-row__amt">−$9.800</span></div>
+<div class="cf-row cf-row--out"><span class="cf-row__name">Impuestos</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:6%"></span></span><span class="cf-row__amt">−$4.300</span></div>
+<div class="cf-row cf-row--out"><span class="cf-row__name">Servicios bancarios</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:4%"></span></span><span class="cf-row__amt">−$3.200</span></div><div class="cr-minis"><div class="cr-mini"><div class="cr-mini__k">Categorización automática</div><div class="cr-mini__v">90%</div></div>
+<div class="cr-mini"><div class="cr-mini__k">Contrapartes nuevas · 30 d</div><div class="cr-mini__v">5</div></div></div></div></div></div></div></div></div></div></section>
+<section class="opt"><div class="opt__head"><span class="opt__num">4</span><div><h2>Sangrado plano · relleno: Top movimientos</h2><p>Mismo sangrado pero sin marco (flat, más Tesote). Bajo el flujo de caja: los 3 movimientos más grandes de 30 días.</p></div></div><div class="opt__canvas"><div class="gh-grid gh-grid--bleed"><div><span class="gh-eyebrow">Producto · Connect</span><h1 class="gh-title">Saldos y movimientos de todos tus bancos, en tiempo real.</h1><p class="gh-sub">Más de 120 bancos — Venezuela, Panamá, RD y EE.&nbsp;UU. — consolidados en Bs y USD, sin entrar a ningún portal.</p><a href="#" class="btn btn-primary">Agenda una demo <i class="fa-solid fa-arrow-right ms-2" aria-hidden="true"></i></a></div><div class="gh-bleedwrap"><div class="app-render"><div class="app-render__bar"><span class="app-render__dot"></span><span class="app-render__dot"></span><span class="app-render__dot"></span><span class="app-render__url">app.tesote.com · Inicio</span></div></div><div class="app-render__body"><div class="cr-box"><div class="cr-label">Posición total · USD consolidado · En vivo</div><div class="cr-headrow"><span class="cr-figure">$1.545.220,80</span><span class="cr-delta"><i class="fa-solid fa-caret-up" aria-hidden="true"></i> +$34.300 · 30 días</span></div><svg class="cr-chart" viewBox="0 0 640 130" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+<defs><linearGradient id="cr-area-o4" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1661E2" stop-opacity="0.22"/><stop offset="100%" stop-color="#1661E2" stop-opacity="0"/></linearGradient></defs>
+<path d="M8 84 L72 78 L136 92 L200 64 L264 72 L328 46 L392 56 L456 30 L520 38 L632 18 L632 130 L8 130 Z" fill="url(#cr-area-o4)"/>
+<path d="M8 84 L72 78 L136 92 L200 64 L264 72 L328 46 L392 56 L456 30 L520 38 L632 18" stroke="#1661E2" stroke-width="2.5" stroke-linejoin="round"/>
+<circle cx="8" cy="84" r="4.5" fill="#FFFFFF" stroke="#1661E2" stroke-width="2"/><circle cx="632" cy="18" r="5" fill="#1661E2"/></svg><div class="cr-row__meta" style="margin-block-end:4px">Inicio del período · $1.510.920,80</div><div class="cr-band">
+<div class="cr-band__cell"><div class="cr-band__k">Entró</div><div class="cr-band__v is-in">+$84.200</div></div>
+<div class="cr-band__cell"><div class="cr-band__k">Salió</div><div class="cr-band__v is-out">−$31.500</div></div>
+<div class="cr-band__cell"><div class="cr-band__k">Variación neta</div><div class="cr-band__v is-net">+$52.700</div></div>
+<div class="cr-band__cell"><div class="cr-band__k">Devaluación</div><div class="cr-band__v is-out">−$18.400</div></div></div><div class="cr-monedas">
+<div class="cr-moneda"><div class="cr-moneda__k">Dólares</div><div class="cr-moneda__v">$592.670,30</div></div>
+<div class="cr-moneda"><div class="cr-moneda__k">Bolívares</div><div class="cr-moneda__v">Bs. 540.096.133,50</div><div class="cr-moneda__sub">≈ $952.550,50</div></div></div><div class="cr-label">Por entidad</div>
+<div class="cr-row"><span class="cr-row__name">Tesote Tecnología, C.A.</span><span class="cr-row__meta">6 cuentas</span><span class="cr-row__vals"><span>$215.300,00</span><span>Bs. 364.070.700,00</span></span></div>
+<div class="cr-row"><span class="cr-row__name">Tesote IA, C.A.</span><span class="cr-row__meta">4 cuentas</span><span class="cr-row__vals"><span>$84.620,00</span><span>Bs. 176.025.433,50</span></span></div>
+<div class="cr-row"><span class="cr-row__name">Tesote Tech, Inc.</span><span class="cr-row__meta">2 cuentas · solo USD</span><span class="cr-row__vals"><span>$292.750,30</span></span></div></div><div class="cr-box cr-cf"><div class="cr-label">Flujo de caja por categoría · 30 días</div><div class="cf-neto">+$52.700</div><div class="cf-neto__k">entradas $84.200 · salidas $31.500</div><div class="cf-group">Entradas</div>
+<div class="cf-row"><span class="cf-row__name">Cobros de clientes</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:100%"></span></span><span class="cf-row__amt is-in">+$76.800</span></div>
+<div class="cf-row"><span class="cf-row__name">Otros ingresos</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:10%"></span></span><span class="cf-row__amt is-in">+$7.400</span></div>
+<div class="cf-group">Salidas</div>
+<div class="cf-row cf-row--out"><span class="cf-row__name">Nómina</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:18%"></span></span><span class="cf-row__amt">−$14.200</span></div>
+<div class="cf-row cf-row--out"><span class="cf-row__name">Proveedores</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:13%"></span></span><span class="cf-row__amt">−$9.800</span></div>
+<div class="cf-row cf-row--out"><span class="cf-row__name">Impuestos</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:6%"></span></span><span class="cf-row__amt">−$4.300</span></div>
+<div class="cf-row cf-row--out"><span class="cf-row__name">Servicios bancarios</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:4%"></span></span><span class="cf-row__amt">−$3.200</span></div><div class="cr-label" style="margin-block-start:16px">Top movimientos · 30 días</div>
+<div class="cr-row"><span class="cr-row__name">Distribuidora Caruba</span><span class="cr-row__meta">Cobro de clientes</span><span class="cr-row__vals"><span style="color:#1B8A5A">+$12.400</span></span></div>
+<div class="cr-row"><span class="cr-row__name">Nómina · quincena</span><span class="cr-row__meta">Nómina</span><span class="cr-row__vals"><span>−$7.100</span></span></div>
+<div class="cr-row"><span class="cr-row__name">Comercial Vethia</span><span class="cr-row__meta">Cobro de clientes</span><span class="cr-row__vals"><span style="color:#1B8A5A">+$8.900</span></span></div></div></div></div></div></div></div></section>
+<section class="opt"><div class="opt__head"><span class="opt__num">5</span><div><h2>Sangrado plano · relleno: Saldos por cuenta</h2><p>Bajo el flujo de caja: saldos por cuenta con estado de conexión y último sync — adelanta el capítulo Saldos.</p></div></div><div class="opt__canvas"><div class="gh-grid gh-grid--bleed"><div><span class="gh-eyebrow">Producto · Connect</span><h1 class="gh-title">Saldos y movimientos de todos tus bancos, en tiempo real.</h1><p class="gh-sub">Más de 120 bancos — Venezuela, Panamá, RD y EE.&nbsp;UU. — consolidados en Bs y USD, sin entrar a ningún portal.</p><a href="#" class="btn btn-primary">Agenda una demo <i class="fa-solid fa-arrow-right ms-2" aria-hidden="true"></i></a></div><div class="gh-bleedwrap"><div class="app-render"><div class="app-render__bar"><span class="app-render__dot"></span><span class="app-render__dot"></span><span class="app-render__dot"></span><span class="app-render__url">app.tesote.com · Inicio</span></div></div><div class="app-render__body"><div class="cr-box"><div class="cr-label">Posición total · USD consolidado · En vivo</div><div class="cr-headrow"><span class="cr-figure">$1.545.220,80</span><span class="cr-delta"><i class="fa-solid fa-caret-up" aria-hidden="true"></i> +$34.300 · 30 días</span></div><svg class="cr-chart" viewBox="0 0 640 130" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+<defs><linearGradient id="cr-area-o5" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1661E2" stop-opacity="0.22"/><stop offset="100%" stop-color="#1661E2" stop-opacity="0"/></linearGradient></defs>
+<path d="M8 84 L72 78 L136 92 L200 64 L264 72 L328 46 L392 56 L456 30 L520 38 L632 18 L632 130 L8 130 Z" fill="url(#cr-area-o5)"/>
+<path d="M8 84 L72 78 L136 92 L200 64 L264 72 L328 46 L392 56 L456 30 L520 38 L632 18" stroke="#1661E2" stroke-width="2.5" stroke-linejoin="round"/>
+<circle cx="8" cy="84" r="4.5" fill="#FFFFFF" stroke="#1661E2" stroke-width="2"/><circle cx="632" cy="18" r="5" fill="#1661E2"/></svg><div class="cr-row__meta" style="margin-block-end:4px">Inicio del período · $1.510.920,80</div><div class="cr-band">
+<div class="cr-band__cell"><div class="cr-band__k">Entró</div><div class="cr-band__v is-in">+$84.200</div></div>
+<div class="cr-band__cell"><div class="cr-band__k">Salió</div><div class="cr-band__v is-out">−$31.500</div></div>
+<div class="cr-band__cell"><div class="cr-band__k">Variación neta</div><div class="cr-band__v is-net">+$52.700</div></div>
+<div class="cr-band__cell"><div class="cr-band__k">Devaluación</div><div class="cr-band__v is-out">−$18.400</div></div></div><div class="cr-monedas">
+<div class="cr-moneda"><div class="cr-moneda__k">Dólares</div><div class="cr-moneda__v">$592.670,30</div></div>
+<div class="cr-moneda"><div class="cr-moneda__k">Bolívares</div><div class="cr-moneda__v">Bs. 540.096.133,50</div><div class="cr-moneda__sub">≈ $952.550,50</div></div></div><div class="cr-label">Por entidad</div>
+<div class="cr-row"><span class="cr-row__name">Tesote Tecnología, C.A.</span><span class="cr-row__meta">6 cuentas</span><span class="cr-row__vals"><span>$215.300,00</span><span>Bs. 364.070.700,00</span></span></div>
+<div class="cr-row"><span class="cr-row__name">Tesote IA, C.A.</span><span class="cr-row__meta">4 cuentas</span><span class="cr-row__vals"><span>$84.620,00</span><span>Bs. 176.025.433,50</span></span></div>
+<div class="cr-row"><span class="cr-row__name">Tesote Tech, Inc.</span><span class="cr-row__meta">2 cuentas · solo USD</span><span class="cr-row__vals"><span>$292.750,30</span></span></div></div><div class="cr-box cr-cf"><div class="cr-label">Flujo de caja por categoría · 30 días</div><div class="cf-neto">+$52.700</div><div class="cf-neto__k">entradas $84.200 · salidas $31.500</div><div class="cf-group">Entradas</div>
+<div class="cf-row"><span class="cf-row__name">Cobros de clientes</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:100%"></span></span><span class="cf-row__amt is-in">+$76.800</span></div>
+<div class="cf-row"><span class="cf-row__name">Otros ingresos</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:10%"></span></span><span class="cf-row__amt is-in">+$7.400</span></div>
+<div class="cf-group">Salidas</div>
+<div class="cf-row cf-row--out"><span class="cf-row__name">Nómina</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:18%"></span></span><span class="cf-row__amt">−$14.200</span></div>
+<div class="cf-row cf-row--out"><span class="cf-row__name">Proveedores</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:13%"></span></span><span class="cf-row__amt">−$9.800</span></div>
+<div class="cf-row cf-row--out"><span class="cf-row__name">Impuestos</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:6%"></span></span><span class="cf-row__amt">−$4.300</span></div>
+<div class="cf-row cf-row--out"><span class="cf-row__name">Servicios bancarios</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:4%"></span></span><span class="cf-row__amt">−$3.200</span></div><div class="cr-label" style="margin-block-start:16px">Saldos por cuenta</div>
+<div class="cr-row"><span class="cr-row__name">Cuenta Operativa ··4210</span><span class="cr-row__meta">OK · hace 2 min</span><span class="cr-row__vals"><span>Bs. 18.245.709</span></span></div>
+<div class="cr-row"><span class="cr-row__name">Cuenta Nómina ··3187</span><span class="cr-row__meta">OK · hace 9 min</span><span class="cr-row__vals"><span>Bs. 6.420.330</span></span></div>
+<div class="cr-row"><span class="cr-row__name">Cuenta en USD ··9052</span><span class="cr-row__meta">OK · hace 2 min</span><span class="cr-row__vals"><span>$84.210</span></span></div></div></div></div></div></div></div></section>
+<section class="opt"><div class="opt__head"><span class="opt__num">6</span><div><h2>Sangrado plano · relleno: Atención</h2><p>Bajo el flujo de caja: lo accionable — pagos por aprobar que vencen y transferencias en tránsito.</p></div></div><div class="opt__canvas"><div class="gh-grid gh-grid--bleed"><div><span class="gh-eyebrow">Producto · Connect</span><h1 class="gh-title">Saldos y movimientos de todos tus bancos, en tiempo real.</h1><p class="gh-sub">Más de 120 bancos — Venezuela, Panamá, RD y EE.&nbsp;UU. — consolidados en Bs y USD, sin entrar a ningún portal.</p><a href="#" class="btn btn-primary">Agenda una demo <i class="fa-solid fa-arrow-right ms-2" aria-hidden="true"></i></a></div><div class="gh-bleedwrap"><div class="app-render"><div class="app-render__bar"><span class="app-render__dot"></span><span class="app-render__dot"></span><span class="app-render__dot"></span><span class="app-render__url">app.tesote.com · Inicio</span></div></div><div class="app-render__body"><div class="cr-box"><div class="cr-label">Posición total · USD consolidado · En vivo</div><div class="cr-headrow"><span class="cr-figure">$1.545.220,80</span><span class="cr-delta"><i class="fa-solid fa-caret-up" aria-hidden="true"></i> +$34.300 · 30 días</span></div><svg class="cr-chart" viewBox="0 0 640 130" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+<defs><linearGradient id="cr-area-o6" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1661E2" stop-opacity="0.22"/><stop offset="100%" stop-color="#1661E2" stop-opacity="0"/></linearGradient></defs>
+<path d="M8 84 L72 78 L136 92 L200 64 L264 72 L328 46 L392 56 L456 30 L520 38 L632 18 L632 130 L8 130 Z" fill="url(#cr-area-o6)"/>
+<path d="M8 84 L72 78 L136 92 L200 64 L264 72 L328 46 L392 56 L456 30 L520 38 L632 18" stroke="#1661E2" stroke-width="2.5" stroke-linejoin="round"/>
+<circle cx="8" cy="84" r="4.5" fill="#FFFFFF" stroke="#1661E2" stroke-width="2"/><circle cx="632" cy="18" r="5" fill="#1661E2"/></svg><div class="cr-row__meta" style="margin-block-end:4px">Inicio del período · $1.510.920,80</div><div class="cr-band">
+<div class="cr-band__cell"><div class="cr-band__k">Entró</div><div class="cr-band__v is-in">+$84.200</div></div>
+<div class="cr-band__cell"><div class="cr-band__k">Salió</div><div class="cr-band__v is-out">−$31.500</div></div>
+<div class="cr-band__cell"><div class="cr-band__k">Variación neta</div><div class="cr-band__v is-net">+$52.700</div></div>
+<div class="cr-band__cell"><div class="cr-band__k">Devaluación</div><div class="cr-band__v is-out">−$18.400</div></div></div><div class="cr-monedas">
+<div class="cr-moneda"><div class="cr-moneda__k">Dólares</div><div class="cr-moneda__v">$592.670,30</div></div>
+<div class="cr-moneda"><div class="cr-moneda__k">Bolívares</div><div class="cr-moneda__v">Bs. 540.096.133,50</div><div class="cr-moneda__sub">≈ $952.550,50</div></div></div><div class="cr-label">Por entidad</div>
+<div class="cr-row"><span class="cr-row__name">Tesote Tecnología, C.A.</span><span class="cr-row__meta">6 cuentas</span><span class="cr-row__vals"><span>$215.300,00</span><span>Bs. 364.070.700,00</span></span></div>
+<div class="cr-row"><span class="cr-row__name">Tesote IA, C.A.</span><span class="cr-row__meta">4 cuentas</span><span class="cr-row__vals"><span>$84.620,00</span><span>Bs. 176.025.433,50</span></span></div>
+<div class="cr-row"><span class="cr-row__name">Tesote Tech, Inc.</span><span class="cr-row__meta">2 cuentas · solo USD</span><span class="cr-row__vals"><span>$292.750,30</span></span></div></div><div class="cr-box cr-cf"><div class="cr-label">Flujo de caja por categoría · 30 días</div><div class="cf-neto">+$52.700</div><div class="cf-neto__k">entradas $84.200 · salidas $31.500</div><div class="cf-group">Entradas</div>
+<div class="cf-row"><span class="cf-row__name">Cobros de clientes</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:100%"></span></span><span class="cf-row__amt is-in">+$76.800</span></div>
+<div class="cf-row"><span class="cf-row__name">Otros ingresos</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:10%"></span></span><span class="cf-row__amt is-in">+$7.400</span></div>
+<div class="cf-group">Salidas</div>
+<div class="cf-row cf-row--out"><span class="cf-row__name">Nómina</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:18%"></span></span><span class="cf-row__amt">−$14.200</span></div>
+<div class="cf-row cf-row--out"><span class="cf-row__name">Proveedores</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:13%"></span></span><span class="cf-row__amt">−$9.800</span></div>
+<div class="cf-row cf-row--out"><span class="cf-row__name">Impuestos</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:6%"></span></span><span class="cf-row__amt">−$4.300</span></div>
+<div class="cf-row cf-row--out"><span class="cf-row__name">Servicios bancarios</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:4%"></span></span><span class="cf-row__amt">−$3.200</span></div><div class="cr-label" style="margin-block-start:16px">Atención</div>
+<div class="hero-panel__feed">
+<div class="hero-panel__feed-item"><i class="fa-regular fa-clock" aria-hidden="true"></i><span class="hero-panel__feed-text"><b>$48.250 a proveedores</b> · vencen el jueves</span><span class="hero-panel__feed-time">por aprobar</span></div>
+<div class="hero-panel__feed-item"><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i><span class="hero-panel__feed-text">Transferencia <b>en tránsito</b> · $9.800</span><span class="hero-panel__feed-time">hoy</span></div></div></div></div></div></div></div></div></section>
+<section class="opt"><div class="opt__head"><span class="opt__num">7</span><div><h2>División · Flujo de caja protagonista</h2><p>La posición se reduce a una franja (cifra + delta) y el flujo de caja por categoría es la imagen. Prueba de protagonista alternativo.</p></div></div><div class="opt__canvas"><div class="gh-grid"><div><span class="gh-eyebrow">Producto · Connect</span><h1 class="gh-title">Saldos y movimientos de todos tus bancos, en tiempo real.</h1><p class="gh-sub">Más de 120 bancos — Venezuela, Panamá, RD y EE.&nbsp;UU. — consolidados en Bs y USD, sin entrar a ningún portal.</p><a href="#" class="btn btn-primary">Agenda una demo <i class="fa-solid fa-arrow-right ms-2" aria-hidden="true"></i></a></div><div class="gh-bleedwrap"><div class="app-render app-render--solo"><div class="app-render__bar"><span class="app-render__dot"></span><span class="app-render__dot"></span><span class="app-render__dot"></span><span class="app-render__url">app.tesote.com · Inicio</span></div><div class="app-render__body"><div class="cr-box"><div class="cr-label">Posición total · USD consolidado</div><div class="pos-strip"><span class="cr-figure">$1.545.220,80</span><span class="cr-delta"><i class="fa-solid fa-caret-up" aria-hidden="true"></i> +$34.300 · 30 días</span></div></div><div class="cr-box cr-cf"><div class="cr-label">Flujo de caja por categoría · 30 días</div><div class="cf-neto">+$52.700</div><div class="cf-neto__k">entradas $84.200 · salidas $31.500</div><div class="cf-group">Entradas</div>
+<div class="cf-row"><span class="cf-row__name">Cobros de clientes</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:100%"></span></span><span class="cf-row__amt is-in">+$76.800</span></div>
+<div class="cf-row"><span class="cf-row__name">Otros ingresos</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:10%"></span></span><span class="cf-row__amt is-in">+$7.400</span></div>
+<div class="cf-group">Salidas</div>
+<div class="cf-row cf-row--out"><span class="cf-row__name">Nómina</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:18%"></span></span><span class="cf-row__amt">−$14.200</span></div>
+<div class="cf-row cf-row--out"><span class="cf-row__name">Proveedores</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:13%"></span></span><span class="cf-row__amt">−$9.800</span></div>
+<div class="cf-row cf-row--out"><span class="cf-row__name">Impuestos</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:6%"></span></span><span class="cf-row__amt">−$4.300</span></div>
+<div class="cf-row cf-row--out"><span class="cf-row__name">Servicios bancarios</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:4%"></span></span><span class="cf-row__amt">−$3.200</span></div><div class="cr-minis"><div class="cr-mini"><div class="cr-mini__k">Categorización automática</div><div class="cr-mini__v">90%</div></div>
+<div class="cr-mini"><div class="cr-mini__k">Contrapartes nuevas · 30 d</div><div class="cr-mini__v">5</div></div></div></div></div></div></div></div></div></section>
+<section class="opt"><div class="opt__head"><span class="opt__num">8</span><div><h2>División · Posición compacta + KPIs de la semana</h2><p>Posición compacta y, debajo, dos KPIs de la semana en mini-cards (sin caja de flujo). La opción más liviana después de la 1.</p></div></div><div class="opt__canvas"><div class="gh-grid"><div><span class="gh-eyebrow">Producto · Connect</span><h1 class="gh-title">Saldos y movimientos de todos tus bancos, en tiempo real.</h1><p class="gh-sub">Más de 120 bancos — Venezuela, Panamá, RD y EE.&nbsp;UU. — consolidados en Bs y USD, sin entrar a ningún portal.</p><a href="#" class="btn btn-primary">Agenda una demo <i class="fa-solid fa-arrow-right ms-2" aria-hidden="true"></i></a></div><div class="gh-bleedwrap"><div class="app-render app-render--solo"><div class="app-render__bar"><span class="app-render__dot"></span><span class="app-render__dot"></span><span class="app-render__dot"></span><span class="app-render__url">app.tesote.com · Inicio</span></div><div class="app-render__body"><div class="cr-box"><div class="cr-label">Posición total · USD consolidado · En vivo</div><div class="cr-headrow"><span class="cr-figure">$1.545.220,80</span><span class="cr-delta"><i class="fa-solid fa-caret-up" aria-hidden="true"></i> +$34.300 · 30 días</span></div><svg class="cr-chart" viewBox="0 0 640 130" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+<defs><linearGradient id="cr-area-o8" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1661E2" stop-opacity="0.22"/><stop offset="100%" stop-color="#1661E2" stop-opacity="0"/></linearGradient></defs>
+<path d="M8 84 L72 78 L136 92 L200 64 L264 72 L328 46 L392 56 L456 30 L520 38 L632 18 L632 130 L8 130 Z" fill="url(#cr-area-o8)"/>
+<path d="M8 84 L72 78 L136 92 L200 64 L264 72 L328 46 L392 56 L456 30 L520 38 L632 18" stroke="#1661E2" stroke-width="2.5" stroke-linejoin="round"/>
+<circle cx="8" cy="84" r="4.5" fill="#FFFFFF" stroke="#1661E2" stroke-width="2"/><circle cx="632" cy="18" r="5" fill="#1661E2"/></svg><div class="cr-row__meta" style="margin-block-end:4px">Inicio del período · $1.510.920,80</div><div class="cr-band">
+<div class="cr-band__cell"><div class="cr-band__k">Entró</div><div class="cr-band__v is-in">+$84.200</div></div>
+<div class="cr-band__cell"><div class="cr-band__k">Salió</div><div class="cr-band__v is-out">−$31.500</div></div>
+<div class="cr-band__cell"><div class="cr-band__k">Variación neta</div><div class="cr-band__v is-net">+$52.700</div></div>
+<div class="cr-band__cell"><div class="cr-band__k">Devaluación</div><div class="cr-band__v is-out">−$18.400</div></div></div></div><div class="cr-box cr-cf"><div class="cr-label">Esta semana</div><div class="cr-minis"><div class="cr-mini"><div class="cr-mini__k">Entró esta semana</div><div class="cr-mini__v" style="color:#1B8A5A">+$22.600</div></div>
+<div class="cr-mini"><div class="cr-mini__k">Salió esta semana</div><div class="cr-mini__v">−$8.400</div></div></div><div class="cr-label" style="margin-block-start:16px">Top movimientos · 30 días</div>
+<div class="cr-row"><span class="cr-row__name">Distribuidora Caruba</span><span class="cr-row__meta">Cobro de clientes</span><span class="cr-row__vals"><span style="color:#1B8A5A">+$12.400</span></span></div>
+<div class="cr-row"><span class="cr-row__name">Nómina · quincena</span><span class="cr-row__meta">Nómina</span><span class="cr-row__vals"><span>−$7.100</span></span></div>
+<div class="cr-row"><span class="cr-row__name">Comercial Vethia</span><span class="cr-row__meta">Cobro de clientes</span><span class="cr-row__vals"><span style="color:#1B8A5A">+$8.900</span></span></div></div></div></div></div></div></div></section>
+<section class="opt"><div class="opt__head"><span class="opt__num">9</span><div><h2>Recorte inferior · estilo Stripe</h2><p>División con el render recortado por el borde inferior de la sección — se ve la cifra, el chart y la banda; el resto queda bajo el fold del hero.</p></div></div><div class="opt__canvas"><div class="gh-grid"><div><span class="gh-eyebrow">Producto · Connect</span><h1 class="gh-title">Saldos y movimientos de todos tus bancos, en tiempo real.</h1><p class="gh-sub">Más de 120 bancos — Venezuela, Panamá, RD y EE.&nbsp;UU. — consolidados en Bs y USD, sin entrar a ningún portal.</p><a href="#" class="btn btn-primary">Agenda una demo <i class="fa-solid fa-arrow-right ms-2" aria-hidden="true"></i></a></div><div class="gh-bleedwrap"><div class="gh-cropbottom"><div class="app-render app-render--solo"><div class="app-render__bar"><span class="app-render__dot"></span><span class="app-render__dot"></span><span class="app-render__dot"></span><span class="app-render__url">app.tesote.com · Inicio</span></div><div class="app-render__body"><div class="cr-box"><div class="cr-label">Posición total · USD consolidado · En vivo</div><div class="cr-headrow"><span class="cr-figure">$1.545.220,80</span><span class="cr-delta"><i class="fa-solid fa-caret-up" aria-hidden="true"></i> +$34.300 · 30 días</span></div><svg class="cr-chart" viewBox="0 0 640 130" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+<defs><linearGradient id="cr-area-o9" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1661E2" stop-opacity="0.22"/><stop offset="100%" stop-color="#1661E2" stop-opacity="0"/></linearGradient></defs>
+<path d="M8 84 L72 78 L136 92 L200 64 L264 72 L328 46 L392 56 L456 30 L520 38 L632 18 L632 130 L8 130 Z" fill="url(#cr-area-o9)"/>
+<path d="M8 84 L72 78 L136 92 L200 64 L264 72 L328 46 L392 56 L456 30 L520 38 L632 18" stroke="#1661E2" stroke-width="2.5" stroke-linejoin="round"/>
+<circle cx="8" cy="84" r="4.5" fill="#FFFFFF" stroke="#1661E2" stroke-width="2"/><circle cx="632" cy="18" r="5" fill="#1661E2"/></svg><div class="cr-row__meta" style="margin-block-end:4px">Inicio del período · $1.510.920,80</div><div class="cr-band">
+<div class="cr-band__cell"><div class="cr-band__k">Entró</div><div class="cr-band__v is-in">+$84.200</div></div>
+<div class="cr-band__cell"><div class="cr-band__k">Salió</div><div class="cr-band__v is-out">−$31.500</div></div>
+<div class="cr-band__cell"><div class="cr-band__k">Variación neta</div><div class="cr-band__v is-net">+$52.700</div></div>
+<div class="cr-band__cell"><div class="cr-band__k">Devaluación</div><div class="cr-band__v is-out">−$18.400</div></div></div><div class="cr-monedas">
+<div class="cr-moneda"><div class="cr-moneda__k">Dólares</div><div class="cr-moneda__v">$592.670,30</div></div>
+<div class="cr-moneda"><div class="cr-moneda__k">Bolívares</div><div class="cr-moneda__v">Bs. 540.096.133,50</div><div class="cr-moneda__sub">≈ $952.550,50</div></div></div><div class="cr-label">Por entidad</div>
+<div class="cr-row"><span class="cr-row__name">Tesote Tecnología, C.A.</span><span class="cr-row__meta">6 cuentas</span><span class="cr-row__vals"><span>$215.300,00</span><span>Bs. 364.070.700,00</span></span></div>
+<div class="cr-row"><span class="cr-row__name">Tesote IA, C.A.</span><span class="cr-row__meta">4 cuentas</span><span class="cr-row__vals"><span>$84.620,00</span><span>Bs. 176.025.433,50</span></span></div>
+<div class="cr-row"><span class="cr-row__name">Tesote Tech, Inc.</span><span class="cr-row__meta">2 cuentas · solo USD</span><span class="cr-row__vals"><span>$292.750,30</span></span></div></div></div></div></div></div></div></div></section>
+<section class="opt"><div class="opt__head"><span class="opt__num">10</span><div><h2>Control · centrado + render completo (lo actual)</h2><p>Lo que está hoy en page-connect: copy centrado y el render de dos columnas a lo ancho (relleno: minis). Para comparar contra 1–9.</p></div></div><div class="opt__canvas"><div class="opt__canvas--center"><span class="gh-eyebrow">Producto · Connect</span><h1 class="gh-title">Saldos y movimientos de todos tus bancos, en tiempo real.</h1><p class="gh-sub">Más de 120 bancos — Venezuela, Panamá, RD y EE.&nbsp;UU. — consolidados en Bs y USD, sin entrar a ningún portal.</p><p style="margin:0 0 28px"><a href="#" class="btn btn-primary">Agenda una demo <i class="fa-solid fa-arrow-right ms-2" aria-hidden="true"></i></a></p><div class="app-render"><div class="app-render__bar"><span class="app-render__dot"></span><span class="app-render__dot"></span><span class="app-render__dot"></span><span class="app-render__url">app.tesote.com · Inicio</span></div></div><div class="app-render__body"><div class="cr-box"><div class="cr-label">Posición total · USD consolidado · En vivo</div><div class="cr-headrow"><span class="cr-figure">$1.545.220,80</span><span class="cr-delta"><i class="fa-solid fa-caret-up" aria-hidden="true"></i> +$34.300 · 30 días</span></div><svg class="cr-chart" viewBox="0 0 640 130" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+<defs><linearGradient id="cr-area-o10" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1661E2" stop-opacity="0.22"/><stop offset="100%" stop-color="#1661E2" stop-opacity="0"/></linearGradient></defs>
+<path d="M8 84 L72 78 L136 92 L200 64 L264 72 L328 46 L392 56 L456 30 L520 38 L632 18 L632 130 L8 130 Z" fill="url(#cr-area-o10)"/>
+<path d="M8 84 L72 78 L136 92 L200 64 L264 72 L328 46 L392 56 L456 30 L520 38 L632 18" stroke="#1661E2" stroke-width="2.5" stroke-linejoin="round"/>
+<circle cx="8" cy="84" r="4.5" fill="#FFFFFF" stroke="#1661E2" stroke-width="2"/><circle cx="632" cy="18" r="5" fill="#1661E2"/></svg><div class="cr-row__meta" style="margin-block-end:4px">Inicio del período · $1.510.920,80</div><div class="cr-band">
+<div class="cr-band__cell"><div class="cr-band__k">Entró</div><div class="cr-band__v is-in">+$84.200</div></div>
+<div class="cr-band__cell"><div class="cr-band__k">Salió</div><div class="cr-band__v is-out">−$31.500</div></div>
+<div class="cr-band__cell"><div class="cr-band__k">Variación neta</div><div class="cr-band__v is-net">+$52.700</div></div>
+<div class="cr-band__cell"><div class="cr-band__k">Devaluación</div><div class="cr-band__v is-out">−$18.400</div></div></div><div class="cr-monedas">
+<div class="cr-moneda"><div class="cr-moneda__k">Dólares</div><div class="cr-moneda__v">$592.670,30</div></div>
+<div class="cr-moneda"><div class="cr-moneda__k">Bolívares</div><div class="cr-moneda__v">Bs. 540.096.133,50</div><div class="cr-moneda__sub">≈ $952.550,50</div></div></div><div class="cr-label">Por entidad</div>
+<div class="cr-row"><span class="cr-row__name">Tesote Tecnología, C.A.</span><span class="cr-row__meta">6 cuentas</span><span class="cr-row__vals"><span>$215.300,00</span><span>Bs. 364.070.700,00</span></span></div>
+<div class="cr-row"><span class="cr-row__name">Tesote IA, C.A.</span><span class="cr-row__meta">4 cuentas</span><span class="cr-row__vals"><span>$84.620,00</span><span>Bs. 176.025.433,50</span></span></div>
+<div class="cr-row"><span class="cr-row__name">Tesote Tech, Inc.</span><span class="cr-row__meta">2 cuentas · solo USD</span><span class="cr-row__vals"><span>$292.750,30</span></span></div></div><div class="cr-box cr-cf"><div class="cr-label">Flujo de caja por categoría · 30 días</div><div class="cf-neto">+$52.700</div><div class="cf-neto__k">entradas $84.200 · salidas $31.500</div><div class="cf-group">Entradas</div>
+<div class="cf-row"><span class="cf-row__name">Cobros de clientes</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:100%"></span></span><span class="cf-row__amt is-in">+$76.800</span></div>
+<div class="cf-row"><span class="cf-row__name">Otros ingresos</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:10%"></span></span><span class="cf-row__amt is-in">+$7.400</span></div>
+<div class="cf-group">Salidas</div>
+<div class="cf-row cf-row--out"><span class="cf-row__name">Nómina</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:18%"></span></span><span class="cf-row__amt">−$14.200</span></div>
+<div class="cf-row cf-row--out"><span class="cf-row__name">Proveedores</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:13%"></span></span><span class="cf-row__amt">−$9.800</span></div>
+<div class="cf-row cf-row--out"><span class="cf-row__name">Impuestos</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:6%"></span></span><span class="cf-row__amt">−$4.300</span></div>
+<div class="cf-row cf-row--out"><span class="cf-row__name">Servicios bancarios</span><span class="cf-row__track"><span class="cf-row__bar" style="inline-size:4%"></span></span><span class="cf-row__amt">−$3.200</span></div><div class="cr-minis"><div class="cr-mini"><div class="cr-mini__k">Categorización automática</div><div class="cr-mini__v">90%</div></div>
+<div class="cr-mini"><div class="cr-mini__k">Contrapartes nuevas · 30 d</div><div class="cr-mini__v">5</div></div></div></div></div><div class="app-render__foot"><p class="chapter__panel-note" style="margin:0">+120 bancos · Venezuela · Panamá · República Dominicana · EE.&nbsp;UU. · Bs y USD nativo</p></div></div></div></div></section>
+</div>
+</body>
+</html>

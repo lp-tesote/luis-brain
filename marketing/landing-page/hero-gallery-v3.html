@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Hero gallery v3 — comando + agente: USD primero, tasa 567</title>
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="preload" href="current/assets/inter/inter-latin-0555e090.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="current/assets/aspekta/AspektaVF-36354009.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="current/assets/fontawesome/css/all.min-8e150040.css">
+  <link rel="stylesheet" href="current/assets/admin-1f3f92b5.css">
+  <link rel="stylesheet" href="current/assets/application-23a5d970.css">
+
+  <style>
+    /* ===== Lunour light tokens ===== */
+    :root {
+      --bg-base: #FFFFFF;
+      --bg-surface-1: var(--tesote-gray-25);
+      --bg-surface-2: var(--tesote-gray-50);
+      --bg-surface-3: var(--tesote-gray-100);
+      --border-subtle: #E8E3DA;
+      --border-strong: #DCD6CB;
+      --text-primary: #12110F;
+      --text-secondary: var(--tesote-gray-600);
+      --text-muted: #635D55;
+      --text-subtle: #857D73;
+      --accent: #1661E2;
+      --accent-hover: #184EB5;
+      --accent-soft: #EEF8FF;
+      --shadow-sm: 0 1px 2px rgba(18, 17, 15, 0.04);
+      --shadow-md: 0 4px 12px rgba(18, 17, 15, 0.08);
+      --shadow-lg: 0 24px 48px rgba(18, 17, 15, 0.12);
+    }
+    body { background: #FFFFFF; color: var(--text-primary); }
+
+    /* ===== Gallery layout ===== */
+    .gal { max-inline-size: 1280px; margin-inline: auto; padding: var(--space-12) var(--space-6) var(--space-20); }
+    .gal__header { max-inline-size: 72ch; margin-bottom: var(--space-10); }
+    .gal__title { font-family: var(--font-display); font-size: var(--fs-3xl); font-weight: var(--fw-semi); letter-spacing: var(--tracking-tight); margin: 0 0 var(--space-3); }
+    .gal__sub { color: var(--text-muted); line-height: var(--lh-normal); margin: 0; }
+    .gal__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-8); }
+    @media (max-width: 1100px) { .gal__grid { grid-template-columns: 1fr; } }
+    .variant__meta { display: flex; align-items: baseline; gap: var(--space-3); margin-bottom: var(--space-3); }
+    .variant__num {
+      flex: none; inline-size: 28px; block-size: 28px; border-radius: var(--radius-pill);
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--text-primary); color: #fff;
+      font-family: var(--font-mono); font-size: var(--fs-sm); position: relative; top: 5px;
+    }
+    .variant__name { font-family: var(--font-display); font-size: var(--fs-lg); font-weight: var(--fw-semi); }
+    .variant__story { font-size: var(--fs-sm); color: var(--text-muted); margin: 0 0 var(--space-4); line-height: var(--lh-normal); }
+    .stage {
+      background: #FCFBF7; border: 1px solid var(--border-subtle); border-radius: var(--radius-2xl);
+      padding: var(--space-10) var(--space-8); display: flex; align-items: center; justify-content: center;
+      min-block-size: 470px;
+    }
+
+    /* ===== Shared mini-UI primitives ===== */
+    .hp {
+      position: relative; inline-size: 100%; max-inline-size: 510px;
+      background: #FFFFFF; border: 1px solid var(--border-subtle); border-radius: var(--radius-2xl);
+      box-shadow: var(--shadow-lg); padding: var(--space-6);
+      display: flex; flex-direction: column; gap: var(--space-4);
+    }
+    .hp-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding-bottom: var(--space-3); border-bottom: 1px solid var(--border-subtle); }
+    .hp-title { font-family: var(--font-display); font-size: var(--fs-sm); font-weight: var(--fw-semi); color: var(--text-primary); }
+    .hp-live { display: inline-flex; align-items: center; gap: var(--space-2); font-size: var(--fs-xs); font-weight: var(--fw-medium); color: #0F6E45; white-space: nowrap; }
+    .hp-dot { inline-size: 6px; block-size: 6px; border-radius: var(--radius-pill); background: #1A8C5B; flex: none; }
+    .hp-label { font-size: var(--fs-xs); color: var(--text-subtle); }
+    .hp-figure { font-family: var(--font-mono); font-size: var(--fs-3xl); line-height: var(--lh-tight); color: var(--text-primary); font-variant-numeric: tabular-nums; }
+    .hp-cents { font-size: var(--fs-lg); color: var(--text-subtle); }
+    .hp-figure-bs { font-family: var(--font-mono); font-size: var(--fs-base); color: var(--text-muted); font-variant-numeric: tabular-nums; margin-top: 1px; }
+    .hp-deltas { display: flex; gap: var(--space-3); font-size: var(--fs-xs); font-family: var(--font-mono); font-variant-numeric: tabular-nums; color: var(--text-subtle); margin-top: var(--space-1); flex-wrap: wrap; }
+    .hp-delta--in { color: #0F6E45; }
+    .hp-delta--out { color: var(--text-muted); }
+    .hp-deltas i { font-size: 0.6rem; position: relative; top: -1px; }
+    .hp-chip {
+      display: flex; align-items: center; gap: var(--space-2);
+      background: var(--bg-surface-2); border: 1px solid var(--border-subtle); border-radius: var(--radius-md);
+      padding: var(--space-2) var(--space-3); font-size: var(--fs-xs); color: var(--text-secondary);
+    }
+    .hp-chip--card { background: #FFFFFF; box-shadow: var(--shadow-sm); }
+    .hp-chip-label { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .hp-chip-value { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--text-primary); font-variant-numeric: tabular-nums; }
+    .hp-pill {
+      font-size: 0.65rem; font-weight: var(--fw-semi); letter-spacing: var(--tracking-wide); text-transform: uppercase;
+      color: #0F6E45; background: #D6E8D5; border-radius: var(--radius-pill); padding: 1px var(--space-2); flex: none; white-space: nowrap;
+    }
+    .hp-pill--accent { color: #184EB5; background: #E4ECF7; }
+    /* Stripe-style rectangular badge (v14 decision) */
+    .hp-badge {
+      display: inline-flex; align-items: center; gap: var(--space-1);
+      font-size: 0.7rem; font-weight: var(--fw-medium);
+      color: #184EB5; background: #E4ECF7;
+      border-radius: 4px; padding: 1px var(--space-2); flex: none; white-space: nowrap;
+    }
+    .hp-badge--green { color: #0F6E45; background: #D6E8D5; }
+    .hp-rows { display: flex; flex-direction: column; }
+    .hp-row { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-2) 0; border-bottom: 1px solid var(--bg-surface-2); font-size: var(--fs-sm); }
+    .hp-row:last-child { border-bottom: 0; }
+    .hp-avatar {
+      inline-size: 24px; block-size: 24px; flex: none; display: inline-flex; align-items: center; justify-content: center;
+      background: var(--bg-surface-2); border: 1px solid var(--border-subtle); border-radius: var(--radius-md);
+      font-size: var(--fs-xs); font-weight: var(--fw-semi); color: var(--text-secondary);
+    }
+    .hp-name { flex: 1; min-width: 0; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .hp-meta { color: var(--text-subtle); font-size: var(--fs-xs); }
+    .hp-value { font-family: var(--font-mono); font-size: var(--fs-sm); color: var(--text-primary); font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .hp-values { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; flex: none; }
+    .hp-value-bs { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--text-subtle); font-variant-numeric: tabular-nums; }
+    .hp-actions { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+    .hp-action {
+      display: inline-flex; align-items: center; gap: var(--space-2);
+      font-size: var(--fs-xs); font-weight: var(--fw-medium); color: var(--text-secondary);
+      background: #FFFFFF; border: 1px solid var(--border-strong); border-radius: var(--radius-md);
+      padding: var(--space-2) var(--space-3); box-shadow: var(--shadow-sm); white-space: nowrap;
+    }
+    .hp-action--primary { color: #FFFFFF; background: var(--accent); border-color: var(--accent); }
+    .hp-float {
+      position: absolute; left: calc(var(--space-8) * -1); bottom: var(--space-8);
+      background: #FFFFFF !important; box-shadow: var(--shadow-md); max-inline-size: calc(100% - var(--space-4));
+    }
+    .hp-spark { inline-size: 120px; block-size: 44px; flex: none; }
+    .hp-figrow { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-4); }
+    .hp-bigchart { inline-size: 100%; block-size: auto; display: block; }
+    .hp-subcard { background: var(--bg-surface-1); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: var(--space-3) var(--space-4); display: flex; flex-direction: column; gap: var(--space-2); }
+    .hp-subhead { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
+    .hp-subtitle { font-size: var(--fs-xs); font-weight: var(--fw-semi); color: var(--text-primary); }
+    .hp-subtitle i { color: var(--accent); margin-right: 6px; }
+    .hp-feed { display: flex; flex-direction: column; gap: var(--space-2); }
+    .hp-feed-item { display: flex; align-items: baseline; gap: var(--space-3); font-size: var(--fs-xs); color: var(--text-secondary); }
+    .hp-feed-item i { color: #1A8C5B; font-size: var(--fs-xs); flex: none; position: relative; top: 1px; }
+    .hp-feed-item i.is-working { color: var(--accent); }
+    .hp-feed-text { flex: 1; min-width: 0; }
+    .hp-feed-time { color: var(--text-subtle); font-family: var(--font-mono); font-size: 0.65rem; white-space: nowrap; }
+
+    /* v3-gallery specifics */
+    .hp-rate {
+      display: inline-flex; align-items: center; gap: var(--space-2);
+      font-size: var(--fs-xs); font-family: var(--font-mono); font-variant-numeric: tabular-nums;
+      color: var(--text-muted); background: var(--bg-surface-2);
+      border: 1px solid var(--border-subtle); border-radius: var(--radius-md);
+      padding: 2px var(--space-2); white-space: nowrap;
+    }
+    .hp-rate i { font-size: 0.6rem; color: var(--text-subtle); }
+    .hp-toggle { display: inline-flex; background: var(--bg-surface-2); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 2px; gap: 2px; }
+    .hp-toggle span { font-size: 0.7rem; font-weight: var(--fw-medium); color: var(--text-subtle); padding: 1px var(--space-2); border-radius: 4px; }
+    .hp-toggle .is-active { background: #FFFFFF; color: var(--text-primary); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-sm); }
+    .hp-strip {
+      display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);
+      background: var(--bg-surface-1); border: 1px solid var(--border-subtle); border-radius: var(--radius-md);
+      padding: var(--space-2) var(--space-3); font-size: var(--fs-xs); color: var(--text-secondary);
+    }
+    .hp-grid2 { display: grid; grid-template-columns: 1fr 1.1fr; gap: var(--space-4); align-items: start; }
+    .hp-col { display: flex; flex-direction: column; gap: var(--space-3); min-width: 0; }
+    .hp-col .hp-rows .hp-row { font-size: var(--fs-xs); padding: var(--space-1) 0; }
+    .hp-col .hp-value { font-size: var(--fs-xs); }
+  </style>
+</head>
+<body>
+  <div class="gal">
+    <header class="gal__header">
+      <h1 class="gal__title">Comando + agente — USD primero, tasa 567</h1>
+      <p class="gal__sub">8 variaciones del panel ganador. Reglas nuevas: USD siempre protagonista, Bs visible por entidad, todo cuadra a tasa BCV 567,00 ($1.245.300,80 = Bs. 706.085.553,60), entidades con nombres derivados de Tesote. Elige una o pide injertos.</p>
+    </header>
+
+    <div class="gal__grid">
+
+      <!-- ============ 1 ============ -->
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__num">1</span><span class="variant__name">Base actualizada (v14 corregido)</span></div>
+        <p class="variant__story">El v14 con las reglas nuevas: USD grande, Bs debajo, entidades Tesote, números cuadrados a 567. La referencia.</p>
+        <div class="stage">
+          <div class="hp" aria-hidden="true">
+            <div class="hp-bar">
+              <div class="hp-actions">
+                <span class="hp-action hp-action--primary"><i class="fa-solid fa-arrow-up"></i>Pagar</span>
+                <span class="hp-action">Cobrar</span>
+                <span class="hp-action">Conciliar</span>
+              </div>
+              <span class="hp-live"><span class="hp-dot"></span>En vivo</span>
+            </div>
+            <div class="hp-figrow">
+              <div>
+                <div class="hp-label">Saldo total · Todas las entidades</div>
+                <div class="hp-figure">$1.245.300<span class="hp-cents">,80</span></div>
+                <div class="hp-figure-bs">Bs. 706.085.553,60</div>
+                <div class="hp-deltas">
+                  <span>Últimos 30 días</span>
+                  <span class="hp-delta--in"><i class="fa-solid fa-caret-up"></i> $84,2K</span>
+                  <span class="hp-delta--out"><i class="fa-solid fa-caret-down"></i> $31,5K</span>
+                </div>
+              </div>
+              <svg class="hp-spark" viewBox="0 0 120 44" fill="none" preserveAspectRatio="none">
+                <defs><linearGradient id="k1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1661E2" stop-opacity="0.35"/><stop offset="100%" stop-color="#1661E2" stop-opacity="0"/></linearGradient></defs>
+                <path d="M0 32 L15 29 L30 33 L45 24 L60 27 L75 18 L90 21 L105 11 L120 7 L120 44 L0 44 Z" fill="url(#k1)"/>
+                <path d="M0 32 L15 29 L30 33 L45 24 L60 27 L75 18 L90 21 L105 11 L120 7" stroke="#3B7CF5" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="hp-rows">
+              <div class="hp-row"><span class="hp-avatar">C</span><span class="hp-name">Tesote Comercial, C.A. <span class="hp-meta">· 5 cuentas</span></span><span class="hp-values"><span class="hp-value">$642.100,00</span><span class="hp-value-bs">Bs. 364.070.700,00</span></span></div>
+              <div class="hp-row"><span class="hp-avatar">D</span><span class="hp-name">Tesote Distribución, C.A. <span class="hp-meta">· 4 cuentas</span></span><span class="hp-values"><span class="hp-value">$310.450,50</span><span class="hp-value-bs">Bs. 176.025.433,50</span></span></div>
+              <div class="hp-row"><span class="hp-avatar">S</span><span class="hp-name">Tesote Servicios, C.A. <span class="hp-meta">· 3 cuentas</span></span><span class="hp-values"><span class="hp-value">$292.750,30</span><span class="hp-value-bs">Bs. 165.989.420,10</span></span></div>
+            </div>
+            <div class="hp-subcard">
+              <div class="hp-subhead"><span class="hp-subtitle"><i class="fa-solid fa-wand-magic-sparkles"></i>Tesote IA</span><span class="hp-badge">Trabajando</span></div>
+              <div class="hp-feed">
+                <div class="hp-feed-item"><i class="fa-solid fa-circle-check"></i><span class="hp-feed-text">Conciliados <b>142 movimientos</b></span><span class="hp-feed-time">hace 2 min</span></div>
+                <div class="hp-feed-item"><i class="fa-solid fa-circle-notch fa-spin is-working"></i><span class="hp-feed-text">Preparando el <b>cierre del día</b>…</span><span class="hp-feed-time">ahora</span></div>
+              </div>
+            </div>
+            <div class="hp-chip hp-float"><span class="hp-chip-label">Cobro recibido · Factura #1042</span><span class="hp-chip-value">$85,18</span><span class="hp-pill">Conciliado</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 2 ============ -->
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__num">2</span><span class="variant__name">Tasa a la vista</span></div>
+        <p class="variant__story">Igual que la 1, pero la tasa BCV vive en la barra superior como dato del sistema — el detalle más venezolano posible. Quien la ve, sabe que esto fue hecho aquí.</p>
+        <div class="stage">
+          <div class="hp" aria-hidden="true">
+            <div class="hp-bar">
+              <div class="hp-actions">
+                <span class="hp-action hp-action--primary"><i class="fa-solid fa-arrow-up"></i>Pagar</span>
+                <span class="hp-action">Cobrar</span>
+                <span class="hp-action">Conciliar</span>
+              </div>
+              <span class="hp-rate"><i class="fa-solid fa-rotate"></i>BCV 567,00</span>
+            </div>
+            <div class="hp-figrow">
+              <div>
+                <div class="hp-label">Saldo total · Todas las entidades · <span style="color:#0F6E45;">● En vivo</span></div>
+                <div class="hp-figure">$1.245.300<span class="hp-cents">,80</span></div>
+                <div class="hp-figure-bs">Bs. 706.085.553,60</div>
+              </div>
+              <svg class="hp-spark" viewBox="0 0 120 44" fill="none" preserveAspectRatio="none">
+                <defs><linearGradient id="k2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1661E2" stop-opacity="0.35"/><stop offset="100%" stop-color="#1661E2" stop-opacity="0"/></linearGradient></defs>
+                <path d="M0 32 L15 29 L30 33 L45 24 L60 27 L75 18 L90 21 L105 11 L120 7 L120 44 L0 44 Z" fill="url(#k2)"/>
+                <path d="M0 32 L15 29 L30 33 L45 24 L60 27 L75 18 L90 21 L105 11 L120 7" stroke="#3B7CF5" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="hp-rows">
+              <div class="hp-row"><span class="hp-avatar">C</span><span class="hp-name">Tesote Comercial, C.A. <span class="hp-meta">· 5 cuentas</span></span><span class="hp-values"><span class="hp-value">$642.100,00</span><span class="hp-value-bs">Bs. 364.070.700,00</span></span></div>
+              <div class="hp-row"><span class="hp-avatar">D</span><span class="hp-name">Tesote Distribución, C.A. <span class="hp-meta">· 4 cuentas</span></span><span class="hp-values"><span class="hp-value">$310.450,50</span><span class="hp-value-bs">Bs. 176.025.433,50</span></span></div>
+              <div class="hp-row"><span class="hp-avatar">S</span><span class="hp-name">Tesote Servicios, C.A. <span class="hp-meta">· 3 cuentas</span></span><span class="hp-values"><span class="hp-value">$292.750,30</span><span class="hp-value-bs">Bs. 165.989.420,10</span></span></div>
+            </div>
+            <div class="hp-subcard">
+              <div class="hp-subhead"><span class="hp-subtitle"><i class="fa-solid fa-wand-magic-sparkles"></i>Tesote IA</span><span class="hp-badge">Trabajando</span></div>
+              <div class="hp-feed">
+                <div class="hp-feed-item"><i class="fa-solid fa-circle-check"></i><span class="hp-feed-text">Conciliados <b>142 movimientos</b></span><span class="hp-feed-time">hace 2 min</span></div>
+                <div class="hp-feed-item"><i class="fa-solid fa-circle-notch fa-spin is-working"></i><span class="hp-feed-text">Preparando el <b>cierre del día</b>…</span><span class="hp-feed-time">ahora</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 3 ============ -->
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__num">3</span><span class="variant__name">Toggle USD / Bs</span></div>
+        <p class="variant__story">Un selector de moneda como en el producto (USD activo). Las filas quedan solo en USD — el panel más limpio; los Bs viven a un clic, no en cada fila.</p>
+        <div class="stage">
+          <div class="hp" aria-hidden="true">
+            <div class="hp-bar">
+              <div class="hp-actions">
+                <span class="hp-action hp-action--primary"><i class="fa-solid fa-arrow-up"></i>Pagar</span>
+                <span class="hp-action">Cobrar</span>
+                <span class="hp-action">Conciliar</span>
+              </div>
+              <span class="hp-toggle"><span class="is-active">USD</span><span>Bs</span></span>
+            </div>
+            <div class="hp-figrow">
+              <div>
+                <div class="hp-label">Saldo total · Todas las entidades · BCV 567,00</div>
+                <div class="hp-figure">$1.245.300<span class="hp-cents">,80</span></div>
+                <div class="hp-deltas">
+                  <span>Últimos 30 días</span>
+                  <span class="hp-delta--in"><i class="fa-solid fa-caret-up"></i> $84,2K</span>
+                  <span class="hp-delta--out"><i class="fa-solid fa-caret-down"></i> $31,5K</span>
+                </div>
+              </div>
+              <svg class="hp-spark" viewBox="0 0 120 44" fill="none" preserveAspectRatio="none">
+                <defs><linearGradient id="k3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1661E2" stop-opacity="0.35"/><stop offset="100%" stop-color="#1661E2" stop-opacity="0"/></linearGradient></defs>
+                <path d="M0 32 L15 29 L30 33 L45 24 L60 27 L75 18 L90 21 L105 11 L120 7 L120 44 L0 44 Z" fill="url(#k3)"/>
+                <path d="M0 32 L15 29 L30 33 L45 24 L60 27 L75 18 L90 21 L105 11 L120 7" stroke="#3B7CF5" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="hp-rows">
+              <div class="hp-row"><span class="hp-avatar">C</span><span class="hp-name">Tesote Comercial, C.A. <span class="hp-meta">· 5 cuentas</span></span><span class="hp-value">$642.100,00</span></div>
+              <div class="hp-row"><span class="hp-avatar">D</span><span class="hp-name">Tesote Distribución, C.A. <span class="hp-meta">· 4 cuentas</span></span><span class="hp-value">$310.450,50</span></div>
+              <div class="hp-row"><span class="hp-avatar">S</span><span class="hp-name">Tesote Servicios, C.A. <span class="hp-meta">· 3 cuentas</span></span><span class="hp-value">$292.750,30</span></div>
+            </div>
+            <div class="hp-subcard">
+              <div class="hp-subhead"><span class="hp-subtitle"><i class="fa-solid fa-wand-magic-sparkles"></i>Tesote IA</span><span class="hp-badge">Trabajando</span></div>
+              <div class="hp-feed">
+                <div class="hp-feed-item"><i class="fa-solid fa-circle-check"></i><span class="hp-feed-text">Conciliados <b>142 movimientos</b></span><span class="hp-feed-time">hace 2 min</span></div>
+                <div class="hp-feed-item"><i class="fa-solid fa-circle-notch fa-spin is-working"></i><span class="hp-feed-text">Preparando el <b>cierre del día</b>…</span><span class="hp-feed-time">ahora</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 4 ============ -->
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__num">4</span><span class="variant__name">Bs en línea</span></div>
+        <p class="variant__story">Filas de una sola línea: USD protagonista y Bs abreviado al lado, en gris. Panel más bajo y rápido de leer; deja aire para un feed de IA más rico.</p>
+        <div class="stage">
+          <div class="hp" aria-hidden="true">
+            <div class="hp-bar">
+              <div class="hp-actions">
+                <span class="hp-action hp-action--primary"><i class="fa-solid fa-arrow-up"></i>Pagar</span>
+                <span class="hp-action">Cobrar</span>
+                <span class="hp-action">Conciliar</span>
+              </div>
+              <span class="hp-live"><span class="hp-dot"></span>En vivo</span>
+            </div>
+            <div class="hp-figrow">
+              <div>
+                <div class="hp-label">Saldo total · Todas las entidades</div>
+                <div class="hp-figure">$1.245.300<span class="hp-cents">,80</span></div>
+                <div class="hp-figure-bs">Bs. 706.085.553,60 <span class="hp-meta">· BCV 567,00</span></div>
+              </div>
+              <svg class="hp-spark" viewBox="0 0 120 44" fill="none" preserveAspectRatio="none">
+                <defs><linearGradient id="k4" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1661E2" stop-opacity="0.35"/><stop offset="100%" stop-color="#1661E2" stop-opacity="0"/></linearGradient></defs>
+                <path d="M0 32 L15 29 L30 33 L45 24 L60 27 L75 18 L90 21 L105 11 L120 7 L120 44 L0 44 Z" fill="url(#k4)"/>
+                <path d="M0 32 L15 29 L30 33 L45 24 L60 27 L75 18 L90 21 L105 11 L120 7" stroke="#3B7CF5" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="hp-rows">
+              <div class="hp-row"><span class="hp-avatar">C</span><span class="hp-name">Tesote Comercial <span class="hp-meta">· Bs. 364,1M</span></span><span class="hp-value">$642.100,00</span></div>
+              <div class="hp-row"><span class="hp-avatar">D</span><span class="hp-name">Tesote Distribución <span class="hp-meta">· Bs. 176,0M</span></span><span class="hp-value">$310.450,50</span></div>
+              <div class="hp-row"><span class="hp-avatar">S</span><span class="hp-name">Tesote Servicios <span class="hp-meta">· Bs. 166,0M</span></span><span class="hp-value">$292.750,30</span></div>
+            </div>
+            <div class="hp-subcard">
+              <div class="hp-subhead"><span class="hp-subtitle"><i class="fa-solid fa-wand-magic-sparkles"></i>Tesote IA</span><span class="hp-badge">Trabajando</span></div>
+              <div class="hp-feed">
+                <div class="hp-feed-item"><i class="fa-solid fa-circle-check"></i><span class="hp-feed-text">Conciliados <b>142 movimientos</b></span><span class="hp-feed-time">hace 2 min</span></div>
+                <div class="hp-feed-item"><i class="fa-solid fa-circle-check"></i><span class="hp-feed-text">Extraídos <b>8 documentos</b> de la bandeja</span><span class="hp-feed-time">hace 1 h</span></div>
+                <div class="hp-feed-item"><i class="fa-solid fa-circle-notch fa-spin is-working"></i><span class="hp-feed-text">Preparando el <b>cierre del día</b>…</span><span class="hp-feed-time">ahora</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 5 ============ -->
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__num">5</span><span class="variant__name">Bs como franja</span></div>
+        <p class="variant__story">USD totalmente solo arriba; los bolívares consolidados viven en una franja propia con la tasa — un solo lugar para los Bs, filas 100% USD.</p>
+        <div class="stage">
+          <div class="hp" aria-hidden="true">
+            <div class="hp-bar">
+              <div class="hp-actions">
+                <span class="hp-action hp-action--primary"><i class="fa-solid fa-arrow-up"></i>Pagar</span>
+                <span class="hp-action">Cobrar</span>
+                <span class="hp-action">Conciliar</span>
+              </div>
+              <span class="hp-live"><span class="hp-dot"></span>En vivo</span>
+            </div>
+            <div class="hp-figrow">
+              <div>
+                <div class="hp-label">Saldo total · Todas las entidades</div>
+                <div class="hp-figure">$1.245.300<span class="hp-cents">,80</span></div>
+                <div class="hp-deltas">
+                  <span>Últimos 30 días</span>
+                  <span class="hp-delta--in"><i class="fa-solid fa-caret-up"></i> $84,2K</span>
+                  <span class="hp-delta--out"><i class="fa-solid fa-caret-down"></i> $31,5K</span>
+                </div>
+              </div>
+              <svg class="hp-spark" viewBox="0 0 120 44" fill="none" preserveAspectRatio="none">
+                <defs><linearGradient id="k5" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1661E2" stop-opacity="0.35"/><stop offset="100%" stop-color="#1661E2" stop-opacity="0"/></linearGradient></defs>
+                <path d="M0 32 L15 29 L30 33 L45 24 L60 27 L75 18 L90 21 L105 11 L120 7 L120 44 L0 44 Z" fill="url(#k5)"/>
+                <path d="M0 32 L15 29 L30 33 L45 24 L60 27 L75 18 L90 21 L105 11 L120 7" stroke="#3B7CF5" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="hp-strip">
+              <span><i class="fa-solid fa-coins" style="color: var(--text-subtle); margin-right: 6px;"></i>En bolívares</span>
+              <span class="hp-chip-value">Bs. 706.085.553,60</span>
+              <span class="hp-rate">BCV 567,00</span>
+            </div>
+            <div class="hp-rows">
+              <div class="hp-row"><span class="hp-avatar">C</span><span class="hp-name">Tesote Comercial, C.A. <span class="hp-meta">· 5 cuentas</span></span><span class="hp-value">$642.100,00</span></div>
+              <div class="hp-row"><span class="hp-avatar">D</span><span class="hp-name">Tesote Distribución, C.A. <span class="hp-meta">· 4 cuentas</span></span><span class="hp-value">$310.450,50</span></div>
+              <div class="hp-row"><span class="hp-avatar">S</span><span class="hp-name">Tesote Servicios, C.A. <span class="hp-meta">· 3 cuentas</span></span><span class="hp-value">$292.750,30</span></div>
+            </div>
+            <div class="hp-subcard">
+              <div class="hp-subhead"><span class="hp-subtitle"><i class="fa-solid fa-wand-magic-sparkles"></i>Tesote IA</span><span class="hp-badge">Trabajando</span></div>
+              <div class="hp-feed">
+                <div class="hp-feed-item"><i class="fa-solid fa-circle-check"></i><span class="hp-feed-text">Conciliados <b>142 movimientos</b></span><span class="hp-feed-time">hace 2 min</span></div>
+                <div class="hp-feed-item"><i class="fa-solid fa-circle-notch fa-spin is-working"></i><span class="hp-feed-text">Preparando el <b>cierre del día</b>…</span><span class="hp-feed-time">ahora</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 6 ============ -->
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__num">6</span><span class="variant__name">Dos columnas</span></div>
+        <p class="variant__story">Saldo + gráfico grande a la izquierda; entidades y feed a la derecha. Más horizontal — útil si el hero necesita un panel más ancho que alto.</p>
+        <div class="stage">
+          <div class="hp" style="max-inline-size: 560px;" aria-hidden="true">
+            <div class="hp-bar">
+              <div class="hp-actions">
+                <span class="hp-action hp-action--primary"><i class="fa-solid fa-arrow-up"></i>Pagar</span>
+                <span class="hp-action">Cobrar</span>
+                <span class="hp-action">Transferir</span>
+                <span class="hp-action">Conciliar</span>
+              </div>
+              <span class="hp-rate">BCV 567,00</span>
+            </div>
+            <div class="hp-grid2">
+              <div class="hp-col">
+                <div>
+                  <div class="hp-label">Saldo total</div>
+                  <div class="hp-figure" style="font-size: var(--fs-2xl);">$1.245.300<span class="hp-cents">,80</span></div>
+                  <div class="hp-figure-bs" style="font-size: var(--fs-sm);">Bs. 706.085.553,60</div>
+                </div>
+                <svg class="hp-bigchart" viewBox="0 0 230 100" fill="none" preserveAspectRatio="none">
+                  <defs><linearGradient id="k6" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1661E2" stop-opacity="0.3"/><stop offset="100%" stop-color="#1661E2" stop-opacity="0"/></linearGradient></defs>
+                  <path d="M0 75 L23 68 L46 78 L69 58 L92 64 L115 45 L138 51 L161 32 L184 38 L207 19 L230 12 L230 100 L0 100 Z" fill="url(#k6)"/>
+                  <path d="M0 75 L23 68 L46 78 L69 58 L92 64 L115 45 L138 51 L161 32 L184 38 L207 19 L230 12" stroke="#3B7CF5" stroke-width="2" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="hp-col">
+                <div class="hp-rows">
+                  <div class="hp-row"><span class="hp-avatar">C</span><span class="hp-name">Tesote Comercial</span><span class="hp-values"><span class="hp-value">$642.100,00</span><span class="hp-value-bs">Bs. 364,1M</span></span></div>
+                  <div class="hp-row"><span class="hp-avatar">D</span><span class="hp-name">Tesote Distribución</span><span class="hp-values"><span class="hp-value">$310.450,50</span><span class="hp-value-bs">Bs. 176,0M</span></span></div>
+                  <div class="hp-row"><span class="hp-avatar">S</span><span class="hp-name">Tesote Servicios</span><span class="hp-values"><span class="hp-value">$292.750,30</span><span class="hp-value-bs">Bs. 166,0M</span></span></div>
+                </div>
+                <div class="hp-subcard">
+                  <div class="hp-subhead"><span class="hp-subtitle"><i class="fa-solid fa-wand-magic-sparkles"></i>Tesote IA</span><span class="hp-badge">Trabajando</span></div>
+                  <div class="hp-feed">
+                    <div class="hp-feed-item"><i class="fa-solid fa-circle-check"></i><span class="hp-feed-text">142 movimientos conciliados</span></div>
+                    <div class="hp-feed-item"><i class="fa-solid fa-circle-notch fa-spin is-working"></i><span class="hp-feed-text">Cierre del día…</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 7 ============ -->
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__num">7</span><span class="variant__name">El agente primero</span></div>
+        <p class="variant__story">El feed de IA sube al tope — «esto pasó mientras no estabas» — y el saldo + entidades quedan debajo. La jerarquía más agresiva con el mensaje de agentes.</p>
+        <div class="stage">
+          <div class="hp" aria-hidden="true">
+            <div class="hp-bar">
+              <span class="hp-title"><i class="fa-solid fa-wand-magic-sparkles" style="color: var(--accent); margin-right: 6px;"></i>Tesote IA</span>
+              <span class="hp-badge">Trabajando</span>
+            </div>
+            <div class="hp-feed">
+              <div class="hp-feed-item"><i class="fa-solid fa-circle-check"></i><span class="hp-feed-text">Conciliados <b>142 movimientos</b> en 3 entidades</span><span class="hp-feed-time">hace 2 min</span></div>
+              <div class="hp-feed-item"><i class="fa-solid fa-circle-check"></i><span class="hp-feed-text">Extraídos <b>8 documentos</b> · listos para tu visto bueno</span><span class="hp-feed-time">hace 1 h</span></div>
+              <div class="hp-feed-item"><i class="fa-solid fa-circle-notch fa-spin is-working"></i><span class="hp-feed-text">Preparando el <b>cierre del día</b>…</span><span class="hp-feed-time">ahora</span></div>
+            </div>
+            <div class="hp-figrow" style="border-top: 1px solid var(--border-subtle); padding-top: var(--space-3);">
+              <div>
+                <div class="hp-label">Saldo total · Todas las entidades</div>
+                <div class="hp-figure">$1.245.300<span class="hp-cents">,80</span></div>
+                <div class="hp-figure-bs">Bs. 706.085.553,60 <span class="hp-meta">· BCV 567,00</span></div>
+              </div>
+              <svg class="hp-spark" viewBox="0 0 120 44" fill="none" preserveAspectRatio="none">
+                <defs><linearGradient id="k7" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1661E2" stop-opacity="0.35"/><stop offset="100%" stop-color="#1661E2" stop-opacity="0"/></linearGradient></defs>
+                <path d="M0 32 L15 29 L30 33 L45 24 L60 27 L75 18 L90 21 L105 11 L120 7 L120 44 L0 44 Z" fill="url(#k7)"/>
+                <path d="M0 32 L15 29 L30 33 L45 24 L60 27 L75 18 L90 21 L105 11 L120 7" stroke="#3B7CF5" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="hp-rows">
+              <div class="hp-row"><span class="hp-avatar">C</span><span class="hp-name">Tesote Comercial, C.A. <span class="hp-meta">· 5 cuentas</span></span><span class="hp-values"><span class="hp-value">$642.100,00</span><span class="hp-value-bs">Bs. 364.070.700,00</span></span></div>
+              <div class="hp-row"><span class="hp-avatar">D</span><span class="hp-name">Tesote Distribución, C.A. <span class="hp-meta">· 4 cuentas</span></span><span class="hp-values"><span class="hp-value">$310.450,50</span><span class="hp-value-bs">Bs. 176.025.433,50</span></span></div>
+            </div>
+            <div class="hp-actions">
+              <span class="hp-action hp-action--primary"><i class="fa-solid fa-arrow-up"></i>Pagar</span>
+              <span class="hp-action">Cobrar</span>
+              <span class="hp-action">Conciliar</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 8 ============ -->
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__num">8</span><span class="variant__name">Dos monedas, dos números</span></div>
+        <p class="variant__story">USD y Bs como pareja explícita en la cabecera — el grande y el completo, lado a lado, con la tasa entre ellos. La dualidad como elemento de diseño.</p>
+        <div class="stage">
+          <div class="hp" aria-hidden="true">
+            <div class="hp-bar">
+              <div class="hp-actions">
+                <span class="hp-action hp-action--primary"><i class="fa-solid fa-arrow-up"></i>Pagar</span>
+                <span class="hp-action">Cobrar</span>
+                <span class="hp-action">Conciliar</span>
+              </div>
+              <span class="hp-live"><span class="hp-dot"></span>En vivo</span>
+            </div>
+            <div>
+              <div class="hp-label">Saldo total · Todas las entidades</div>
+              <div style="display: flex; align-items: baseline; gap: var(--space-4); flex-wrap: wrap;">
+                <span class="hp-figure">$1.245.300<span class="hp-cents">,80</span></span>
+                <span class="hp-rate" style="position: relative; top: -4px;"><i class="fa-solid fa-rotate"></i>567,00</span>
+                <span class="hp-figure-bs" style="font-size: var(--fs-lg);">Bs. 706.085.553,60</span>
+              </div>
+              <div class="hp-deltas">
+                <span>Últimos 30 días</span>
+                <span class="hp-delta--in"><i class="fa-solid fa-caret-up"></i> $84,2K</span>
+                <span class="hp-delta--out"><i class="fa-solid fa-caret-down"></i> $31,5K</span>
+              </div>
+            </div>
+            <div class="hp-rows">
+              <div class="hp-row"><span class="hp-avatar">C</span><span class="hp-name">Tesote Comercial, C.A. <span class="hp-meta">· 5 cuentas</span></span><span class="hp-values"><span class="hp-value">$642.100,00</span><span class="hp-value-bs">Bs. 364.070.700,00</span></span></div>
+              <div class="hp-row"><span class="hp-avatar">D</span><span class="hp-name">Tesote Distribución, C.A. <span class="hp-meta">· 4 cuentas</span></span><span class="hp-values"><span class="hp-value">$310.450,50</span><span class="hp-value-bs">Bs. 176.025.433,50</span></span></div>
+              <div class="hp-row"><span class="hp-avatar">S</span><span class="hp-name">Tesote Servicios, C.A. <span class="hp-meta">· 3 cuentas</span></span><span class="hp-values"><span class="hp-value">$292.750,30</span><span class="hp-value-bs">Bs. 165.989.420,10</span></span></div>
+            </div>
+            <div class="hp-subcard">
+              <div class="hp-subhead"><span class="hp-subtitle"><i class="fa-solid fa-wand-magic-sparkles"></i>Tesote IA</span><span class="hp-badge">Trabajando</span></div>
+              <div class="hp-feed">
+                <div class="hp-feed-item"><i class="fa-solid fa-circle-check"></i><span class="hp-feed-text">Conciliados <b>142 movimientos</b></span><span class="hp-feed-time">hace 2 min</span></div>
+                <div class="hp-feed-item"><i class="fa-solid fa-circle-notch fa-spin is-working"></i><span class="hp-feed-text">Preparando el <b>cierre del día</b>…</span><span class="hp-feed-time">ahora</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</body>
+</html>

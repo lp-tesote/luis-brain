@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hero line-motif gallery — Tesote (10 options)</title>
+
+<style>
+  @font-face { font-family:'Aspekta'; src:url('current/assets/aspekta/AspektaVF-36354009.woff2') format('woff2'); font-weight:100 900; font-display:swap; }
+  @font-face { font-family:'InterLocal'; src:url('current/assets/inter/inter-latin-0555e090.woff2') format('woff2'); font-weight:100 900; font-display:swap; }
+
+  :root{
+    --bg-hero:#FCFBF7; --bg-card:#FFFFFF; --bg-2:#F7F5F0;
+    --ink:#12110F; --t2:#635D55; --t3:#857D73;
+    --border:#E8E3DA; --border-strong:#DCD6CB;
+    --blue:#1661E2; --green:#0F6E45; --greendot:#1A8C5B;
+    --radius:18px;
+    --line: rgba(18,17,15,.06);   /* the brand black line, low alpha */
+  }
+
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:#EDEAE3; font-family:'InterLocal',-apple-system,system-ui,sans-serif; color:var(--ink); }
+
+  /* ---- gallery chrome ---- */
+  .intro{ max-width:1100px; margin:0 auto; padding:40px 24px 8px; }
+  .intro h1{ font-family:'Aspekta',sans-serif; font-weight:600; font-size:24px; margin:0 0 6px; }
+  .intro p{ color:var(--t2); font-size:14px; line-height:1.6; margin:0 0 4px; max-width:70ch; }
+  .intro code{ background:#fff; border:1px solid var(--border); border-radius:5px; padding:1px 6px; font-size:12px; }
+
+  .demo{ max-width:1180px; margin:26px auto; padding:0 24px; }
+  .demo__label{ font-family:'Aspekta',sans-serif; font-weight:600; font-size:13px; letter-spacing:.02em; color:var(--ink); margin:0 0 8px; }
+  .demo__label span{ color:var(--t3); font-weight:400; }
+
+  /* ---- hero shell (shared) ---- */
+  .hero{ position:relative; overflow:hidden; background:var(--bg-hero); border:1px solid var(--border); border-radius:22px; }
+  .hero__inner{ position:relative; z-index:2; display:grid; grid-template-columns:1.05fr .95fr; gap:48px; align-items:center; padding:56px 52px; min-height:430px; }
+  @media (max-width:900px){ .hero__inner{ grid-template-columns:1fr; } }
+
+  .hero__bg{ position:absolute; inset:0; z-index:1; pointer-events:none; }
+  /* gentle fade so lines concentrate behind copy and never fight the panel */
+  .masked{
+    -webkit-mask-image: radial-gradient(135% 115% at 28% 45%, #000 30%, transparent 82%);
+            mask-image: radial-gradient(135% 115% at 28% 45%, #000 30%, transparent 82%);
+  }
+
+  .h1{ font-family:'Aspekta',sans-serif; font-weight:600; font-size:clamp(28px,3vw,42px); line-height:1.07; letter-spacing:-.02em; margin:0 0 18px; }
+  .sub{ font-size:16px; line-height:1.6; color:var(--t2); margin:0 0 26px; max-width:46ch; }
+  .cta{ display:inline-flex; align-items:center; gap:10px; background:var(--blue); color:#fff; font-family:'Aspekta',sans-serif; font-weight:600; font-size:15px; padding:12px 22px; border-radius:11px; text-decoration:none; }
+  .cta svg{ width:14px; height:14px; }
+
+  /* ---- simplified command panel (shared) ---- */
+  .panel{ background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); box-shadow:0 24px 48px rgba(18,17,15,.12); padding:22px; display:flex; flex-direction:column; gap:16px; max-width:520px; width:100%; margin-inline:auto; }
+  .panel__bar{ display:flex; align-items:center; justify-content:space-between; padding-bottom:12px; border-bottom:1px solid var(--border); }
+  .panel__actions{ display:flex; gap:8px; }
+  .chip{ font-size:12px; font-weight:500; color:var(--t2); background:#fff; border:1px solid var(--border-strong); border-radius:9px; padding:6px 11px; }
+  .chip--black{ color:#fff; background:var(--ink); border-color:var(--ink); }
+  .panel__live{ display:inline-flex; align-items:center; gap:7px; font-size:12px; font-weight:500; color:var(--green); }
+  .dot{ width:6px; height:6px; border-radius:50%; background:var(--greendot); }
+  .panel__label{ font-size:12px; color:var(--t3); }
+  .panel__figure{ font-family:'InterLocal',monospace; font-size:30px; letter-spacing:-.01em; }
+  .panel__figure .cents{ font-size:18px; color:var(--t3); }
+  .panel__rows{ display:flex; flex-direction:column; }
+  .prow{ display:flex; align-items:center; gap:12px; padding:9px 0; border-bottom:1px solid var(--bg-2); font-size:14px; }
+  .prow:last-child{ border-bottom:0; }
+  .ava{ width:24px; height:24px; flex:none; display:inline-flex; align-items:center; justify-content:center; background:var(--bg-2); border:1px solid var(--border); border-radius:7px; font-size:12px; font-weight:600; color:var(--t2); }
+  .pname{ flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .pval{ font-family:'InterLocal',monospace; font-size:14px; }
+  .panel__ai{ background:var(--bg-hero); border:1px solid var(--border); border-radius:12px; padding:11px 14px; font-size:12px; color:var(--t2); display:flex; align-items:center; gap:8px; }
+  .ai-dot{ width:7px; height:7px; border-radius:50%; background:var(--blue); }
+
+  /* =========================================================
+     THE 10 LINE MOTIFS  (all use the brand black --line)
+     ========================================================= */
+
+  /* 1 — Ledger: horizontal hairlines (accounting paper) */
+  .bg--ledger{ background-image: repeating-linear-gradient(to bottom, transparent 0 31px, var(--line) 31px 32px); }
+
+  /* 2 — Columns: vertical hairlines (spreadsheet) */
+  .bg--columns{ background-image: repeating-linear-gradient(to right, transparent 0 55px, rgba(18,17,15,.05) 55px 56px); }
+
+  /* 3 — Grid: fine graph paper */
+  .bg--grid{ background-image:
+      repeating-linear-gradient(to bottom, transparent 0 31px, rgba(18,17,15,.04) 31px 32px),
+      repeating-linear-gradient(to right,  transparent 0 31px, rgba(18,17,15,.04) 31px 32px); }
+
+  /* 4 — Diagonal hatch: 45° hairlines */
+  .bg--hatch{ background-image: repeating-linear-gradient(45deg, transparent 0 15px, rgba(18,17,15,.04) 15px 16px); }
+
+  /* 6 — Dot grid: line motif distilled to nodes */
+  .bg--dots{ background-image: radial-gradient(rgba(18,17,15,.11) 1px, transparent 1.5px); background-size:26px 26px; }
+
+  /* 10 — Crosshair grid: technical-drawing plus-marks */
+  .bg--cross{
+    background-image:
+      linear-gradient(rgba(18,17,15,.13) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(18,17,15,.13) 1px, transparent 1px);
+    background-size:56px 56px;
+    -webkit-mask-image: repeating-linear-gradient(to right, #000 0 7px, transparent 7px 49px), repeating-linear-gradient(to bottom, #000 0 7px, transparent 7px 49px);
+            mask-image: repeating-linear-gradient(to right, #000 0 7px, transparent 7px 49px), repeating-linear-gradient(to bottom, #000 0 7px, transparent 7px 49px);
+    -webkit-mask-composite: source-in; mask-composite: intersect;
+  }
+
+  /* 7 — Editorial: a single margin rule + a baseline hairline (set via markup) */
+  .bg--editorial .v-rule{ position:absolute; top:0; bottom:0; left:46px; width:1px; background:rgba(18,17,15,.14); }
+  .bg--editorial .h-rule{ position:absolute; left:46px; right:55%; top:46px; height:1px; background:rgba(18,17,15,.12); }
+
+  /* SVG-based motifs: stroke uses the brand ink */
+  .svg-lines{ width:100%; height:100%; display:block; }
+  .svg-lines path, .svg-lines line, .svg-lines polyline{ vector-effect:non-scaling-stroke; }
+
+  /* 8 — animated underline draw  / 9 — animated flow sparkline */
+  @keyframes draw{ to{ stroke-dashoffset:0; } }
+  @keyframes drift{ 0%{ transform:translateX(0);} 100%{ transform:translateX(-40px);} }
+  .anim-draw{ stroke-dasharray:var(--len,1200); stroke-dashoffset:var(--len,1200); animation:draw 2.4s ease forwards; }
+  .anim-drift{ animation:drift 14s ease-in-out infinite alternate; }
+  @media (prefers-reduced-motion:reduce){ .anim-draw{ animation:none; stroke-dashoffset:0; } .anim-drift{ animation:none; } }
+
+  /* underline sits under the H1 inside the copy column */
+  .copy{ position:relative; }
+  .ul-svg{ position:absolute; left:0; bottom:auto; width:230px; height:14px; margin-top:-12px; }
+</style>
+</head>
+<body>
+
+<div class="intro">
+  <h1>Hero line motifs — 10 subtle black-line options</h1>
+  <p>Same hero (Spanish copy + simplified command panel), same tokens. Only the background line treatment changes. All lines are the brand ink <code>#12110F</code> at low opacity. Most are masked with a soft radial so they fade toward the edges and never fight the panel. Numbers 8 &amp; 9 animate on load (respect <code>prefers-reduced-motion</code>).</p>
+  <p style="color:var(--t3)">Pick the one(s) to push into a real <code>vNN</code>. We can also dial opacity / spacing / mask on the winner.</p>
+</div>
+
+<!-- 1 LEDGER -->
+<div class="demo">
+  <div class="demo__label">1 · Ledger lines <span>— horizontal hairlines, the accounting-paper read</span></div>
+  <div class="hero">
+    <div class="hero__bg bg--ledger masked"></div>
+    <div class="container hero__inner">
+      <div class="copy">
+        <h2 class="h1">El centro de inteligencia financiera de tu empresa.</h2>
+        <p class="sub">Bancos en tiempo real, pagos y cobros desde un solo lugar — con agentes de IA que ejecutan y concilian por ti.</p>
+        <a class="cta" href="#">Agenda una demo <svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      </div>
+      <div class="panel">
+        <div class="panel__bar"><div class="panel__actions"><span class="chip chip--black">Pagar</span><span class="chip">Cobrar</span><span class="chip">Conciliar</span></div><span class="panel__live"><span class="dot"></span>En vivo</span></div>
+        <div><div class="panel__label">Saldo total en USD · Todas las entidades</div><div class="panel__figure">$1.545.220<span class="cents">,80</span></div></div>
+        <div class="panel__rows"><div class="prow"><span class="ava">T</span><span class="pname">Tesote Tecnología, C.A.</span><span class="pval">$215.300,00</span></div><div class="prow"><span class="ava">I</span><span class="pname">Tesote IA, C.A.</span><span class="pval">$84.620,00</span></div><div class="prow"><span class="ava">T</span><span class="pname">Tesote Tech, Inc.</span><span class="pval">$292.750,30</span></div></div>
+        <div class="panel__ai"><span class="ai-dot"></span> Tesote IA · armando el <b style="color:var(--ink);font-weight:600">cierre del mes</b> · 87%…</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 2 COLUMNS -->
+<div class="demo">
+  <div class="demo__label">2 · Column rules <span>— vertical hairlines, the spreadsheet read</span></div>
+  <div class="hero">
+    <div class="hero__bg bg--columns masked"></div>
+    <div class="container hero__inner">
+      <div class="copy">
+        <h2 class="h1">El centro de inteligencia financiera de tu empresa.</h2>
+        <p class="sub">Bancos en tiempo real, pagos y cobros desde un solo lugar — con agentes de IA que ejecutan y concilian por ti.</p>
+        <a class="cta" href="#">Agenda una demo <svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      </div>
+      <div class="panel">
+        <div class="panel__bar"><div class="panel__actions"><span class="chip chip--black">Pagar</span><span class="chip">Cobrar</span><span class="chip">Conciliar</span></div><span class="panel__live"><span class="dot"></span>En vivo</span></div>
+        <div><div class="panel__label">Saldo total en USD · Todas las entidades</div><div class="panel__figure">$1.545.220<span class="cents">,80</span></div></div>
+        <div class="panel__rows"><div class="prow"><span class="ava">T</span><span class="pname">Tesote Tecnología, C.A.</span><span class="pval">$215.300,00</span></div><div class="prow"><span class="ava">I</span><span class="pname">Tesote IA, C.A.</span><span class="pval">$84.620,00</span></div><div class="prow"><span class="ava">T</span><span class="pname">Tesote Tech, Inc.</span><span class="pval">$292.750,30</span></div></div>
+        <div class="panel__ai"><span class="ai-dot"></span> Tesote IA · armando el <b style="color:var(--ink);font-weight:600">cierre del mes</b> · 87%…</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 3 GRID -->
+<div class="demo">
+  <div class="demo__label">3 · Graph grid <span>— fine graph-paper, balanced both ways</span></div>
+  <div class="hero">
+    <div class="hero__bg bg--grid masked"></div>
+    <div class="container hero__inner">
+      <div class="copy">
+        <h2 class="h1">El centro de inteligencia financiera de tu empresa.</h2>
+        <p class="sub">Bancos en tiempo real, pagos y cobros desde un solo lugar — con agentes de IA que ejecutan y concilian por ti.</p>
+        <a class="cta" href="#">Agenda una demo <svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      </div>
+      <div class="panel">
+        <div class="panel__bar"><div class="panel__actions"><span class="chip chip--black">Pagar</span><span class="chip">Cobrar</span><span class="chip">Conciliar</span></div><span class="panel__live"><span class="dot"></span>En vivo</span></div>
+        <div><div class="panel__label">Saldo total en USD · Todas las entidades</div><div class="panel__figure">$1.545.220<span class="cents">,80</span></div></div>
+        <div class="panel__rows"><div class="prow"><span class="ava">T</span><span class="pname">Tesote Tecnología, C.A.</span><span class="pval">$215.300,00</span></div><div class="prow"><span class="ava">I</span><span class="pname">Tesote IA, C.A.</span><span class="pval">$84.620,00</span></div><div class="prow"><span class="ava">T</span><span class="pname">Tesote Tech, Inc.</span><span class="pval">$292.750,30</span></div></div>
+        <div class="panel__ai"><span class="ai-dot"></span> Tesote IA · armando el <b style="color:var(--ink);font-weight:600">cierre del mes</b> · 87%…</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 4 DIAGONAL HATCH -->
+<div class="demo">
+  <div class="demo__label">4 · Diagonal hatch <span>— 45° hairlines, quiet movement</span></div>
+  <div class="hero">
+    <div class="hero__bg bg--hatch masked"></div>
+    <div class="container hero__inner">
+      <div class="copy">
+        <h2 class="h1">El centro de inteligencia financiera de tu empresa.</h2>
+        <p class="sub">Bancos en tiempo real, pagos y cobros desde un solo lugar — con agentes de IA que ejecutan y concilian por ti.</p>
+        <a class="cta" href="#">Agenda una demo <svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      </div>
+      <div class="panel">
+        <div class="panel__bar"><div class="panel__actions"><span class="chip chip--black">Pagar</span><span class="chip">Cobrar</span><span class="chip">Conciliar</span></div><span class="panel__live"><span class="dot"></span>En vivo</span></div>
+        <div><div class="panel__label">Saldo total en USD · Todas las entidades</div><div class="panel__figure">$1.545.220<span class="cents">,80</span></div></div>
+        <div class="panel__rows"><div class="prow"><span class="ava">T</span><span class="pname">Tesote Tecnología, C.A.</span><span class="pval">$215.300,00</span></div><div class="prow"><span class="ava">I</span><span class="pname">Tesote IA, C.A.</span><span class="pval">$84.620,00</span></div><div class="prow"><span class="ava">T</span><span class="pname">Tesote Tech, Inc.</span><span class="pval">$292.750,30</span></div></div>
+        <div class="panel__ai"><span class="ai-dot"></span> Tesote IA · armando el <b style="color:var(--ink);font-weight:600">cierre del mes</b> · 87%…</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 5 TOPO CONTOURS -->
+<div class="demo">
+  <div class="demo__label">5 · Topographic contours <span>— organic parallel curves (most "designed")</span></div>
+  <div class="hero">
+    <div class="hero__bg masked" aria-hidden="true">
+      <svg class="svg-lines" viewBox="0 0 1200 460" preserveAspectRatio="xMidYMid slice" fill="none">
+        <g stroke="rgba(18,17,15,.07)" stroke-width="1.2">
+          <path d="M-40 70 C 200 20, 420 120, 660 70 S 1100 20, 1260 80"/>
+          <path d="M-40 130 C 200 80, 420 180, 660 130 S 1100 80, 1260 140"/>
+          <path d="M-40 190 C 200 140, 420 240, 660 190 S 1100 140, 1260 200"/>
+          <path d="M-40 250 C 200 200, 420 300, 660 250 S 1100 200, 1260 260"/>
+          <path d="M-40 310 C 200 260, 420 360, 660 310 S 1100 260, 1260 320"/>
+          <path d="M-40 370 C 200 320, 420 420, 660 370 S 1100 320, 1260 380"/>
+          <path d="M-40 430 C 200 380, 420 480, 660 430 S 1100 380, 1260 440"/>
+        </g>
+      </svg>
+    </div>
+    <div class="container hero__inner">
+      <div class="copy">
+        <h2 class="h1">El centro de inteligencia financiera de tu empresa.</h2>
+        <p class="sub">Bancos en tiempo real, pagos y cobros desde un solo lugar — con agentes de IA que ejecutan y concilian por ti.</p>
+        <a class="cta" href="#">Agenda una demo <svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      </div>
+      <div class="panel">
+        <div class="panel__bar"><div class="panel__actions"><span class="chip chip--black">Pagar</span><span class="chip">Cobrar</span><span class="chip">Conciliar</span></div><span class="panel__live"><span class="dot"></span>En vivo</span></div>
+        <div><div class="panel__label">Saldo total en USD · Todas las entidades</div><div class="panel__figure">$1.545.220<span class="cents">,80</span></div></div>
+        <div class="panel__rows"><div class="prow"><span class="ava">T</span><span class="pname">Tesote Tecnología, C.A.</span><span class="pval">$215.300,00</span></div><div class="prow"><span class="ava">I</span><span class="pname">Tesote IA, C.A.</span><span class="pval">$84.620,00</span></div><div class="prow"><span class="ava">T</span><span class="pname">Tesote Tech, Inc.</span><span class="pval">$292.750,30</span></div></div>
+        <div class="panel__ai"><span class="ai-dot"></span> Tesote IA · armando el <b style="color:var(--ink);font-weight:600">cierre del mes</b> · 87%…</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 6 DOT GRID -->
+<div class="demo">
+  <div class="demo__label">6 · Dot grid <span>— the line motif distilled to nodes</span></div>
+  <div class="hero">
+    <div class="hero__bg bg--dots masked"></div>
+    <div class="container hero__inner">
+      <div class="copy">
+        <h2 class="h1">El centro de inteligencia financiera de tu empresa.</h2>
+        <p class="sub">Bancos en tiempo real, pagos y cobros desde un solo lugar — con agentes de IA que ejecutan y concilian por ti.</p>
+        <a class="cta" href="#">Agenda una demo <svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      </div>
+      <div class="panel">
+        <div class="panel__bar"><div class="panel__actions"><span class="chip chip--black">Pagar</span><span class="chip">Cobrar</span><span class="chip">Conciliar</span></div><span class="panel__live"><span class="dot"></span>En vivo</span></div>
+        <div><div class="panel__label">Saldo total en USD · Todas las entidades</div><div class="panel__figure">$1.545.220<span class="cents">,80</span></div></div>
+        <div class="panel__rows"><div class="prow"><span class="ava">T</span><span class="pname">Tesote Tecnología, C.A.</span><span class="pval">$215.300,00</span></div><div class="prow"><span class="ava">I</span><span class="pname">Tesote IA, C.A.</span><span class="pval">$84.620,00</span></div><div class="prow"><span class="ava">T</span><span class="pname">Tesote Tech, Inc.</span><span class="pval">$292.750,30</span></div></div>
+        <div class="panel__ai"><span class="ai-dot"></span> Tesote IA · armando el <b style="color:var(--ink);font-weight:600">cierre del mes</b> · 87%…</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 7 EDITORIAL -->
+<div class="demo">
+  <div class="demo__label">7 · Editorial rules <span>— one margin line + one baseline hairline (minimal, most premium)</span></div>
+  <div class="hero">
+    <div class="hero__bg bg--editorial" aria-hidden="true"><span class="v-rule"></span><span class="h-rule"></span></div>
+    <div class="container hero__inner">
+      <div class="copy">
+        <h2 class="h1">El centro de inteligencia financiera de tu empresa.</h2>
+        <p class="sub">Bancos en tiempo real, pagos y cobros desde un solo lugar — con agentes de IA que ejecutan y concilian por ti.</p>
+        <a class="cta" href="#">Agenda una demo <svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      </div>
+      <div class="panel">
+        <div class="panel__bar"><div class="panel__actions"><span class="chip chip--black">Pagar</span><span class="chip">Cobrar</span><span class="chip">Conciliar</span></div><span class="panel__live"><span class="dot"></span>En vivo</span></div>
+        <div><div class="panel__label">Saldo total en USD · Todas las entidades</div><div class="panel__figure">$1.545.220<span class="cents">,80</span></div></div>
+        <div class="panel__rows"><div class="prow"><span class="ava">T</span><span class="pname">Tesote Tecnología, C.A.</span><span class="pval">$215.300,00</span></div><div class="prow"><span class="ava">I</span><span class="pname">Tesote IA, C.A.</span><span class="pval">$84.620,00</span></div><div class="prow"><span class="ava">T</span><span class="pname">Tesote Tech, Inc.</span><span class="pval">$292.750,30</span></div></div>
+        <div class="panel__ai"><span class="ai-dot"></span> Tesote IA · armando el <b style="color:var(--ink);font-weight:600">cierre del mes</b> · 87%…</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 8 ANIMATED UNDERLINE -->
+<div class="demo">
+  <div class="demo__label">8 · Animated underline <span>— a black line draws itself under the headline on load</span></div>
+  <div class="hero">
+    <div class="hero__bg bg--ledger masked" style="opacity:.5"></div>
+    <div class="container hero__inner">
+      <div class="copy">
+        <h2 class="h1">El centro de inteligencia financiera de tu empresa.
+          <svg class="ul-svg" viewBox="0 0 230 14" fill="none" aria-hidden="true"><path class="anim-draw" style="--len:236" d="M2 9 C 50 2, 120 13, 228 5" stroke="#12110F" stroke-width="2" stroke-linecap="round"/></svg>
+        </h2>
+        <p class="sub">Bancos en tiempo real, pagos y cobros desde un solo lugar — con agentes de IA que ejecutan y concilian por ti.</p>
+        <a class="cta" href="#">Agenda una demo <svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      </div>
+      <div class="panel">
+        <div class="panel__bar"><div class="panel__actions"><span class="chip chip--black">Pagar</span><span class="chip">Cobrar</span><span class="chip">Conciliar</span></div><span class="panel__live"><span class="dot"></span>En vivo</span></div>
+        <div><div class="panel__label">Saldo total en USD · Todas las entidades</div><div class="panel__figure">$1.545.220<span class="cents">,80</span></div></div>
+        <div class="panel__rows"><div class="prow"><span class="ava">T</span><span class="pname">Tesote Tecnología, C.A.</span><span class="pval">$215.300,00</span></div><div class="prow"><span class="ava">I</span><span class="pname">Tesote IA, C.A.</span><span class="pval">$84.620,00</span></div><div class="prow"><span class="ava">T</span><span class="pname">Tesote Tech, Inc.</span><span class="pval">$292.750,30</span></div></div>
+        <div class="panel__ai"><span class="ai-dot"></span> Tesote IA · armando el <b style="color:var(--ink);font-weight:600">cierre del mes</b> · 87%…</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 9 ANIMATED FLOW SPARKLINE -->
+<div class="demo">
+  <div class="demo__label">9 · Ambient flow line <span>— a faint cash-flow line draws + drifts across the hero (ties to the product)</span></div>
+  <div class="hero">
+    <div class="hero__bg masked" aria-hidden="true">
+      <svg class="svg-lines anim-drift" viewBox="0 0 1240 460" preserveAspectRatio="none" fill="none">
+        <path class="anim-draw" style="--len:1700" d="M-20 360 L120 340 L240 366 L360 300 L480 322 L600 250 L720 274 L840 190 L960 214 L1080 120 L1200 96 L1320 60"
+              stroke="rgba(18,17,15,.16)" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="container hero__inner">
+      <div class="copy">
+        <h2 class="h1">El centro de inteligencia financiera de tu empresa.</h2>
+        <p class="sub">Bancos en tiempo real, pagos y cobros desde un solo lugar — con agentes de IA que ejecutan y concilian por ti.</p>
+        <a class="cta" href="#">Agenda una demo <svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      </div>
+      <div class="panel">
+        <div class="panel__bar"><div class="panel__actions"><span class="chip chip--black">Pagar</span><span class="chip">Cobrar</span><span class="chip">Conciliar</span></div><span class="panel__live"><span class="dot"></span>En vivo</span></div>
+        <div><div class="panel__label">Saldo total en USD · Todas las entidades</div><div class="panel__figure">$1.545.220<span class="cents">,80</span></div></div>
+        <div class="panel__rows"><div class="prow"><span class="ava">T</span><span class="pname">Tesote Tecnología, C.A.</span><span class="pval">$215.300,00</span></div><div class="prow"><span class="ava">I</span><span class="pname">Tesote IA, C.A.</span><span class="pval">$84.620,00</span></div><div class="prow"><span class="ava">T</span><span class="pname">Tesote Tech, Inc.</span><span class="pval">$292.750,30</span></div></div>
+        <div class="panel__ai"><span class="ai-dot"></span> Tesote IA · armando el <b style="color:var(--ink);font-weight:600">cierre del mes</b> · 87%…</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 10 CROSSHAIR GRID -->
+<div class="demo">
+  <div class="demo__label">10 · Crosshair grid <span>— technical-drawing plus-marks at intersections</span></div>
+  <div class="hero">
+    <div class="hero__bg bg--cross masked"></div>
+    <div class="container hero__inner">
+      <div class="copy">
+        <h2 class="h1">El centro de inteligencia financiera de tu empresa.</h2>
+        <p class="sub">Bancos en tiempo real, pagos y cobros desde un solo lugar — con agentes de IA que ejecutan y concilian por ti.</p>
+        <a class="cta" href="#">Agenda una demo <svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      </div>
+      <div class="panel">
+        <div class="panel__bar"><div class="panel__actions"><span class="chip chip--black">Pagar</span><span class="chip">Cobrar</span><span class="chip">Conciliar</span></div><span class="panel__live"><span class="dot"></span>En vivo</span></div>
+        <div><div class="panel__label">Saldo total en USD · Todas las entidades</div><div class="panel__figure">$1.545.220<span class="cents">,80</span></div></div>
+        <div class="panel__rows"><div class="prow"><span class="ava">T</span><span class="pname">Tesote Tecnología, C.A.</span><span class="pval">$215.300,00</span></div><div class="prow"><span class="ava">I</span><span class="pname">Tesote IA, C.A.</span><span class="pval">$84.620,00</span></div><div class="prow"><span class="ava">T</span><span class="pname">Tesote Tech, Inc.</span><span class="pval">$292.750,30</span></div></div>
+        <div class="panel__ai"><span class="ai-dot"></span> Tesote IA · armando el <b style="color:var(--ink);font-weight:600">cierre del mes</b> · 87%…</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="intro" style="padding-bottom:60px">
+  <p style="color:var(--t3)">Not shown but easy to add: a corner-bracket frame, radiating lines from behind the panel, or a hatch that only fills the panel's "shadow" zone. Say which number wins and I'll tune + push it into a <code>vNN</code>.</p>
+</div>
+
+</body>
+</html>

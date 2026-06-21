@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Chapter gallery v1 — paneles de producto: 3 opciones × 5 productos</title>
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="preload" href="current/assets/inter/inter-latin-0555e090.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="current/assets/aspekta/AspektaVF-36354009.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="current/assets/fontawesome/css/all.min-8e150040.css">
+  <link rel="stylesheet" href="current/assets/admin-1f3f92b5.css">
+  <link rel="stylesheet" href="current/assets/application-23a5d970.css">
+
+  <style>
+    :root {
+      --bg-base: #FFFFFF;
+      --bg-surface-1: var(--tesote-gray-25);
+      --bg-surface-2: var(--tesote-gray-50);
+      --bg-surface-3: var(--tesote-gray-100);
+      --border-subtle: #E8E3DA;
+      --border-strong: #DCD6CB;
+      --text-primary: #12110F;
+      --text-secondary: var(--tesote-gray-600);
+      --text-muted: #635D55;
+      --text-subtle: #857D73;
+      --accent: #1661E2;
+      --accent-soft: #EEF8FF;
+      --shadow-sm: 0 1px 2px rgba(18, 17, 15, 0.04);
+      --shadow-md: 0 4px 12px rgba(18, 17, 15, 0.08);
+      --shadow-lg: 0 24px 48px rgba(18, 17, 15, 0.12);
+    }
+    body { background: #FFFFFF; color: var(--text-primary); }
+
+    .gal { max-inline-size: 1280px; margin-inline: auto; padding: var(--space-12) var(--space-6) var(--space-20); }
+    .gal__header { max-inline-size: 74ch; margin-bottom: var(--space-8); }
+    .gal__title { font-family: var(--font-display); font-size: var(--fs-3xl); font-weight: var(--fw-semi); letter-spacing: var(--tracking-tight); margin: 0 0 var(--space-3); }
+    .gal__sub { color: var(--text-muted); line-height: var(--lh-normal); margin: 0; }
+    .product-head {
+      font-family: var(--font-display); font-size: var(--fs-2xl); font-weight: var(--fw-semi);
+      letter-spacing: var(--tracking-tight); margin: var(--space-12) 0 var(--space-2);
+      padding-top: var(--space-8); border-top: 2px solid var(--text-primary);
+    }
+    .product-sub { color: var(--text-muted); font-size: var(--fs-sm); margin: 0 0 var(--space-6); }
+    .gal__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-6); }
+    @media (max-width: 1100px) { .gal__grid { grid-template-columns: 1fr; } }
+    .variant__meta { display: flex; align-items: baseline; gap: var(--space-2); margin-bottom: var(--space-2); }
+    .variant__letter {
+      flex: none; inline-size: 24px; block-size: 24px; border-radius: var(--radius-pill);
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--text-primary); color: #fff;
+      font-family: var(--font-mono); font-size: var(--fs-xs); position: relative; top: 4px;
+    }
+    .variant__name { font-family: var(--font-display); font-size: var(--fs-base); font-weight: var(--fw-semi); }
+    .variant__story { font-size: var(--fs-xs); color: var(--text-muted); margin: 0 0 var(--space-3); line-height: var(--lh-normal); min-block-size: 3em; }
+    .stage { display: flex; align-items: stretch; justify-content: center; }
+
+    /* ===== Standardized chapter panel frame — SAME for all products ===== */
+    .cp {
+      background: var(--bg-surface-2);
+      border-radius: var(--radius-2xl);
+      padding: var(--space-8);
+      display: flex; flex-direction: column; gap: var(--space-3);
+      justify-content: center;
+      min-block-size: 400px;
+      inline-size: 100%;
+    }
+    .cp--dark { background: #12110F; border: 1px solid #34322E; }
+    .cp-note { font-size: var(--fs-xs); color: var(--text-subtle); text-align: center; margin-top: var(--space-1); }
+    .cp--dark .cp-note { color: #857D73; }
+
+    /* Lunour ui-card */
+    .uc {
+      background: #FFFFFF; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md); padding: var(--space-4) var(--space-5);
+      display: flex; flex-direction: column; gap: var(--space-2);
+    }
+    .cp--dark .uc { background: #1A1917; border-color: #34322E; box-shadow: none; }
+    .uc-label { font-size: var(--fs-xs); color: var(--text-subtle); }
+    .cp--dark .uc-label { color: #857D73; }
+    .uc-figure { font-family: var(--font-mono); font-size: var(--fs-2xl); color: var(--text-primary); font-variant-numeric: tabular-nums; }
+    .cp--dark .uc-figure { color: #FFFFFF; }
+
+    .chip {
+      display: flex; align-items: center; gap: var(--space-2);
+      background: var(--bg-surface-1); border: 1px solid var(--border-subtle); border-radius: var(--radius-md);
+      padding: var(--space-2) var(--space-3); font-size: var(--fs-xs); color: var(--text-secondary);
+    }
+    .cp--dark .chip { background: #232220; border-color: #34322E; color: #C7C0B5; }
+    .chip-label { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .chip-value { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--text-primary); font-variant-numeric: tabular-nums; }
+    .cp--dark .chip-value { color: #FFFFFF; }
+    .dot { inline-size: 6px; block-size: 6px; border-radius: var(--radius-pill); background: #1A8C5B; flex: none; }
+
+    /* Stripe-style rectangular pills (v16 convention) */
+    .pill {
+      font-size: 0.7rem; font-weight: var(--fw-medium);
+      color: #0F6E45; background: #D6E8D5;
+      border-radius: 4px; padding: 1px var(--space-2); flex: none; white-space: nowrap;
+    }
+    .pill--accent { color: #184EB5; background: #E4ECF7; }
+    .pill--warn { color: #8A6400; background: #F7EDD0; }
+
+    .match { display: flex; justify-content: center; padding: 1px 0; }
+    .steps { display: flex; flex-direction: column; gap: var(--space-2); }
+    .step { display: flex; align-items: baseline; gap: var(--space-3); font-size: var(--fs-xs); color: var(--text-secondary); }
+    .step i { flex: none; font-size: var(--fs-xs); color: #1A8C5B; position: relative; top: 1px; inline-size: 14px; text-align: center; }
+    .step--pending { color: var(--text-subtle); }
+    .step--pending i { color: var(--text-subtle); }
+    .step--working i { color: var(--accent); }
+
+    .banks { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+    .bank {
+      display: inline-flex; align-items: center; gap: var(--space-2);
+      background: #FFFFFF; border: 1px solid var(--border-subtle); border-radius: var(--radius-md);
+      padding: var(--space-1) var(--space-3); font-size: var(--fs-xs); color: var(--text-secondary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .paybtn {
+      display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+      background: var(--accent); color: #FFFFFF; border-radius: var(--radius-md);
+      font-size: var(--fs-sm); font-weight: var(--fw-medium); padding: var(--space-2) var(--space-4);
+    }
+    .bubble { font-size: var(--fs-xs); line-height: var(--lh-normal); border-radius: var(--radius-md); padding: var(--space-2) var(--space-3); max-inline-size: 94%; }
+    .bubble--user { align-self: flex-end; background: var(--accent); color: #fff; border-end-end-radius: var(--radius-xs); }
+    .bubble--ai { align-self: flex-start; background: #232220; border: 1px solid #34322E; color: #E7E5E0; border-end-start-radius: var(--radius-xs); }
+    .bubble--ai .chip-value { display: inline; color: #FFFFFF; }
+    .ai-actions { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+    .ai-action {
+      display: inline-flex; align-items: center; gap: var(--space-2);
+      font-size: var(--fs-xs); color: #E7E5E0;
+      background: #232220; border: 1px solid #4A4843;
+      border-radius: var(--radius-md); padding: var(--space-2) var(--space-3);
+    }
+    .ai-action i { color: var(--tesote-blue-300); }
+    .feed { display: flex; flex-direction: column; gap: var(--space-2); }
+    .feed-item { display: flex; align-items: baseline; gap: var(--space-3); font-size: var(--fs-xs); color: #C7C0B5; }
+    .feed-item i { color: #24AD72; flex: none; inline-size: 14px; text-align: center; position: relative; top: 1px; }
+    .feed-item i.is-working { color: var(--tesote-blue-300); }
+    .feed-item b { color: #FFFFFF; }
+    .progress { block-size: 5px; border-radius: var(--radius-pill); background: var(--bg-surface-3); overflow: hidden; flex: 1; }
+    .progress > span { display: block; block-size: 100%; inline-size: 87%; background: var(--accent); border-radius: var(--radius-pill); }
+    .sparkmini { inline-size: 100%; block-size: 48px; display: block; }
+  </style>
+</head>
+<body>
+  <div class="gal">
+    <header class="gal__header">
+      <h1 class="gal__title">Paneles de capítulo — 3 opciones por producto</h1>
+      <p class="gal__sub">Marco estandarizado para los 5 capítulos: misma altura (400px), mismo fondo, 2 tarjetas + 1 nota al pie. Lo que cambia es la historia adentro. Elige una letra por producto (p. ej. «Connect B, Pagos A, Negocios C…») y armo la v22.</p>
+    </header>
+
+    <!-- ================= CONNECT ================= -->
+    <h2 class="product-head">1 · Connect</h2>
+    <p class="product-sub">«Ve todo. Sin entrar a ningún portal.» — panel derecho del primer capítulo.</p>
+    <div class="gal__grid">
+
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__letter">A</span><span class="variant__name">Posición + movimiento vivo</span></div>
+        <p class="variant__story">La actual, alineada a las reglas nuevas: USD protagonista, cuentas sin nombres de banco, movimiento categorizado debajo.</p>
+        <div class="stage">
+          <div class="cp" aria-hidden="true">
+            <div class="uc">
+              <div class="uc-label">Posición consolidada · USD</div>
+              <div class="uc-figure">$1.545.220,80</div>
+              <div class="chip"><span class="dot"></span><span class="chip-label">Cuenta Operativa</span><span class="chip-value">Bs. 18.245.709</span></div>
+              <div class="chip"><span class="dot"></span><span class="chip-label">Cuenta Nómina</span><span class="chip-value">Bs. 6.420.330</span></div>
+              <div class="chip"><span class="dot"></span><span class="chip-label">Cuenta en USD</span><span class="chip-value">$84.210</span></div>
+            </div>
+            <div class="uc">
+              <div class="uc-label">Transferencia recibida · hace 2 min</div>
+              <div class="chip"><span class="chip-label">Seguros Crecer</span><span class="chip-value">Bs. 312.500</span></div>
+              <div style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
+                <span class="pill pill--accent">Categoría · Cobranzas</span>
+                <span class="pill">Contraparte identificada</span>
+              </div>
+            </div>
+            <p class="cp-note">+120 bancos · VE · Panamá · RD · EE.&nbsp;UU.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__letter">B</span><span class="variant__name">El muro de bancos</span></div>
+        <p class="variant__story">El moat literal: la cuadrícula de bancos en vivo que nadie más puede renderizar. Posición arriba, bancos abajo.</p>
+        <div class="stage">
+          <div class="cp" aria-hidden="true">
+            <div class="uc">
+              <div class="uc-label">Posición consolidada · USD · En vivo</div>
+              <div class="uc-figure">$1.545.220,80</div>
+            </div>
+            <div class="uc">
+              <div class="uc-label">Conectado ahora</div>
+              <div class="banks">
+                <span class="bank"><span class="dot"></span>Banesco</span>
+                <span class="bank"><span class="dot"></span>Mercantil</span>
+                <span class="bank"><span class="dot"></span>BNC</span>
+                <span class="bank"><span class="dot"></span>Provincial</span>
+                <span class="bank"><span class="dot"></span>Banco de Venezuela</span>
+                <span class="bank"><span class="dot"></span>Banesco Panamá</span>
+                <span class="bank"><span class="dot"></span>BHD</span>
+                <span class="bank"><span class="dot"></span>Chase</span>
+                <span class="bank">+112 más</span>
+              </div>
+            </div>
+            <p class="cp-note">VE · Panamá · RD · EE.&nbsp;UU. · Bs y USD nativo</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__letter">C</span><span class="variant__name">La transacción inteligente</span></div>
+        <p class="variant__story">Una sola transacción abierta con todo lo que Tesote sabe de ella: contraparte, categoría, historial. La profundidad como argumento.</p>
+        <div class="stage">
+          <div class="cp" aria-hidden="true">
+            <div class="uc">
+              <div class="uc-label">Transferencia recibida · Cuenta Operativa</div>
+              <div class="uc-figure" style="font-size: var(--fs-xl);">Bs. 312.500,00</div>
+              <div class="chip"><span class="chip-label">Contraparte</span><span class="chip-value">Seguros Crecer</span></div>
+              <div class="chip"><span class="chip-label">Categoría</span><span class="pill pill--accent">Cobranzas</span></div>
+              <div class="chip"><span class="chip-label">Similares este mes</span><span class="chip-value">12 · Bs. 3,7M</span></div>
+              <div class="chip"><span class="chip-label">vs. mes pasado</span><span class="chip-value" style="color: #0F6E45;">+18%</span></div>
+            </div>
+            <div class="uc">
+              <div class="uc-label">Todo llega así — sin que nadie lo toque</div>
+              <div style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
+                <span class="pill">Categorizada</span>
+                <span class="pill">Contraparte identificada</span>
+                <span class="pill pill--accent">Notas en equipo</span>
+              </div>
+            </div>
+            <p class="cp-note">+120 bancos · VE · Panamá · RD · EE.&nbsp;UU.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ================= PAGOS ================= -->
+    <h2 class="product-head">2 · Pagos</h2>
+    <p class="product-sub">«Paga sin entrar al portal de cada banco.»</p>
+    <div class="gal__grid">
+
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__letter">A</span><span class="variant__name">Orden + lote</span></div>
+        <p class="variant__story">La actual, igualada al marco: orden ejecutada por API + lote programado, con nota del refrán.</p>
+        <div class="stage">
+          <div class="cp" aria-hidden="true">
+            <div class="uc">
+              <div class="uc-label">Orden de pago</div>
+              <div class="chip"><span class="chip-label">Pago a proveedor</span><span class="chip-value">$12.840,00</span></div>
+              <div class="chip"><span class="chip-label">Ejecutado por API bancaria</span><span class="pill">Conciliado</span></div>
+            </div>
+            <div class="uc">
+              <div class="uc-label">Lote de pagos · #88</div>
+              <div class="chip"><span class="chip-label">23 proveedores · validados contra órdenes</span><span class="pill pill--accent">Programado</span></div>
+              <div class="chip"><span class="chip-label">Total del lote</span><span class="chip-value">$48.250,00</span></div>
+            </div>
+            <p class="cp-note">Conciliado en el momento en que se ejecuta</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__letter">B</span><span class="variant__name">El pipeline del pago</span></div>
+        <p class="variant__story">Un lote moviéndose por sus pasos: validado → aprobado → ejecutado → al libro. El gobierno del dinero como visual.</p>
+        <div class="stage">
+          <div class="cp" aria-hidden="true">
+            <div class="uc">
+              <div class="uc-label">Lote #88 · 23 proveedores</div>
+              <div class="uc-figure" style="font-size: var(--fs-xl);">$48.250,00</div>
+              <div class="steps">
+                <div class="step"><i class="fa-solid fa-circle-check"></i><span>Validado contra facturas y retenciones</span></div>
+                <div class="step"><i class="fa-solid fa-circle-check"></i><span>Aprobado por la directora de finanzas</span></div>
+                <div class="step step--working"><i class="fa-solid fa-circle-notch fa-spin"></i><span>Ejecutando por API bancaria…</span></div>
+                <div class="step step--pending"><i class="fa-regular fa-circle"></i><span>Asiento en tu ERP — se registra solo</span></div>
+              </div>
+            </div>
+            <div class="uc">
+              <div class="chip"><span class="chip-label">Pago anterior · #87</span><span class="chip-value">$31.900,00</span><span class="pill">Conciliado</span></div>
+            </div>
+            <p class="cp-note">Sin entrar al portal de ningún banco</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__letter">C</span><span class="variant__name">Aprobar desde donde estés</span></div>
+        <p class="variant__story">El momento humano: el pago llega listo y validado, tú solo apruebas. Control sin fricción.</p>
+        <div class="stage">
+          <div class="cp" aria-hidden="true">
+            <div class="uc">
+              <div class="uc-label">Esperando tu aprobación</div>
+              <div class="chip"><span class="chip-label">Nómina · 48 personas</span><span class="chip-value">Bs. 2.420.000</span><span class="pill pill--warn">Aprobar</span></div>
+              <div class="chip"><span class="chip-label">Lote #88 · 23 proveedores</span><span class="chip-value">$48.250,00</span><span class="pill pill--warn">Aprobar</span></div>
+              <span class="paybtn" style="align-self: flex-start; margin-top: var(--space-1);"><i class="fa-solid fa-check"></i>Aprobar y ejecutar</span>
+            </div>
+            <div class="uc">
+              <div class="uc-label">Ejecutados hoy</div>
+              <div class="chip"><span class="chip-label">3 pagos · por API bancaria</span><span class="chip-value">$44.740,00</span><span class="pill">Conciliado</span></div>
+            </div>
+            <p class="cp-note">Validado contra facturas antes de llegar a ti</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ================= NEGOCIOS ================= -->
+    <h2 class="product-head">3 · Negocios</h2>
+    <p class="product-sub">«Envía un link de pago con la factura adentro.» — hoy es el panel más flaco de la página.</p>
+    <div class="gal__grid">
+
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__letter">A</span><span class="variant__name">El link + te pagaron</span></div>
+        <p class="variant__story">El link como tarjeta (factura adentro, botón de pago) y la notificación de cobro debajo. La experiencia de ambos lados.</p>
+        <div class="stage">
+          <div class="cp" aria-hidden="true">
+            <div class="uc">
+              <div class="uc-label">Link de pago · Factura #2210</div>
+              <div class="uc-figure" style="font-size: var(--fs-xl);">Bs. 312.500,00</div>
+              <div class="chip"><span class="chip-label">Vence 15 jun · Pago móvil, transferencia o tarjeta</span></div>
+              <span class="paybtn" style="align-self: flex-start;">Pagar ahora</span>
+            </div>
+            <div class="uc">
+              <div class="uc-label">Te pagaron · hace 2 min</div>
+              <div class="chip"><span class="chip-label">Factura #2210 · Cliente pagó por link</span><span class="pill">Conciliado</span></div>
+            </div>
+            <p class="cp-note">Te pagan — y no hay nada que conciliar</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__letter">B</span><span class="variant__name">La vida del link</span></div>
+        <p class="variant__story">Timeline del cobro: enviado → abierto → pagado → conciliado. El cobro que se persigue solo.</p>
+        <div class="stage">
+          <div class="cp" aria-hidden="true">
+            <div class="uc">
+              <div class="uc-label">Factura #2210 · Bs. 312.500,00</div>
+              <div class="steps">
+                <div class="step"><i class="fa-solid fa-circle-check"></i><span>Link enviado al cliente · lun 9:00 am</span></div>
+                <div class="step"><i class="fa-solid fa-circle-check"></i><span>Abierto · lun 9:42 am</span></div>
+                <div class="step"><i class="fa-solid fa-circle-check"></i><span>Pagado por pago móvil · lun 10:15 am</span></div>
+                <div class="step"><i class="fa-solid fa-circle-check"></i><span>Conciliado y registrado en tu ERP · automático</span></div>
+              </div>
+            </div>
+            <div class="uc">
+              <div class="uc-label">Este mes</div>
+              <div class="chip"><span class="chip-label">64 cobros por link</span><span class="chip-value">Bs. 18.840.000</span><span class="pill">Todo conciliado</span></div>
+            </div>
+            <p class="cp-note">Sin recordatorios manuales, sin cruzar nada</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__letter">C</span><span class="variant__name">Cobra en automático</span></div>
+        <p class="variant__story">El nivel superior: suscripciones que facturan y cobran solas cada ciclo. Para el que factura recurrente.</p>
+        <div class="stage">
+          <div class="cp" aria-hidden="true">
+            <div class="uc">
+              <div class="uc-label">Suscripciones · facturan esta semana</div>
+              <div class="uc-figure" style="font-size: var(--fs-xl);">Bs. 18.840.000</div>
+              <div class="chip"><span class="chip-label">Avodon, C.A. · mar 13</span><span class="chip-value">Bs. 4.250.000</span></div>
+              <div class="chip"><span class="chip-label">Aragua, C.A. · jue 14</span><span class="chip-value">Bs. 1.890.000</span></div>
+              <div class="chip"><span class="chip-label">Maralak Industrial · vie 16</span><span class="chip-value">Bs. 2.420.000</span></div>
+            </div>
+            <div class="uc">
+              <div class="chip"><span class="chip-label">Factura → link → cobro → libro</span><span class="pill">Sin tocar nada</span></div>
+            </div>
+            <p class="cp-note">Cada ciclo se factura, se cobra y se concilia solo</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ================= CONTABILIDAD ================= -->
+    <h2 class="product-head">4 · Contabilidad automática</h2>
+    <p class="product-sub">«Tus libros se llevan solos.»</p>
+    <div class="gal__grid">
+
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__letter">A</span><span class="variant__name">Match + devuelto al ERP</span></div>
+        <p class="variant__story">La actual igualada: el cruce banco↔ERP con el conector verde, y lo que Tesote devuelve ya registrado.</p>
+        <div class="stage">
+          <div class="cp" aria-hidden="true">
+            <div class="uc">
+              <div class="uc-label">Match automático</div>
+              <div class="chip"><span class="chip-label">Banco · Transferencia</span><span class="chip-value">$4.520,00</span></div>
+              <div class="match">
+                <svg width="16" height="14" viewBox="0 0 16 14" fill="none">
+                  <path d="M8 0v14" stroke="#24AD72" stroke-width="1.5" stroke-dasharray="2 2"/>
+                  <circle cx="8" cy="7" r="5" fill="#FFFFFF" stroke="#24AD72" stroke-width="1.5"/>
+                  <path d="M5.8 7l1.5 1.5L10.2 5.6" stroke="#24AD72" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="chip"><span class="chip-label">ERP · Factura #1042</span><span class="pill">Conciliado</span></div>
+            </div>
+            <div class="uc">
+              <div class="uc-label">Devuelto a tu ERP</div>
+              <div class="chip"><span class="chip-label">Partida conciliada · #1042</span><span class="pill">Registrada</span></div>
+              <div class="chip"><span class="chip-label">Proveedor nuevo · creado</span><span class="pill pill--accent">Sincronizado</span></div>
+            </div>
+            <p class="cp-note">En ambas direcciones — sube enriquecido, baja conciliado</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__letter">B</span><span class="variant__name">El cierre en vivo</span></div>
+        <p class="variant__story">El cierre del día como proceso corriendo: partidas que avanzan con barra de progreso. El proyecto que dejó de serlo.</p>
+        <div class="stage">
+          <div class="cp" aria-hidden="true">
+            <div class="uc">
+              <div class="uc-label">Cierre del día · hoy</div>
+              <div class="steps">
+                <div class="step"><i class="fa-solid fa-circle-check"></i><span><b>142 movimientos</b> conciliados contra el ERP</span></div>
+                <div class="step"><i class="fa-solid fa-circle-check"></i><span><b>36 comprobantes de retención</b> preparados</span></div>
+                <div class="step step--working"><i class="fa-solid fa-circle-notch fa-spin"></i><span>Generando partidas del día…</span></div>
+              </div>
+              <div style="display: flex; align-items: center; gap: var(--space-3); margin-top: var(--space-1);">
+                <div class="progress"><span></span></div>
+                <span class="uc-label" style="color: var(--accent);">87%</span>
+              </div>
+            </div>
+            <div class="uc">
+              <div class="chip"><span class="chip-label">Cierre de ayer</span><span class="pill">Enviado al ERP</span></div>
+            </div>
+            <p class="cp-note">El cierre deja de ser un proyecto</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__letter">C</span><span class="variant__name">Documento → asiento</span></div>
+        <p class="variant__story">El antes/después del contador: llega una factura en PDF, sale un asiento registrado. La bandeja como puente.</p>
+        <div class="stage">
+          <div class="cp" aria-hidden="true">
+            <div class="uc">
+              <div class="uc-label">Llega · Bandeja</div>
+              <div class="chip"><i class="fa-regular fa-file-lines" style="color: var(--text-subtle);"></i><span class="chip-label">factura-avodon-mayo.pdf</span><span class="pill pill--accent">Extraída</span></div>
+              <div class="chip"><span class="chip-label">Proveedor, RIF, montos, retenciones</span><span class="pill pill--warn">Tu visto bueno</span></div>
+            </div>
+            <div class="match">
+              <svg width="16" height="14" viewBox="0 0 16 14" fill="none">
+                <path d="M8 0v14" stroke="#24AD72" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <circle cx="8" cy="7" r="5" fill="#FFFFFF" stroke="#24AD72" stroke-width="1.5"/>
+                <path d="M5.8 7l1.5 1.5L10.2 5.6" stroke="#24AD72" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="uc">
+              <div class="uc-label">Sale · Tu ERP</div>
+              <div class="chip"><span class="chip-label">Factura de proveedor · Avodon, C.A.</span><span class="chip-value">Bs. 4.250.000</span><span class="pill">Registrada</span></div>
+            </div>
+            <p class="cp-note">Del PDF al libro, sin transcribir nada</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ================= TESOTE AI ================= -->
+    <h2 class="product-head">5 · Tesote AI <span style="font-size: var(--fs-sm); color: var(--text-subtle); font-weight: var(--fw-regular);">(registro oscuro — el crescendo)</span></h2>
+    <p class="product-sub">«Todo conectado. Ahora, inteligente.»</p>
+    <div class="gal__grid">
+
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__letter">A</span><span class="variant__name">Chat + acciones</span></div>
+        <p class="variant__story">La actual igualada: pregunta → respuesta con cifras → guárdalo como tuyo. El «show, don't declare» del doc.</p>
+        <div class="stage">
+          <div class="cp cp--dark" aria-hidden="true">
+            <div class="bubble bubble--user">¿Cómo cerramos la semana contra la pasada?</div>
+            <div class="bubble bubble--ai">Cobraste <span class="chip-value">$48.230</span> (+12%) y pagaste <span class="chip-value">$31.900</span>. La diferencia viene de cobranzas: 38 facturas pagadas por link.</div>
+            <div class="ai-actions">
+              <span class="ai-action"><i class="fa-solid fa-bookmark"></i>Guardar como mi reporte</span>
+              <span class="ai-action"><i class="fa-solid fa-arrows-rotate"></i>Correr cada lunes</span>
+            </div>
+            <p class="cp-note">Con tus bancos, tus pagos y tu ERP ya conectados</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__letter">B</span><span class="variant__name">El agente nocturno</span></div>
+        <p class="variant__story">Eco del hero: el feed de lo que la IA hizo sola, en oscuro. Cierra el círculo que el hero abre.</p>
+        <div class="stage">
+          <div class="cp cp--dark" aria-hidden="true">
+            <div class="uc">
+              <div class="uc-label">Mientras dormías</div>
+              <div class="feed">
+                <div class="feed-item"><i class="fa-solid fa-circle-check"></i><span>Cierre de ayer enviado al ERP</span></div>
+                <div class="feed-item"><i class="fa-solid fa-circle-check"></i><span><b>142 partidas</b> conciliadas · cero diferencias</span></div>
+                <div class="feed-item"><i class="fa-solid fa-circle-check"></i><span>Recordatorios a <b>9 clientes</b> con saldo vencido</span></div>
+                <div class="feed-item"><i class="fa-solid fa-circle-notch fa-spin is-working"></i><span>Armando el cierre del mes · va 87%…</span></div>
+              </div>
+            </div>
+            <div class="bubble bubble--user">¿Algo que deba ver hoy?</div>
+            <div class="bubble bubble--ai">Sí — una factura duplicada de <span class="chip-value">$7.490</span> que detuve antes del pago. Está esperando tu revisión.</div>
+            <p class="cp-note">Agentes que trabajan con tus datos al día</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__letter">C</span><span class="variant__name">El reporte que se hace solo</span></div>
+        <p class="variant__story">Pediste un reporte una vez — ahora corre cada lunes y te llega armado. La IA como analista de planta.</p>
+        <div class="stage">
+          <div class="cp cp--dark" aria-hidden="true">
+            <div class="uc">
+              <div class="uc-label">Mi reporte semanal · corre cada lunes</div>
+              <div class="uc-figure" style="font-size: var(--fs-xl);">+$16.330 <span style="font-size: var(--fs-xs); color: #857D73;">neto esta semana</span></div>
+              <svg class="sparkmini" viewBox="0 0 280 48" fill="none" preserveAspectRatio="none">
+                <defs><linearGradient id="ai-c" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3B7CF5" stop-opacity="0.4"/><stop offset="100%" stop-color="#3B7CF5" stop-opacity="0"/></linearGradient></defs>
+                <path d="M0 36 L40 31 L80 38 L120 24 L160 28 L200 14 L240 18 L280 8 L280 48 L0 48 Z" fill="url(#ai-c)"/>
+                <path d="M0 36 L40 31 L80 38 L120 24 L160 28 L200 14 L240 18 L280 8" stroke="#3B7CF5" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+              <div class="feed">
+                <div class="feed-item"><i class="fa-solid fa-circle-check"></i><span>Cobros <b>+12%</b> · 38 facturas pagadas por link</span></div>
+                <div class="feed-item"><i class="fa-solid fa-circle-check"></i><span>Mayor gasto: nómina · <b>Bs. 2,4M</b> · en línea con el mes</span></div>
+              </div>
+            </div>
+            <div class="ai-actions">
+              <span class="ai-action"><i class="fa-solid fa-paper-plane"></i>Enviar al equipo</span>
+              <span class="ai-action"><i class="fa-solid fa-arrows-rotate"></i>Corre cada lunes 7 am</span>
+            </div>
+            <p class="cp-note">Lo pediste una vez — ahora es tuyo</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mega-menu styles — 6 options (Tesote)</title>
+<link rel="stylesheet" href="current/assets/fontawesome/css/all.min-8e150040.css">
+<style>
+  @font-face { font-family:'Aspekta'; src:url('current/assets/aspekta/AspektaVF-36354009.woff2') format('woff2'); font-weight:100 900; font-display:swap; }
+  @font-face { font-family:'InterLocal'; src:url('current/assets/inter/inter-latin-0555e090.woff2') format('woff2'); font-weight:100 900; font-display:swap; }
+  :root{
+    --bg-hero:#FCFBF7; --bg-2:#F7F5F0; --ink:#12110F; --t2:#635D55; --t3:#857D73;
+    --border:#E8E3DA; --border-strong:#DCD6CB; --blue:#1661E2;
+  }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:#EDEAE3; font-family:'InterLocal',-apple-system,system-ui,sans-serif; color:var(--ink); }
+  .intro{ max-width:1100px; margin:0 auto; padding:36px 24px 4px; }
+  .intro h1{ font-family:'Aspekta'; font-weight:600; font-size:24px; margin:0 0 6px; }
+  .intro p{ color:var(--t2); font-size:14px; line-height:1.6; margin:0 0 4px; max-width:78ch; }
+
+  .demo{ max-width:1180px; margin:26px auto; padding:0 24px; }
+  .demo__label{ font-family:'Aspekta'; font-weight:600; font-size:13px; margin:0 0 8px; }
+  .demo__label span{ color:var(--t3); font-weight:400; }
+  /* stage = a slice of page so the dropdown overlays real content */
+  .stage{ background:var(--bg-hero); border:1px solid var(--border); border-radius:14px; overflow:visible; position:relative; }
+  .stage__page{ padding:64px 48px 90px; }
+  .stage__h{ font-family:'Aspekta'; font-weight:600; font-size:30px; letter-spacing:-.02em; margin:0 0 10px; max-width:18ch; line-height:1.1; }
+  .stage__p{ color:var(--t2); font-size:15px; max-width:48ch; line-height:1.6; margin:0; }
+
+  /* ---------- shared navbar ---------- */
+  .tnav{ position:relative; display:flex; align-items:center; justify-content:space-between; gap:24px;
+         padding:0 28px; height:64px; background:rgba(252,251,247,.92); border-bottom:1px solid var(--border);
+         border-radius:14px 14px 0 0; }
+  .tnav__brand img{ height:20px; display:block; filter:invert(1); }
+  .tnav__menu{ display:flex; align-items:center; gap:6px; list-style:none; margin:0; padding:0; }
+  .tnav__item{ position:relative; }
+  .tnav__link{ display:inline-flex; align-items:center; gap:7px; font-family:'Aspekta'; font-size:14px; font-weight:500;
+               color:var(--ink); text-decoration:none; padding:9px 13px; border-radius:9px; }
+  .tnav__link .car{ font-size:.55rem; opacity:.55; transition:transform .18s ease; position:relative; top:-1px; }
+  .tnav__item:hover .tnav__link .car, .tnav__item:focus-within .tnav__link .car{ transform:rotate(180deg); }
+  .tnav__right{ display:flex; align-items:center; gap:10px; }
+  .tnav__login{ font-family:'Aspekta'; font-size:13.5px; font-weight:500; color:var(--t2); text-decoration:none; }
+  .tnav__cta{ display:inline-flex; align-items:center; gap:8px; background:var(--blue); color:#fff; font-family:'Aspekta';
+              font-weight:600; font-size:13.5px; padding:9px 16px; border-radius:9px; text-decoration:none; }
+
+  /* ---------- shared mega bones ---------- */
+  .mega{ position:absolute; top:100%; left:50%; z-index:60; display:flex; gap:1.6rem; padding:1.15rem;
+         background:#fff; border:1px solid var(--border); opacity:0; visibility:hidden; pointer-events:none; text-align:left; }
+  .mega::before{ content:""; position:absolute; top:-14px; left:0; right:0; height:14px; }
+  .tnav__item:hover > .mega, .tnav__item:focus-within > .mega{ opacity:1; visibility:visible; pointer-events:auto; }
+  .mcol{ min-width:228px; }
+  .mhead{ font-family:'Aspekta'; font-size:.66rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase;
+          color:var(--t3); padding-bottom:.5rem; border-bottom:1px solid var(--border); margin-bottom:.55rem; }
+  .mitem{ display:flex; align-items:flex-start; gap:.7rem; padding:.5rem .6rem; border-radius:10px; text-decoration:none; }
+  .mico{ inline-size:32px; block-size:32px; flex:none; display:inline-flex; align-items:center; justify-content:center;
+         background:#fff; border:1px solid var(--border); border-radius:8px; color:var(--ink); font-size:.8rem;
+         transition:background .15s ease, color .15s ease, border-color .15s ease; }
+  .mtxt{ display:flex; flex-direction:column; gap:1px; }
+  .mtitle{ font-size:.875rem; font-weight:600; color:var(--ink); font-family:'Aspekta'; }
+  .mdesc{ font-size:.74rem; color:var(--t2); }
+
+  /* =========================================================
+     V1 — Refined card: layered shadow, rise-in, icon fills black on hover
+     ========================================================= */
+  .v1 .mega{ transform:translate(-50%,10px); border-radius:18px;
+             box-shadow:0 18px 50px rgba(18,17,15,.14), 0 2px 8px rgba(18,17,15,.06);
+             transition:opacity .18s cubic-bezier(.21,.8,.35,1), transform .18s cubic-bezier(.21,.8,.35,1), visibility .18s; }
+  .v1 .tnav__item:hover > .mega, .v1 .tnav__item:focus-within > .mega{ transform:translate(-50%,0); }
+  .v1 .mcol + .mcol{ border-left:1px solid var(--border); padding-left:1.6rem; }
+  .v1 .mitem:hover{ background:var(--bg-2); }
+  .v1 .mitem:hover .mico{ background:var(--ink); border-color:var(--ink); color:#fff; }
+  .v1 .tnav__item:hover .tnav__link{ background:var(--bg-2); }
+
+  /* =========================================================
+     V2 — Brex full-width panel: spans the whole bar, slides down
+     ========================================================= */
+  .v2 .tnav__item{ position:static; }
+  .v2 .mega{ left:0; right:0; transform:translateY(-6px); border-radius:0 0 16px 16px; border-top:0;
+             padding:1.6rem 2rem 1.8rem; gap:3rem; justify-content:flex-start;
+             box-shadow:0 30px 60px rgba(18,17,15,.16);
+             transition:opacity .2s ease, transform .2s ease, visibility .2s; }
+  .v2 .tnav__item:hover > .mega, .v2 .tnav__item:focus-within > .mega{ transform:translateY(0); }
+  .v2 .mcol{ min-width:0; flex:1; max-width:330px; }
+  .v2 .mhead{ font-size:.72rem; }
+  .v2 .mitem:hover{ background:var(--bg-2); }
+  .v2 .mitem:hover .mico{ border-color:var(--ink); }
+  .v2 .tnav__item:hover .tnav__link{ background:var(--bg-2); }
+
+  /* =========================================================
+     V3 — Scale from origin: Apple-style, calm
+     ========================================================= */
+  .v3 .mega{ transform:translate(-50%,0) scale(.965); transform-origin:top center; border-radius:16px;
+             box-shadow:0 14px 40px rgba(18,17,15,.12);
+             transition:opacity .16s ease, transform .16s ease, visibility .16s; }
+  .v3 .tnav__item:hover > .mega, .v3 .tnav__item:focus-within > .mega{ transform:translate(-50%,0) scale(1); }
+  .v3 .mitem:hover{ background:var(--bg-2); }
+  .v3 .mitem:hover .mtitle{ color:var(--blue); }
+
+  /* =========================================================
+     V4 — Stagger: panel rises, items cascade in
+     ========================================================= */
+  .v4 .mega{ transform:translate(-50%,12px); border-radius:18px;
+             box-shadow:0 18px 50px rgba(18,17,15,.14);
+             transition:opacity .18s ease, transform .22s cubic-bezier(.21,.8,.35,1), visibility .18s; }
+  .v4 .tnav__item:hover > .mega, .v4 .tnav__item:focus-within > .mega{ transform:translate(-50%,0); }
+  .v4 .mitem{ opacity:0; transform:translateY(7px); transition:opacity .22s ease, transform .22s cubic-bezier(.21,.8,.35,1), background .15s; }
+  .v4 .tnav__item:hover .mitem, .v4 .tnav__item:focus-within .mitem{ opacity:1; transform:none; }
+  .v4 .mitem:nth-child(2){ transition-delay:.03s; } .v4 .mitem:nth-child(3){ transition-delay:.06s; }
+  .v4 .mitem:nth-child(4){ transition-delay:.09s; } .v4 .mitem:nth-child(5){ transition-delay:.12s; }
+  .v4 .mitem:hover{ background:var(--bg-2); }
+  .v4 .mitem:hover .mico{ background:var(--ink); border-color:var(--ink); color:#fff; }
+
+  /* =========================================================
+     V5 — Dark panel: ink menu, ties to the black identity
+     ========================================================= */
+  .v5 .mega{ transform:translate(-50%,10px); border-radius:18px; background:#12110F; border-color:#34322E;
+             box-shadow:0 24px 60px rgba(18,17,15,.35);
+             transition:opacity .18s ease, transform .18s ease, visibility .18s; }
+  .v5 .tnav__item:hover > .mega, .v5 .tnav__item:focus-within > .mega{ transform:translate(-50%,0); }
+  .v5 .mhead{ color:#857D73; border-color:#34322E; }
+  .v5 .mcol + .mcol{ border-left:1px solid #34322E; padding-left:1.6rem; }
+  .v5 .mtitle{ color:#fff; } .v5 .mdesc{ color:#A39C90; }
+  .v5 .mico{ background:#232220; border-color:#4A4843; color:#E7E5E0; }
+  .v5 .mitem:hover{ background:#1F1E1B; }
+  .v5 .mitem:hover .mico{ background:var(--blue); border-color:var(--blue); color:#fff; }
+
+  /* =========================================================
+     V6 — Connected: trigger pill + pointer notch on the panel
+     ========================================================= */
+  .v6 .mega{ transform:translate(-50%,10px); border-radius:16px; margin-top:10px;
+             box-shadow:0 18px 50px rgba(18,17,15,.14);
+             transition:opacity .18s ease, transform .18s ease, visibility .18s; }
+  .v6 .mega::after{ content:""; position:absolute; top:-6px; left:50%; width:12px; height:12px;
+                    background:#fff; border-left:1px solid var(--border); border-top:1px solid var(--border);
+                    transform:translateX(-50%) rotate(45deg); border-radius:2px 0 0 0; }
+  .v6 .tnav__item:hover > .mega, .v6 .tnav__item:focus-within > .mega{ transform:translate(-50%,2px); }
+  .v6 .tnav__item:hover .tnav__link{ background:var(--ink); color:#fff; }
+  .v6 .tnav__item:hover .tnav__link .car{ opacity:1; }
+  .v6 .mitem:hover{ background:var(--bg-2); }
+  .v6 .mitem:hover .mico{ background:var(--ink); border-color:var(--ink); color:#fff; }
+</style>
+</head>
+<body>
+
+<div class="intro">
+  <h1>Mega-menu — 6 opening styles</h1>
+  <p>Same nav, same real items — only the dropdown design/motion changes. Hover <b>Productos</b> / <b>Soluciones</b> / <b>Recursos</b> in each bar. All CSS-only (ports straight into the generator), keyboard-focusable, with a hover bridge so the menu doesn't flicker on the gap.</p>
+  <p style="color:var(--t3)">Pick a winner (or a combo: e.g. V1's panel + V4's stagger) → I bake it into <code style="background:#fff;border:1px solid var(--border);border-radius:5px;padding:1px 6px;font-size:12px">build-pages-v1.py</code> → v57 + all pages.</p>
+</div>
+
+<div id="gallery"></div>
+
+<script>
+const PRODUCTOS = [
+  ['fa-building-columns','Connect','Todos tus bancos, en vivo'],
+  ['fa-money-bill-transfer','Pagos','Aprueba y paga por API bancaria'],
+  ['fa-link','Cobros','Links de pago que entran conciliados'],
+  ['fa-check-double','Conciliación automática','Banco y ERP, cuadrados solos'],
+];
+const PLATAFORMA = [
+  ['fa-wand-magic-sparkles','Tesote AI','Agentes para tus finanzas'],
+  ['fa-plug','Integraciones','Tu ERP, en ambas direcciones'],
+  ['fa-shield-halved','Seguridad','Cifrado, permisos y auditoría'],
+];
+const TAMANO = [
+  ['fa-building','Medianas','Finanzas al día con equipo chico'],
+  ['fa-city','Corporativas','Multi-entidad bajo control'],
+];
+const INDUSTRIA = [
+  ['fa-bag-shopping','Retail y consumo','Cuadre diario multi-tienda'],
+  ['fa-utensils','Alimentos y restaurantes','De la venta diaria al cierre'],
+  ['fa-truck-fast','Distribución y manufactura','Cartera B2B cobrada y cuadrada'],
+  ['fa-umbrella','Seguros','Primas y siniestros conciliados'],
+];
+const PARTNERS = [['fa-handshake','Programa de partners','Integradores, ERPs y software']];
+const RECURSOS = [
+  ['fa-newspaper','Blog','Ideas y guías de finanzas'],
+  ['fa-circle-question','Centro de ayuda','Documentación y soporte'],
+];
+
+const item = ([ic,t,d]) => `<a class="mitem" href="#" onclick="return false">
+  <span class="mico"><i class="fa-solid ${ic}" aria-hidden="true"></i></span>
+  <span class="mtxt"><span class="mtitle">${t}</span><span class="mdesc">${d}</span></span></a>`;
+const colh = (h,items) => `<div class="mcol"><div class="mhead">${h}</div>${items.map(item).join('')}</div>`;
+
+function nav(){
+  const car = '<i class="fa-solid fa-chevron-down car" aria-hidden="true"></i>';
+  const megaProd = `<div class="mega">${colh('Productos',PRODUCTOS)}${colh('Plataforma',PLATAFORMA)}</div>`;
+  const megaSol  = `<div class="mega">${colh('Por tamaño',TAMANO)}${colh('Por industria',INDUSTRIA)}${colh('Partners',PARTNERS)}</div>`;
+  const megaRec  = `<div class="mega">${colh('Recursos',RECURSOS)}</div>`;
+  return `<nav class="tnav">
+    <a class="tnav__brand" href="#" onclick="return false"><img src="current/assets/logos/tesote/text-white-9d9d1f73.svg" alt="Tesote"></a>
+    <ul class="tnav__menu">
+      <li class="tnav__item"><a class="tnav__link" href="#" onclick="return false">Productos ${car}</a>${megaProd}</li>
+      <li class="tnav__item"><a class="tnav__link" href="#" onclick="return false">Soluciones ${car}</a>${megaSol}</li>
+      <li class="tnav__item"><a class="tnav__link" href="#" onclick="return false">Clientes</a></li>
+      <li class="tnav__item"><a class="tnav__link" href="#" onclick="return false">Recursos ${car}</a>${megaRec}</li>
+    </ul>
+    <div class="tnav__right">
+      <a class="tnav__login" href="#" onclick="return false"><i class="fa-solid fa-arrow-right-to-bracket" aria-hidden="true"></i> Acceder</a>
+      <a class="tnav__cta" href="#" onclick="return false">Agenda una demo <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+    </div>
+  </nav>`;
+}
+
+const VARIANTS = [
+  ['v1','Refined card','layered shadow, rise-in 180ms, column divider, icons fill black on hover'],
+  ['v2','Full-width panel (Brex)','dropdown spans the whole bar and slides down — most "platform company"'],
+  ['v3','Scale from origin','Apple-style: scales up from the trigger, titles tint blue on hover'],
+  ['v4','Stagger cascade','panel rises and the items cascade in one after another'],
+  ['v5','Dark panel','ink menu — ties the nav to the black identity, blue icon fill on hover'],
+  ['v6','Connected pill + notch','trigger becomes a black pill, panel points at it with a notch'],
+];
+
+document.getElementById('gallery').innerHTML = VARIANTS.map(([id,t,d]) => `
+  <div class="demo"><div class="demo__label">${id.toUpperCase().replace('V','')} · ${t} <span>— ${d}</span></div>
+    <div class="stage ${id}">${nav()}
+      <div class="stage__page">
+        <h2 class="stage__h">El centro de inteligencia financiera de tu empresa.</h2>
+        <p class="stage__p">Bancos en tiempo real, pagos y cobros desde un solo lugar — con agentes de IA que ejecutan y concilian por ti.</p>
+      </div>
+    </div>
+  </div>`).join('');
+</script>
+</body>
+</html>

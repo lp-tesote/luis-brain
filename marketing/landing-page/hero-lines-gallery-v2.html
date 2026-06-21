@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hero line motifs v2 — Tesote house style (20 options)</title>
+<style>
+  @font-face { font-family:'Aspekta'; src:url('current/assets/aspekta/AspektaVF-36354009.woff2') format('woff2'); font-weight:100 900; font-display:swap; }
+  @font-face { font-family:'InterLocal'; src:url('current/assets/inter/inter-latin-0555e090.woff2') format('woff2'); font-weight:100 900; font-display:swap; }
+
+  :root{
+    --bg-hero:#FCFBF7; --bg-card:#FFFFFF; --bg-2:#F7F5F0;
+    --ink:#12110F; --t2:#635D55; --t3:#857D73;
+    --border:#E8E3DA; --border-strong:#DCD6CB;
+    --blue:#1661E2; --green:#0F6E45; --greendot:#1A8C5B; --radius:18px;
+  }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:#EDEAE3; font-family:'InterLocal',-apple-system,system-ui,sans-serif; color:var(--ink); }
+
+  .intro{ max-width:1100px; margin:0 auto; padding:40px 24px 8px; }
+  .intro h1{ font-family:'Aspekta',sans-serif; font-weight:600; font-size:24px; margin:0 0 6px; }
+  .intro p{ color:var(--t2); font-size:14px; line-height:1.6; margin:0 0 4px; max-width:74ch; }
+  .intro code{ background:#fff; border:1px solid var(--border); border-radius:5px; padding:1px 6px; font-size:12px; }
+
+  .demo{ max-width:1180px; margin:26px auto; padding:0 24px; }
+  .demo__label{ font-family:'Aspekta',sans-serif; font-weight:600; font-size:13px; color:var(--ink); margin:0 0 8px; }
+  .demo__label span{ color:var(--t3); font-weight:400; }
+
+  .hero{ position:relative; overflow:hidden; background:var(--bg-hero); border:1px solid var(--border); border-radius:22px; }
+  .hero__inner{ position:relative; z-index:3; display:grid; grid-template-columns:1.05fr .95fr; gap:48px; align-items:center; padding:56px 52px; min-height:440px; }
+  @media (max-width:900px){ .hero__inner{ grid-template-columns:1fr; } }
+  .hero__bg{ position:absolute; inset:0; z-index:1; pointer-events:none; }
+  .hero__scrim{ position:absolute; inset:0; z-index:2; pointer-events:none;
+    background:radial-gradient(115% 95% at 25% 45%, var(--bg-hero) 26%, rgba(252,251,247,.6) 52%, transparent 76%); }
+
+  .svg-lines{ width:100%; height:100%; display:block; }
+
+  .h1{ font-family:'Aspekta',sans-serif; font-weight:600; font-size:clamp(28px,3vw,42px); line-height:1.07; letter-spacing:-.02em; margin:0 0 18px; }
+  .sub{ font-size:16px; line-height:1.6; color:var(--t2); margin:0 0 26px; max-width:46ch; }
+  .cta{ display:inline-flex; align-items:center; gap:10px; background:var(--blue); color:#fff; font-family:'Aspekta',sans-serif; font-weight:600; font-size:15px; padding:12px 22px; border-radius:11px; text-decoration:none; }
+  .cta svg{ width:14px; height:14px; }
+
+  .panel{ background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); box-shadow:0 24px 48px rgba(18,17,15,.12); padding:22px; display:flex; flex-direction:column; gap:16px; max-width:520px; width:100%; margin-inline:auto; }
+  .panel__bar{ display:flex; align-items:center; justify-content:space-between; padding-bottom:12px; border-bottom:1px solid var(--border); }
+  .panel__actions{ display:flex; gap:8px; }
+  .chip{ font-size:12px; font-weight:500; color:var(--t2); background:#fff; border:1px solid var(--border-strong); border-radius:9px; padding:6px 11px; }
+  .chip--black{ color:#fff; background:var(--ink); border-color:var(--ink); }
+  .panel__live{ display:inline-flex; align-items:center; gap:7px; font-size:12px; font-weight:500; color:var(--green); }
+  .dot{ width:6px; height:6px; border-radius:50%; background:var(--greendot); }
+  .panel__label{ font-size:12px; color:var(--t3); }
+  .panel__figure{ font-family:'InterLocal',monospace; font-size:30px; letter-spacing:-.01em; }
+  .panel__figure .cents{ font-size:18px; color:var(--t3); }
+  .panel__rows{ display:flex; flex-direction:column; }
+  .prow{ display:flex; align-items:center; gap:12px; padding:9px 0; border-bottom:1px solid var(--bg-2); font-size:14px; }
+  .prow:last-child{ border-bottom:0; }
+  .ava{ width:24px; height:24px; flex:none; display:inline-flex; align-items:center; justify-content:center; background:var(--bg-2); border:1px solid var(--border); border-radius:7px; font-size:12px; font-weight:600; color:var(--t2); }
+  .pname{ flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .pval{ font-family:'InterLocal',monospace; font-size:14px; }
+  .panel__ai{ background:var(--bg-hero); border:1px solid var(--border); border-radius:12px; padding:11px 14px; font-size:12px; color:var(--t2); display:flex; align-items:center; gap:8px; }
+  .ai-dot{ width:7px; height:7px; border-radius:50%; background:var(--blue); }
+
+  /* blue axis ticks (image-2 style) */
+  .tick{ position:absolute; z-index:3; bottom:16px; display:flex; flex-direction:column; align-items:center; gap:6px; }
+  .tick--left{ left:52px; } .tick--right{ right:40px; }
+  .tick__bar{ width:2px; height:16px; background:var(--blue); }
+  .tick__lab{ font-family:'Aspekta',sans-serif; font-weight:700; font-size:15px; color:var(--blue); }
+
+  /* blue callout pill for a highlighted bar */
+  .callout{ position:absolute; z-index:3; transform:translate(-50%,-100%); font-family:'Aspekta',sans-serif; font-weight:600; font-size:12px; color:#fff; background:var(--blue); padding:3px 8px; border-radius:6px; white-space:nowrap; }
+
+  /* animation: bars grow up, blue line draws */
+  .gbar{ transform:scaleY(0); transform-box:fill-box; transform-origin:bottom; animation:grow .55s cubic-bezier(.2,.7,.2,1) forwards; }
+  @keyframes grow{ to{ transform:scaleY(1); } }
+  @media (prefers-reduced-motion:reduce){ .gbar{ transform:none; animation:none; } }
+</style>
+</head>
+<body>
+
+<div class="intro">
+  <h1>Hero line motifs v2 — Tesote house style</h1>
+  <p>Built from your two references: <b>vertical bars on a wave envelope</b> (with a single blue line + square cap) and <b>horizontal lines with an opacity fade</b> (+ blue axis ticks). 20 iterations on the real Spanish hero. Black line-fields = <code>#12110F</code>; blue <code>#1661E2</code> is the single precise accent. A soft scrim keeps the headline legible where lines run behind it. #19 &amp; #20 animate on load (respect <code>prefers-reduced-motion</code>).</p>
+  <p style="color:var(--t3)">#1 recreates ref-1, #9 recreates ref-2. Tell me the winner(s) → I tune density/opacity/placement → bake as static SVG into a <code>vNN</code> (no JS in the real page).</p>
+</div>
+
+<div id="gallery"></div>
+
+<div class="intro" style="padding-bottom:60px">
+  <p style="color:var(--t3)">All rendered procedurally here just to explore fast — the production version will be hand-tuned static SVG/CSS.</p>
+</div>
+
+<script>
+const W=1200,H=460,INK='#12110F',BLUE='#1661E2';
+const lerp=(a,b,t)=>a+(b-a)*t, clamp=v=>Math.max(0,Math.min(1,v));
+function envFn(name,t){
+  switch(name){
+    case 'signature': return 0.55+0.30*Math.sin(t*5.6+0.4);   // ref-1 wave
+    case 'rise':      return 0.28+0.64*t+0.05*Math.sin(t*9);  // growth
+    case 'double':    return 0.5+0.38*Math.sin(t*Math.PI*4);  // two humps
+    case 'bell':      return 0.16+0.84*Math.exp(-Math.pow((t-0.5)/0.26,2));
+    case 'valley':    return 0.5-0.30*Math.sin(t*5.6+0.4);
+    case 'ascend':    return 0.30+0.60*t;
+    case 'flat':      return 0.72;
+    default:          return 0.6;
+  }
+}
+function capMark(cx,cy,shape){
+  if(shape==='square') return `<rect x="${cx-3.5}" y="${cy-7}" width="7" height="7" fill="${BLUE}"/>`;
+  if(shape==='dot')    return `<circle cx="${cx}" cy="${cy-3}" r="4.3" fill="${BLUE}"/>`;
+  if(shape==='diamond')return `<rect x="${cx-4}" y="${cy-4}" width="8" height="8" fill="${BLUE}" transform="rotate(45 ${cx} ${cy})"/>`;
+  return '';
+}
+function vbars(c){
+  const n=c.count||34, x0=c.x0??70, x1=c.x1??(W-70), base=c.base??(H-42);
+  const minH=c.minH??80, maxH=c.maxH??300, sw=c.sw??2.4, alpha=c.alpha??0.92;
+  const hiIdx=c.hi!=null?Math.round(c.hi*(n-1)):-1;
+  const rng=c.hiRange?[Math.round(c.hiRange[0]*(n-1)),Math.round(c.hiRange[1]*(n-1))]:null;
+  let s='',caps='',calloutX=null,calloutY=null;
+  for(let i=0;i<n;i++){
+    const t=n>1?i/(n-1):0.5, h=lerp(minH,maxH,clamp(envFn(c.env,t))), x=lerp(x0,x1,t);
+    const isHi=i===hiIdx||(rng&&i>=rng[0]&&i<=rng[1]);
+    const col=isHi?BLUE:INK, w=isHi?(c.hiSw||sw+0.8):sw, op=isHi?1:alpha;
+    const cls=c.anim?'gbar':'', dl=c.anim?` style="animation-delay:${i*20}ms"`:'';
+    s+=`<line class="${cls}"${dl} x1="${x.toFixed(1)}" y1="${base}" x2="${x.toFixed(1)}" y2="${(base-h).toFixed(1)}" stroke="${col}" stroke-width="${w}" stroke-opacity="${op}"/>`;
+    if(i===hiIdx){ if(c.cap) caps+=capMark(x,base-h,c.cap); calloutX=x; calloutY=base-h; }
+  }
+  const svg=`<svg class="svg-lines" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" fill="none">${s}${caps}</svg>`;
+  let extra='';
+  if(c.callout&&calloutX!=null){ const px=(calloutX/W*100).toFixed(1), py=((calloutY-12)/H*100).toFixed(1);
+    extra=`<div class="callout" style="left:${px}%;top:${py}%">${c.callout}</div>`; }
+  return {html:svg, host:'', extra};
+}
+function hlines(c){
+  const n=c.count||26, y0=c.y0??28, y1=c.y1??(H-44), x0=c.x0??44, x1=c.x1??(W-30), sw=c.sw??2.4;
+  let s='';
+  for(let i=0;i<n;i++){
+    const t=n>1?i/(n-1):0.5, y=lerp(y0,y1,t);
+    const isHi=c.hi!=null&&Math.round(c.hi*(n-1))===i;
+    s+=`<line x1="${x0}" y1="${y.toFixed(1)}" x2="${x1}" y2="${y.toFixed(1)}" stroke="${isHi?BLUE:INK}" stroke-width="${isHi?sw+1.2:sw}" stroke-opacity="${isHi?1:(c.alpha??0.9)}"/>`;
+  }
+  const svg=`<svg class="svg-lines" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" fill="none">${s}</svg>`;
+  const grad={
+    'to right':'linear-gradient(to right,#000 6%,rgba(0,0,0,.12) 96%)',
+    'to left':'linear-gradient(to left,#000 6%,rgba(0,0,0,.12) 96%)',
+    'to bottom':'linear-gradient(to bottom,#000 4%,transparent 98%)',
+    'center':'linear-gradient(to right,transparent,#000 42%,#000 58%,transparent)'
+  }[c.fade];
+  const host=grad?`-webkit-mask-image:${grad};mask-image:${grad};`:'';
+  return {html:svg, host, extra:''};
+}
+const COPY=`<div class="copy"><h2 class="h1">El centro de inteligencia financiera de tu empresa.</h2><p class="sub">Bancos en tiempo real, pagos y cobros desde un solo lugar — con agentes de IA que ejecutan y concilian por ti.</p><a class="cta" href="#">Agenda una demo <svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>`;
+const PANEL=`<div class="panel"><div class="panel__bar"><div class="panel__actions"><span class="chip chip--black">Pagar</span><span class="chip">Cobrar</span><span class="chip">Conciliar</span></div><span class="panel__live"><span class="dot"></span>En vivo</span></div><div><div class="panel__label">Saldo total en USD · Todas las entidades</div><div class="panel__figure">$1.545.220<span class="cents">,80</span></div></div><div class="panel__rows"><div class="prow"><span class="ava">T</span><span class="pname">Tesote Tecnología, C.A.</span><span class="pval">$215.300,00</span></div><div class="prow"><span class="ava">I</span><span class="pname">Tesote IA, C.A.</span><span class="pval">$84.620,00</span></div><div class="prow"><span class="ava">T</span><span class="pname">Tesote Tech, Inc.</span><span class="pval">$292.750,30</span></div></div><div class="panel__ai"><span class="ai-dot"></span> Tesote IA · armando el <b style="color:var(--ink);font-weight:600">cierre del mes</b> · 87%…</div></div>`;
+
+const CFG=[
+ {n:1,title:'Signature wave bars',desc:'ref-1 recreation — wave envelope, blue line + square cap',type:'vbars',env:'signature',count:34,hi:0.5,cap:'square',scrim:true},
+ {n:2,title:'Wave bars · dot cap',desc:'same wave, softer dot marker',type:'vbars',env:'signature',count:34,hi:0.5,cap:'dot',scrim:true},
+ {n:3,title:'Growth bars',desc:'rising envelope, blue cap on the peak (the up-and-to-the-right story)',type:'vbars',env:'rise',count:34,hi:0.97,cap:'square',scrim:true},
+ {n:4,title:'Double-wave bars',desc:'two humps — more rhythm',type:'vbars',env:'double',count:40,hi:0.5,cap:'dot',scrim:true},
+ {n:5,title:'Bell bars',desc:'single centered swell, diamond cap',type:'vbars',env:'bell',count:36,hi:0.5,cap:'diamond',scrim:true},
+ {n:6,title:'Dense thin bars',desc:'more bars, thinner stroke — finer texture',type:'vbars',env:'signature',count:64,sw:1.5,hi:0.5,cap:'dot',scrim:true},
+ {n:7,title:'Wave bars · full-bleed faint',desc:'low-opacity field, blue line stays crisp',type:'vbars',env:'signature',count:40,hi:0.5,cap:'square',alpha:0.14,scrim:true},
+ {n:8,title:'Wave bars · right only',desc:'bars behind the panel, copy on clean ground',type:'vbars',env:'signature',count:22,x0:W*0.5,x1:W-60,hi:0.62,cap:'square'},
+ {n:9,title:'Horizontal fade · 100→0%',desc:'ref-2 recreation — fade left→right with blue axis ticks',type:'hlines',count:26,fade:'to right',ticks:[{side:'left',label:'100%'},{side:'right',label:'0%'}],scrim:true},
+ {n:10,title:'Horizontal fade · reverse',desc:'dense on the right, behind the panel',type:'hlines',count:26,fade:'to left',scrim:true},
+ {n:11,title:'Horizontal fade · top→down',desc:'lines settle toward the fold',type:'hlines',count:30,fade:'to bottom',scrim:true},
+ {n:12,title:'Horizontal · center band',desc:'bright through the middle, fades to both edges',type:'hlines',count:30,fade:'center',scrim:true},
+ {n:13,title:'Horizontal fade + blue line',desc:'one blue rule highlighted among the field',type:'hlines',count:26,fade:'to right',hi:0.42,ticks:[{side:'left',label:'100%'},{side:'right',label:'0%'}],scrim:true},
+ {n:14,title:'Selected-range bars',desc:'a contiguous blue group — a highlighted period',type:'vbars',env:'signature',count:36,hiRange:[0.46,0.58],scrim:true},
+ {n:15,title:'Valley bars',desc:'inverse wave — dips in the middle',type:'vbars',env:'valley',count:34,hi:0.5,cap:'square',scrim:true},
+ {n:16,title:'Bars · blue callout',desc:'highlighted bar carries a value label (ties to the panel figure)',type:'vbars',env:'signature',count:30,hi:0.5,cap:'square',callout:'$1.545.220',scrim:true},
+ {n:17,title:'Baseline strip',desc:'short wave bars as a footer band — quietest integration',type:'vbars',env:'signature',count:54,sw:1.8,base:H-26,minH:24,maxH:90,hi:0.5,cap:'dot'},
+ {n:18,title:'Hybrid · fade-lines + bars',desc:'horizontal fade behind copy, wave bars behind panel',type:'hlines',count:22,fade:'to right',scrim:true,overlayBars:{env:'signature',count:20,x0:W*0.52,x1:W-60,hi:0.6,cap:'square'}},
+ {n:19,title:'Animated · bars grow',desc:'bars rise into the wave on load (staggered)',type:'vbars',env:'signature',count:38,hi:0.5,cap:'square',anim:true,scrim:true},
+ {n:20,title:'Animated growth + callout',desc:'rising bars + blue peak cap, on load',type:'vbars',env:'rise',count:38,hi:0.97,cap:'square',anim:true,callout:'+23%',scrim:true},
+];
+
+const g=document.getElementById('gallery');
+g.innerHTML=CFG.map(c=>{
+  const m=c.type==='vbars'?vbars(c):hlines(c);
+  let bg=m.html+(m.extra||'');
+  if(c.overlayBars){ const ob=vbars(Object.assign({scrim:false},c.overlayBars)); bg+=ob.html+(ob.extra||''); }
+  const scrim=c.scrim?'<div class="hero__scrim"></div>':'';
+  const ticks=(c.ticks||[]).map(t=>`<div class="tick tick--${t.side}"><span class="tick__bar"></span><span class="tick__lab">${t.label}</span></div>`).join('');
+  return `<div class="demo"><div class="demo__label">${c.n} · ${c.title} <span>— ${c.desc}</span></div>
+  <div class="hero"><div class="hero__bg" style="${m.host}">${bg}</div>${scrim}${ticks}<div class="container hero__inner">${COPY}${PANEL}</div></div></div>`;
+}).join('');
+</script>
+</body>
+</html>

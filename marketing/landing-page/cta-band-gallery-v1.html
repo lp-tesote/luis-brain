@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CTA band — 20 attention treatments (Tesote)</title>
+<style>
+  @font-face { font-family:'Aspekta'; src:url('current/assets/aspekta/AspektaVF-36354009.woff2') format('woff2'); font-weight:100 900; font-display:swap; }
+  @font-face { font-family:'InterLocal'; src:url('current/assets/inter/inter-latin-0555e090.woff2') format('woff2'); font-weight:100 900; font-display:swap; }
+  :root{
+    --bg-hero:#FCFBF7; --bg-2:#F7F5F0; --bg-3:#E7E5E0;
+    --ink:#12110F; --t2:#635D55; --t3:#857D73;
+    --border:#E8E3DA; --border-strong:#DCD6CB; --blue:#1661E2;
+  }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:#EDEAE3; font-family:'InterLocal',-apple-system,system-ui,sans-serif; color:var(--ink); }
+  .intro{ max-width:1080px; margin:0 auto; padding:40px 24px 4px; }
+  .intro h1{ font-family:'Aspekta'; font-weight:600; font-size:24px; margin:0 0 6px; }
+  .intro p{ color:var(--t2); font-size:14px; line-height:1.6; margin:0 0 4px; max-width:76ch; }
+  .intro code{ background:#fff; border:1px solid var(--border); border-radius:5px; padding:1px 6px; font-size:12px; }
+
+  .demo{ max-width:1080px; margin:22px auto; padding:0 24px; }
+  .demo__label{ font-family:'Aspekta'; font-weight:600; font-size:13px; color:var(--ink); margin:0 0 8px; }
+  .demo__label span{ color:var(--t3); font-weight:400; }
+  /* the page the band sits on (so figure/ground contrast is visible) */
+  .stage{ background:var(--bg-hero); border:1px solid var(--border); border-radius:14px; padding:40px; }
+
+  /* ---- the band (constant content) ---- */
+  .cta{ position:relative; overflow:hidden; border:1px solid var(--border); border-radius:24px; background:var(--bg-hero); padding:44px 48px; text-align:center; }
+  .cta__inner{ position:relative; z-index:2; max-width:760px; margin:0 auto; }
+  .cta__title{ font-family:'Aspekta'; font-weight:600; font-size:29px; line-height:1.12; margin:0 0 14px; }
+  .cta__sub{ color:var(--t2); font-size:15px; line-height:1.6; margin:0 auto 24px; max-width:62ch; }
+  .cta__list{ list-style:none; margin:0 auto 26px; padding:0; max-width:600px; display:grid; grid-template-columns:1fr 1fr; gap:13px 34px; text-align:left; }
+  @media (max-width:620px){ .cta__list{ grid-template-columns:1fr; } }
+  .cta__list li{ display:flex; gap:10px; font-size:13.5px; line-height:1.5; color:var(--t2); }
+  .cta__list b{ color:var(--ink); font-weight:600; }
+  .cta__chk{ flex:none; width:16px; height:16px; margin-top:1px; }
+  .cta__btn{ display:inline-flex; align-items:center; gap:9px; background:var(--blue); color:#fff; font-family:'Aspekta'; font-weight:600; font-size:15px; padding:12px 22px; border-radius:11px; text-decoration:none; }
+  .cta__btn svg{ width:14px; height:14px; }
+
+  /* ===== 20 attention treatments ===== */
+  .cta--current::before{ content:""; position:absolute; inset:0; z-index:1; background:radial-gradient(circle at top, rgba(22,97,226,.18), transparent 65%); pointer-events:none; }
+
+  .cta--tonal{ background:var(--bg-2); }
+  .cta--tonal2{ background:#EFEAE1; border-color:var(--border-strong); }
+  .cta--wsoft{ background:#fff; box-shadow:0 6px 20px rgba(18,17,15,.07); }
+  .cta--wstrong{ background:#fff; border-color:transparent; box-shadow:0 26px 50px rgba(18,17,15,.14); }
+  .cta--inkborder{ background:#fff; border:1.5px solid var(--ink); }
+
+  .cta--topblue{ background:#fff; }
+  .cta--topblue::before{ content:""; position:absolute; inset:0 0 auto 0; height:3px; z-index:1; background:var(--blue); }
+  .cta--topink{ background:#fff; }
+  .cta--topink::before{ content:""; position:absolute; inset:0 0 auto 0; height:3px; z-index:1; background:var(--ink); }
+  .cta--leftblue{ background:#fff; }
+  .cta--leftblue::before{ content:""; position:absolute; inset:0 auto 0 0; width:4px; z-index:1; background:var(--blue); }
+  .cta--leftink{ background:#fff; }
+  .cta--leftink::before{ content:""; position:absolute; inset:0 auto 0 0; width:4px; z-index:1; background:var(--ink); }
+
+  .cta--inkglow{ background:#fff; }
+  .cta--inkglow::before{ content:""; position:absolute; inset:0; z-index:1; background:radial-gradient(circle at top, rgba(18,17,15,.06), transparent 62%); pointer-events:none; }
+  .cta--warmgrad{ background:linear-gradient(180deg, #F4F1EA 0%, var(--bg-hero) 70%); }
+
+  .cta--ledger{ background:#fff; background-image:repeating-linear-gradient(to bottom, transparent 0 25px, rgba(18,17,15,.045) 25px 26px);
+    -webkit-mask-image:radial-gradient(120% 100% at 50% 0%, #000 40%, transparent 88%); mask-image:radial-gradient(120% 100% at 50% 0%, #000 40%, transparent 88%); }
+  .cta--ledger .cta__inner{ -webkit-mask-image:none; }
+  .cta--dots{ background:#fff; background-image:radial-gradient(rgba(18,17,15,.10) 1px, transparent 1.5px); background-size:22px 22px; }
+  .cta--waves{ background:#fff; }
+
+  .cta--brackets{ background:#fff; }
+  .cta--brackets::before{ content:""; position:absolute; top:14px; left:14px; width:26px; height:26px; z-index:1; border-top:2px solid var(--ink); border-left:2px solid var(--ink); }
+  .cta--brackets::after{ content:""; position:absolute; bottom:14px; right:14px; width:26px; height:26px; z-index:1; border-bottom:2px solid var(--ink); border-right:2px solid var(--ink); }
+
+  .cta--inset{ background:#fff; }
+  .cta--inset::after{ content:""; position:absolute; inset:8px; z-index:1; border:1px solid rgba(18,17,15,.18); border-radius:18px; pointer-events:none; }
+
+  /* dark family */
+  .cta--dark{ background:#12110F; border-color:#34322E; }
+  .cta--dark2{ background:#1A1917; border-color:#34322E; background-image:repeating-linear-gradient(to bottom, transparent 0 25px, rgba(255,255,255,.03) 25px 26px); }
+  .cta--darktop{ background:#12110F; border-color:#34322E; }
+  .cta--darktop::before{ content:""; position:absolute; inset:0 0 auto 0; height:3px; z-index:1; background:var(--blue); }
+  .is-dark .cta__title{ color:#FFFFFF; }
+  .is-dark .cta__sub{ color:#C7C0B5; }
+  .is-dark .cta__list li{ color:#C7C0B5; }
+  .is-dark .cta__list b{ color:#FFFFFF; }
+
+  /* wave-bars echo strip */
+  .cta__waves{ position:absolute; z-index:1; left:0; right:0; bottom:0; height:64px; pointer-events:none;
+    -webkit-mask-image:linear-gradient(to right, transparent, #000 6%, #000 94%, transparent); mask-image:linear-gradient(to right, transparent, #000 6%, #000 94%, transparent); }
+  .cta__waves svg{ width:100%; height:100%; display:block; }
+</style>
+</head>
+<body>
+<div class="intro">
+  <h1>CTA band — 20 attention treatments</h1>
+  <p>The band is the same warm color as the page, so today it leans on a <b>blue radial glow</b> (#1) to stand out — the same tech-blue wash we removed from the hero. These 20 explore other ways to draw the eye to this conversion box, on-brand. Grouped: <b>tonal</b> (2–3) · <b>elevation</b> (4–5) · <b>frame/border</b> (6, 16, 20) · <b>accent rule/bar</b> (7–10) · <b>on-brand glow/gradient</b> (11–12) · <b>line texture</b> (13–15) · <b>dark/invert</b> (17–19).</p>
+  <p style="color:var(--t3)">Pick one (or a combo) → I bake it into a <code>vNN</code>.</p>
+</div>
+<div id="gallery"></div>
+<div class="intro" style="padding-bottom:60px"><p style="color:var(--t3)">Same content in every tile; only the band treatment changes.</p></div>
+
+<script>
+const INK='#12110F', BLUE='#1661E2';
+const CHK='<svg class="cta__chk" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="14" height="14" rx="3.5" stroke="currentColor" stroke-opacity=".42"/><path d="M4.8 8.2l2.1 2.1 4.3-4.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const ARROW='<svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+function li(b,t){ return `<li>${CHK}<span><b>${b}</b> — ${t}</span></li>`; }
+const LIST = li('Diagnóstico de tu operación','mapeamos cada proceso manual y cuánto tiempo te cuesta.')
+           + li('Implementación llave en mano','conectamos tus bancos, tu ERP y tus flujos; tú no levantas nada.')
+           + li('Especialistas dentro de tu equipo','finanzas y tecnología trabajando contigo, no a distancia.')
+           + li('Soporte dedicado, siempre','de ahí en adelante, alguien que conoce tu operación al detalle.');
+const INNER = `<div class="cta__inner"><h2 class="cta__title">¿Qué porcentaje de tu operación está automatizada?</h2>`
+            + `<p class="cta__sub">Más que un software, Tesote es el equipo que sube ese número por ti. No te entregamos un login y un manual: diseñamos, implementamos y operamos tu automatización financiera contigo.</p>`
+            + `<ul class="cta__list">${LIST}</ul>`
+            + `<a class="cta__btn" href="#">Agenda una demo ${ARROW}</a></div>`;
+
+// faint wave-bars strip (echo of the hero motif) for variant 15
+function wavesSVG(dark){
+  const W=1000,H=120,n=46,x0=8,x1=992,base=H,HMIN=10,HMAX=104;
+  let s='';
+  for(let i=0;i<n;i++){ const t=i/(n-1);
+    const e=0.30+0.70*Math.pow(t,3.0)+0.06*Math.sin(t*2*Math.PI*2.5);
+    const h=HMIN+(HMAX-HMIN)*Math.max(0,Math.min(1,e));
+    const x=x0+(x1-x0)*t;
+    s+=`<line x1="${x.toFixed(1)}" y1="${base}" x2="${x.toFixed(1)}" y2="${(base-h).toFixed(1)}" stroke="${dark?'#FFFFFF':INK}" stroke-width="1.5" stroke-opacity="${dark?0.10:0.10}" vector-effect="non-scaling-stroke"/>`;
+  }
+  return `<div class="cta__waves"><svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" fill="none">${s}</svg></div>`;
+}
+
+const CFG=[
+ {n:1, cls:'cta--current', title:'Current — blue radial glow', desc:'the existing treatment (baseline)'},
+ {n:2, cls:'cta--tonal', title:'Tonal lift', desc:'flat warm surface a step off the page — no gradient'},
+ {n:3, cls:'cta--tonal2', title:'Tonal lift · stronger', desc:'warmer/darker surface, more separation'},
+ {n:4, cls:'cta--wsoft', title:'White + soft shadow', desc:'elevation, not color — floats off the page'},
+ {n:5, cls:'cta--wstrong', title:'White + strong shadow', desc:'bigger lift, borderless'},
+ {n:6, cls:'cta--inkborder', title:'Ink border', desc:'flat white, confident black frame'},
+ {n:7, cls:'cta--topblue', title:'Top accent rule · blue', desc:'a precise blue line, not a wash'},
+ {n:8, cls:'cta--topink', title:'Top accent rule · black', desc:'on-brand black accent line'},
+ {n:9, cls:'cta--leftblue', title:'Left accent bar · blue', desc:'editorial side marker'},
+ {n:10,cls:'cta--leftink', title:'Left accent bar · black', desc:'black side marker'},
+ {n:11,cls:'cta--inkglow', title:'Ink glow (de-blued)', desc:'same glow idea, warm ink instead of blue'},
+ {n:12,cls:'cta--warmgrad', title:'Warm gradient', desc:'subtle warm-gray top→bottom, neutral'},
+ {n:13,cls:'cta--ledger', title:'Ledger lines', desc:'faint black hairline texture (brand lines), top-faded'},
+ {n:14,cls:'cta--dots', title:'Dot grid', desc:'faint node texture'},
+ {n:15,cls:'cta--waves', title:'Wave-bars echo', desc:'hero growth motif repeated faint along the bottom', waves:true},
+ {n:16,cls:'cta--brackets', title:'Corner brackets', desc:'technical L-frames (TL + BR)'},
+ {n:17,cls:'cta--dark', title:'Dark band — full black', desc:'invert the page: max contrast, blue button pops', dark:true},
+ {n:18,cls:'cta--dark2', title:'Dark band + line texture', desc:'near-black with faint lines', dark:true, waves:false},
+ {n:19,cls:'cta--darktop', title:'Dark + blue top rule', desc:'dark band, one precise blue accent', dark:true},
+ {n:20,cls:'cta--inset', title:'Inset frame', desc:'white with an inner hairline — editorial double-frame'},
+];
+
+document.getElementById('gallery').innerHTML = CFG.map(c=>{
+  const extra = c.waves ? wavesSVG(!!c.dark) : '';
+  return `<div class="demo"><div class="demo__label">${c.n} · ${c.title} <span>— ${c.desc}</span></div>
+    <div class="stage"><div class="cta ${c.cls} ${c.dark?'is-dark':''}">${extra}${INNER}</div></div></div>`;
+}).join('');
+</script>
+</body>
+</html>

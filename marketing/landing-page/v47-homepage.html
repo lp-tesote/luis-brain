@@ -1,0 +1,1678 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="csrf-param" content="authenticity_token" />
+<meta name="csrf-token" content="fDomiQQho73fii1msx5ymN_nRCzvXG9skwr0qqr_b1vUOmpOQ9HjLlWHbzym3MRXU3NUxVhiGSYacT8t_iDTPA" />
+  
+
+    <meta name="sentry-dsn" content="https://c94dba2785a7c13a8e11691d11b2a9f8@o4505788721332224.ingest.us.sentry.io/4511282095325184">
+    <meta name="sentry-environment" content="production">
+      <meta name="sentry-release" content="ce8abf916892634f972ed312263ecfa987ba6cfe">
+
+  <title>El centro de inteligencia financiera de tu empresa — Tesote</title>
+<meta name="description" content="Bancos en tiempo real, pagos y cobros desde un solo lugar — con agentes de IA que ejecutan y concilian por ti.">
+
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="canonical" href="https://marketing.tesote.com/">
+
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="El centro de inteligencia financiera de tu empresa — Tesote">
+<meta property="og:description" content="Bancos en tiempo real, pagos y cobros desde un solo lugar — con agentes de IA que ejecutan y concilian por ti.">
+<meta property="og:image" content="https://marketing.tesote.com/assets/marketing/tesote-treasury-dashboard-3120536a.webp">
+<meta property="og:url" content="https://marketing.tesote.com/">
+<meta property="og:site_name" content="Tesote">
+<meta property="og:locale" content="es_ES">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="El centro de inteligencia financiera de tu empresa — Tesote">
+<meta name="twitter:description" content="Bancos en tiempo real, pagos y cobros desde un solo lugar — con agentes de IA que ejecutan y concilian por ti.">
+<meta name="twitter:image" content="https://marketing.tesote.com/assets/marketing/tesote-treasury-dashboard-3120536a.webp">
+
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Tesote","url":"https://marketing.tesote.com","logo":"https://marketing.tesote.com/icon.png","description":"Automatización Financiera","sameAs":["https://linkedin.com/company/tesote","https://twitter.com/tesote","https://instagram.com/tesote__"]}</script>
+
+
+
+
+
+  <link rel="icon" type="image/svg+xml" href="/icon.svg">
+  <link rel="icon" type="image/png" href="/icon.png" sizes="32x32">
+  <link rel="alternate icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" href="/icon.png">
+  <meta name="theme-color" content="#FCFBF7">
+
+  <link rel="preload" href="current/assets/inter/inter-latin-0555e090.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="current/assets/aspekta/AspektaVF-36354009.woff2" as="font" type="font/woff2" crossorigin>
+
+  <link rel="stylesheet" href="current/assets/fontawesome/css/all.min-8e150040.css" data-turbo-track="reload" />
+  <link rel="stylesheet" href="current/assets/admin-1f3f92b5.css" data-turbo-track="reload" />
+<link rel="stylesheet" href="current/assets/application-23a5d970.css" data-turbo-track="reload" />
+<link rel="stylesheet" href="current/assets/fontawesome/css/all.min-8e150040.css" data-turbo-track="reload" />
+
+  <style id="light-theme-overrides">
+    /* ===== Light theme — Lunour palette (Saldos/Movimientos new UI) ===== */
+    /* Remap semantic tokens; the warm-gray ramp already exists in the site CSS. */
+    :root {
+      --bg-base: #FFFFFF;
+      --bg-surface-1: var(--tesote-gray-25);   /* #FCFBF7 */
+      --bg-surface-2: var(--tesote-gray-50);   /* #F7F5F0 */
+      --bg-surface-3: var(--tesote-gray-100);  /* #E7E5E0 */
+      --bg-hero: #FCFBF7;
+
+      --border-subtle: #E8E3DA;                /* Lunour --border */
+      --border-strong: #DCD6CB;
+
+      --text-primary: #12110F;                 /* Lunour --text */
+      --text-secondary: var(--tesote-gray-600);
+      --text-muted: #635D55;                   /* Lunour --text-2 */
+      --text-subtle: #857D73;                  /* Lunour --text-3 */
+
+      --accent: #1661E2;
+      --accent-hover: #184EB5;                 /* Lunour --primary-hover */
+      --accent-soft: #EEF8FF;                  /* Lunour --primary-light */
+      --link: var(--tesote-blue-600);
+      --link-hover: var(--tesote-blue-700);
+
+      --shadow-sm: 0 1px 2px rgba(18, 17, 15, 0.04);
+      --shadow-md: 0 4px 12px rgba(18, 17, 15, 0.08);
+      --shadow-lg: 0 24px 48px rgba(18, 17, 15, 0.12);
+      --shadow-dropdown: 0 8px 24px rgba(18, 17, 15, 0.12);
+      --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    }
+
+    /* Navbar: dark glass -> warm light glass */
+    .site-navbar { background-color: rgba(252, 251, 247, 0.92); }
+
+    /* Wordmark assets are white SVGs — invert to ink */
+    .site-navbar__brand-wordmark,
+    .site-footer__logo { filter: invert(1); }
+
+    /* Client logos: were grayscale+brightness(2) for dark bg */
+    .logo-strip__img { filter: grayscale(1) brightness(0.25) opacity(0.75); }
+
+    /* v42: CTA buttons -> brand blue (#1661E2 / --accent). The compiled app CSS forces
+       .btn-primary to --tesote-blue-800 (#07286B, dark navy) via a later non-media rule;
+       this inline block loads after the linked CSS, so it restores the brand blue. */
+    .btn-primary { background-color: var(--accent); border-color: var(--accent); }
+    .btn-primary:hover, .btn-primary:focus-visible, .btn-primary:active {
+      background-color: var(--accent-hover); border-color: var(--accent-hover);
+    }
+
+    /* v12: dark hero video removed — visual is now an HTML/CSS mini-UI panel (see #hero-pass-v15) */
+
+    /* Product cards (v2 section): dark gradient + inset chips -> Lunour card language */
+    .pcard {
+      background: #FFFFFF;
+      border-color: var(--border-subtle);
+      box-shadow: var(--shadow-sm);
+    }
+    .pcard:hover { border-color: var(--border-strong); }
+    .pcard__chip {
+      background: var(--bg-surface-2);
+      border-color: var(--border-subtle);
+      box-shadow: none;
+    }
+    .pcard__match circle { fill: #FFFFFF; }
+    .pcard__dot { background: #1A8C5B; }
+    .pcard__pill { color: #0F6E45; background: #D6E8D5; }       /* Lunour pill-paid */
+    .pcard__pill--accent { color: #184EB5; background: #E4ECF7; } /* Lunour pill-new */
+    .pcard__bubble--user { background: var(--tesote-blue-500); }
+    .pcard__bubble--ai { background: var(--bg-surface-2); border-color: var(--border-subtle); }
+    .pcard__figure-label { color: #857D73; }
+  </style>
+
+  <script src="current/assets/application-0879d1d5.js" data-turbo-track="reload" type="module"></script>
+
+  <link rel="alternate" type="application/rss+xml"
+        title="Tesote — Blog"
+        href="https://marketing.tesote.com/blog/feed.xml">
+
+  
+
+  
+</head>
+
+<body data-controller="timezone">
+
+  <nav class="site-navbar" data-controller="ui--page--navbar mobile-menu" data-mobile-menu-open-class="is-open" aria-label="Primary">
+  <div class="container site-navbar__inner">
+    <a class="site-navbar__brand" href="/" aria-label="Tesote">
+      <img class="site-navbar__brand-wordmark" alt="Tesote" src="current/assets/logos/tesote/text-white-9d9d1f73.svg" />
+    </a>
+
+        <ul class="site-navbar__nav">
+        <li class="site-navbar__nav-item"><a class="site-navbar__link" href="#features">Producto</a></li>
+        <li class="site-navbar__nav-item"><a class="site-navbar__link" href="#seguridad">Seguridad</a></li>
+        <li class="site-navbar__nav-item"><a class="site-navbar__link" href="#faq">FAQ</a></li>
+    </ul>
+
+    <div class="site-navbar__right">
+      <a href="https://equipo.tesote.com/users/sign_in"
+         class="btn btn-sm site-navbar__login"
+         target="_blank" rel="noopener">
+        <i class="fa-solid fa-arrow-right-to-bracket me-1" aria-hidden="true"></i>
+        Acceder
+      </a>
+      <a href="#agenda" class="btn btn-primary btn-sm site-navbar__cta">
+        Agenda una demo
+        <i class="fa-solid fa-arrow-right ms-2" aria-hidden="true"></i>
+      </a>
+    </div>
+
+    <button type="button" class="site-navbar__toggle"
+            data-mobile-menu-target="toggle"
+            data-action="click->mobile-menu#toggle"
+            aria-label="Abrir menú"
+            aria-expanded="false"
+            aria-controls="site-navbar-drawer">
+      <i class="fa-solid fa-bars" aria-hidden="true"></i>
+    </button>
+  </div>
+
+  <div class="site-navbar__drawer" id="site-navbar-drawer" data-mobile-menu-target="panel">
+    <div class="site-navbar__drawer-backdrop"
+         data-action="click->mobile-menu#close"
+         aria-hidden="true"></div>
+
+    <aside class="site-navbar__drawer-panel"
+           role="dialog"
+           aria-modal="true"
+           aria-label="Menú">
+      <div class="site-navbar__drawer-header">
+        <span class="site-navbar__drawer-title">Menú</span>
+        <button type="button"
+                class="site-navbar__drawer-close"
+                data-action="click->mobile-menu#close"
+                aria-label="Cerrar">
+          <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      <div class="site-navbar__drawer-body">
+                <ul class="site-navbar__drawer-list">
+            <li>
+              <a class="site-navbar__drawer-link site-navbar__drawer-link--top" href="#features" data-action="click->mobile-menu#close">Producto</a>
+            </li>
+            <li>
+              <a class="site-navbar__drawer-link site-navbar__drawer-link--top" href="#seguridad" data-action="click->mobile-menu#close">Seguridad</a>
+            </li>
+            <li>
+              <a class="site-navbar__drawer-link site-navbar__drawer-link--top" href="#faq" data-action="click->mobile-menu#close">FAQ</a>
+            </li>
+        </ul>
+      </div>
+
+      <div class="site-navbar__drawer-footer">
+        <a href="https://equipo.tesote.com/users/sign_in"
+           class="btn btn-outline-light w-100 mt-3"
+           target="_blank" rel="noopener"
+           data-action="click->mobile-menu#close">
+          <i class="fa-solid fa-arrow-right-to-bracket me-1" aria-hidden="true"></i>
+          Acceder
+        </a>
+        <a href="#agenda"
+           class="btn btn-primary w-100 mt-2"
+           data-action="click->mobile-menu#close">
+          Agenda una demo
+        </a>
+      </div>
+    </aside>
+  </div>
+</nav>
+
+
+
+  <main>
+
+<style id="hero-pass-v15">
+  /* ===== Hero mini-UI panel (v15) — comando + agente final (hero-gallery-v5 #1, Luis 2026-06-07):
+     clean panel (no floating chips, no BCV rate), USD-only consolidated figure, Tesote-derivative
+     entities with equal-weight dual amounts, IA box = mix equilibrado (4 lines) ===== */
+  .hero-panel {
+    position: relative;
+    inline-size: 100%;
+    max-inline-size: 540px;
+    margin-inline: auto;
+    background: #FFFFFF;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-lg);
+    padding: var(--space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  .hero-panel__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .hero-panel__title {
+    font-family: var(--font-display);
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-semi);
+    color: var(--text-primary);
+  }
+  .hero-panel__live {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-medium);
+    color: #0F6E45;
+  }
+  .hero-panel__figure-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+  .hero-panel__figure {
+    font-family: var(--font-mono);
+    font-size: var(--fs-3xl);
+    line-height: var(--lh-tight);
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+  }
+  .hero-panel__spark { inline-size: 120px; block-size: 44px; flex: none; }
+  .hero-panel__rows { display: flex; flex-direction: column; }
+  .hero-panel__row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--bg-surface-2);
+    font-size: var(--fs-sm);
+  }
+  .hero-panel__row:last-child { border-bottom: 0; }
+  .hero-panel__avatar {
+    inline-size: 24px;
+    block-size: 24px;
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-surface-2);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-semi);
+    color: var(--text-secondary);
+  }
+  .hero-panel__bank { flex: 1; min-width: 0; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .hero-panel__acct { color: var(--text-subtle); font-size: var(--fs-xs); }
+  .hero-panel__value { font-family: var(--font-mono); font-size: var(--fs-sm); color: var(--text-primary); font-variant-numeric: tabular-nums; }
+  /* v15: dual-currency column per entity row — USD and Bs at EQUAL size/color (Luis 2026-06-07) */
+  .hero-panel__values { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; flex: none; }
+
+  /* v13: action bar — belief #4, actuar no solo mirar */
+  .hero-panel__actions { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+  .hero-panel__action {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-medium);
+    color: var(--text-secondary);
+    background: #FFFFFF;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md); /* v14: squarer, less pill */
+    padding: var(--space-2) var(--space-3);
+    box-shadow: var(--shadow-sm);
+  }
+  .hero-panel__action--primary {
+    color: #FFFFFF;
+    background: #12110F;        /* v43: product-UI buttons -> Tesote black (CTAs stay brand blue) */
+    border-color: #12110F;
+  }
+  /* v13: saldo figure decimals + 30-day deltas */
+  .hero-panel__cents { font-size: var(--fs-lg); color: var(--text-subtle); }
+  .hero-panel__deltas {
+    display: flex;
+    gap: var(--space-3);
+    font-size: var(--fs-xs);
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    color: var(--text-subtle);
+    margin-top: var(--space-1);
+  }
+  .hero-panel__delta--in { color: #0F6E45; }
+  .hero-panel__delta--out { color: var(--text-muted); }
+  .hero-panel__deltas i { font-size: 0.6rem; position: relative; top: -1px; }
+  /* v14: Tesote IA subcard — the agent feed (replaces v13 bandeja chip) */
+  .hero-panel__subcard {
+    background: var(--bg-surface-1);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: var(--space-3) var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .hero-panel__subhead { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
+  .hero-panel__subtitle { font-size: var(--fs-xs); font-weight: var(--fw-semi); color: var(--text-primary); }
+  .hero-panel__subtitle i { color: var(--accent); margin-right: 6px; }
+  /* v14: Stripe-style badge — rectangular, sentence case */
+  .hero-panel__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: 0.7rem;
+    font-weight: var(--fw-medium);
+    color: #184EB5;
+    background: #E4ECF7;
+    border-radius: 4px;
+    padding: 1px var(--space-2);
+    flex: none;
+    white-space: nowrap;
+  }
+  .hero-panel__feed { display: flex; flex-direction: column; gap: var(--space-2); }
+  .hero-panel__feed-item { display: flex; align-items: baseline; gap: var(--space-3); font-size: var(--fs-xs); color: var(--text-secondary); }
+  .hero-panel__feed-item i { color: #1A8C5B; font-size: var(--fs-xs); flex: none; position: relative; top: 1px; inline-size: 14px; text-align: center; }
+  .hero-panel__feed-item i.is-working { color: var(--accent); }
+  .hero-panel__feed-item i.is-guard { color: #B45309; } /* v15: protection lines (duplicada detenida) */
+  .hero-panel__feed-text { flex: 1; min-width: 0; }
+  .hero-panel__feed-time { color: var(--text-subtle); font-family: var(--font-mono); font-size: 0.65rem; white-space: nowrap; }
+  /* v15: floating chips removed — clean panel (Luis 2026-06-07) */
+</style>
+
+<section class="hero">
+  <div class="hero-lines" aria-hidden="true"><svg class="svg" viewBox="0 0 1200 150" preserveAspectRatio="none" fill="none"><line x1="12.0" y1="150" x2="12.0" y2="62.0" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="34.2" y1="150" x2="34.2" y2="59.4" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="56.4" y1="150" x2="56.4" y2="57.0" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="78.6" y1="150" x2="78.6" y2="54.8" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="100.8" y1="150" x2="100.8" y2="52.7" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="122.9" y1="150" x2="122.9" y2="50.9" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="145.1" y1="150" x2="145.1" y2="49.3" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="167.3" y1="150" x2="167.3" y2="48.0" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="189.5" y1="150" x2="189.5" y2="46.9" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="211.7" y1="150" x2="211.7" y2="46.1" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="233.9" y1="150" x2="233.9" y2="45.7" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="256.1" y1="150" x2="256.1" y2="45.5" stroke="#1661E2" stroke-width="2.6" stroke-opacity="1" vector-effect="non-scaling-stroke"/><line x1="278.3" y1="150" x2="278.3" y2="45.6" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="300.5" y1="150" x2="300.5" y2="46.1" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="322.6" y1="150" x2="322.6" y2="46.8" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="344.8" y1="150" x2="344.8" y2="47.8" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="367.0" y1="150" x2="367.0" y2="49.1" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="389.2" y1="150" x2="389.2" y2="50.6" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="411.4" y1="150" x2="411.4" y2="52.4" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="433.6" y1="150" x2="433.6" y2="54.4" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="455.8" y1="150" x2="455.8" y2="56.6" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="478.0" y1="150" x2="478.0" y2="59.0" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="500.2" y1="150" x2="500.2" y2="61.6" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="522.3" y1="150" x2="522.3" y2="64.2" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="544.5" y1="150" x2="544.5" y2="67.0" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="566.7" y1="150" x2="566.7" y2="69.8" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="588.9" y1="150" x2="588.9" y2="72.7" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="611.1" y1="150" x2="611.1" y2="75.5" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="633.3" y1="150" x2="633.3" y2="78.3" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="655.5" y1="150" x2="655.5" y2="81.1" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="677.7" y1="150" x2="677.7" y2="83.7" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="699.8" y1="150" x2="699.8" y2="86.2" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="722.0" y1="150" x2="722.0" y2="88.6" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="744.2" y1="150" x2="744.2" y2="90.8" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="766.4" y1="150" x2="766.4" y2="92.8" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="788.6" y1="150" x2="788.6" y2="94.6" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="810.8" y1="150" x2="810.8" y2="96.1" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="833.0" y1="150" x2="833.0" y2="97.3" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="855.2" y1="150" x2="855.2" y2="98.3" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="877.4" y1="150" x2="877.4" y2="99.0" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="899.5" y1="150" x2="899.5" y2="99.4" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="921.7" y1="150" x2="921.7" y2="99.5" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="943.9" y1="150" x2="943.9" y2="99.3" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="966.1" y1="150" x2="966.1" y2="98.8" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="988.3" y1="150" x2="988.3" y2="98.0" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="1010.5" y1="150" x2="1010.5" y2="96.9" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="1032.7" y1="150" x2="1032.7" y2="95.5" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="1054.9" y1="150" x2="1054.9" y2="93.9" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="1077.1" y1="150" x2="1077.1" y2="92.1" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="1099.2" y1="150" x2="1099.2" y2="90.0" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="1121.4" y1="150" x2="1121.4" y2="87.7" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="1143.6" y1="150" x2="1143.6" y2="85.3" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="1165.8" y1="150" x2="1165.8" y2="82.7" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/><line x1="1188.0" y1="150" x2="1188.0" y2="80.0" stroke="#12110F" stroke-width="1.8" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/></svg><span class="hero-lines__cap"></span></div>
+  <div class="container">
+    <div class="hero__inner">
+      <div class="hero__copy">
+        <h1 class="hero__headline">El centro de inteligencia financiera de tu empresa.</h1>
+
+          <p class="hero__subline">Bancos en tiempo real, pagos y cobros desde un solo lugar — con agentes de IA que ejecutan y concilian por ti.</p>
+
+          <div class="hero__ctas">
+              <a href="#agenda" class="btn btn-primary">
+                Agenda una demo
+                  <i class="fa-solid fa-arrow-right ms-2" aria-hidden="true"></i>
+              </a>
+          </div>
+      </div>
+
+        <div class="hero__media">
+          <!-- v15: hero visual final = comando + agente (acciones + saldo USD consolidado + entidades Tesote + IA mix equilibrado) -->
+          <div class="hero-panel" aria-hidden="true">
+            <div class="hero-panel__bar">
+              <div class="hero-panel__actions">
+                <span class="hero-panel__action hero-panel__action--primary"><i class="fa-solid fa-arrow-up" aria-hidden="true"></i>Pagar</span>
+                <span class="hero-panel__action">Cobrar</span>
+                <span class="hero-panel__action">Conciliar</span>
+              </div>
+              <span class="hero-panel__live"><span class="pcard__dot"></span>En vivo</span>
+            </div>
+            <div class="hero-panel__figure-row">
+              <div>
+                <div class="ui-card__label">Saldo total en USD · Todas las entidades</div>
+                <div class="hero-panel__figure">$1.545.220<span class="hero-panel__cents">,80</span></div>
+                <div class="hero-panel__deltas">
+                  <span>Últimos 30 días</span>
+                  <span class="hero-panel__delta--in"><i class="fa-solid fa-caret-up" aria-hidden="true"></i> $84,2K</span>
+                  <span class="hero-panel__delta--out"><i class="fa-solid fa-caret-down" aria-hidden="true"></i> $31,5K</span>
+                </div>
+              </div>
+              <svg class="hero-panel__spark" viewBox="0 0 120 44" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="hero-spark-area" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#1661E2" stop-opacity="0.35"/>
+                    <stop offset="100%" stop-color="#1661E2" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+                <path d="M0 32 L15 29 L30 33 L45 24 L60 27 L75 18 L90 21 L105 11 L120 7 L120 44 L0 44 Z" fill="url(#hero-spark-area)"/>
+                <path d="M0 32 L15 29 L30 33 L45 24 L60 27 L75 18 L90 21 L105 11 L120 7" stroke="#1661E2" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="hero-panel__rows">
+              <div class="hero-panel__row">
+                <span class="hero-panel__avatar">T</span>
+                <span class="hero-panel__bank">Tesote Tecnología, C.A. <span class="hero-panel__acct">· 6 cuentas</span></span>
+                <span class="hero-panel__values">
+                  <span class="hero-panel__value">$215.300,00</span>
+                  <span class="hero-panel__value">Bs. 364.070.700,00</span>
+                </span>
+              </div>
+              <div class="hero-panel__row">
+                <span class="hero-panel__avatar">I</span>
+                <span class="hero-panel__bank">Tesote IA, C.A. <span class="hero-panel__acct">· 4 cuentas</span></span>
+                <span class="hero-panel__values">
+                  <span class="hero-panel__value">$84.620,00</span>
+                  <span class="hero-panel__value">Bs. 176.025.433,50</span>
+                </span>
+              </div>
+              <div class="hero-panel__row">
+                <span class="hero-panel__avatar">T</span>
+                <span class="hero-panel__bank">Tesote Tech, Inc. <span class="hero-panel__acct">· 2 cuentas · solo USD</span></span>
+                <span class="hero-panel__value">$292.750,30</span>
+              </div>
+            </div>
+            <div class="hero-panel__subcard">
+              <div class="hero-panel__subhead">
+                <span class="hero-panel__subtitle"><i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i>Tesote IA</span>
+                <span class="hero-panel__badge">Trabajando</span>
+              </div>
+              <div class="hero-panel__feed">
+                <div class="hero-panel__feed-item"><i class="fa-solid fa-shield-halved is-guard" aria-hidden="true"></i><span class="hero-panel__feed-text">Factura duplicada <b>detenida antes del pago</b> · $7.490</span><span class="hero-panel__feed-time">hace 1 h</span></div>
+                <div class="hero-panel__feed-item"><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span class="hero-panel__feed-text"><b>14 facturas vencidas cobradas</b> · $96.400 recuperados</span><span class="hero-panel__feed-time">este mes</span></div>
+                <div class="hero-panel__feed-item"><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span class="hero-panel__feed-text"><b>142 partidas</b> enviadas al ERP · cero diferencias</span><span class="hero-panel__feed-time">hoy</span></div>
+                <div class="hero-panel__feed-item"><i class="fa-solid fa-circle-notch fa-spin is-working" aria-hidden="true"></i><span class="hero-panel__feed-text">Armando el <b>cierre del mes</b> · va 87%…</span><span class="hero-panel__feed-time">ahora</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+</section>
+
+<section class="stat-grid-section" aria-label="Métricas de Tesote">
+  <div class="container">
+    <div class="stat-grid">
+        <div class="stat-grid__cell">
+          <div class="stat-grid__value">120+</div>
+          <div class="stat-grid__label">Bancos conectados</div>
+        </div>
+        <div class="stat-grid__cell">
+          <div class="stat-grid__value">150+</div>
+          <div class="stat-grid__label">Empresas activas</div>
+        </div>
+        <div class="stat-grid__cell">
+          <div class="stat-grid__value">100M+</div>
+          <div class="stat-grid__label">Transacciones conciliadas</div>
+        </div>
+        <div class="stat-grid__cell">
+          <div class="stat-grid__value">90%</div>
+          <div class="stat-grid__label">Categorización automática</div>
+        </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight logo-strip">
+  <div class="container">
+      <h2 class="logo-strip__heading">Equipos de finanzas que ya operan con Tesote</h2>
+  </div>
+  <div class="logo-strip__viewport" aria-label="Equipos de finanzas que ya operan con Tesote">
+      <ul class="logo-strip__track logo-strip__track--row-1" role="list">
+            <li class="logo-strip__item" >
+                <img class="logo-strip__img" src="current/assets/clients/traki-d615adf4.webp" alt="Logo de Traki" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" >
+                <img class="logo-strip__img" src="current/assets/clients/blue-mall-c9ca5e52.webp" alt="Logo de Blue Mall" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" >
+                <img class="logo-strip__img" src="current/assets/clients/ama-de-casa-f367519b.webp" alt="Logo de Ama de Casa" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" >
+                <img class="logo-strip__img" src="current/assets/clients/estar-seguros-6bd639f4.webp" alt="Logo de Estar Seguros" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" >
+                <img class="logo-strip__img" src="current/assets/clients/burger-king-831b823c.webp" alt="Logo de Burger King" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" >
+                <img class="logo-strip__img" src="current/assets/clients/seguros-crecer-3709fe89.webp" alt="Logo de Seguros Crecer" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" >
+                <img class="logo-strip__img" src="current/assets/clients/armi-cc1041ee.webp" alt="Logo de Armi" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" >
+                <img class="logo-strip__img" src="current/assets/clients/mimesa-49410e74.webp" alt="Logo de Grupo Mimesa" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" >
+                <img class="logo-strip__img" src="current/assets/clients/grupo-cometa-0b0de340.webp" alt="Logo de Grupo Cometa" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" >
+                <img class="logo-strip__img" src="current/assets/clients/paisa-8727515c.webp" alt="Logo de Paisa" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" >
+                <img class="logo-strip__img" src="current/assets/clients/hageco-3aa95de4.webp" alt="Logo de Hageco" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" aria-hidden="true">
+                <img class="logo-strip__img" src="current/assets/clients/traki-d615adf4.webp" alt="" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" aria-hidden="true">
+                <img class="logo-strip__img" src="current/assets/clients/blue-mall-c9ca5e52.webp" alt="" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" aria-hidden="true">
+                <img class="logo-strip__img" src="current/assets/clients/ama-de-casa-f367519b.webp" alt="" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" aria-hidden="true">
+                <img class="logo-strip__img" src="current/assets/clients/estar-seguros-6bd639f4.webp" alt="" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" aria-hidden="true">
+                <img class="logo-strip__img" src="current/assets/clients/burger-king-831b823c.webp" alt="" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" aria-hidden="true">
+                <img class="logo-strip__img" src="current/assets/clients/seguros-crecer-3709fe89.webp" alt="" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" aria-hidden="true">
+                <img class="logo-strip__img" src="current/assets/clients/armi-cc1041ee.webp" alt="" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" aria-hidden="true">
+                <img class="logo-strip__img" src="current/assets/clients/mimesa-49410e74.webp" alt="" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" aria-hidden="true">
+                <img class="logo-strip__img" src="current/assets/clients/grupo-cometa-0b0de340.webp" alt="" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" aria-hidden="true">
+                <img class="logo-strip__img" src="current/assets/clients/paisa-8727515c.webp" alt="" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" aria-hidden="true">
+                <img class="logo-strip__img" src="current/assets/clients/hageco-3aa95de4.webp" alt="" loading="lazy" decoding="async">
+            </li>
+      </ul>
+      <ul class="logo-strip__track logo-strip__track--row-2" role="list">
+            <li class="logo-strip__item" >
+                <img class="logo-strip__img" src="current/assets/clients/cines-unidos-88a1fcbc.webp" alt="Logo de Cines Unidos" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" >
+                <img class="logo-strip__img" src="current/assets/clients/nueve-once-cdb4ecbd.webp" alt="Logo de Grupo Nueve Once" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" >
+                <img class="logo-strip__img" src="current/assets/clients/la-sante-ffa54f67.webp" alt="Logo de La Santé" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" >
+                <img class="logo-strip__img" src="current/assets/clients/megalabs-45b426d7.webp" alt="Logo de Megalabs" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" >
+                <img class="logo-strip__img" src="current/assets/clients/seguros-venezuela-3bbc7c60.webp" alt="Logo de Seguros Venezuela" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" >
+                <img class="logo-strip__img" src="current/assets/clients/munchy-6a10dc4d.webp" alt="Logo de Munchy" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" >
+                <img class="logo-strip__img" src="current/assets/clients/zara-22c602db.webp" alt="Logo de Zara" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" >
+                <img class="logo-strip__img" src="current/assets/clients/asoportuguesa-819c5c19.webp" alt="Logo de Asoportuguesa" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" >
+                <img class="logo-strip__img" src="current/assets/clients/disbattery-126e11c0.webp" alt="Logo de Disbattery" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" >
+                <img class="logo-strip__img" src="current/assets/clients/abodom-09751a41.webp" alt="Logo de Abodom" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" >
+                <img class="logo-strip__img" src="current/assets/clients/cencozotti-669c9c13.webp" alt="Logo de Cencozotti" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" aria-hidden="true">
+                <img class="logo-strip__img" src="current/assets/clients/cines-unidos-88a1fcbc.webp" alt="" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" aria-hidden="true">
+                <img class="logo-strip__img" src="current/assets/clients/nueve-once-cdb4ecbd.webp" alt="" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" aria-hidden="true">
+                <img class="logo-strip__img" src="current/assets/clients/la-sante-ffa54f67.webp" alt="" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" aria-hidden="true">
+                <img class="logo-strip__img" src="current/assets/clients/megalabs-45b426d7.webp" alt="" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" aria-hidden="true">
+                <img class="logo-strip__img" src="current/assets/clients/seguros-venezuela-3bbc7c60.webp" alt="" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" aria-hidden="true">
+                <img class="logo-strip__img" src="current/assets/clients/munchy-6a10dc4d.webp" alt="" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" aria-hidden="true">
+                <img class="logo-strip__img" src="current/assets/clients/zara-22c602db.webp" alt="" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" aria-hidden="true">
+                <img class="logo-strip__img" src="current/assets/clients/asoportuguesa-819c5c19.webp" alt="" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" aria-hidden="true">
+                <img class="logo-strip__img" src="current/assets/clients/disbattery-126e11c0.webp" alt="" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" aria-hidden="true">
+                <img class="logo-strip__img" src="current/assets/clients/abodom-09751a41.webp" alt="" loading="lazy" decoding="async">
+            </li>
+            <li class="logo-strip__item" aria-hidden="true">
+                <img class="logo-strip__img" src="current/assets/clients/cencozotti-669c9c13.webp" alt="" loading="lazy" decoding="async">
+            </li>
+      </ul>
+  </div>
+</section>
+
+
+<section id="features" class="section product-row">
+  <style>
+    /* ===== Product row (Brex-style) — prototype styles, port to SCSS on Rails port ===== */
+    .product-row .section__header { text-align: center; }
+    .product-row .section__subtitle { margin-inline: auto; }
+    /* v16: subtitle on a single line (wraps again below 1240px) */
+    .product-row .section__subtitle { max-inline-size: none; white-space: nowrap; }
+    @media (max-width: 1240px) { .product-row .section__subtitle { white-space: normal; max-inline-size: 60ch; } }
+
+    .pcard-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: var(--space-4);
+      align-items: stretch;
+    }
+    @media (max-width: 1100px) { .pcard-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 640px)  { .pcard-grid { grid-template-columns: 1fr; } }
+
+    .pcard {
+      display: flex;
+      flex-direction: column;
+      background: #FFFFFF; /* v16: gradient dropped — flat Lunour card */
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease;
+      text-decoration: none; /* v24: cards are now anchors → chapter sections */
+      color: inherit;
+      cursor: pointer;
+    }
+    .pcard:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .pcard:hover {
+      border-color: var(--border-strong);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    .pcard__head { padding: var(--space-6) var(--space-5) var(--space-4); }
+    .pcard__title {
+      font-family: var(--font-display);
+      font-size: var(--fs-xl);
+      font-weight: var(--fw-semi);
+      color: var(--text-primary);
+      line-height: var(--lh-snug);
+      margin: 0 0 var(--space-2);
+    }
+    .pcard__body {
+      font-size: var(--fs-sm);
+      color: var(--text-muted);
+      line-height: var(--lh-normal);
+      margin: 0;
+    }
+    .pcard__visual {
+      margin-top: auto;
+      padding: var(--space-4) var(--space-5) var(--space-6);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    /* mini-UI chips shared */
+    .pcard__chip {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      background: var(--bg-surface-2);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      padding: var(--space-2) var(--space-3);
+      font-size: var(--fs-xs);
+      color: var(--text-secondary);
+      box-shadow: var(--shadow-inset);
+    }
+    .pcard__chip-label { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pcard__chip-value { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--text-primary); }
+    .pcard__dot { inline-size: 6px; block-size: 6px; border-radius: var(--radius-pill); background: var(--tesote-success); flex: none; }
+    .pcard__pill {
+      /* v16: Stripe-style rectangular badge — sentence case, 4px radius */
+      font-size: 0.7rem;
+      font-weight: var(--fw-medium);
+      color: var(--tesote-success);
+      background: rgba(36, 173, 114, 0.12);
+      border-radius: 4px;
+      padding: 1px var(--space-2);
+      flex: none;
+      white-space: nowrap;
+    }
+    .pcard__pill--accent { color: var(--tesote-blue-300); background: rgba(22, 97, 226, 0.18); }
+
+    /* card 2: match connector */
+    .pcard__match { display: flex; justify-content: center; padding: 1px 0; }
+    .pcard__match svg { display: block; }
+
+    /* card 4: chart */
+    .pcard__figure { font-family: var(--font-mono); font-size: var(--fs-lg); color: var(--text-primary); }
+    .pcard__figure-label { font-size: var(--fs-xs); color: var(--text-subtle); margin-bottom: var(--space-1); }
+    .pcard__chart { inline-size: 100%; block-size: auto; display: block; border-radius: var(--radius-sm); }
+
+    /* card 5: chat */
+    .pcard__bubble {
+      font-size: var(--fs-xs);
+      line-height: var(--lh-normal);
+      border-radius: var(--radius-md);
+      padding: var(--space-2) var(--space-3);
+      max-inline-size: 92%;
+    }
+    .pcard__bubble--user { align-self: flex-end; background: var(--tesote-blue-700); color: #fff; border-end-end-radius: var(--radius-xs); }
+    .pcard__bubble--ai { align-self: flex-start; background: var(--bg-surface-2); border: 1px solid var(--border-strong); color: var(--text-secondary); border-end-start-radius: var(--radius-xs); }
+    .pcard__bubble--ai .pcard__chip-value { display: inline; }
+  </style>
+
+  <div class="container">
+    <header class="section__header">
+      <h2 class="section__title">Conectar tus bancos es solo el comienzo.</h2>
+      <p class="section__subtitle">Todo lo que tu equipo de finanzas necesita para tener las cuentas al día — y eliminar el trabajo manual.</p>
+    </header>
+
+    <div class="pcard-grid">
+
+      <a class="pcard" href="#connect" aria-label="Ver Conexiones bancarias">
+        <div class="pcard__head">
+          <h3 class="pcard__title">Conexiones bancarias</h3>
+          <p class="pcard__body">Saldos y movimientos de más de 120 bancos, en tiempo real.</p>
+        </div>
+        <div class="pcard__visual" aria-hidden="true">
+          <div class="pcard__chip">
+            <span class="pcard__dot"></span>
+            <span class="pcard__chip-label">Cuenta Operativa</span>
+            <span class="pcard__chip-value">Bs. 18.245.709</span>
+          </div>
+          <div class="pcard__chip">
+            <span class="pcard__dot"></span>
+            <span class="pcard__chip-label">Cuenta Nómina</span>
+            <span class="pcard__chip-value">Bs. 6.420.330</span>
+          </div>
+          <div class="pcard__chip">
+            <span class="pcard__dot"></span>
+            <span class="pcard__chip-label">Cuenta en USD</span>
+            <span class="pcard__chip-value">$84.210</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="pcard" href="#contabilidad" aria-label="Ver Conciliación automática">
+        <div class="pcard__head">
+          <h3 class="pcard__title">Conciliación automática</h3>
+          <p class="pcard__body">Cruza bancos contra tu ERP y deja cada movimiento cuadrado.</p>
+        </div>
+        <div class="pcard__visual" aria-hidden="true">
+          <div class="pcard__chip">
+            <span class="pcard__chip-label">Banco · Transferencia</span>
+            <span class="pcard__chip-value">$4.520,00</span>
+          </div>
+          <div class="pcard__match">
+            <svg width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8 0v14" stroke="#24AD72" stroke-width="1.5" stroke-dasharray="2 2"/>
+              <circle cx="8" cy="7" r="5" fill="#12110F" stroke="#24AD72" stroke-width="1.5"/>
+              <path d="M5.8 7l1.5 1.5L10.2 5.6" stroke="#24AD72" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="pcard__chip">
+            <span class="pcard__chip-label">ERP · Factura #1042</span>
+            <span class="pcard__pill">Conciliado</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="pcard" href="#pagos" aria-label="Ver Pagos y cobros">
+        <div class="pcard__head">
+          <h3 class="pcard__title">Pagos y cobros</h3>
+          <p class="pcard__body">Cobra con botón de pago y ejecuta pagos validados, sin salir de Tesote.</p>
+        </div>
+        <div class="pcard__visual" aria-hidden="true">
+          <div class="pcard__chip">
+            <span class="pcard__chip-label">Cobro recibido</span>
+            <span class="pcard__chip-value">$1.250,00</span>
+            <span class="pcard__pill">Confirmado</span>
+          </div>
+          <div class="pcard__chip">
+            <span class="pcard__chip-label">Lote de pagos · 23 proveedores</span>
+            <span class="pcard__pill pcard__pill--accent">Programado</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="pcard" href="#connect" aria-label="Ver Tesorería en vivo">
+        <div class="pcard__head">
+          <h3 class="pcard__title">Tesorería en vivo</h3>
+          <p class="pcard__body">Posición consolidada multi-banco y multi-moneda, lista para decidir.</p>
+        </div>
+        <div class="pcard__visual" aria-hidden="true">
+          <div>
+            <div class="pcard__figure-label">Posición consolidada</div>
+            <div class="pcard__figure">$1.2M</div>
+          </div>
+          <svg class="pcard__chart" viewBox="0 0 200 70" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="pcard-area" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#1661E2" stop-opacity="0.45"/>
+                <stop offset="100%" stop-color="#1661E2" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path d="M0 52 L25 48 L50 54 L75 40 L100 44 L125 30 L150 34 L175 18 L200 12 L200 70 L0 70 Z" fill="url(#pcard-area)"/>
+            <path d="M0 52 L25 48 L50 54 L75 40 L100 44 L125 30 L150 34 L175 18 L200 12" stroke="#1661E2" stroke-width="2" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </a>
+
+      <a class="pcard" href="#ai" aria-label="Ver Tesote AI">
+        <div class="pcard__head">
+          <h3 class="pcard__title">Tesote AI</h3>
+          <p class="pcard__body">Pregúntale a tus finanzas. Agentes que trabajan con tus datos al día.</p>
+        </div>
+        <div class="pcard__visual" aria-hidden="true">
+          <div class="pcard__bubble pcard__bubble--user">¿Cuánto cobramos esta semana?</div>
+          <div class="pcard__bubble pcard__bubble--ai">Cobraste <span class="pcard__chip-value">$48.230</span> en 312 transacciones, 12% más que la semana pasada.</div>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- Story bridge — narrative hinge between the product rail (catalog) and the chapter story (lifecycle of money) -->
+<style>
+  .story-bridge { padding-block: var(--space-16); }
+  .story-bridge__inner { margin-inline: auto; text-align: center; }
+  .story-bridge__statement {
+    font-family: var(--font-display);
+    font-size: var(--fs-3xl); /* matches .section__title (mobile) */
+    font-weight: var(--fw-semi);
+    line-height: var(--lh-tight);
+    letter-spacing: var(--tracking-tight);
+    color: var(--text-primary);
+    margin: 0;
+    white-space: nowrap; /* Luis: keep on one line */
+  }
+  @media (min-width: 768px) { .story-bridge__statement { font-size: var(--fs-4xl); } } /* matches .section__title (desktop) */
+</style>
+
+<section class="story-bridge" aria-label="Lo que viene después de conectar">
+  <div class="container">
+    <div class="story-bridge__inner">
+      <h2 class="story-bridge__statement">Después, Tesote transforma tu operación financiera para siempre.</h2>
+    </div>
+  </div>
+</section>
+
+
+<style>
+  /* ===== Story chapters (argument doc §4-8, Brex split-row pattern) — prototype styles ===== */
+  html { scroll-behavior: smooth; } /* v24: rail cards anchor-jump to chapters */
+  .chapter { padding-block: var(--space-20); scroll-margin-top: var(--header-height, 64px); }
+  .chapter__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-16);
+    align-items: center;
+  }
+  .chapter--flip .chapter__row > .chapter__panel { order: -1; }
+  @media (max-width: 900px) {
+    .chapter__row { grid-template-columns: 1fr; gap: var(--space-8); }
+    .chapter--flip .chapter__row > .chapter__panel { order: 0; }
+  }
+
+  .chapter__eyebrow {
+    display: block;
+    font-family: var(--font-display);
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-semi);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: var(--space-3);
+  }
+  .chapter__title {
+    font-family: var(--font-display);
+    font-size: var(--fs-3xl);
+    font-weight: var(--fw-semi);
+    line-height: var(--lh-tight);
+    letter-spacing: var(--tracking-tight);
+    color: var(--text-primary);
+    margin: 0 0 var(--space-4);
+  }
+  .chapter__body { font-size: var(--fs-lg); color: var(--text-muted); line-height: var(--lh-normal); margin: 0 0 var(--space-5); }
+  .chapter__list { list-style: none; margin: 0 0 var(--space-6); padding: 0; display: flex; flex-direction: column; gap: var(--space-3); }
+  .chapter__list li { display: flex; gap: var(--space-3); align-items: baseline; color: var(--text-secondary); line-height: var(--lh-normal); }
+  .chapter__list i { color: var(--tesote-success); font-size: var(--fs-sm); flex: none; position: relative; top: 1px; }
+  .chapter__link { display: inline-flex; align-items: center; gap: var(--space-2); font-weight: var(--fw-medium); color: var(--link); text-decoration: none; }
+  .chapter__link:hover { color: var(--link-hover); }
+
+  .chapter__panel {
+    background: var(--bg-surface-2);
+    border-radius: var(--radius-2xl);
+    padding: var(--space-10);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    justify-content: center;
+    min-height: 320px;
+  }
+  .ui-card {
+    background: #FFFFFF;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .ui-card__label { font-size: var(--fs-xs); color: var(--text-subtle); }
+  .ui-card__figure { font-family: var(--font-mono); font-size: var(--fs-2xl); color: var(--text-primary); font-variant-numeric: tabular-nums; margin-bottom: var(--space-2); }
+  .ui-card .pcard__chip { background: var(--bg-surface-1); }
+  .ui-card__pills { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+  .chapter__panel-note { font-size: var(--fs-xs); color: var(--text-subtle); text-align: center; }
+
+  /* v22: shared step list for panel stories (Pagos pipeline, Cobros timeline) */
+  .chapter-steps { display: flex; flex-direction: column; gap: var(--space-2); }
+  .chapter-step { display: flex; align-items: baseline; gap: var(--space-3); font-size: var(--fs-xs); color: var(--text-secondary); }
+  .chapter-step i { flex: none; font-size: var(--fs-xs); color: #1A8C5B; inline-size: 14px; text-align: center; position: relative; top: 1px; }
+  .chapter-step--working i { color: var(--accent); }
+  .chapter-step--pending { color: var(--text-subtle); }
+  .chapter-step--pending i { color: var(--text-subtle); }
+  /* v22: mini cash-flow chart + deltas (Connect panel) */
+  .chapter-flow-deltas { display: flex; gap: var(--space-4); font-size: var(--fs-xs); font-family: var(--font-mono); font-variant-numeric: tabular-nums; color: var(--text-subtle); flex-wrap: wrap; }
+  .chapter-flow-deltas i { font-size: 0.6rem; position: relative; top: -1px; }
+  .chapter-flow--in { color: #0F6E45; }
+  .chapter-flow--out { color: var(--text-muted); }
+  .chapter-flow-chart { inline-size: 100%; block-size: 56px; display: block; }
+
+  /* Mueve dinero — two doors */
+  .chapter__header-center { text-align: center; max-inline-size: 70ch; margin-inline: auto; margin-bottom: var(--space-12); }
+  .doors { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+  @media (max-width: 900px) { .doors { grid-template-columns: 1fr; } }
+  .door {
+    background: var(--bg-surface-2);
+    border-radius: var(--radius-2xl);
+    padding: var(--space-8);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  .door .ui-card { box-shadow: var(--shadow-sm); }
+  .door__title { font-family: var(--font-display); font-size: var(--fs-xl); font-weight: var(--fw-semi); color: var(--text-primary); margin: var(--space-2) 0 0; }
+  .door__body { color: var(--text-muted); line-height: var(--lh-normal); margin: 0; flex: 1; }
+
+  /* AI crescendo — the page's one dark register */
+  .chapter--dark { background: #12110F; }
+  .chapter--dark .chapter__title { color: #FFFFFF; }
+  .chapter--dark .chapter__body { color: #C7C0B5; }
+  .chapter--dark .chapter__link { color: var(--tesote-blue-300); }
+  .chapter--dark .chapter__link:hover { color: var(--tesote-blue-200); }
+  .chapter--dark .chapter__panel { background: #1A1917; border: 1px solid #34322E; }
+  .chapter--dark .pcard__bubble--ai { background: #232220; border-color: #34322E; color: #E7E5E0; }
+  .chapter--dark .pcard__bubble--ai .pcard__chip-value { color: #FFFFFF; }
+  .chapter--dark .ui-card { background: #232220; border-color: #34322E; box-shadow: none; }
+  .chapter--dark .ui-card__label { color: #857D73; }
+  .ai-actions { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+  .ai-action {
+    display: inline-flex; align-items: center; gap: var(--space-2);
+    font-size: var(--fs-xs); color: #E7E5E0;
+    background: #232220; border: 1px solid #4A4843;
+    border-radius: var(--radius-pill); padding: var(--space-2) var(--space-3);
+  }
+  .ai-action i { color: var(--tesote-blue-300); }
+
+  /* v38: AI weekly digest bubble — structured, bulleted */
+  .pcard__bubble--ai.ai-digest { max-inline-size: 100%; align-self: stretch; display: flex; flex-direction: column; gap: var(--space-2); }
+  .ai-digest__lead { margin: 0; color: #C7C0B5; }
+  .ai-digest__neto { display: flex; flex-direction: column; gap: 1px; padding-block: var(--space-2); border-block: 1px solid #34322E; }
+  .ai-digest__neto-value { font-family: var(--font-mono); font-size: var(--fs-lg); color: var(--tesote-success); }
+  .ai-digest__neto-sub { font-size: var(--fs-xs); color: #857D73; }
+  .ai-digest__label { margin: var(--space-1) 0 0; font-family: var(--font-display); font-size: 0.7rem; font-weight: var(--fw-semi); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--tesote-blue-300); }
+  .ai-digest__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 3px; }
+  .ai-digest__list li { position: relative; padding-inline-start: var(--space-3); font-size: var(--fs-xs); line-height: var(--lh-normal); color: #E7E5E0; }
+  .ai-digest__list li::before { content: "·"; position: absolute; inset-inline-start: 2px; color: var(--tesote-blue-300); }
+
+  /* Seguridad */
+  .sec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); }
+  @media (max-width: 1100px) { .sec-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 640px)  { .sec-grid { grid-template-columns: 1fr; } }
+  .sec-card {
+    background: #FFFFFF;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-sm);
+  }
+  .sec-card__icon { color: #12110F; font-size: var(--fs-xl); margin-bottom: var(--space-3); } /* v44: black-forward */
+  .sec-card__title { font-family: var(--font-display); font-size: var(--fs-base); font-weight: var(--fw-semi); color: var(--text-primary); margin: 0 0 var(--space-2); }
+  .sec-card__body { font-size: var(--fs-sm); color: var(--text-muted); line-height: var(--lh-normal); margin: 0; }
+  .sec-card__verify {
+    display: inline-block; margin-top: var(--space-3);
+    font-size: 0.65rem; font-weight: var(--fw-semi); letter-spacing: var(--tracking-wide); text-transform: uppercase;
+    color: #CC9500; background: #F7EDD0;
+    border-radius: var(--radius-pill); padding: 1px var(--space-2);
+  }
+</style>
+
+<!-- §4 Ve todo — Connect -->
+<section id="connect" class="chapter">
+  <div class="container">
+    <div class="chapter__row">
+      <div class="chapter__copy">
+        <h2 class="chapter__title">Por primera vez, ve todo tu dinero en un solo lugar.</h2>
+        <p class="chapter__body">Tu posición en vivo, en todos tus bancos — Venezuela, Panamá, RD y EE.&nbsp;UU. — en Bs y USD nativo. Nadie en tu equipo descarga un estado de cuenta nunca más.</p>
+        <ul class="chapter__list">
+          <li><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span>Cada transacción llega categorizada y con su contraparte identificada.</span></li>
+          <li><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span>Permisos granulares: cada quien ve exactamente lo que le toca.</span></li>
+          <li><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span>Insights por transacción: contraparte, similares, comparaciones.</span></li>
+        </ul>
+        <a class="chapter__link" href="#agenda">Conoce Connect <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+      </div>
+      <div class="chapter__panel" aria-hidden="true">
+        <div class="ui-card">
+          <div class="ui-card__label">Posición consolidada · USD · En vivo</div>
+          <div class="ui-card__figure">$1.545.220,80</div>
+          <div class="pcard__chip"><span class="pcard__dot"></span><span class="pcard__chip-label">Cuenta Operativa</span><span class="pcard__chip-value">Bs. 18.245.709</span></div>
+          <div class="pcard__chip"><span class="pcard__dot"></span><span class="pcard__chip-label">Cuenta Nómina</span><span class="pcard__chip-value">Bs. 6.420.330</span></div>
+          <div class="pcard__chip"><span class="pcard__dot"></span><span class="pcard__chip-label">Cuenta en USD</span><span class="pcard__chip-value">$84.210</span></div>
+        </div>
+        <div class="ui-card">
+          <div class="ui-card__label">Flujo de caja · últimos 30 días</div>
+          <svg class="chapter-flow-chart" viewBox="0 0 320 56" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="connect-flow" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#1661E2" stop-opacity="0.3"/>
+                <stop offset="100%" stop-color="#1661E2" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path d="M0 42 L40 37 L80 44 L120 29 L160 33 L200 20 L240 24 L280 11 L320 8 L320 56 L0 56 Z" fill="url(#connect-flow)"/>
+            <path d="M0 42 L40 37 L80 44 L120 29 L160 33 L200 20 L240 24 L280 11 L320 8" stroke="#1661E2" stroke-width="2" stroke-linejoin="round"/>
+          </svg>
+          <div class="chapter-flow-deltas">
+            <span class="chapter-flow--in"><i class="fa-solid fa-caret-up" aria-hidden="true"></i> Entró $84,2K</span>
+            <span class="chapter-flow--out"><i class="fa-solid fa-caret-down" aria-hidden="true"></i> Salió $31,5K</span>
+            <span class="chapter-flow--in">Neto +$52,7K</span>
+          </div>
+        </div>
+        <p class="chapter__panel-note">+120 bancos · VE · Panamá · RD · EE.&nbsp;UU.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- §5a Pagos — text right, panel left (flip) -->
+<section id="pagos" class="chapter chapter--flip">
+  <div class="container">
+    <div class="chapter__row">
+      <div class="chapter__copy">
+        <h2 class="chapter__title">Aprueba y paga desde un solo lugar — y se concilia solo.</h2>
+        <p class="chapter__body">Mueve dinero desde el mismo lugar donde lo ves: pagos directo por API bancaria, conciliados en el momento en que se ejecutan.</p>
+        <ul class="chapter__list">
+          <li><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span>Pagos directo por API bancaria — sin entrar al portal de cada banco.</span></li>
+          <li><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span>Cada lote se valida contra facturas y retenciones antes de salir.</span></li>
+          <li><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span>Se concilia y se registra en tu ERP en el momento en que se ejecuta.</span></li>
+        </ul>
+        <a class="chapter__link" href="#agenda">Conoce Pagos <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+      </div>
+      <div class="chapter__panel" aria-hidden="true">
+        <div class="ui-card">
+          <div class="ui-card__label">Lote #88 · 23 proveedores</div>
+          <div class="ui-card__figure" style="font-size: var(--fs-xl);">$48.250,00</div>
+          <div class="chapter-steps">
+            <div class="chapter-step"><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span>Validado contra facturas y retenciones</span></div>
+            <div class="chapter-step"><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span>Aprobado por la directora de finanzas</span></div>
+            <div class="chapter-step chapter-step--working"><i class="fa-solid fa-circle-notch fa-spin" aria-hidden="true"></i><span>Ejecutando por API bancaria…</span></div>
+            <div class="chapter-step chapter-step--pending"><i class="fa-regular fa-circle" aria-hidden="true"></i><span>Asiento en tu ERP — se registra solo</span></div>
+          </div>
+        </div>
+        <div class="ui-card">
+          <div class="pcard__chip"><span class="pcard__chip-label">Pago anterior · #87</span><span class="pcard__chip-value">$31.900,00</span><span class="pcard__pill">Conciliado</span></div>
+        </div>
+        <p class="chapter__panel-note">Sin entrar al portal de ningún banco</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- §5b Cobros — text left, panel right -->
+<section id="cobros" class="chapter">
+  <div class="container">
+    <div class="chapter__row">
+      <div class="chapter__copy">
+        <h2 class="chapter__title">Cobra con un link de pago: te pagan más rápido y entra conciliado.</h2>
+        <p class="chapter__body">El link lleva la factura adentro, así que tu cliente paga en un clic. Te pagan — y no hay nada que conciliar.</p>
+        <ul class="chapter__list">
+          <li><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span>Comparte el link por WhatsApp, correo o dentro de tu factura.</span></li>
+          <li><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span>Tu cliente paga por pago móvil, transferencia o tarjeta.</span></li>
+          <li><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span>Cada pago entra identificado con su factura y contraparte.</span></li>
+        </ul>
+        <a class="chapter__link" href="#agenda">Conoce Cobros <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+      </div>
+      <div class="chapter__panel" aria-hidden="true">
+        <div class="ui-card">
+          <div class="ui-card__label">Factura #2210 · Bs. 312.500,00</div>
+          <div class="chapter-steps">
+            <div class="chapter-step"><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span>Link enviado al cliente · lun 9:00 am</span></div>
+            <div class="chapter-step"><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span>Abierto · lun 9:42 am</span></div>
+            <div class="chapter-step"><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span>Pagado por pago móvil · lun 10:15 am</span></div>
+            <div class="chapter-step"><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span>Conciliado y registrado en tu ERP · automático</span></div>
+          </div>
+        </div>
+        <div class="ui-card">
+          <div class="ui-card__label">Este mes</div>
+          <div class="pcard__chip"><span class="pcard__chip-label">64 cobros por link</span><span class="pcard__chip-value">Bs. 18.840.000</span><span class="pcard__pill">Todo conciliado</span></div>
+        </div>
+        <p class="chapter__panel-note">Sin recordatorios manuales, sin cruzar nada</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- §6 Tus libros se llevan solos — Contabilidad automática -->
+<section id="contabilidad" class="chapter chapter--flip">
+  <div class="container">
+    <div class="chapter__row">
+      <div class="chapter__copy">
+        <h2 class="chapter__title">Llega al cierre del mes con la conciliación ya lista.</h2>
+        <p class="chapter__body">Tesote habla con tu ERP en ambas direcciones — y el cierre deja de ser un proyecto.</p>
+        <ul class="chapter__list">
+          <li><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span>Sube tu data bancaria ya enriquecida: categorías, contrapartes, tasas.</span></li>
+          <li><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span>Baja tus facturas abiertas, hace el match y devuelve partidas conciliadas.</span></li>
+          <li><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span>Crea proveedores, crea y corrige facturas, concilia pagos.</span></li>
+        </ul>
+        <a class="chapter__link" href="#agenda">Conoce Contabilidad automática <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+      </div>
+      <div class="chapter__panel" aria-hidden="true">
+        <div class="ui-card">
+          <div class="ui-card__label">Match automático</div>
+          <div class="pcard__chip"><span class="pcard__chip-label">Banco · Transferencia</span><span class="pcard__chip-value">$4.520,00</span></div>
+          <div class="pcard__match">
+            <svg width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8 0v14" stroke="#24AD72" stroke-width="1.5" stroke-dasharray="2 2"/>
+              <circle cx="8" cy="7" r="5" fill="#FFFFFF" stroke="#24AD72" stroke-width="1.5"/>
+              <path d="M5.8 7l1.5 1.5L10.2 5.6" stroke="#24AD72" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="pcard__chip"><span class="pcard__chip-label">ERP · Factura #1042</span><span class="pcard__pill">Conciliado</span></div>
+        </div>
+        <div class="ui-card">
+          <div class="ui-card__label">Devuelto a tu ERP</div>
+          <div class="pcard__chip"><span class="pcard__chip-label">Partida conciliada · #1042</span><span class="pcard__pill">Registrada</span></div>
+          <div class="pcard__chip"><span class="pcard__chip-label">Proveedor nuevo · creado</span><span class="pcard__pill pcard__pill--accent">Sincronizado</span></div>
+        </div>
+        <p class="chapter__panel-note">En ambas direcciones — sube enriquecido, baja conciliado</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- §7 Tesote AI — the crescendo, dark register -->
+<section id="ai" class="chapter chapter--dark">
+  <div class="container">
+    <div class="chapter__row">
+      <div class="chapter__copy">
+        <span class="chapter__eyebrow">Tesote AI</span>
+        <h2 class="chapter__title">Todo conectado. Ahora, inteligente.</h2>
+        <p class="chapter__body">La IA más avanzada, aplicada a las finanzas de tu empresa — con tus bancos, tus pagos y tu ERP ya conectados.</p>
+        <a class="chapter__link" href="#agenda">Conoce Tesote AI <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+      </div>
+      <div class="chapter__panel" aria-hidden="true">
+        <div class="pcard__bubble pcard__bubble--user">Mándame un resumen de la semana pasada.</div>
+        <div class="pcard__bubble pcard__bubble--ai ai-digest">
+          <p class="ai-digest__lead">Semana del 25 al 31 de mayo — conciliada y lista.</p>
+          <div class="ai-digest__neto">
+            <span class="ai-digest__neto-value">Neto +$58.440</span>
+            <span class="ai-digest__neto-sub">entradas $214.380 · salidas $155.940 · tu mejor semana del mes</span>
+          </div>
+          <p class="ai-digest__label">Por qué</p>
+          <ul class="ai-digest__list">
+            <li>Cobros +23% vs. la semana previa; 88% de tus clientes al día.</li>
+            <li>Salida no recurrente: $18.600 en honorarios (tu firma legal).</li>
+          </ul>
+          <p class="ai-digest__label">Quiénes</p>
+          <ul class="ai-digest__list">
+            <li>Top entradas: Distribuidora Caruba $32.500 y Comercial Vethia $24.800. Nueva: Academia Norvel (+$7.450).</li>
+          </ul>
+          <p class="ai-digest__label">Lo que ya hice por ti</p>
+          <ul class="ai-digest__list">
+            <li>Concilié el 93% en tu ERP y categoricé los 318 movimientos (solo 4 por revisar).</li>
+            <li>Detuve una factura duplicada de $7.490 antes de pagarla.</li>
+          </ul>
+          <p class="ai-digest__label">Atención</p>
+          <ul class="ai-digest__list">
+            <li>Una transferencia interna de $9.800 sigue en tránsito desde el viernes.</li>
+            <li>$48.250 en pagos a proveedores vencen el jueves — listos para tu aprobación.</li>
+          </ul>
+        </div>
+        <div class="ai-actions">
+          <span class="ai-action"><i class="fa-solid fa-bookmark" aria-hidden="true"></i>Guardar como mi reporte</span>
+          <span class="ai-action"><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i>Correr cada lunes</span>
+        </div>
+        <p class="chapter__panel-note">Con tus bancos, tus pagos y tu ERP ya conectados</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- §8 Seguridad — claims per Luis 2026-06-06; pending Dan sign-off before ship (doc open decision #4) -->
+<section id="seguridad" class="chapter">
+  <div class="container">
+    <header class="chapter__header-center">
+      <h2 class="chapter__title">Tu data operativa, tratada como lo que es.</h2>
+      <p class="chapter__body">La seguridad no es una sección de esta página — es la condición para que todo lo demás exista.</p>
+    </header>
+    <div class="sec-grid">
+      <div class="sec-card">
+        <div class="sec-card__icon" aria-hidden="true"><i class="fa-solid fa-lock"></i></div>
+        <h3 class="sec-card__title">Cifrado de grado bancario</h3>
+        <p class="sec-card__body">AES-256-GCM en reposo, TLS en tránsito e integridad verificada con SHA-256. Tu información se cifra y se protege con los estándares más altos de la industria.</p>
+      </div>
+      <div class="sec-card">
+        <div class="sec-card__icon" aria-hidden="true"><i class="fa-solid fa-user-shield"></i></div>
+        <h3 class="sec-card__title">Tú controlas quién ve y hace qué</h3>
+        <p class="sec-card__body">Permisos granulares por banco, cuenta y módulo; 2FA en cada acceso; y una auditoría completa que registra quién vio o movió qué, y cuándo.</p>
+      </div>
+      <div class="sec-card">
+        <div class="sec-card__icon" aria-hidden="true"><i class="fa-solid fa-certificate"></i></div>
+        <h3 class="sec-card__title">Probado, no solo prometido</h3>
+        <p class="sec-card__body">Pruebas de penetración recurrentes y trabajo bajo SOC 2 Type II, el estándar de controles más exigente de la industria.</p>
+        <span class="pcard__pill pcard__pill--accent">SOC 2 Type II · en curso</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- §9 Testimonios — real client quotes (replaces placeholder testimonial) -->
+<section id="testimonios" class="chapter">
+  <style>
+    .testi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); }
+    @media (max-width: 900px) { .testi-grid { grid-template-columns: 1fr; } }
+    .testi-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-6);
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .testi-card__quote {
+      font-size: var(--fs-sm);
+      color: var(--text-secondary);
+      line-height: var(--lh-normal);
+      margin: 0 0 var(--space-4);
+      flex: 1;
+    }
+    .testi-card__stars { display: flex; gap: 2px; color: #CC9500; font-size: var(--fs-xs); margin-bottom: var(--space-5); }
+    .testi-card__cite {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      border-top: 1px solid var(--border-2, #F2EEE6);
+      padding-top: var(--space-4);
+    }
+    .testi-card__logo { block-size: 26px; inline-size: auto; max-inline-size: 72px; object-fit: contain; filter: grayscale(1) brightness(0.25) opacity(0.75); flex: none; }
+    .testi-card__person { display: flex; flex-direction: column; min-width: 0; }
+    .testi-card__name { font-size: var(--fs-sm); font-weight: var(--fw-semi); color: var(--text-primary); }
+    .testi-card__role { font-size: var(--fs-xs); color: var(--text-muted); }
+  </style>
+  <div class="container">
+    <header class="chapter__header-center">
+      <span class="chapter__eyebrow">Clientes</span>
+      <h2 class="chapter__title">Equipos de finanzas que ya operan con Tesote.</h2>
+      <p class="chapter__body">Ninguno implementó solo — cada uno arrancó con nuestro equipo adentro.</p>
+    </header>
+    <div class="testi-grid">
+      <figure class="testi-card">
+        <blockquote class="testi-card__quote">“Nuestra tesorería ha experimentado una transformación gracias a Tesote. Tenemos la información bancaria consolidada al instante, facilitando nuestros reportes y destinando más tiempo del equipo al análisis y toma de decisiones importantes.”</blockquote>
+        <div class="testi-card__stars" aria-label="5 de 5 estrellas">
+          <i class="fa-solid fa-star" aria-hidden="true"></i><i class="fa-solid fa-star" aria-hidden="true"></i><i class="fa-solid fa-star" aria-hidden="true"></i><i class="fa-solid fa-star" aria-hidden="true"></i><i class="fa-solid fa-star" aria-hidden="true"></i>
+        </div>
+        <figcaption class="testi-card__cite">
+          <img class="testi-card__logo" src="current/assets/clients/ama-de-casa-f367519b.webp" alt="Grupo Ama de Casa" loading="lazy">
+          <span class="testi-card__person">
+            <span class="testi-card__name">Carlos Domínguez</span>
+            <span class="testi-card__role">VP Ejecutivo · Grupo Ama de Casa</span>
+          </span>
+        </figcaption>
+      </figure>
+      <figure class="testi-card">
+        <blockquote class="testi-card__quote">“Tesote ha potenciado nuestra tesorería con acceso inmediato a saldos bancarios, unificando todas las transacciones de todos los bancos en un solo lugar con filtros avanzados, gráficos que muestran ingresos, débitos por cuenta y banco al alcance de un clic.”</blockquote>
+        <div class="testi-card__stars" aria-label="5 de 5 estrellas">
+          <i class="fa-solid fa-star" aria-hidden="true"></i><i class="fa-solid fa-star" aria-hidden="true"></i><i class="fa-solid fa-star" aria-hidden="true"></i><i class="fa-solid fa-star" aria-hidden="true"></i><i class="fa-solid fa-star" aria-hidden="true"></i>
+        </div>
+        <figcaption class="testi-card__cite">
+          <img class="testi-card__logo" src="current/assets/clients/cines-unidos-88a1fcbc.webp" alt="Cines Unidos" loading="lazy">
+          <span class="testi-card__person">
+            <span class="testi-card__name">José Daniel López</span>
+            <span class="testi-card__role">Jefe de Tesorería · Cines Unidos</span>
+          </span>
+        </figcaption>
+      </figure>
+      <figure class="testi-card">
+        <blockquote class="testi-card__quote">“Tesote nos ha permitido disminuir significativamente los tiempos de consultas bancarias y agilizar las confirmaciones de pagos de clientes, generando así un impacto positivo en nuestros procesos administrativos de ventas y flujo de caja.”</blockquote>
+        <div class="testi-card__stars" aria-label="5 de 5 estrellas">
+          <i class="fa-solid fa-star" aria-hidden="true"></i><i class="fa-solid fa-star" aria-hidden="true"></i><i class="fa-solid fa-star" aria-hidden="true"></i><i class="fa-solid fa-star" aria-hidden="true"></i><i class="fa-solid fa-star" aria-hidden="true"></i>
+        </div>
+        <figcaption class="testi-card__cite">
+          <img class="testi-card__logo" src="current/assets/clients/paisa-8727515c.webp" alt="Paisa" loading="lazy">
+          <span class="testi-card__person">
+            <span class="testi-card__name">Jorge Guerra</span>
+            <span class="testi-card__role">Gerente de Finanzas · Paisa</span>
+          </span>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <style>
+    .cta-section__list {
+      list-style: none; margin: 0; padding: 0; inline-size: 100%; max-inline-size: 58ch;
+      display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4) var(--space-8);
+      text-align: left;
+    }
+    @media (max-width: 640px) { .cta-section__list { grid-template-columns: 1fr; } }
+    .cta-section__list li { display: flex; gap: var(--space-3); align-items: baseline; color: var(--text-secondary); line-height: var(--lh-normal); }
+    .cta-section__list i { color: var(--tesote-success); font-size: var(--fs-sm); flex: none; position: relative; top: 2px; }
+    .cta-section__list strong { color: var(--text-primary); font-weight: var(--fw-semi); }
+  </style>
+  <div class="container">
+    <div class="cta-section">
+      <div class="cta-section__inner">
+        <h2 class="cta-section__title">¿Qué porcentaje de tu operación está automatizada?</h2>
+          <p class="cta-section__subtitle">Más que un software, Tesote es el equipo que sube ese número por ti. No te entregamos un login y un manual: diseñamos, implementamos y operamos tu automatización financiera contigo.</p>
+
+          <ul class="cta-section__list">
+            <li><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span><strong>Diagnóstico de tu operación</strong> — mapeamos cada proceso manual y cuánto tiempo te cuesta.</span></li>
+            <li><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span><strong>Implementación llave en mano</strong> — conectamos tus bancos, tu ERP y tus flujos; tú no levantas nada.</span></li>
+            <li><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span><strong>Especialistas dentro de tu equipo</strong> — finanzas y tecnología trabajando contigo, no a distancia.</span></li>
+            <li><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span><strong>Soporte dedicado, siempre</strong> — de ahí en adelante, alguien que conoce tu operación al detalle.</span></li>
+          </ul>
+
+          <div class="cta-section__actions">
+              <a href="#agenda" class="btn btn-primary">
+                Agenda una demo
+                <i class="fa-solid fa-arrow-right ms-2" aria-hidden="true"></i>
+              </a>
+          </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- §11 Agenda — HubSpot Meetings embed. data-src is a PLACEHOLDER: replace with the real meetings link, then serve over http (the embed script does not run on file://). -->
+<style>
+  .booking { padding-block: var(--space-12); }
+  .booking__header { text-align: center; max-inline-size: 56ch; margin-inline: auto; margin-bottom: var(--space-8); }
+  .booking__header .section__title { margin-inline: auto; }
+  .booking-frame {
+    background: #FFFFFF; border: 1px solid var(--border-subtle); border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-sm); min-block-size: 640px; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .booking-frame__placeholder { text-align: center; color: var(--text-subtle); padding: var(--space-10); max-inline-size: 40ch; }
+  .booking-frame__placeholder i { font-size: 2rem; color: var(--accent); margin-bottom: var(--space-4); display: block; }
+  .booking-frame__placeholder strong { display: block; color: var(--text-secondary); font-family: var(--font-display); font-size: var(--fs-lg); margin-bottom: var(--space-2); }
+
+  .faq { padding-block: var(--space-12); }
+  .faq__header { text-align: center; max-inline-size: 50ch; margin-inline: auto; margin-bottom: var(--space-8); }
+  .faq__header .section__title { margin-inline: auto; }
+  .faq__list { max-inline-size: 760px; margin-inline: auto; display: flex; flex-direction: column; gap: var(--space-3); }
+  .faq__item { border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); background: #FFFFFF; box-shadow: var(--shadow-sm); }
+  .faq__q {
+    list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: var(--space-4);
+    padding: var(--space-5) var(--space-6);
+    font-family: var(--font-display); font-weight: var(--fw-semi); font-size: var(--fs-base); color: var(--text-primary);
+  }
+  .faq__q::-webkit-details-marker { display: none; }
+  .faq__chevron { color: var(--text-subtle); flex: none; transition: transform .2s ease; }
+  .faq__item[open] .faq__chevron { transform: rotate(180deg); }
+  .faq__a { padding: 0 var(--space-6) var(--space-5); margin: 0; color: var(--text-muted); font-size: var(--fs-sm); line-height: var(--lh-normal); }
+</style>
+
+<section id="agenda" class="section booking">
+  <div class="container">
+    <header class="booking__header">
+      <h2 class="section__title">Agenda tu demo</h2>
+      <p class="section__subtitle">Reserva 30 minutos. Trae tus números y sales de la llamada con un diagnóstico de qué puedes automatizar en tu operación.</p>
+    </header>
+    <!-- Start of Meetings Embed Script -->
+    <div class="meetings-iframe-container booking-frame" data-src="https://meetings.hubspot.com/ventas690/reunion-de-ventas-ve?embed=true">
+      <div class="booking-frame__placeholder">
+        <i class="fa-regular fa-calendar-check" aria-hidden="true"></i>
+        <strong>Calendario de HubSpot</strong>
+        El calendario en vivo se carga aquí (necesita conexión a internet; offline muestra este aviso).
+      </div>
+    </div>
+    <script type="text/javascript" src="https://static.hsappstatic.net/MeetingsEmbed/ex/MeetingsEmbedCode.js"></script>
+    <!-- End of Meetings Embed Script -->
+  </div>
+</section>
+
+<!-- §12 FAQ — native details/summary accordion, no JS dependency -->
+<section id="faq" class="section faq">
+  <div class="container">
+    <header class="faq__header">
+      <h2 class="section__title">Preguntas frecuentes</h2>
+    </header>
+    <div class="faq__list">
+      <details class="faq__item">
+        <summary class="faq__q">¿Con qué bancos se conecta Tesote?<i class="fa-solid fa-chevron-down faq__chevron" aria-hidden="true"></i></summary>
+        <p class="faq__a">Con más de 120 bancos en Venezuela, y también con bancos en Panamá, República Dominicana y Estados Unidos. Ves todas tus cuentas, en Bs y USD, desde un solo lugar.</p>
+      </details>
+      <details class="faq__item">
+        <summary class="faq__q">¿Se integra con mi ERP o sistema contable?<i class="fa-solid fa-chevron-down faq__chevron" aria-hidden="true"></i></summary>
+        <p class="faq__a">Sí. Tesote habla con tu ERP en ambas direcciones: sube tu data bancaria ya enriquecida y baja tus facturas para conciliarlas y devolver las partidas registradas — sin que nadie copie y pegue.</p>
+      </details>
+      <details class="faq__item">
+        <summary class="faq__q">¿Qué tan segura está mi información?<i class="fa-solid fa-chevron-down faq__chevron" aria-hidden="true"></i></summary>
+        <p class="faq__a">Cifrado de grado bancario (AES-256-GCM, TLS, integridad SHA-256), 2FA en cada acceso, permisos granulares y auditoría completa de cada acción. Estamos en proceso de certificación SOC 2 Type II.</p>
+      </details>
+      <details class="faq__item">
+        <summary class="faq__q">¿Tesote tiene acceso a mi dinero?<i class="fa-solid fa-chevron-down faq__chevron" aria-hidden="true"></i></summary>
+        <p class="faq__a">No. Tesote no custodia tus fondos. Los pagos se ejecutan por la API de tu propio banco y cada acción la autorizas tú — Tesote ve y organiza, tú decides y apruebas.</p>
+      </details>
+      <details class="faq__item">
+        <summary class="faq__q">¿Cuánto tarda la implementación?<i class="fa-solid fa-chevron-down faq__chevron" aria-hidden="true"></i></summary>
+        <p class="faq__a">No te entregamos un login y un manual: nuestro equipo conecta tus bancos, tu ERP y tus flujos contigo. El tiempo depende del tamaño de tu operación, y lo estimamos contigo en la demo.</p>
+      </details>
+      <details class="faq__item">
+        <summary class="faq__q">¿Cuánto cuesta?<i class="fa-solid fa-chevron-down faq__chevron" aria-hidden="true"></i></summary>
+        <p class="faq__a">El precio depende de tu operación: número de bancos y entidades, volumen y el alcance de la automatización que necesites. Lo definimos juntos en la demo, según lo que tu equipo requiere.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+
+  </main>
+
+  <footer class="site-footer">
+  <div class="container">
+    <div class="site-footer__top">
+      <div class="site-footer__brand">
+        <img class="site-footer__logo" alt="Tesote" src="current/assets/logos/tesote/text-white-9d9d1f73.svg" />
+        <p class="site-footer__tagline">Automatización Financiera</p>
+        <ul class="social-links social-links--icons">
+    <li>
+      <a href="https://www.linkedin.com/company/tesote"
+         class="social-links__item"
+         target="_blank" rel="noopener noreferrer"
+         aria-label="LinkedIn">
+        <i class="fa-brands fa-linkedin-in" aria-hidden="true"></i>
+      </a>
+    </li>
+    <li>
+      <a href="https://x.com/tesote_"
+         class="social-links__item"
+         target="_blank" rel="noopener noreferrer"
+         aria-label="X (Twitter)">
+        <i class="fa-brands fa-x-twitter" aria-hidden="true"></i>
+      </a>
+    </li>
+    <li>
+      <a href="https://www.instagram.com/tesote__"
+         class="social-links__item"
+         target="_blank" rel="noopener noreferrer"
+         aria-label="Instagram">
+        <i class="fa-brands fa-instagram" aria-hidden="true"></i>
+      </a>
+    </li>
+</ul>
+
+      </div>
+
+            <div class="site-footer__nav">
+          <div class="site-footer__nav-col">
+            <h6 class="site-footer__col-heading">Navegación</h6>
+            <ul class="site-footer__list">
+                <li><a class="site-footer__link" href="#features">Producto</a></li>
+                <li><a class="site-footer__link" href="#seguridad">Seguridad</a></li>
+                <li><a class="site-footer__link" href="#faq">FAQ</a></li>
+                <li><a class="site-footer__link" href="#agenda">Agenda una demo</a></li>
+            </ul>
+          </div>
+          <div class="site-footer__nav-col">
+            <h6 class="site-footer__col-heading">Tesote</h6>
+            <ul class="site-footer__list">
+                <li><a class="site-footer__link" href="https://equipo.tesote.com/users/sign_in" target="_blank" rel="noopener">Iniciar sesión</a></li>
+                <li><a class="site-footer__link" href="https://api.whatsapp.com/send/?app_absent=0&amp;phone=19786375755&amp;text=%C2%A1Hola%21+Estoy+interesad%40+en+Tesote.&amp;type=phone_number" target="_blank" rel="noopener nofollow">WhatsApp</a></li>
+            </ul>
+          </div>
+          <div class="site-footer__nav-col">
+            <h6 class="site-footer__col-heading">Legal</h6>
+            <ul class="site-footer__list">
+                <li><a class="site-footer__link" href="/privacidad">Política de Privacidad</a></li>
+                <li><a class="site-footer__link" href="/terminos">Términos y Condiciones</a></li>
+            </ul>
+          </div>
+      </div>
+    </div>
+
+    <div class="site-footer__bottom">
+      <p class="site-footer__copyright">&copy; 2026 Tesote. Todos los derechos reservados.</p>
+      <ul class="site-footer__legal-links">
+        <li><a href="/privacidad">Política de Privacidad</a></li>
+        <li><a href="/terminos">Términos y Condiciones</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+  <a class="whatsapp-fab"
+   href="https://api.whatsapp.com/send/?app_absent=0&amp;phone=19786375755&amp;text=%C2%A1Hola%21+Estoy+interesad%40+en+Tesote.&amp;type=phone_number"
+   target="_blank"
+   rel="noopener nofollow"
+   aria-label="Habla con nosotros por WhatsApp">
+  <span class="whatsapp-fab__icon" aria-hidden="true">
+    <i class="fa-brands fa-whatsapp"></i>
+  </span>
+  <span class="whatsapp-fab__label">WhatsApp</span>
+</a>
+
+<style id="density-pass">
+  /* ===== Density pass — wider canvas, smaller type, tighter rhythm (Brex proportions) ===== */
+
+  /* Canvas: 1100px -> 1200px */
+  .container { max-width: 75rem; }
+
+  /* Type scale: trim the top end */
+  :root {
+    --fs-5xl: 3rem;
+    --fs-4xl: 2.125rem;
+    --fs-3xl: 1.75rem;
+    --section-padding-y: 4.5rem;
+    --section-padding-y-sm: 3rem;
+  }
+
+  /* Hero — v21: hero owns the full first viewport; stats start exactly below the fold */
+  .hero { padding-block: 3rem 4rem; min-block-size: calc(100svh - 64px); display: flex; align-items: center; }
+  .hero > .container { inline-size: 100%; }
+  .hero__inner { gap: 2.5rem; }
+  .hero__headline { font-size: clamp(2rem, 3.4vw, 3.125rem); }
+  .hero__subline { font-size: 1.0625rem; }
+
+  /* Section headers */
+  .section__subtitle { font-size: 1rem; }
+
+  /* Stat grid */
+  .stat-grid__value { font-size: 1.75rem; }
+
+  /* Logo strip */
+  .logo-strip__img { max-inline-size: 150px; }
+
+  /* Product rail */
+  .pcard-grid { gap: 0.75rem; }
+  .pcard__head { padding: 1.25rem 1.25rem 0.75rem; }
+  .pcard__title { font-size: 1.0625rem; }
+  .pcard__visual { padding: 0.75rem 1.25rem 1.25rem; }
+
+  /* Story chapters */
+  .chapter { padding-block: 3.5rem; }
+  .chapter__row { gap: 3rem; }
+  .chapter__title { font-size: 1.625rem; }
+  .chapter__body { font-size: 1rem; }
+  .chapter__list li { font-size: 0.9375rem; }
+  .chapter__panel { padding: 2rem; min-height: 380px; border-radius: 1rem; } /* v22: equalized across all 5 chapters */
+  .chapter__header-center { margin-bottom: 2.5rem; }
+  .ui-card { padding: 1rem; }
+  .ui-card__figure { font-size: 1.25rem; }
+
+  /* Seguridad */
+  .sec-grid { gap: 0.75rem; }
+  .sec-card { padding: 1.25rem; }
+
+  /* Testimonial + CTA */
+  .testimonial-pull__quote { font-size: 1.375rem; }
+  .cta-section { padding: 3rem; }
+</style>
+
+<style id="mobile-pass-v41">
+  /* ===== v41 mobile pass ===== */
+  /* Story bridge: one-line only on wide screens; wrap below 1200px so it never overflows the viewport. */
+  @media (max-width: 1199px) {
+    .story-bridge__statement { white-space: normal; text-wrap: balance; }
+  }
+  @media (max-width: 640px) {
+    /* Hero: don't force full-viewport height on phones (avoids dead centered whitespace). */
+    .hero { min-block-size: auto; padding-block: 2rem 2.5rem; }
+    .hero__inner { gap: var(--space-8); }
+    /* Tighten the big section rhythm so mobile isn't endless scroll. */
+    .chapter { padding-block: var(--space-12); }
+    .story-bridge { padding-block: var(--space-10); }
+    .section { padding-block: var(--section-padding-y-sm); }
+    /* Calendar frame: shorter on phones; HubSpot iframe is responsive. */
+    .booking-frame { min-block-size: 560px; }
+    /* CTA rectangle: trim inner padding so copy isn't cramped against edges. */
+    .cta-section { padding: 1.75rem; }
+  }
+</style>
+
+<style id="palette-v45">
+  /* v45 color logic — blue = data + CTAs; black = chrome/identity.
+     Graphs reverted black->brand blue #1661E2 (line+fill). FAB + hero ambient glow de-blued. */
+
+  /* WhatsApp FAB: compiled CSS paints it blue (blue-700->900). -> Tesote black. */
+  .whatsapp-fab {
+    background: linear-gradient(180deg, #232220 0%, #12110F 100%);
+    box-shadow: 0 12px 28px rgba(18,17,15,.35), 0 2px 6px rgba(18,17,15,.30);
+  }
+
+  /* Hero ambient glow: compiled CSS paints a blue radial wash via .hero::before.
+     Replace with a whisper of warm ink for depth without the tech-blue cast. */
+  .hero::before {
+    background: radial-gradient(ellipse at top, rgba(18,17,15,0.05), transparent 60%);
+  }
+</style>
+
+<style id="hero-lines-v47">
+  /* v47: hero line motif (gallery #17) — full-width "baseline strip" of wave bars anchored to the
+     bottom edge of the hero (where the first screen ends); bars rise from the fold. The peak column
+     is blue with a perfect blue SQUARE cap (CSS, so it never distorts). Static SVG, no JS. */
+  .hero { position: relative; }
+  .hero > .container { position: relative; z-index: 2; }   /* hero content above the strip */
+  .hero-lines {
+    position: absolute; z-index: 1; left: 0; right: 0; bottom: 0; height: 150px; pointer-events: none;
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 3%, #000 97%, transparent 100%);
+            mask-image: linear-gradient(to right, transparent 0, #000 3%, #000 97%, transparent 100%);
+  }
+  .hero-lines .svg { width: 100%; height: 100%; display: block; }
+  .hero-lines__cap {
+    position: absolute; width: 8px; height: 8px; background: #1661E2;
+    left: 21.34%; bottom: 69.67%; transform: translate(-50%, 50%);
+  }
+  @media (max-width: 991px) { .hero-lines { height: 104px; } }
+</style>
+
+</body>
+</html>

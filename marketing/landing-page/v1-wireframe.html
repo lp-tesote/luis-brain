@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tesote — Homepage Wireframe v1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============ TOKENS ============ */
+  :root {
+    --ink-900: #16181d;
+    --ink-700: #3c4046;
+    --ink-500: #6b7077;
+    --ink-300: #b4b8bd;
+    --line: #e4e6e8;
+    --paper: #ffffff;
+    --paper-dim: #f6f7f8;
+    --accent: #1f4dd8;          /* placeholder accent — token, swap later */
+    --accent-ink: #ffffff;
+    --dark-bg: #101216;         /* AI crescendo register */
+    --dark-ink: #e9eaec;
+    --dark-dim: #8d929a;
+
+    --font: 'Inter', system-ui, sans-serif;
+    --fs-hero: clamp(2.1rem, 5vw, 3.4rem);
+    --fs-h2: clamp(1.5rem, 3vw, 2.2rem);
+    --fs-h3: 1.125rem;
+    --fs-body: 1rem;
+    --fs-small: 0.85rem;
+
+    --space-1: 0.5rem;
+    --space-2: 1rem;
+    --space-3: 1.5rem;
+    --space-4: 2.5rem;
+    --space-5: 4rem;
+    --space-6: 6.5rem;
+
+    --radius-s: 6px;
+    --radius-m: 10px;
+    --radius-l: 16px;
+    --maxw: 1120px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); color: var(--ink-900); background: var(--paper); line-height: 1.6; font-size: var(--fs-body); }
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--space-3); }
+  section { padding: var(--space-6) 0; position: relative; }
+  h1 { font-size: var(--fs-hero); line-height: 1.12; letter-spacing: -0.025em; font-weight: 700; }
+  h2 { font-size: var(--fs-h2); line-height: 1.2; letter-spacing: -0.02em; font-weight: 700; }
+  h3 { font-size: var(--fs-h3); font-weight: 600; }
+  p.lead { font-size: 1.15rem; color: var(--ink-700); }
+  .muted { color: var(--ink-500); }
+
+  /* wireframe annotation chips — remove before any external share */
+  .wf-tag {
+    position: absolute; top: var(--space-2); left: var(--space-3);
+    font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--ink-300); border: 1px dashed var(--ink-300);
+    padding: 2px 8px; border-radius: 999px; background: var(--paper);
+  }
+  .dark .wf-tag { background: var(--dark-bg); color: var(--dark-dim); border-color: var(--dark-dim); }
+
+  .eyebrow { font-size: var(--fs-small); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: var(--space-2); }
+  .refrain { font-weight: 600; color: var(--ink-900); margin-top: var(--space-3); }
+
+  .btn { display: inline-block; padding: 0.75rem 1.4rem; border-radius: var(--radius-s); font-weight: 600; font-size: 0.95rem; text-decoration: none; }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); }
+  .btn-ghost { color: var(--ink-700); border: 1px solid var(--line); }
+
+  /* placeholder blocks for real product UI */
+  .ph {
+    background: var(--paper-dim); border: 1px dashed var(--ink-300); border-radius: var(--radius-l);
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    color: var(--ink-500); font-size: var(--fs-small); font-weight: 500; padding: var(--space-2);
+  }
+  .dark .ph { background: #1a1d23; border-color: #3a3e46; color: var(--dark-dim); }
+
+  /* ---- nav ---- */
+  nav { border-bottom: 1px solid var(--line); padding: var(--space-2) 0; position: sticky; top: 0; background: var(--paper); z-index: 10; }
+  nav .wrap { display: flex; align-items: center; gap: var(--space-3); }
+  .logo { font-weight: 700; font-size: 1.1rem; letter-spacing: -0.02em; }
+  .nav-links { display: flex; gap: var(--space-3); margin-left: auto; align-items: center; }
+  .nav-links a { color: var(--ink-700); text-decoration: none; font-size: 0.95rem; font-weight: 500; }
+
+  /* ---- hero ---- */
+  .hero { padding-top: var(--space-5); }
+  .hero .wrap { display: grid; gap: var(--space-4); text-align: center; max-width: 880px; }
+  .hero p.lead { max-width: 620px; margin: 0 auto; }
+  .hero-cta { display: flex; gap: var(--space-2); justify-content: center; }
+  .hero-ui { height: 420px; margin-top: var(--space-2); }
+
+  /* ---- product suite rail ---- */
+  .suite { padding: 0 0 var(--space-5); }
+  .suite-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--space-2); }
+  .suite-card {
+    border: 1px solid var(--line); border-radius: var(--radius-m); padding: var(--space-3) var(--space-2);
+    text-decoration: none; color: inherit; display: grid; gap: 6px; align-content: start;
+    transition: border-color 0.15s;
+  }
+  .suite-card:hover { border-color: var(--accent); }
+  .suite-card .product-name { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+  .suite-card h3 { font-size: 0.98rem; }
+  .suite-card p { font-size: var(--fs-small); color: var(--ink-500); line-height: 1.45; }
+  .suite-card .go { font-size: var(--fs-small); font-weight: 600; color: var(--ink-700); margin-top: 2px; }
+
+  /* ---- logos ---- */
+  .logos { padding: var(--space-4) 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .logos .wrap { text-align: center; }
+  .logo-row { display: flex; gap: var(--space-3); justify-content: center; flex-wrap: wrap; margin-top: var(--space-3); }
+  .logo-ph { width: 120px; height: 36px; }
+
+  /* ---- chapters ---- */
+  .chapter .wrap { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-5); align-items: center; }
+  .chapter.flip .wrap > .ch-visual { order: -1; }
+  .ch-visual { height: 360px; }
+  .alt { background: var(--paper-dim); }
+
+  .feature-list { list-style: none; margin-top: var(--space-3); display: grid; gap: var(--space-2); }
+  .feature-list li { padding-left: 1.4rem; position: relative; color: var(--ink-700); }
+  .feature-list li::before {
+    content: ""; position: absolute; left: 0; top: 0.55em; width: 0.55rem; height: 0.55rem;
+    border-radius: 2px; background: var(--accent);
+  }
+  .feature-list strong { color: var(--ink-900); }
+
+  /* bank grid */
+  .bank-grid { display: flex; flex-wrap: wrap; gap: var(--space-1); margin-top: var(--space-3); }
+  .bank { font-size: var(--fs-small); font-weight: 500; color: var(--ink-700); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; background: var(--paper); }
+  .bank.more { color: var(--ink-300); border-style: dashed; }
+
+  /* two doors */
+  .doors { background: var(--paper-dim); }
+  .doors .head { text-align: center; max-width: 640px; margin: 0 auto var(--space-4); }
+  .door-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+  .door { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-l); padding: var(--space-4); display: grid; gap: var(--space-2); align-content: start; }
+  .door .ph { height: 180px; }
+  .door .product-name { font-size: var(--fs-small); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+
+  /* AI crescendo */
+  .dark { background: var(--dark-bg); color: var(--dark-ink); }
+  .dark .eyebrow { color: #7ea0ff; }
+  .dark p.lead, .dark .muted { color: var(--dark-dim); }
+  .dark .refrain { color: var(--dark-ink); }
+  .ai .wrap { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-5); align-items: center; }
+  .ai-chat { height: 400px; }
+
+  /* security */
+  .sec-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-3); margin-top: var(--space-4); }
+  .sec-card { border: 1px solid var(--line); border-radius: var(--radius-m); padding: var(--space-3); display: grid; gap: var(--space-1); align-content: start; }
+  .sec-card .verify { font-size: 0.7rem; font-weight: 700; color: #b3261e; letter-spacing: 0.05em; }
+
+  /* testimonial */
+  .testimonial .wrap { max-width: 760px; text-align: center; display: grid; gap: var(--space-3); justify-items: center; }
+  blockquote { font-size: 1.4rem; line-height: 1.45; font-weight: 500; letter-spacing: -0.01em; }
+  .avatar { width: 56px; height: 56px; border-radius: 50%; }
+
+  /* CTA band */
+  .cta-band { background: var(--paper-dim); border-top: 1px solid var(--line); }
+  .cta-band .wrap { text-align: center; display: grid; gap: var(--space-3); justify-items: center; max-width: 640px; }
+
+  footer { border-top: 1px solid var(--line); padding: var(--space-4) 0; }
+  footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: var(--space-2); color: var(--ink-500); font-size: var(--fs-small); }
+
+  /* ---- responsive ---- */
+  @media (max-width: 768px) {
+    .chapter .wrap, .ai .wrap, .door-grid { grid-template-columns: 1fr; }
+    .sec-grid { grid-template-columns: 1fr 1fr; }
+    .ch-visual, .hero-ui { height: 260px; }
+    .chapter.flip .wrap > .ch-visual { order: 0; }
+    .nav-links a:not(.btn) { display: none; }
+    section { padding: var(--space-5) 0; }
+  }
+  @media (max-width: 480px) {
+    .sec-grid { grid-template-columns: 1fr; }
+    .hero-cta { flex-direction: column; align-items: stretch; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 0 · NAV -->
+<nav>
+  <div class="wrap">
+    <span class="logo">tesote</span>
+    <div class="nav-links">
+      <a href="#">Producto</a>
+      <a href="#">Seguridad</a>
+      <a href="#" class="btn btn-primary">Agenda una demo</a>
+    </div>
+  </div>
+</nav>
+
+<!-- 1 · HERO — Act I: the day-1 claim -->
+<section class="hero">
+  <span class="wf-tag">01 · Hero — Connect claim + lifecycle subhead</span>
+  <div class="wrap">
+    <h1>Todos tus bancos.<br>Un solo lugar. En tiempo real.</h1>
+    <p class="lead">Y desde ahí: paga, cobra y deja que tus libros se lleven solos. Tesote es el centro de comando de las finanzas de tu empresa.</p>
+    <div class="hero-cta">
+      <a href="#" class="btn btn-primary">Agenda una demo</a>
+      <a href="#" class="btn btn-ghost">Ver el producto</a>
+    </div>
+    <div class="ph hero-ui">[ UI REAL — pantalla de Cuentas/Transacciones, multi-banco, Bs + USD ]<br>screenshot del producto, nunca ilustración</div>
+  </div>
+</section>
+
+<!-- 2 · LOGOS -->
+<section class="logos">
+  <span class="wf-tag">02 · Logos — borrowed trust</span>
+  <div class="wrap">
+    <p class="muted">Equipos de finanzas que ya operan con Tesote</p>
+    <div class="logo-row">
+      <div class="ph logo-ph">logo</div>
+      <div class="ph logo-ph">logo</div>
+      <div class="ph logo-ph">logo</div>
+      <div class="ph logo-ph">logo</div>
+      <div class="ph logo-ph">logo</div>
+      <div class="ph logo-ph">logo</div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 · VE TODO — Tesote Connect -->
+<section class="chapter">
+  <span class="wf-tag">03 · Ve todo — Connect + bank grid (the moat wall)</span>
+  <div class="wrap">
+    <div>
+      <p class="eyebrow">Tesote Connect</p>
+      <h2>Ve todo. Sin entrar a ningún portal.</h2>
+      <p class="lead" style="margin-top: var(--space-2);">Tu posición en vivo en todos tus bancos — Venezuela, Panamá, República Dominicana, Estados Unidos — en bolívares y dólares, sin que nadie vuelva a descargar un estado de cuenta.</p>
+      <ul class="feature-list">
+        <li><strong>Categorización automática</strong> — cada transacción llega con su categoría y su contraparte identificada</li>
+        <li><strong>Permisos granulares</strong> — decide quién ve qué, hasta el nivel de "solo créditos de esta cuenta"</li>
+        <li><strong>Insights por transacción</strong> — historial de la contraparte, transacciones similares, comparación de montos</li>
+      </ul>
+      <div class="bank-grid">
+        <span class="bank">Banesco</span><span class="bank">Mercantil</span><span class="bank">BNC</span><span class="bank">BBVA Provincial</span><span class="bank">Banco de Venezuela</span><span class="bank">Bancaribe</span><span class="bank">Banco Exterior</span><span class="bank">Bancamiga</span><span class="bank">Banesco Panamá</span><span class="bank">Banco General</span><span class="bank">Banreservas</span><span class="bank more">+ todos los demás</span>
+      </div>
+    </div>
+    <div class="ph ch-visual">[ UI REAL — vista de transacciones enriquecidas:<br>categoría + contraparte + nota de equipo visible ]</div>
+  </div>
+</section>
+
+<!-- 4 · MUEVE DINERO — two doors, one chapter -->
+<section class="doors">
+  <span class="wf-tag">04 · Mueve dinero — Paga / Cobra (two separate doors)</span>
+  <div class="wrap">
+    <div class="head">
+      <h2>Mueve dinero desde el mismo lugar donde lo ves.</h2>
+    </div>
+    <div class="door-grid">
+      <div class="door">
+        <span class="product-name">Tesote Pagos</span>
+        <h3>Paga</h3>
+        <p class="muted">Ejecuta pagos directo por API bancaria, sin entrar al portal de cada banco. Conciliado en el momento en que se ejecuta.</p>
+        <div class="ph">[ UI — flujo de pago / cola de aprobación ]</div>
+        <p class="refrain">Se concilia solo.</p>
+      </div>
+      <div class="door">
+        <span class="product-name">Tesote Negocios</span>
+        <h3>Cobra con un link</h3>
+        <p class="muted">Envía un link de pago con la factura adentro. Te pagan — y no hay nada que conciliar, porque el pago nació conectado a su factura.</p>
+        <div class="ph">[ UI — link de pago / portal del pagador ]</div>
+        <p class="refrain">Se concilia solo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 · TUS LIBROS SE LLEVAN SOLOS — Accounting Automation -->
+<section class="chapter flip alt">
+  <span class="wf-tag">05 · Libros — Accounting Automation (ERP both ways)</span>
+  <div class="wrap">
+    <div>
+      <p class="eyebrow">Contabilidad automática</p>
+      <h2>Tus libros se llevan solos.</h2>
+      <p class="lead" style="margin-top: var(--space-2);">Tesote se integra con tu ERP en ambas direcciones.</p>
+      <ul class="feature-list">
+        <li><strong>Sube</strong> la data bancaria ya enriquecida — categorías, contrapartes, tasas de cambio</li>
+        <li><strong>Baja</strong> tus facturas abiertas, hace el match en Tesote y devuelve partidas conciliadas</li>
+        <li><strong>Opera</strong> tu contabilidad: crea proveedores, crea y corrige facturas, concilia pagos</li>
+      </ul>
+      <p class="refrain">Lo que entra a tu contabilidad, entra conciliado.</p>
+    </div>
+    <div class="ph ch-visual">[ DIAGRAMA/UI — flujo bidireccional Tesote ⇄ ERP:<br>data enriquecida sube · facturas bajan · match en el medio ]</div>
+  </div>
+</section>
+
+<!-- 6 · TESOTE AI — Act III, the crescendo (distinct register) -->
+<section class="ai dark">
+  <span class="wf-tag">06 · Tesote AI — crescendo, dark register</span>
+  <div class="wrap">
+    <div>
+      <p class="eyebrow">Tesote AI</p>
+      <h2>Todo conectado.<br>Ahora, inteligente.</h2>
+      <p class="lead" style="margin-top: var(--space-2);">La IA más avanzada, aplicada a las finanzas de tu empresa — con tus bancos, tus pagos y tu ERP ya conectados.</p>
+      <ul class="feature-list">
+        <li><strong>Pregunta lo que sea</strong> — un reporte ad hoc sobre tu data real, en segundos</li>
+        <li><strong>Guárdalo como tuyo</strong> — reportes personalizados que se actualizan solos</li>
+        <li><strong>Corre flujos a escala</strong> — operaciones masivas que antes tomaban días</li>
+      </ul>
+    </div>
+    <div class="ph ai-chat">[ UI REAL — conversación con Tesote AI:<br>pregunta → reporte generado sobre data real ]<br>demo, no declaración</div>
+  </div>
+</section>
+
+<!-- 7 · SEGURIDAD -->
+<section>
+  <span class="wf-tag">07 · Seguridad — kill the #1 silent objection</span>
+  <div class="wrap">
+    <h2>Tu data bancaria, tratada como lo que es.</h2>
+    <p class="lead muted" style="margin-top: var(--space-2); max-width: 640px;">Le estás dando acceso a tus bancos a un software. Esto es exactamente lo que eso significa — y lo que no.</p>
+    <div class="sec-grid">
+      <div class="sec-card"><span class="verify">[VERIFICAR con Dan]</span><h3>Credenciales</h3><p class="muted">Cómo se almacenan y cifran las credenciales bancarias.</p></div>
+      <div class="sec-card"><span class="verify">[VERIFICAR con Dan]</span><h3>Quién ve qué</h3><p class="muted">Permisos granulares por persona, cuenta y tipo de movimiento.</p></div>
+      <div class="sec-card"><span class="verify">[VERIFICAR con Dan]</span><h3>Qué puede tocar Tesote</h3><p class="muted">Alcances de lectura vs. ejecución, y quién aprueba qué.</p></div>
+      <div class="sec-card"><span class="verify">[VERIFICAR con Dan]</span><h3>Infraestructura</h3><p class="muted">Cifrado en tránsito y en reposo, auditoría, respaldos.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 · TESTIMONIAL -->
+<section class="alt testimonial">
+  <span class="wf-tag">08 · Testimonial — one named human</span>
+  <div class="wrap">
+    <blockquote>"[Cita real de un cliente — específica, con números si se puede: horas ahorradas, bancos conectados, cierre del día.]"</blockquote>
+    <div class="ph avatar"></div>
+    <p class="muted">[Nombre] — [Cargo], [Empresa]</p>
+  </div>
+</section>
+
+<!-- 9 · CTA BAND -->
+<section class="cta-band">
+  <span class="wf-tag">09 · CTA — same single ask as hero</span>
+  <div class="wrap">
+    <h2>¿Cuánto tiempo pierde tu equipo cerrando el día?</h2>
+    <a href="#" class="btn btn-primary">Agenda una demo</a>
+  </div>
+</section>
+
+<!-- 10 · FOOTER -->
+<footer>
+  <div class="wrap">
+    <span>tesote — el centro de comando de tus finanzas</span>
+    <span>Producto · Seguridad · Contacto · Términos</span>
+  </div>
+</footer>
+
+</body>
+</html>

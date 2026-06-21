@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Hero gallery v4 — 10 versiones: USD consolidado + IA que asombra</title>
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="preload" href="current/assets/inter/inter-latin-0555e090.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="current/assets/aspekta/AspektaVF-36354009.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="current/assets/fontawesome/css/all.min-8e150040.css">
+  <link rel="stylesheet" href="current/assets/admin-1f3f92b5.css">
+  <link rel="stylesheet" href="current/assets/application-23a5d970.css">
+
+  <style>
+    /* ===== Lunour light tokens ===== */
+    :root {
+      --bg-base: #FFFFFF;
+      --bg-surface-1: var(--tesote-gray-25);
+      --bg-surface-2: var(--tesote-gray-50);
+      --bg-surface-3: var(--tesote-gray-100);
+      --border-subtle: #E8E3DA;
+      --border-strong: #DCD6CB;
+      --text-primary: #12110F;
+      --text-secondary: var(--tesote-gray-600);
+      --text-muted: #635D55;
+      --text-subtle: #857D73;
+      --accent: #1661E2;
+      --accent-hover: #184EB5;
+      --accent-soft: #EEF8FF;
+      --shadow-sm: 0 1px 2px rgba(18, 17, 15, 0.04);
+      --shadow-md: 0 4px 12px rgba(18, 17, 15, 0.08);
+      --shadow-lg: 0 24px 48px rgba(18, 17, 15, 0.12);
+    }
+    body { background: #FFFFFF; color: var(--text-primary); }
+
+    /* ===== Gallery layout ===== */
+    .gal { max-inline-size: 1280px; margin-inline: auto; padding: var(--space-12) var(--space-6) var(--space-20); }
+    .gal__header { max-inline-size: 74ch; margin-bottom: var(--space-10); }
+    .gal__title { font-family: var(--font-display); font-size: var(--fs-3xl); font-weight: var(--fw-semi); letter-spacing: var(--tracking-tight); margin: 0 0 var(--space-3); }
+    .gal__sub { color: var(--text-muted); line-height: var(--lh-normal); margin: 0; }
+    .gal__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-8); }
+    @media (max-width: 1100px) { .gal__grid { grid-template-columns: 1fr; } }
+    .variant__meta { display: flex; align-items: baseline; gap: var(--space-3); margin-bottom: var(--space-3); }
+    .variant__num {
+      flex: none; inline-size: 28px; block-size: 28px; border-radius: var(--radius-pill);
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--text-primary); color: #fff;
+      font-family: var(--font-mono); font-size: var(--fs-sm); position: relative; top: 5px;
+    }
+    .variant__name { font-family: var(--font-display); font-size: var(--fs-lg); font-weight: var(--fw-semi); }
+    .variant__story { font-size: var(--fs-sm); color: var(--text-muted); margin: 0 0 var(--space-4); line-height: var(--lh-normal); }
+    .stage {
+      background: #FCFBF7; border: 1px solid var(--border-subtle); border-radius: var(--radius-2xl);
+      padding: var(--space-12) var(--space-10); display: flex; align-items: center; justify-content: center;
+      min-block-size: 500px;
+    }
+
+    /* ===== Shared mini-UI primitives ===== */
+    .hp {
+      position: relative; inline-size: 100%; max-inline-size: 510px;
+      background: #FFFFFF; border: 1px solid var(--border-subtle); border-radius: var(--radius-2xl);
+      box-shadow: var(--shadow-lg); padding: var(--space-6);
+      display: flex; flex-direction: column; gap: var(--space-4);
+    }
+    .hp-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding-bottom: var(--space-3); border-bottom: 1px solid var(--border-subtle); }
+    .hp-title { font-family: var(--font-display); font-size: var(--fs-sm); font-weight: var(--fw-semi); color: var(--text-primary); }
+    .hp-live { display: inline-flex; align-items: center; gap: var(--space-2); font-size: var(--fs-xs); font-weight: var(--fw-medium); color: #0F6E45; white-space: nowrap; }
+    .hp-dot { inline-size: 6px; block-size: 6px; border-radius: var(--radius-pill); background: #1A8C5B; flex: none; }
+    .hp-label { font-size: var(--fs-xs); color: var(--text-subtle); }
+    .hp-figure { font-family: var(--font-mono); font-size: var(--fs-3xl); line-height: var(--lh-tight); color: var(--text-primary); font-variant-numeric: tabular-nums; }
+    .hp-cents { font-size: var(--fs-lg); color: var(--text-subtle); }
+    .hp-deltas { display: flex; gap: var(--space-3); font-size: var(--fs-xs); font-family: var(--font-mono); font-variant-numeric: tabular-nums; color: var(--text-subtle); margin-top: var(--space-1); flex-wrap: wrap; }
+    .hp-delta--in { color: #0F6E45; }
+    .hp-delta--out { color: var(--text-muted); }
+    .hp-deltas i { font-size: 0.6rem; position: relative; top: -1px; }
+    .hp-chip {
+      display: flex; align-items: center; gap: var(--space-2);
+      background: var(--bg-surface-2); border: 1px solid var(--border-subtle); border-radius: var(--radius-md);
+      padding: var(--space-2) var(--space-3); font-size: var(--fs-xs); color: var(--text-secondary);
+    }
+    .hp-chip-label { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .hp-chip-value { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--text-primary); font-variant-numeric: tabular-nums; }
+    .hp-pill {
+      font-size: 0.65rem; font-weight: var(--fw-semi); letter-spacing: var(--tracking-wide); text-transform: uppercase;
+      color: #0F6E45; background: #D6E8D5; border-radius: var(--radius-pill); padding: 1px var(--space-2); flex: none; white-space: nowrap;
+    }
+    .hp-pill--accent { color: #184EB5; background: #E4ECF7; }
+    .hp-badge {
+      display: inline-flex; align-items: center; gap: var(--space-1);
+      font-size: 0.7rem; font-weight: var(--fw-medium);
+      color: #184EB5; background: #E4ECF7;
+      border-radius: 4px; padding: 1px var(--space-2); flex: none; white-space: nowrap;
+    }
+    .hp-rows { display: flex; flex-direction: column; }
+    .hp-row { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-2) 0; border-bottom: 1px solid var(--bg-surface-2); font-size: var(--fs-sm); }
+    .hp-row:last-child { border-bottom: 0; }
+    .hp-avatar {
+      inline-size: 24px; block-size: 24px; flex: none; display: inline-flex; align-items: center; justify-content: center;
+      background: var(--bg-surface-2); border: 1px solid var(--border-subtle); border-radius: var(--radius-md);
+      font-size: var(--fs-xs); font-weight: var(--fw-semi); color: var(--text-secondary);
+    }
+    .hp-name { flex: 1; min-width: 0; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .hp-meta { color: var(--text-subtle); font-size: var(--fs-xs); }
+    .hp-value { font-family: var(--font-mono); font-size: var(--fs-sm); color: var(--text-primary); font-variant-numeric: tabular-nums; white-space: nowrap; }
+    /* entity dual amounts — SAME size/color for USD and Bs (Luis 2026-06-07) */
+    .hp-values { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; flex: none; }
+    .hp-actions { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+    .hp-action {
+      display: inline-flex; align-items: center; gap: var(--space-2);
+      font-size: var(--fs-xs); font-weight: var(--fw-medium); color: var(--text-secondary);
+      background: #FFFFFF; border: 1px solid var(--border-strong); border-radius: var(--radius-md);
+      padding: var(--space-2) var(--space-3); box-shadow: var(--shadow-sm); white-space: nowrap;
+    }
+    .hp-action--primary { color: #FFFFFF; background: var(--accent); border-color: var(--accent); }
+    .hp-spark { inline-size: 120px; block-size: 44px; flex: none; }
+    .hp-figrow { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-4); }
+    .hp-subcard { background: var(--bg-surface-1); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: var(--space-3) var(--space-4); display: flex; flex-direction: column; gap: var(--space-2); }
+    .hp-subhead { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
+    .hp-subtitle { font-size: var(--fs-xs); font-weight: var(--fw-semi); color: var(--text-primary); }
+    .hp-subtitle i { color: var(--accent); margin-right: 6px; }
+    .hp-feed { display: flex; flex-direction: column; gap: var(--space-2); }
+    .hp-feed-item { display: flex; align-items: baseline; gap: var(--space-3); font-size: var(--fs-xs); color: var(--text-secondary); }
+    .hp-feed-item > i { color: #1A8C5B; font-size: var(--fs-xs); flex: none; position: relative; top: 1px; inline-size: 14px; text-align: center; }
+    .hp-feed-item > i.is-working { color: var(--accent); }
+    .hp-feed-item > i.is-guard { color: #B45309; }
+    .hp-feed-text { flex: 1; min-width: 0; }
+    .hp-feed-time { color: var(--text-subtle); font-family: var(--font-mono); font-size: 0.65rem; white-space: nowrap; }
+    .hp-bubble { font-size: var(--fs-xs); line-height: var(--lh-normal); border-radius: var(--radius-md); padding: var(--space-2) var(--space-3); max-inline-size: 94%; }
+    .hp-bubble--user { align-self: flex-end; background: var(--accent); color: #fff; border-end-end-radius: var(--radius-xs); }
+    .hp-bubble--ai { align-self: flex-start; background: #FFFFFF; border: 1px solid var(--border-subtle); color: var(--text-secondary); border-end-start-radius: var(--radius-xs); }
+    .hp-bubble--ai .hp-chip-value { display: inline; }
+
+    /* floating chips — positions chosen to NEVER cover the IA subcard (bottom of panel) */
+    .hp-float { position: absolute; background: #FFFFFF; box-shadow: var(--shadow-md); inline-size: max-content; max-inline-size: 320px; z-index: 2; }
+    .hp-float--tr { inset-block-start: calc(var(--space-5) * -1); inset-inline-end: calc(var(--space-6) * -1); }
+    .hp-float--tl { inset-block-start: calc(var(--space-5) * -1); inset-inline-start: calc(var(--space-6) * -1); }
+    .hp-float--l  { inset-inline-start: calc(var(--space-8) * -1); inset-block-start: 44%; }
+    .hp-float--r  { inset-inline-end: calc(var(--space-7) * -1); inset-block-start: 34%; }
+    .hp-float--r2 { inset-inline-end: calc(var(--space-7) * -1); inset-block-start: 50%; }
+
+    .hp-firma { display: flex; align-items: center; gap: var(--space-3); background: var(--accent-soft); border: 1px solid #C9DDF5; border-radius: var(--radius-md); padding: var(--space-2) var(--space-3); font-size: var(--fs-xs); color: var(--text-secondary); }
+    .hp-firma-btn { display: inline-flex; align-items: center; gap: var(--space-1); background: var(--accent); color: #fff; font-size: 0.7rem; font-weight: var(--fw-medium); border-radius: 4px; padding: 2px var(--space-2); flex: none; }
+    .hp-duo { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); }
+    .hp-duo .hp-subcard { padding: var(--space-3); }
+    .hp-duo .hp-feed-item { font-size: 0.7rem; }
+  </style>
+</head>
+<body>
+  <div class="gal">
+    <header class="gal__header">
+      <h1 class="gal__title">Centro de comando — 10 versiones finales</h1>
+      <p class="gal__sub">Reglas: arriba solo USD — <b>$1.545.220,80</b> = USD de las entidades ($592.670,30) + Bs convertidos a 567 ($952.550,50). Entidades: Tesote Tecnología, C.A. (Bs + USD) · Tesote IA (Bs + USD) · Tesote Tech (solo USD), montos con el mismo peso visual. IA expandida a cosas que asombran. Dos chips flotantes (cobro + lote) sin tapar la IA. Lo que varía entre versiones: <b>qué hace la IA</b> y <b>dónde flotan los chips</b>.</p>
+    </header>
+
+    <div class="gal__grid">
+
+      <!-- ============ 1 ============ -->
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__num">1</span><span class="variant__name">Base nueva</span></div>
+        <p class="variant__story">La estructura de referencia. IA: concilia + detiene una factura duplicada + prepara el cierre. Chips: cobro arriba-derecha, lote izquierda.</p>
+        <div class="stage">
+          <div class="hp" aria-hidden="true">
+            <div class="hp-bar">
+              <div class="hp-actions">
+                <span class="hp-action hp-action--primary"><i class="fa-solid fa-arrow-up"></i>Pagar</span>
+                <span class="hp-action">Cobrar</span>
+                <span class="hp-action">Conciliar</span>
+              </div>
+              <span class="hp-live"><span class="hp-dot"></span>En vivo</span>
+            </div>
+            <div class="hp-figrow">
+              <div>
+                <div class="hp-label">Saldo total en USD · Todas las entidades · BCV 567,00</div>
+                <div class="hp-figure">$1.545.220<span class="hp-cents">,80</span></div>
+                <div class="hp-deltas">
+                  <span>Últimos 30 días</span>
+                  <span class="hp-delta--in"><i class="fa-solid fa-caret-up"></i> $84,2K</span>
+                  <span class="hp-delta--out"><i class="fa-solid fa-caret-down"></i> $31,5K</span>
+                </div>
+              </div>
+              <svg class="hp-spark" viewBox="0 0 120 44" fill="none" preserveAspectRatio="none">
+                <defs><linearGradient id="m1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1661E2" stop-opacity="0.35"/><stop offset="100%" stop-color="#1661E2" stop-opacity="0"/></linearGradient></defs>
+                <path d="M0 32 L15 29 L30 33 L45 24 L60 27 L75 18 L90 21 L105 11 L120 7 L120 44 L0 44 Z" fill="url(#m1)"/>
+                <path d="M0 32 L15 29 L30 33 L45 24 L60 27 L75 18 L90 21 L105 11 L120 7" stroke="#3B7CF5" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="hp-rows">
+              <div class="hp-row"><span class="hp-avatar">T</span><span class="hp-name">Tesote Tecnología, C.A. <span class="hp-meta">· 6 cuentas</span></span><span class="hp-values"><span class="hp-value">$215.300,00</span><span class="hp-value">Bs. 364.070.700,00</span></span></div>
+              <div class="hp-row"><span class="hp-avatar">I</span><span class="hp-name">Tesote IA <span class="hp-meta">· 4 cuentas</span></span><span class="hp-values"><span class="hp-value">$84.620,00</span><span class="hp-value">Bs. 176.025.433,50</span></span></div>
+              <div class="hp-row"><span class="hp-avatar">T</span><span class="hp-name">Tesote Tech <span class="hp-meta">· 2 cuentas · solo USD</span></span><span class="hp-value">$292.750,30</span></div>
+            </div>
+            <div class="hp-subcard">
+              <div class="hp-subhead"><span class="hp-subtitle"><i class="fa-solid fa-wand-magic-sparkles"></i>Tesote IA</span><span class="hp-badge">Trabajando</span></div>
+              <div class="hp-feed">
+                <div class="hp-feed-item"><i class="fa-solid fa-circle-check"></i><span class="hp-feed-text">Conciliados <b>142 movimientos</b> en 3 entidades</span><span class="hp-feed-time">hace 2 min</span></div>
+                <div class="hp-feed-item"><i class="fa-solid fa-shield-halved is-guard"></i><span class="hp-feed-text">Detuve una <b>factura duplicada de $7.490</b> antes del pago</span><span class="hp-feed-time">hace 1 h</span></div>
+                <div class="hp-feed-item"><i class="fa-solid fa-circle-notch fa-spin is-working"></i><span class="hp-feed-text">Preparando el <b>cierre del día</b>…</span><span class="hp-feed-time">ahora</span></div>
+              </div>
+            </div>
+            <div class="hp-chip hp-float hp-float--tr"><i class="fa-solid fa-arrow-down" style="color:#1A8C5B;"></i><span class="hp-chip-label">Cobro · Factura #1042</span><span class="hp-chip-value">$1.240,00</span><span class="hp-pill">Conciliado</span></div>
+            <div class="hp-chip hp-float hp-float--l"><i class="fa-solid fa-arrow-up" style="color:var(--accent);"></i><span class="hp-chip-label">Lote #88 · 23 proveedores</span><span class="hp-chip-value">$48.250,00</span><span class="hp-pill hp-pill--accent">Para tu firma</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 2 ============ -->
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__num">2</span><span class="variant__name">IA guardián</span></div>
+        <p class="variant__story">La IA como guardaespaldas de la plata: duplicados, cargos raros, retenciones mal calculadas. El «wow» de la protección. Chips apilados a la derecha.</p>
+        <div class="stage">
+          <div class="hp" aria-hidden="true">
+            <div class="hp-bar">
+              <div class="hp-actions">
+                <span class="hp-action hp-action--primary"><i class="fa-solid fa-arrow-up"></i>Pagar</span>
+                <span class="hp-action">Cobrar</span>
+                <span class="hp-action">Conciliar</span>
+              </div>
+              <span class="hp-live"><span class="hp-dot"></span>En vivo</span>
+            </div>
+            <div class="hp-figrow">
+              <div>
+                <div class="hp-label">Saldo total en USD · Todas las entidades · BCV 567,00</div>
+                <div class="hp-figure">$1.545.220<span class="hp-cents">,80</span></div>
+              </div>
+              <svg class="hp-spark" viewBox="0 0 120 44" fill="none" preserveAspectRatio="none">
+                <defs><linearGradient id="m2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1661E2" stop-opacity="0.35"/><stop offset="100%" stop-color="#1661E2" stop-opacity="0"/></linearGradient></defs>
+                <path d="M0 32 L15 29 L30 33 L45 24 L60 27 L75 18 L90 21 L105 11 L120 7 L120 44 L0 44 Z" fill="url(#m2)"/>
+                <path d="M0 32 L15 29 L30 33 L45 24 L60 27 L75 18 L90 21 L105 11 L120 7" stroke="#3B7CF5" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="hp-rows">
+              <div class="hp-row"><span class="hp-avatar">T</span><span class="hp-name">Tesote Tecnología, C.A. <span class="hp-meta">· 6 cuentas</span></span><span class="hp-values"><span class="hp-value">$215.300,00</span><span class="hp-value">Bs. 364.070.700,00</span></span></div>
+              <div class="hp-row"><span class="hp-avatar">I</span><span class="hp-name">Tesote IA <span class="hp-meta">· 4 cuentas</span></span><span class="hp-values"><span class="hp-value">$84.620,00</span><span class="hp-value">Bs. 176.025.433,50</span></span></div>
+              <div class="hp-row"><span class="hp-avatar">T</span><span class="hp-name">Tesote Tech <span class="hp-meta">· 2 cuentas · solo USD</span></span><span class="hp-value">$292.750,30</span></div>
+            </div>
+            <div class="hp-subcard">
+              <div class="hp-subhead"><span class="hp-subtitle"><i class="fa-solid fa-shield-halved"></i>Tesote IA · Protección</span><span class="hp-badge">Vigilando</span></div>
+              <div class="hp-feed">
+                <div class="hp-feed-item"><i class="fa-solid fa-shield-halved is-guard"></i><span class="hp-feed-text">Factura duplicada <b>detenida antes del pago</b> · $7.490</span><span class="hp-feed-time">hace 1 h</span></div>
+                <div class="hp-feed-item"><i class="fa-solid fa-bell is-guard"></i><span class="hp-feed-text">Cargo bancario inusual <b>reclamado al banco</b> · Bs. 1,8M</span><span class="hp-feed-time">ayer</span></div>
+                <div class="hp-feed-item"><i class="fa-solid fa-circle-check"></i><span class="hp-feed-text">Retención de IVA <b>corregida antes de declarar</b></span><span class="hp-feed-time">ayer</span></div>
+              </div>
+            </div>
+            <div class="hp-chip hp-float hp-float--r"><i class="fa-solid fa-arrow-down" style="color:#1A8C5B;"></i><span class="hp-chip-label">Cobro · #1042</span><span class="hp-chip-value">$1.240,00</span><span class="hp-pill">Conciliado</span></div>
+            <div class="hp-chip hp-float hp-float--r2"><i class="fa-solid fa-arrow-up" style="color:var(--accent);"></i><span class="hp-chip-label">Lote #88</span><span class="hp-chip-value">$48.250,00</span><span class="hp-pill hp-pill--accent">Para tu firma</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 3 ============ -->
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__num">3</span><span class="variant__name">IA cobradora</span></div>
+        <p class="variant__story">La IA persigue la plata: cobró facturas vencidas sola, mandó recordatorios, genera links. El «wow» que toca el bolsillo. Chips: cobro arriba-derecha (a tema), lote arriba-izquierda.</p>
+        <div class="stage">
+          <div class="hp" aria-hidden="true">
+            <div class="hp-bar">
+              <div class="hp-actions">
+                <span class="hp-action hp-action--primary"><i class="fa-solid fa-arrow-up"></i>Pagar</span>
+                <span class="hp-action">Cobrar</span>
+                <span class="hp-action">Conciliar</span>
+              </div>
+              <span class="hp-live"><span class="hp-dot"></span>En vivo</span>
+            </div>
+            <div class="hp-figrow">
+              <div>
+                <div class="hp-label">Saldo total en USD · Todas las entidades · BCV 567,00</div>
+                <div class="hp-figure">$1.545.220<span class="hp-cents">,80</span></div>
+                <div class="hp-deltas">
+                  <span>Últimos 30 días</span>
+                  <span class="hp-delta--in"><i class="fa-solid fa-caret-up"></i> $84,2K</span>
+                </div>
+              </div>
+              <svg class="hp-spark" viewBox="0 0 120 44" fill="none" preserveAspectRatio="none">
+                <defs><linearGradient id="m3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1661E2" stop-opacity="0.35"/><stop offset="100%" stop-color="#1661E2" stop-opacity="0"/></linearGradient></defs>
+                <path d="M0 32 L15 29 L30 33 L45 24 L60 27 L75 18 L90 21 L105 11 L120 7 L120 44 L0 44 Z" fill="url(#m3)"/>
+                <path d="M0 32 L15 29 L30 33 L45 24 L60 27 L75 18 L90 21 L105 11 L120 7" stroke="#3B7CF5" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="hp-rows">
+              <div class="hp-row"><span class="hp-avatar">T</span><span class="hp-name">Tesote Tecnología, C.A. <span class="hp-meta">· 6 cuentas</span></span><span class="hp-values"><span class="hp-value">$215.300,00</span><span class="hp-value">Bs. 364.070.700,00</span></span></div>
+              <div class="hp-row"><span class="hp-avatar">I</span><span class="hp-name">Tesote IA <span class="hp-meta">· 4 cuentas</span></span><span class="hp-values"><span class="hp-value">$84.620,00</span><span class="hp-value">Bs. 176.025.433,50</span></span></div>
+              <div class="hp-row"><span class="hp-avatar">T</span><span class="hp-name">Tesote Tech <span class="hp-meta">· 2 cuentas · solo USD</span></span><span class="hp-value">$292.750,30</span></div>
+            </div>
+            <div class="hp-subcard">
+              <div class="hp-subhead"><span class="hp-subtitle"><i class="fa-solid fa-hand-holding-dollar"></i>Tesote IA · Cobranzas</span><span class="hp-badge">Trabajando</span></div>
+              <div class="hp-feed">
+                <div class="hp-feed-item"><i class="fa-solid fa-circle-check"></i><span class="hp-feed-text"><b>14 facturas vencidas cobradas</b> · $96.400 recuperados</span><span class="hp-feed-time">este mes</span></div>
+                <div class="hp-feed-item"><i class="fa-solid fa-circle-check"></i><span class="hp-feed-text">Recordatorios enviados a <b>9 clientes</b> con saldo vencido</span><span class="hp-feed-time">hace 3 h</span></div>
+                <div class="hp-feed-item"><i class="fa-solid fa-circle-notch fa-spin is-working"></i><span class="hp-feed-text">Generando <b>links de pago</b> de la facturación de hoy…</span><span class="hp-feed-time">ahora</span></div>
+              </div>
+            </div>
+            <div class="hp-chip hp-float hp-float--tr"><i class="fa-solid fa-arrow-down" style="color:#1A8C5B;"></i><span class="hp-chip-label">Cobro · Factura #1042</span><span class="hp-chip-value">$1.240,00</span><span class="hp-pill">Conciliado</span></div>
+            <div class="hp-chip hp-float hp-float--tl"><i class="fa-solid fa-arrow-up" style="color:var(--accent);"></i><span class="hp-chip-label">Lote #88</span><span class="hp-chip-value">$48.250,00</span><span class="hp-pill hp-pill--accent">Para tu firma</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 4 ============ -->
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__num">4</span><span class="variant__name">IA contadora</span></div>
+        <p class="variant__story">El «wow» del contador: retenciones de IVA listas, partidas al ERP sin diferencias, cierre del mes armándose solo. Chips a los lados, media altura.</p>
+        <div class="stage">
+          <div class="hp" aria-hidden="true">
+            <div class="hp-bar">
+              <div class="hp-actions">
+                <span class="hp-action hp-action--primary"><i class="fa-solid fa-arrow-up"></i>Pagar</span>
+                <span class="hp-action">Cobrar</span>
+                <span class="hp-action">Conciliar</span>
+              </div>
+              <span class="hp-live"><span class="hp-dot"></span>En vivo</span>
+            </div>
+            <div class="hp-figrow">
+              <div>
+                <div class="hp-label">Saldo total en USD · Todas las entidades · BCV 567,00</div>
+                <div class="hp-figure">$1.545.220<span class="hp-cents">,80</span></div>
+              </div>
+              <svg class="hp-spark" viewBox="0 0 120 44" fill="none" preserveAspectRatio="none">
+                <defs><linearGradient id="m4" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1661E2" stop-opacity="0.35"/><stop offset="100%" stop-color="#1661E2" stop-opacity="0"/></linearGradient></defs>
+                <path d="M0 32 L15 29 L30 33 L45 24 L60 27 L75 18 L90 21 L105 11 L120 7 L120 44 L0 44 Z" fill="url(#m4)"/>
+                <path d="M0 32 L15 29 L30 33 L45 24 L60 27 L75 18 L90 21 L105 11 L120 7" stroke="#3B7CF5" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="hp-rows">
+              <div class="hp-row"><span class="hp-avatar">T</span><span class="hp-name">Tesote Tecnología, C.A. <span class="hp-meta">· 6 cuentas</span></span><span class="hp-values"><span class="hp-value">$215.300,00</span><span class="hp-value">Bs. 364.070.700,00</span></span></div>
+              <div class="hp-row"><span class="hp-avatar">I</span><span class="hp-name">Tesote IA <span class="hp-meta">· 4 cuentas</span></span><span class="hp-values"><span class="hp-value">$84.620,00</span><span class="hp-value">Bs. 176.025.433,50</span></span></div>
+              <div class="hp-row"><span class="hp-avatar">T</span><span class="hp-name">Tesote Tech <span class="hp-meta">· 2 cuentas · solo USD</span></span><span class="hp-value">$292.750,30</span></div>
+            </div>
+            <div class="hp-subcard">
+              <div class="hp-subhead"><span class="hp-subtitle"><i class="fa-solid fa-book"></i>Tesote IA · Contabilidad</span><span class="hp-badge">Trabajando</span></div>
+              <div class="hp-feed">
+                <div class="hp-feed-item"><i class="fa-solid fa-circle-check"></i><span class="hp-feed-text"><b>36 comprobantes de retención</b> de IVA preparados</span><span class="hp-feed-time">hace 20 min</span></div>
+                <div class="hp-feed-item"><i class="fa-solid fa-circle-check"></i><span class="hp-feed-text"><b>142 partidas</b> enviadas al ERP · cero diferencias</span><span class="hp-feed-time">hace 2 h</span></div>
+                <div class="hp-feed-item"><i class="fa-solid fa-circle-notch fa-spin is-working"></i><span class="hp-feed-text">Armando el <b>cierre del mes</b> · va 87%…</span><span class="hp-feed-time">ahora</span></div>
+              </div>
+            </div>
+            <div class="hp-chip hp-float hp-float--r"><i class="fa-solid fa-arrow-down" style="color:#1A8C5B;"></i><span class="hp-chip-label">Cobro · #1042</span><span class="hp-chip-value">$1.240,00</span><span class="hp-pill">Conciliado</span></div>
+            <div class="hp-chip hp-float hp-float--l"><i class="fa-solid fa-arrow-up" style="color:var(--accent);"></i><span class="hp-chip-label">Lote #88 · 23 proveedores</span><span class="hp-chip-value">$48.250,00</span><span class="hp-pill hp-pill--accent">Para tu firma</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 5 ============ -->
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__num">5</span><span class="variant__name">IA vidente</span></div>
+        <p class="variant__story">La IA mira hacia adelante: proyecta la caja, avisa de un déficit antes de que pase y propone la jugada. El «wow» del CFO. Chips arriba en ambas esquinas.</p>
+        <div class="stage">
+          <div class="hp" aria-hidden="true">
+            <div class="hp-bar">
+              <div class="hp-actions">
+                <span class="hp-action hp-action--primary"><i class="fa-solid fa-arrow-up"></i>Pagar</span>
+                <span class="hp-action">Cobrar</span>
+                <span class="hp-action">Conciliar</span>
+              </div>
+              <span class="hp-live"><span class="hp-dot"></span>En vivo</span>
+            </div>
+            <div class="hp-figrow">
+              <div>
+                <div class="hp-label">Saldo total en USD · Todas las entidades · BCV 567,00</div>
+                <div class="hp-figure">$1.545.220<span class="hp-cents">,80</span></div>
+              </div>
+              <svg class="hp-spark" viewBox="0 0 120 44" fill="none" preserveAspectRatio="none">
+                <defs><linearGradient id="m5" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1661E2" stop-opacity="0.35"/><stop offset="100%" stop-color="#1661E2" stop-opacity="0"/></linearGradient></defs>
+                <path d="M0 32 L15 29 L30 33 L45 24 L60 27 L75 18 L90 21 L105 11 L120 7 L120 44 L0 44 Z" fill="url(#m5)"/>
+                <path d="M0 32 L15 29 L30 33 L45 24 L60 27 L75 18 L90 21 L105 11 L120 7" stroke="#3B7CF5" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="hp-rows">
+              <div class="hp-row"><span class="hp-avatar">T</span><span class="hp-name">Tesote Tecnología, C.A. <span class="hp-meta">· 6 cuentas</span></span><span class="hp-values"><span class="hp-value">$215.300,00</span><span class="hp-value">Bs. 364.070.700,00</span></span></div>
+              <div class="hp-row"><span class="hp-avatar">I</span><span class="hp-name">Tesote IA <span class="hp-meta">· 4 cuentas</span></span><span class="hp-values"><span class="hp-value">$84.620,00</span><span class="hp-value">Bs. 176.025.433,50</span></span></div>
+              <div class="hp-row"><span class="hp-avatar">T</span><span class="hp-name">Tesote Tech <span class="hp-meta">· 2 cuentas · solo USD</span></span><span class="hp-value">$292.750,30</span></div>
+            </div>
+            <div class="hp-subcard">
+              <div class="hp-subhead"><span class="hp-subtitle"><i class="fa-solid fa-chart-line"></i>Tesote IA · Proyección</span><span class="hp-badge">Trabajando</span></div>
+              <div class="hp-feed">
+                <div class="hp-feed-item"><i class="fa-solid fa-circle-check"></i><span class="hp-feed-text">Caja a 30 días proyectada: <b>nómina cubierta con $112K de holgura</b></span><span class="hp-feed-time">hoy 6 am</span></div>
+                <div class="hp-feed-item"><i class="fa-solid fa-bell is-guard"></i><span class="hp-feed-text">Posible déficit el <b>28 jun</b> — sugerí adelantar 3 cobros</span><span class="hp-feed-time">hoy 6 am</span></div>
+                <div class="hp-feed-item"><i class="fa-solid fa-circle-notch fa-spin is-working"></i><span class="hp-feed-text">Recalculando con la <b>tasa de hoy</b>…</span><span class="hp-feed-time">ahora</span></div>
+              </div>
+            </div>
+            <div class="hp-chip hp-float hp-float--tr"><i class="fa-solid fa-arrow-down" style="color:#1A8C5B;"></i><span class="hp-chip-label">Cobro · #1042</span><span class="hp-chip-value">$1.240,00</span><span class="hp-pill">Conciliado</span></div>
+            <div class="hp-chip hp-float hp-float--tl"><i class="fa-solid fa-arrow-up" style="color:var(--accent);"></i><span class="hp-chip-label">Lote #88</span><span class="hp-chip-value">$48.250,00</span><span class="hp-pill hp-pill--accent">Para tu firma</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 6 ============ -->
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__num">6</span><span class="variant__name">IA multitarea</span></div>
+        <p class="variant__story">El best-of: detiene un duplicado + cobra facturas vencidas + deja el cierre listo, todo en un solo feed de 4 líneas. La más completa — mi recomendada.</p>
+        <div class="stage">
+          <div class="hp" aria-hidden="true">
+            <div class="hp-bar">
+              <div class="hp-actions">
+                <span class="hp-action hp-action--primary"><i class="fa-solid fa-arrow-up"></i>Pagar</span>
+                <span class="hp-action">Cobrar</span>
+                <span class="hp-action">Conciliar</span>
+              </div>
+              <span class="hp-live"><span class="hp-dot"></span>En vivo</span>
+            </div>
+            <div class="hp-figrow">
+              <div>
+                <div class="hp-label">Saldo total en USD · Todas las entidades · BCV 567,00</div>
+                <div class="hp-figure">$1.545.220<span class="hp-cents">,80</span></div>
+                <div class="hp-deltas">
+                  <span>Últimos 30 días</span>
+                  <span class="hp-delta--in"><i class="fa-solid fa-caret-up"></i> $84,2K</span>
+                  <span class="hp-delta--out"><i class="fa-solid fa-caret-down"></i> $31,5K</span>
+                </div>
+              </div>
+              <svg class="hp-spark" viewBox="0 0 120 44" fill="none" preserveAspectRatio="none">
+                <defs><linearGradient id="m6" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1661E2" stop-opacity="0.35"/><stop offset="100%" stop-color="#1661E2" stop-opacity="0"/></linearGradient></defs>
+                <path d="M0 32 L15 29 L30 33 L45 24 L60 27 L75 18 L90 21 L105 11 L120 7 L120 44 L0 44 Z" fill="url(#m6)"/>
+                <path d="M0 32 L15 29 L30 33 L45 24 L60 27 L75 18 L90 21 L105 11 L120 7" stroke="#3B7CF5" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="hp-rows">
+              <div class="hp-row"><span class="hp-avatar">T</span><span class="hp-name">Tesote Tecnología, C.A. <span class="hp-meta">· 6 cuentas</span></span><span class="hp-values"><span class="hp-value">$215.300,00</span><span class="hp-value">Bs. 364.070.700,00</span></span></div>
+              <div class="hp-row"><span class="hp-avatar">I</span><span class="hp-name">Tesote IA <span class="hp-meta">· 4 cuentas</span></span><span class="hp-values"><span class="hp-value">$84.620,00</span><span class="hp-value">Bs. 176.025.433,50</span></span></div>
+              <div class="hp-row"><span class="hp-avatar">T</span><span class="hp-name">Tesote Tech <span class="hp-meta">· 2 cuentas · solo USD</span></span><span class="hp-value">$292.750,30</span></div>
+            </div>
+            <div class="hp-subcard">
+              <div class="hp-subhead"><span class="hp-subtitle"><i class="fa-solid fa-wand-magic-sparkles"></i>Tesote IA</span><span class="hp-badge">Trabajando</span></div>
+              <div class="hp-feed">
+                <div class="hp-feed-item"><i class="fa-solid fa-shield-halved is-guard"></i><span class="hp-feed-text">Detuve un <b>pago duplicado de $7.490</b></span><span class="hp-feed-time">hace 1 h</span></div>
+                <div class="hp-feed-item"><i class="fa-solid fa-circle-check"></i><span class="hp-feed-text"><b>14 facturas vencidas cobradas</b> · $96.400 recuperados</span><span class="hp-feed-time">este mes</span></div>
+                <div class="hp-feed-item"><i class="fa-solid fa-circle-check"></i><span class="hp-feed-text"><b>Cierre del día listo</b> · 142 partidas, cero diferencias</span><span class="hp-feed-time">hace 2 min</span></div>
+                <div class="hp-feed-item"><i class="fa-solid fa-circle-notch fa-spin is-working"></i><span class="hp-feed-text">Proyectando la <b>caja de julio</b>…</span><span class="hp-feed-time">ahora</span></div>
+              </div>
+            </div>
+            <div class="hp-chip hp-float hp-float--tr"><i class="fa-solid fa-arrow-down" style="color:#1A8C5B;"></i><span class="hp-chip-label">Cobro · Factura #1042</span><span class="hp-chip-value">$1.240,00</span><span class="hp-pill">Conciliado</span></div>
+            <div class="hp-chip hp-float hp-float--l"><i class="fa-solid fa-arrow-up" style="color:var(--accent);"></i><span class="hp-chip-label">Lote #88 · 23 proveedores</span><span class="hp-chip-value">$48.250,00</span><span class="hp-pill hp-pill--accent">Para tu firma</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 7 ============ -->
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__num">7</span><span class="variant__name">Pídeselo tú</span></div>
+        <p class="variant__story">La IA como conversación: tú ordenas («prepara los pagos de la semana»), ella ejecuta y te lo trae firmable. El lote nace del chat — el chip de lote sobra y solo flota el cobro.</p>
+        <div class="stage">
+          <div class="hp" aria-hidden="true">
+            <div class="hp-bar">
+              <div class="hp-actions">
+                <span class="hp-action hp-action--primary"><i class="fa-solid fa-arrow-up"></i>Pagar</span>
+                <span class="hp-action">Cobrar</span>
+                <span class="hp-action">Conciliar</span>
+              </div>
+              <span class="hp-live"><span class="hp-dot"></span>En vivo</span>
+            </div>
+            <div class="hp-figrow">
+              <div>
+                <div class="hp-label">Saldo total en USD · Todas las entidades · BCV 567,00</div>
+                <div class="hp-figure">$1.545.220<span class="hp-cents">,80</span></div>
+              </div>
+              <svg class="hp-spark" viewBox="0 0 120 44" fill="none" preserveAspectRatio="none">
+                <defs><linearGradient id="m7" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1661E2" stop-opacity="0.35"/><stop offset="100%" stop-color="#1661E2" stop-opacity="0"/></linearGradient></defs>
+                <path d="M0 32 L15 29 L30 33 L45 24 L60 27 L75 18 L90 21 L105 11 L120 7 L120 44 L0 44 Z" fill="url(#m7)"/>
+                <path d="M0 32 L15 29 L30 33 L45 24 L60 27 L75 18 L90 21 L105 11 L120 7" stroke="#3B7CF5" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="hp-rows">
+              <div class="hp-row"><span class="hp-avatar">T</span><span class="hp-name">Tesote Tecnología, C.A. <span class="hp-meta">· 6 cuentas</span></span><span class="hp-values"><span class="hp-value">$215.300,00</span><span class="hp-value">Bs. 364.070.700,00</span></span></div>
+              <div class="hp-row"><span class="hp-avatar">I</span><span class="hp-name">Tesote IA <span class="hp-meta">· 4 cuentas</span></span><span class="hp-values"><span class="hp-value">$84.620,00</span><span class="hp-value">Bs. 176.025.433,50</span></span></div>
+              <div class="hp-row"><span class="hp-avatar">T</span><span class="hp-name">Tesote Tech <span class="hp-meta">· 2 cuentas · solo USD</span></span><span class="hp-value">$292.750,30</span></div>
+            </div>
+            <div class="hp-subcard">
+              <div class="hp-subhead"><span class="hp-subtitle"><i class="fa-solid fa-wand-magic-sparkles"></i>Tesote IA</span><span class="hp-badge">Trabajando</span></div>
+              <div class="hp-bubble hp-bubble--user">Prepara los pagos de la semana</div>
+              <div class="hp-bubble hp-bubble--ai">Listo: <b>Lote #88</b> · 23 proveedores · <span class="hp-chip-value">$48.250,00</span> — validado contra facturas y retenciones. Esperando tu firma.</div>
+              <div class="hp-firma"><i class="fa-solid fa-file-signature" style="color: var(--accent); flex: none;"></i><span style="flex:1; min-width:0;">Lote #88 · listo para ejecutar</span><span class="hp-firma-btn"><i class="fa-solid fa-check"></i>Firmar</span></div>
+            </div>
+            <div class="hp-chip hp-float hp-float--tr"><i class="fa-solid fa-arrow-down" style="color:#1A8C5B;"></i><span class="hp-chip-label">Cobro · Factura #1042</span><span class="hp-chip-value">$1.240,00</span><span class="hp-pill">Conciliado</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 8 ============ -->
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__num">8</span><span class="variant__name">El día de la IA</span></div>
+        <p class="variant__story">Feed con horas: lo que la IA hizo hoy de 6 am a ahora, como bitácora. Cuenta una jornada completa de trabajo invisible. Chips apilados a la derecha.</p>
+        <div class="stage">
+          <div class="hp" aria-hidden="true">
+            <div class="hp-bar">
+              <div class="hp-actions">
+                <span class="hp-action hp-action--primary"><i class="fa-solid fa-arrow-up"></i>Pagar</span>
+                <span class="hp-action">Cobrar</span>
+                <span class="hp-action">Conciliar</span>
+              </div>
+              <span class="hp-live"><span class="hp-dot"></span>En vivo</span>
+            </div>
+            <div class="hp-figrow">
+              <div>
+                <div class="hp-label">Saldo total en USD · Todas las entidades · BCV 567,00</div>
+                <div class="hp-figure">$1.545.220<span class="hp-cents">,80</span></div>
+              </div>
+              <svg class="hp-spark" viewBox="0 0 120 44" fill="none" preserveAspectRatio="none">
+                <defs><linearGradient id="m8" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1661E2" stop-opacity="0.35"/><stop offset="100%" stop-color="#1661E2" stop-opacity="0"/></linearGradient></defs>
+                <path d="M0 32 L15 29 L30 33 L45 24 L60 27 L75 18 L90 21 L105 11 L120 7 L120 44 L0 44 Z" fill="url(#m8)"/>
+                <path d="M0 32 L15 29 L30 33 L45 24 L60 27 L75 18 L90 21 L105 11 L120 7" stroke="#3B7CF5" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="hp-rows">
+              <div class="hp-row"><span class="hp-avatar">T</span><span class="hp-name">Tesote Tecnología, C.A. <span class="hp-meta">· 6 cuentas</span></span><span class="hp-values"><span class="hp-value">$215.300,00</span><span class="hp-value">Bs. 364.070.700,00</span></span></div>
+              <div class="hp-row"><span class="hp-avatar">I</span><span class="hp-name">Tesote IA <span class="hp-meta">· 4 cuentas</span></span><span class="hp-values"><span class="hp-value">$84.620,00</span><span class="hp-value">Bs. 176.025.433,50</span></span></div>
+              <div class="hp-row"><span class="hp-avatar">T</span><span class="hp-name">Tesote Tech <span class="hp-meta">· 2 cuentas · solo USD</span></span><span class="hp-value">$292.750,30</span></div>
+            </div>
+            <div class="hp-subcard">
+              <div class="hp-subhead"><span class="hp-subtitle"><i class="fa-solid fa-wand-magic-sparkles"></i>Tesote IA · Hoy</span><span class="hp-badge">Trabajando</span></div>
+              <div class="hp-feed">
+                <div class="hp-feed-item"><span class="hp-feed-time" style="inline-size:46px; flex:none;">6:00 am</span><i class="fa-solid fa-circle-check"></i><span class="hp-feed-text">Cierre de ayer enviado al ERP</span></div>
+                <div class="hp-feed-item"><span class="hp-feed-time" style="inline-size:46px; flex:none;">9:04 am</span><i class="fa-solid fa-shield-halved is-guard"></i><span class="hp-feed-text">Pago duplicado detenido · $7.490</span></div>
+                <div class="hp-feed-item"><span class="hp-feed-time" style="inline-size:46px; flex:none;">11:30 am</span><i class="fa-solid fa-circle-check"></i><span class="hp-feed-text">5 facturas vencidas cobradas · $31.200</span></div>
+                <div class="hp-feed-item"><span class="hp-feed-time" style="inline-size:46px; flex:none;">ahora</span><i class="fa-solid fa-circle-notch fa-spin is-working"></i><span class="hp-feed-text">Preparando los pagos de mañana…</span></div>
+              </div>
+            </div>
+            <div class="hp-chip hp-float hp-float--r"><i class="fa-solid fa-arrow-down" style="color:#1A8C5B;"></i><span class="hp-chip-label">Cobro · #1042</span><span class="hp-chip-value">$1.240,00</span><span class="hp-pill">Conciliado</span></div>
+            <div class="hp-chip hp-float hp-float--r2"><i class="fa-solid fa-arrow-up" style="color:var(--accent);"></i><span class="hp-chip-label">Lote #88</span><span class="hp-chip-value">$48.250,00</span><span class="hp-pill hp-pill--accent">Para tu firma</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 9 ============ -->
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__num">9</span><span class="variant__name">IA con resultados</span></div>
+        <p class="variant__story">El feed habla en resultados, no en tareas: plata recuperada, horas ahorradas, cero errores. El «wow» del ROI puro — para el dueño que pregunta «¿y esto qué me da?».</p>
+        <div class="stage">
+          <div class="hp" aria-hidden="true">
+            <div class="hp-bar">
+              <div class="hp-actions">
+                <span class="hp-action hp-action--primary"><i class="fa-solid fa-arrow-up"></i>Pagar</span>
+                <span class="hp-action">Cobrar</span>
+                <span class="hp-action">Conciliar</span>
+              </div>
+              <span class="hp-live"><span class="hp-dot"></span>En vivo</span>
+            </div>
+            <div class="hp-figrow">
+              <div>
+                <div class="hp-label">Saldo total en USD · Todas las entidades · BCV 567,00</div>
+                <div class="hp-figure">$1.545.220<span class="hp-cents">,80</span></div>
+              </div>
+              <svg class="hp-spark" viewBox="0 0 120 44" fill="none" preserveAspectRatio="none">
+                <defs><linearGradient id="m9" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1661E2" stop-opacity="0.35"/><stop offset="100%" stop-color="#1661E2" stop-opacity="0"/></linearGradient></defs>
+                <path d="M0 32 L15 29 L30 33 L45 24 L60 27 L75 18 L90 21 L105 11 L120 7 L120 44 L0 44 Z" fill="url(#m9)"/>
+                <path d="M0 32 L15 29 L30 33 L45 24 L60 27 L75 18 L90 21 L105 11 L120 7" stroke="#3B7CF5" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="hp-rows">
+              <div class="hp-row"><span class="hp-avatar">T</span><span class="hp-name">Tesote Tecnología, C.A. <span class="hp-meta">· 6 cuentas</span></span><span class="hp-values"><span class="hp-value">$215.300,00</span><span class="hp-value">Bs. 364.070.700,00</span></span></div>
+              <div class="hp-row"><span class="hp-avatar">I</span><span class="hp-name">Tesote IA <span class="hp-meta">· 4 cuentas</span></span><span class="hp-values"><span class="hp-value">$84.620,00</span><span class="hp-value">Bs. 176.025.433,50</span></span></div>
+              <div class="hp-row"><span class="hp-avatar">T</span><span class="hp-name">Tesote Tech <span class="hp-meta">· 2 cuentas · solo USD</span></span><span class="hp-value">$292.750,30</span></div>
+            </div>
+            <div class="hp-subcard">
+              <div class="hp-subhead"><span class="hp-subtitle"><i class="fa-solid fa-wand-magic-sparkles"></i>Tesote IA · Este mes</span><span class="hp-badge hp-badge--green" style="color:#0F6E45; background:#D6E8D5;">Resultados</span></div>
+              <div class="hp-feed">
+                <div class="hp-feed-item"><i class="fa-solid fa-circle-check"></i><span class="hp-feed-text"><b>$96.400 recuperados</b> en facturas vencidas</span></div>
+                <div class="hp-feed-item"><i class="fa-solid fa-circle-check"></i><span class="hp-feed-text"><b>$7.490 salvados</b> · pago duplicado detenido</span></div>
+                <div class="hp-feed-item"><i class="fa-solid fa-circle-check"></i><span class="hp-feed-text"><b>1.204 partidas conciliadas</b> · cero errores</span></div>
+                <div class="hp-feed-item"><i class="fa-solid fa-circle-check"></i><span class="hp-feed-text"><b>62 horas</b> de trabajo manual ahorradas</span></div>
+              </div>
+            </div>
+            <div class="hp-chip hp-float hp-float--tr"><i class="fa-solid fa-arrow-down" style="color:#1A8C5B;"></i><span class="hp-chip-label">Cobro · Factura #1042</span><span class="hp-chip-value">$1.240,00</span><span class="hp-pill">Conciliado</span></div>
+            <div class="hp-chip hp-float hp-float--l"><i class="fa-solid fa-arrow-up" style="color:var(--accent);"></i><span class="hp-chip-label">Lote #88 · 23 proveedores</span><span class="hp-chip-value">$48.250,00</span><span class="hp-pill hp-pill--accent">Para tu firma</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 10 ============ -->
+      <section class="variant">
+        <div class="variant__meta"><span class="variant__num">10</span><span class="variant__name">Hecho / Para tu firma</span></div>
+        <p class="variant__story">La IA en dos mitades: izquierda lo que ya hizo, derecha lo que espera tu firma (el lote vive aquí adentro, no flota). Gobierno humano como diseño. Solo el cobro flota.</p>
+        <div class="stage">
+          <div class="hp" aria-hidden="true">
+            <div class="hp-bar">
+              <div class="hp-actions">
+                <span class="hp-action hp-action--primary"><i class="fa-solid fa-arrow-up"></i>Pagar</span>
+                <span class="hp-action">Cobrar</span>
+                <span class="hp-action">Conciliar</span>
+              </div>
+              <span class="hp-live"><span class="hp-dot"></span>En vivo</span>
+            </div>
+            <div class="hp-figrow">
+              <div>
+                <div class="hp-label">Saldo total en USD · Todas las entidades · BCV 567,00</div>
+                <div class="hp-figure">$1.545.220<span class="hp-cents">,80</span></div>
+              </div>
+              <svg class="hp-spark" viewBox="0 0 120 44" fill="none" preserveAspectRatio="none">
+                <defs><linearGradient id="m10" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1661E2" stop-opacity="0.35"/><stop offset="100%" stop-color="#1661E2" stop-opacity="0"/></linearGradient></defs>
+                <path d="M0 32 L15 29 L30 33 L45 24 L60 27 L75 18 L90 21 L105 11 L120 7 L120 44 L0 44 Z" fill="url(#m10)"/>
+                <path d="M0 32 L15 29 L30 33 L45 24 L60 27 L75 18 L90 21 L105 11 L120 7" stroke="#3B7CF5" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="hp-rows">
+              <div class="hp-row"><span class="hp-avatar">T</span><span class="hp-name">Tesote Tecnología, C.A. <span class="hp-meta">· 6 cuentas</span></span><span class="hp-values"><span class="hp-value">$215.300,00</span><span class="hp-value">Bs. 364.070.700,00</span></span></div>
+              <div class="hp-row"><span class="hp-avatar">I</span><span class="hp-name">Tesote IA <span class="hp-meta">· 4 cuentas</span></span><span class="hp-values"><span class="hp-value">$84.620,00</span><span class="hp-value">Bs. 176.025.433,50</span></span></div>
+              <div class="hp-row"><span class="hp-avatar">T</span><span class="hp-name">Tesote Tech <span class="hp-meta">· 2 cuentas · solo USD</span></span><span class="hp-value">$292.750,30</span></div>
+            </div>
+            <div class="hp-duo">
+              <div class="hp-subcard">
+                <div class="hp-subhead"><span class="hp-subtitle"><i class="fa-solid fa-wand-magic-sparkles"></i>Hecho hoy</span></div>
+                <div class="hp-feed">
+                  <div class="hp-feed-item"><i class="fa-solid fa-circle-check"></i><span class="hp-feed-text">142 movimientos conciliados</span></div>
+                  <div class="hp-feed-item"><i class="fa-solid fa-shield-halved is-guard"></i><span class="hp-feed-text">Duplicado detenido · $7.490</span></div>
+                  <div class="hp-feed-item"><i class="fa-solid fa-circle-check"></i><span class="hp-feed-text">5 facturas cobradas · $31.200</span></div>
+                </div>
+              </div>
+              <div class="hp-subcard">
+                <div class="hp-subhead"><span class="hp-subtitle"><i class="fa-solid fa-file-signature"></i>Para tu firma</span><span class="hp-badge">2</span></div>
+                <div class="hp-feed">
+                  <div class="hp-feed-item"><i class="fa-solid fa-arrow-up is-working"></i><span class="hp-feed-text">Lote #88 · $48.250,00</span></div>
+                  <div class="hp-feed-item"><i class="fa-solid fa-book is-working"></i><span class="hp-feed-text">Cierre del día · revisar</span></div>
+                </div>
+                <span class="hp-firma-btn" style="align-self: flex-start;"><i class="fa-solid fa-check"></i>Firmar</span>
+              </div>
+            </div>
+            <div class="hp-chip hp-float hp-float--tr"><i class="fa-solid fa-arrow-down" style="color:#1A8C5B;"></i><span class="hp-chip-label">Cobro · Factura #1042</span><span class="hp-chip-value">$1.240,00</span><span class="hp-pill">Conciliado</span></div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</body>
+</html>
