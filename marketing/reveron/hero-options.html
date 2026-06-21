@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Reverón — 20 hero options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#0C0D0F; --muted:#44484E; --line:#E6E7EA;
+    --card:#FFFFFF; --card2:#FBFBFC; --soft:#F4F5F7;
+    --green:#1C8A5A; --greenbg:#E7F4ED; --amber:#9A6B1C; --amberbg:#F6EFD9;
+    --shadow:0 24px 60px -20px rgba(30,34,40,.35), 0 8px 20px -12px rgba(30,34,40,.25);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;background:#9DA1A8}
+
+  /* each option block */
+  .opt{
+    height:760px; position:relative; display:flex; align-items:center; justify-content:center;
+    padding:0; overflow:hidden;
+    background:
+      radial-gradient(ellipse 100vw 75vh at 50% 32%, rgba(255,255,255,.55), transparent 62%),
+      linear-gradient(180deg,#D6D9DE 0%,#C3C7CD 52%,#ADB1B9 100%);
+    border-bottom:1px solid rgba(0,0,0,.18);
+  }
+  .tag{position:absolute;top:20px;left:24px;font-family:'JetBrains Mono',monospace;font-size:11px;
+    letter-spacing:.16em;text-transform:uppercase;color:#3a3d42;z-index:9;background:rgba(255,255,255,.5);
+    padding:5px 10px;border-radius:6px;backdrop-filter:blur(4px)}
+
+  .wrap{width:100%;max-width:1180px;padding:0 6vw;display:grid;align-items:center;gap:5%}
+  .split{grid-template-columns:0.86fr 1.14fr}
+  .center{display:flex;flex-direction:column;align-items:center;text-align:center;gap:34px}
+
+  /* copy column */
+  .brand{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.32em;text-transform:uppercase;color:#16181B;margin-bottom:22px}
+  .brand b{font-family:'Instrument Serif',serif;font-weight:400;font-size:20px;letter-spacing:0;text-transform:none}
+  h1{font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(2.2rem,3.6vw,3.3rem);line-height:1.04;letter-spacing:-.01em;color:var(--ink)}
+  .sub{margin-top:18px;font-size:1.02rem;font-weight:300;line-height:1.55;color:var(--muted);max-width:34ch}
+  .cta{margin-top:30px;display:inline-flex;align-items:center;gap:.5rem;font-size:.95rem;color:var(--ink);text-decoration:none;border-bottom:1.5px solid var(--ink);padding-bottom:5px}
+  .cta svg{width:13px;height:13px}
+
+  /* ——— UI KIT ——— */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+  .chd{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--line)}
+  .chd .t{font-size:13.5px;font-weight:600}
+  .chd .m{font-family:'JetBrains Mono',monospace;font-size:11px;color:#9aa0a8;letter-spacing:.04em}
+  .av{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#2b2e33,#0c0d0f);display:inline-flex;align-items:center;justify-content:center;color:#fff;font-family:'Instrument Serif',serif;font-size:13px;line-height:1}
+  .row{display:grid;align-items:center;gap:12px;padding:13px 18px;border-bottom:1px solid var(--line);font-size:13px}
+  .row:last-child{border-bottom:0}
+  .row .desc{font-weight:500;color:var(--ink)}
+  .row .meta{color:#8a9098;font-size:12px}
+  .row .amt{font-family:'JetBrains Mono',monospace;font-size:12.5px;text-align:right}
+  .cat{display:inline-block;padding:3px 9px;border-radius:999px;background:var(--soft);font-size:11.5px;color:#3a3d42}
+  .chip{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:500}
+  .chip.ok{background:var(--greenbg);color:var(--green)}
+  .chip.wait{background:var(--amberbg);color:var(--amber)}
+  .appr{display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:8px;background:var(--ink);color:#fff;font-size:12px;font-weight:500;border:0;cursor:pointer}
+  .appr.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+  .check{width:20px;height:20px;border-radius:50%;background:var(--green);display:inline-flex;align-items:center;justify-content:center}
+  .check svg{width:11px;height:11px;stroke:#fff;stroke-width:3;fill:none}
+  .cfoot{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:var(--card2)}
+  .cfoot .lab{font-size:12px;color:#8a9098}
+  .bigbtn{padding:9px 18px;border-radius:9px;background:var(--ink);color:#fff;font-size:12.5px;font-weight:500;border:0}
+  .bubble{background:var(--soft);border-radius:14px 14px 14px 4px;padding:11px 15px;font-size:13px;color:#2a2d31;max-width:340px}
+  .mono{font-family:'JetBrains Mono',monospace}
+
+  /* misc framing */
+  .tilt{transform:perspective(1800px) rotateY(-13deg) rotateX(4deg);transform-origin:center}
+  .float{filter:drop-shadow(0 40px 60px rgba(20,24,30,.30))}
+  .glass{background:rgba(255,255,255,.62);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.7)}
+  .editorial{border-radius:4px;box-shadow:18px 18px 0 rgba(12,13,15,.9)}
+  .wire .row,.wire .chd{border-color:#c7cace}
+  .wire.card{background:transparent;box-shadow:none;border:1px solid #b9bdc4}
+  .wire .desc,.wire .t{color:#23262a}
+  .browser{border-radius:14px;overflow:hidden;box-shadow:var(--shadow);border:1px solid var(--line);background:#fff}
+  .bbar{display:flex;align-items:center;gap:7px;padding:10px 14px;background:#f2f3f5;border-bottom:1px solid var(--line)}
+  .bbar i{width:10px;height:10px;border-radius:50%;background:#cfd2d6;display:block}
+  .bbar .url{margin-left:10px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#9aa0a8}
+  .grid3{position:absolute;inset:0;background-image:linear-gradient(rgba(0,0,0,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.05) 1px,transparent 1px);background-size:42px 42px;mask-image:radial-gradient(ellipse at 70% 60%,#000,transparent 70%)}
+  .stack{position:relative}
+  .stack .card{position:relative}
+  .stack .b1{position:absolute;top:24px;left:24px;right:-24px;height:90%;background:#fff;border:1px solid var(--line);border-radius:16px;opacity:.55;z-index:0}
+  .stack .b2{position:absolute;top:12px;left:12px;right:-12px;height:95%;background:#fff;border:1px solid var(--line);border-radius:16px;opacity:.8;z-index:0}
+</style>
+</head>
+<body>
+
+<!-- ============ 01 — FLOATING APPROVAL CARD (split) ============ -->
+<section class="opt"><span class="tag">01 · Tarjeta flotante</span>
+  <div class="wrap split">
+    <div class="copy">
+      <div class="brand"><b>Reverón</b> &nbsp;· por Tesote&nbsp;AI</div>
+      <h1>Deja de operar tus finanzas. Dirígelas.</h1>
+      <p class="sub">Reverón hace el trabajo. Tú solo apruebas.</p>
+      <a class="cta">Solicitar acceso <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+    </div>
+    <div class="art float">
+      <div class="card">
+        <div class="chd"><span class="t"><span class="av">R</span>&nbsp; Trabajo propuesto · mayo</span><span class="m">5 pendientes</span></div>
+        <div class="row" style="grid-template-columns:1fr auto auto"><div><div class="desc">Conciliar 38 movimientos</div><div class="meta">Banco operativo ↔ libro</div></div><span class="chip ok">Listo</span><button class="appr">Aprobar</button></div>
+        <div class="row" style="grid-template-columns:1fr auto auto"><div><div class="desc">Categorizar 142 transacciones</div><div class="meta">Confianza 98%</div></div><span class="chip ok">Listo</span><button class="appr">Aprobar</button></div>
+        <div class="row" style="grid-template-columns:1fr auto auto"><div><div class="desc">Programar pago a 5 proveedores</div><div class="meta mono">$23.140</div></div><span class="chip wait">Revisar</span><button class="appr ghost">Ver</button></div>
+        <div class="row" style="grid-template-columns:1fr auto auto"><div><div class="desc">Reporte de flujo de caja</div><div class="meta">PDF + Excel</div></div><span class="chip ok">Listo</span><button class="appr">Aprobar</button></div>
+        <div class="cfoot"><span class="lab">Aprobar todo lo listo</span><button class="bigbtn">Aprobar 3 →</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 02 — TILTED / ISOMETRIC ============ -->
+<section class="opt"><span class="tag">02 · Tarjeta inclinada 3D</span>
+  <div class="wrap split">
+    <div class="copy">
+      <div class="brand"><b>Reverón</b> &nbsp;· por Tesote&nbsp;AI</div>
+      <h1>Deja de operar tus finanzas. Dirígelas.</h1>
+      <p class="sub">Reverón hace el trabajo. Tú solo apruebas.</p>
+      <a class="cta">Solicitar acceso <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+    </div>
+    <div class="art tilt float">
+      <div class="card">
+        <div class="chd"><span class="t"><span class="av">R</span>&nbsp; Cola de aprobación</span><span class="m">may 2026</span></div>
+        <div class="row" style="grid-template-columns:1fr auto auto"><div class="desc">Conciliar 38 movimientos</div><span class="chip ok">Listo</span><button class="appr">Aprobar</button></div>
+        <div class="row" style="grid-template-columns:1fr auto auto"><div class="desc">Categorizar 142 transacciones</div><span class="chip ok">Listo</span><button class="appr">Aprobar</button></div>
+        <div class="row" style="grid-template-columns:1fr auto auto"><div class="desc">Reporte de flujo de caja</div><span class="chip ok">Listo</span><button class="appr">Aprobar</button></div>
+        <div class="cfoot"><span class="lab">3 listos para aprobar</span><button class="bigbtn">Aprobar todo →</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 03 — CHAT → TABLE ============ -->
+<section class="opt"><span class="tag">03 · Conversación → tabla</span>
+  <div class="wrap split">
+    <div class="copy">
+      <div class="brand"><b>Reverón</b> &nbsp;· por Tesote&nbsp;AI</div>
+      <h1>Deja de operar tus finanzas. Dirígelas.</h1>
+      <p class="sub">Reverón hace el trabajo. Tú solo apruebas.</p>
+      <a class="cta">Solicitar acceso <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+    </div>
+    <div class="art float">
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="bubble" style="align-self:flex-end;background:#0c0d0f;color:#fff;border-radius:14px 14px 4px 14px">Categoriza y concilia los movimientos de mayo.</div>
+        <div class="card" style="margin-left:18px">
+          <div class="chd"><span class="t"><span class="av">R</span>&nbsp; Listo para tu aprobación</span><span class="m">180 ítems</span></div>
+          <div class="row" style="grid-template-columns:1fr auto auto"><div class="desc">Categorizar 142 transacciones</div><span class="chip ok">Listo</span><button class="appr">Aprobar</button></div>
+          <div class="row" style="grid-template-columns:1fr auto auto"><div class="desc">Conciliar 38 movimientos</div><span class="chip ok">Listo</span><button class="appr">Aprobar</button></div>
+          <div class="cfoot"><span class="lab">Hecho en 4s</span><button class="bigbtn">Aprobar todo →</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 04 — BEFORE / AFTER ============ -->
+<section class="opt"><span class="tag">04 · Antes / después</span>
+  <div class="wrap" style="grid-template-columns:1fr;justify-items:center;text-align:center">
+    <div class="copy" style="margin-bottom:30px">
+      <div class="brand" style="margin-bottom:14px"><b>Reverón</b> &nbsp;· por Tesote&nbsp;AI</div>
+      <h1>Deja de operar tus finanzas. Dirígelas.</h1>
+      <p class="sub" style="margin:14px auto 0">Reverón hace el trabajo. Tú solo apruebas.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:26px;width:100%;max-width:900px">
+      <div class="card" style="opacity:.85">
+        <div class="chd"><span class="t" style="color:#9aa0a8">Antes · Excel</span></div>
+        <div style="padding:14px 18px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#aab0b8;line-height:2">A2 =SUMIF(...)<br>B14 #REF!<br>export_05.csv<br>cuadre_v7_final.xlsx</div>
+        <div class="cfoot"><span class="lab" style="color:#aab0b8">½ día de trabajo</span></div>
+      </div>
+      <div class="mono" style="font-size:22px;color:#3a3d42">→</div>
+      <div class="card float">
+        <div class="chd"><span class="t"><span class="av">R</span>&nbsp; Listo para aprobar</span></div>
+        <div class="row" style="grid-template-columns:1fr auto"><div class="desc">Categorizar 142 transacciones</div><span class="chip ok">Listo</span></div>
+        <div class="row" style="grid-template-columns:1fr auto"><div class="desc">Conciliar 38 movimientos</div><span class="chip ok">Listo</span></div>
+        <div class="cfoot"><span class="lab">4 segundos</span><button class="bigbtn">Aprobar →</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 05 — FULL 3-PANE APP, approval pane lit ============ -->
+<section class="opt"><span class="tag">05 · App completa (panel iluminado)</span>
+  <div class="wrap" style="grid-template-columns:1fr;justify-items:center">
+    <div class="copy center" style="margin-bottom:26px">
+      <div class="brand"><b>Reverón</b> &nbsp;· por Tesote&nbsp;AI</div>
+      <h1>Deja de operar tus finanzas. Dirígelas.</h1>
+      <p class="sub" style="margin:0 auto">Reverón hace el trabajo. Tú solo apruebas.</p>
+    </div>
+    <div class="browser" style="width:100%;max-width:980px">
+      <div style="display:grid;grid-template-columns:150px 1fr 1.1fr;height:300px;font-size:11px">
+        <div style="background:#101216;color:#9aa0a8;padding:14px"><div style="color:#fff;font-family:'Instrument Serif',serif;font-size:15px">Reverón</div><div style="margin-top:16px;opacity:.6;line-height:2.2">+ Nueva conversación<br>Flujo de caja<br>Conciliación mayo<br>Facturas por cobrar</div></div>
+        <div style="background:#fbfbfc;padding:14px;border-right:1px solid var(--line);color:#8a9098;line-height:1.9">Categoricé y concilié mayo. Te dejo el trabajo listo para tu aprobación →</div>
+        <div style="background:#fff;padding:0;position:relative;box-shadow:-20px 0 40px -20px rgba(28,138,90,.25)">
+          <div class="chd" style="padding:12px 14px"><span class="t" style="font-size:12px"><span class="av" style="width:18px;height:18px;font-size:11px">R</span>&nbsp; Por aprobar</span></div>
+          <div class="row" style="grid-template-columns:1fr auto;padding:10px 14px"><div class="desc" style="font-size:12px">Categorizar 142 tx</div><span class="chip ok">Listo</span></div>
+          <div class="row" style="grid-template-columns:1fr auto;padding:10px 14px"><div class="desc" style="font-size:12px">Conciliar 38 mov.</div><span class="chip ok">Listo</span></div>
+          <div class="row" style="grid-template-columns:1fr auto;padding:10px 14px"><div class="desc" style="font-size:12px">Reporte de caja</div><span class="chip ok">Listo</span></div>
+          <div class="cfoot" style="padding:11px 14px"><button class="bigbtn" style="padding:7px 13px">Aprobar todo →</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 06 — MACRO ZOOM (few big rows) ============ -->
+<section class="opt"><span class="tag">06 · Macro (filas grandes)</span>
+  <div class="wrap split">
+    <div class="copy">
+      <div class="brand"><b>Reverón</b> &nbsp;· por Tesote&nbsp;AI</div>
+      <h1>Deja de operar tus finanzas. Dirígelas.</h1>
+      <p class="sub">Reverón hace el trabajo. Tú solo apruebas.</p>
+      <a class="cta">Solicitar acceso <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+    </div>
+    <div class="art float">
+      <div class="card">
+        <div class="row" style="grid-template-columns:1fr auto;padding:22px 22px"><div><div class="desc" style="font-size:16px">Conciliar 38 movimientos de mayo</div><div class="meta" style="margin-top:4px">Reverón ya encontró cada coincidencia.</div></div><button class="appr" style="padding:9px 18px;font-size:13px">Aprobar</button></div>
+        <div class="row" style="grid-template-columns:1fr auto;padding:22px 22px"><div><div class="desc" style="font-size:16px">Categorizar 142 transacciones</div><div class="meta" style="margin-top:4px">Confianza promedio 98%.</div></div><button class="appr" style="padding:9px 18px;font-size:13px">Aprobar</button></div>
+        <div class="row" style="grid-template-columns:1fr auto;padding:22px 22px"><div><div class="desc" style="font-size:16px">Generar reporte de flujo de caja</div><div class="meta" style="margin-top:4px">Listo en PDF y Excel.</div></div><button class="appr" style="padding:9px 18px;font-size:13px">Aprobar</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 07 — FANNED STACK ============ -->
+<section class="opt"><span class="tag">07 · Pila de tarjetas</span>
+  <div class="wrap split">
+    <div class="copy">
+      <div class="brand"><b>Reverón</b> &nbsp;· por Tesote&nbsp;AI</div>
+      <h1>Deja de operar tus finanzas. Dirígelas.</h1>
+      <p class="sub">Reverón hace el trabajo. Tú solo apruebas.</p>
+      <a class="cta">Solicitar acceso <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+    </div>
+    <div class="art stack float">
+      <div class="b1"></div><div class="b2"></div>
+      <div class="card" style="position:relative;z-index:2">
+        <div class="chd"><span class="t"><span class="av">R</span>&nbsp; Categorización</span><span class="m">+ 2 más</span></div>
+        <div class="row" style="grid-template-columns:1fr auto auto"><div class="desc">Proveedora del Lago</div><span class="cat">Inventario</span><button class="appr">Aprobar</button></div>
+        <div class="row" style="grid-template-columns:1fr auto auto"><div class="desc">Servicios Andina</div><span class="cat">Servicios</span><button class="appr">Aprobar</button></div>
+        <div class="row" style="grid-template-columns:1fr auto auto"><div class="desc">Nómina quincena</div><span class="cat">Payroll</span><button class="appr">Aprobar</button></div>
+        <div class="cfoot"><span class="lab">3 propuestas listas</span><button class="bigbtn">Aprobar →</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 08 — BROWSER FRAMED ============ -->
+<section class="opt"><span class="tag">08 · Marco de navegador</span>
+  <div class="wrap split">
+    <div class="copy">
+      <div class="brand"><b>Reverón</b> &nbsp;· por Tesote&nbsp;AI</div>
+      <h1>Deja de operar tus finanzas. Dirígelas.</h1>
+      <p class="sub">Reverón hace el trabajo. Tú solo apruebas.</p>
+      <a class="cta">Solicitar acceso <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+    </div>
+    <div class="art float browser">
+      <div class="bbar"><i></i><i></i><i></i><span class="url">reveron.ai/app</span></div>
+      <div class="chd"><span class="t"><span class="av">R</span>&nbsp; Trabajo propuesto</span><span class="m">5 pendientes</span></div>
+      <div class="row" style="grid-template-columns:1fr auto auto"><div class="desc">Conciliar 38 movimientos</div><span class="chip ok">Listo</span><button class="appr">Aprobar</button></div>
+      <div class="row" style="grid-template-columns:1fr auto auto"><div class="desc">Categorizar 142 transacciones</div><span class="chip ok">Listo</span><button class="appr">Aprobar</button></div>
+      <div class="row" style="grid-template-columns:1fr auto auto"><div class="desc">Reporte de flujo de caja</div><span class="chip ok">Listo</span><button class="appr">Aprobar</button></div>
+      <div class="cfoot"><span class="lab">Aprobar todo lo listo</span><button class="bigbtn">Aprobar 3 →</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 09 — TABLE OVER DATA HORIZON ============ -->
+<section class="opt" style="background:linear-gradient(180deg,#C9CDD3,#B0B4BB)"><span class="tag">09 · Sobre malla de datos</span>
+  <div class="grid3"></div>
+  <div class="wrap split" style="position:relative;z-index:2">
+    <div class="copy">
+      <div class="brand"><b>Reverón</b> &nbsp;· por Tesote&nbsp;AI</div>
+      <h1>Deja de operar tus finanzas. Dirígelas.</h1>
+      <p class="sub">Reverón hace el trabajo. Tú solo apruebas.</p>
+      <a class="cta">Solicitar acceso <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+    </div>
+    <div class="art float">
+      <div class="card">
+        <div class="chd"><span class="t"><span class="av">R</span>&nbsp; Cola de aprobación</span><span class="m">5 pendientes</span></div>
+        <div class="row" style="grid-template-columns:1fr auto auto"><div class="desc">Conciliar 38 movimientos</div><span class="chip ok">Listo</span><button class="appr">Aprobar</button></div>
+        <div class="row" style="grid-template-columns:1fr auto auto"><div class="desc">Categorizar 142 transacciones</div><span class="chip ok">Listo</span><button class="appr">Aprobar</button></div>
+        <div class="cfoot"><span class="lab">Hecho en 4s</span><button class="bigbtn">Aprobar todo →</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 10 — APPROVE IN ACTION ============ -->
+<section class="opt"><span class="tag">10 · Aprobando (en acción)</span>
+  <div class="wrap split">
+    <div class="copy">
+      <div class="brand"><b>Reverón</b> &nbsp;· por Tesote&nbsp;AI</div>
+      <h1>Deja de operar tus finanzas. Dirígelas.</h1>
+      <p class="sub">Reverón hace el trabajo. Tú solo apruebas.</p>
+      <a class="cta">Solicitar acceso <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+    </div>
+    <div class="art float">
+      <div class="card">
+        <div class="chd"><span class="t"><span class="av">R</span>&nbsp; Cola de aprobación</span><span class="m">5 pendientes</span></div>
+        <div class="row" style="grid-template-columns:1fr auto auto;background:var(--greenbg)"><div class="desc">Conciliar 38 movimientos</div><span class="chip ok">Aprobado</span><span class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></div>
+        <div class="row" style="grid-template-columns:1fr auto auto"><div class="desc">Categorizar 142 transacciones</div><span class="chip ok">Listo</span><button class="appr" style="outline:3px solid rgba(12,13,15,.15)">Aprobar ▸</button></div>
+        <div class="row" style="grid-template-columns:1fr auto auto"><div class="desc">Reporte de flujo de caja</div><span class="chip ok">Listo</span><button class="appr">Aprobar</button></div>
+        <div class="cfoot"><span class="lab">1 de 4 aprobado</span><button class="bigbtn">Aprobar resto →</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 11 — PROPOSED CATEGORIZATIONS ============ -->
+<section class="opt"><span class="tag">11 · Categorizaciones propuestas</span>
+  <div class="wrap split">
+    <div class="copy">
+      <div class="brand"><b>Reverón</b> &nbsp;· por Tesote&nbsp;AI</div>
+      <h1>Deja de operar tus finanzas. Dirígelas.</h1>
+      <p class="sub">Reverón hace el trabajo. Tú solo apruebas.</p>
+      <a class="cta">Solicitar acceso <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+    </div>
+    <div class="art float">
+      <div class="card">
+        <div class="chd"><span class="t"><span class="av">R</span>&nbsp; Categorías propuestas</span><span class="m">142 tx</span></div>
+        <div class="row" style="grid-template-columns:1.3fr .7fr 1fr auto"><div class="desc">Proveedora del Lago</div><span class="amt">$4.820</span><span class="cat">Inventario</span><span class="chip ok">98%</span></div>
+        <div class="row" style="grid-template-columns:1.3fr .7fr 1fr auto"><div class="desc">Servicios Andina</div><span class="amt">$1.310</span><span class="cat">Servicios</span><span class="chip ok">99%</span></div>
+        <div class="row" style="grid-template-columns:1.3fr .7fr 1fr auto"><div class="desc">Nómina quincena</div><span class="amt">$18.900</span><span class="cat">Payroll</span><span class="chip ok">100%</span></div>
+        <div class="row" style="grid-template-columns:1.3fr .7fr 1fr auto"><div class="desc">Inversiones Caribe</div><span class="amt">$2.450</span><span class="cat">Software</span><span class="chip wait">86%</span></div>
+        <div class="cfoot"><span class="lab">140 con alta confianza</span><button class="bigbtn">Aprobar todo →</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 12 — PROPOSED PAYMENTS QUEUE ============ -->
+<section class="opt"><span class="tag">12 · Pagos propuestos</span>
+  <div class="wrap split">
+    <div class="copy">
+      <div class="brand"><b>Reverón</b> &nbsp;· por Tesote&nbsp;AI</div>
+      <h1>Deja de operar tus finanzas. Dirígelas.</h1>
+      <p class="sub">Reverón hace el trabajo. Tú solo apruebas.</p>
+      <a class="cta">Solicitar acceso <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+    </div>
+    <div class="art float">
+      <div class="card">
+        <div class="chd"><span class="t"><span class="av">R</span>&nbsp; Pagos listos para aprobar</span><span class="m mono">$27.490</span></div>
+        <div class="row" style="grid-template-columns:1.3fr .8fr .7fr auto"><div class="desc">Proveedora del Lago</div><span class="amt">$4.820</span><span class="meta">Hoy</span><button class="appr">Aprobar</button></div>
+        <div class="row" style="grid-template-columns:1.3fr .8fr .7fr auto"><div class="desc">Servicios Andina</div><span class="amt">$1.310</span><span class="meta">16 jun</span><button class="appr">Aprobar</button></div>
+        <div class="row" style="grid-template-columns:1.3fr .8fr .7fr auto"><div class="desc">Nómina quincena</div><span class="amt">$18.900</span><span class="meta">Hoy</span><button class="appr">Aprobar</button></div>
+        <div class="cfoot"><span class="lab">3 beneficiarios</span><button class="bigbtn">Aprobar lote →</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 13 — PROPOSED RECONCILIATIONS ============ -->
+<section class="opt"><span class="tag">13 · Conciliaciones propuestas</span>
+  <div class="wrap split">
+    <div class="copy">
+      <div class="brand"><b>Reverón</b> &nbsp;· por Tesote&nbsp;AI</div>
+      <h1>Deja de operar tus finanzas. Dirígelas.</h1>
+      <p class="sub">Reverón hace el trabajo. Tú solo apruebas.</p>
+      <a class="cta">Solicitar acceso <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+    </div>
+    <div class="art float">
+      <div class="card">
+        <div class="chd"><span class="t"><span class="av">R</span>&nbsp; Coincidencias encontradas</span><span class="m">38 de 38</span></div>
+        <div class="row" style="grid-template-columns:1fr auto 1fr auto"><div class="desc">Mov. banco · $4.820</div><span class="mono" style="color:#3a3d42">↔</span><div class="meta" style="text-align:right">Factura #1042</div><span class="chip ok">Match</span></div>
+        <div class="row" style="grid-template-columns:1fr auto 1fr auto"><div class="desc">Mov. banco · $1.310</div><span class="mono" style="color:#3a3d42">↔</span><div class="meta" style="text-align:right">Factura #1043</div><span class="chip ok">Match</span></div>
+        <div class="row" style="grid-template-columns:1fr auto 1fr auto"><div class="desc">Mov. banco · $960</div><span class="mono" style="color:#3a3d42">↔</span><div class="meta" style="text-align:right">Recibo #88</div><span class="chip ok">Match</span></div>
+        <div class="cfoot"><span class="lab">100% conciliado</span><button class="bigbtn">Aprobar conciliación →</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 14 — FINISHED REPORT, ready to approve ============ -->
+<section class="opt"><span class="tag">14 · Reporte listo para aprobar</span>
+  <div class="wrap split">
+    <div class="copy">
+      <div class="brand"><b>Reverón</b> &nbsp;· por Tesote&nbsp;AI</div>
+      <h1>Deja de operar tus finanzas. Dirígelas.</h1>
+      <p class="sub">Reverón hace el trabajo. Tú solo apruebas.</p>
+      <a class="cta">Solicitar acceso <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+    </div>
+    <div class="art float">
+      <div class="card">
+        <div class="chd"><span class="t"><span class="av">R</span>&nbsp; Flujo de caja · mayo 2026</span><span class="m">listo</span></div>
+        <div class="row" style="grid-template-columns:1fr auto"><div class="desc" style="color:var(--green)">Total ingresos</div><span class="amt" style="color:var(--green)">$76.336</span></div>
+        <div class="row" style="grid-template-columns:1fr auto"><div class="desc">Total egresos</div><span class="amt">$28.423</span></div>
+        <div class="row" style="grid-template-columns:1fr auto"><div class="desc" style="font-weight:600">Flujo neto</div><span class="amt" style="font-weight:600">$47.913</span></div>
+        <div class="cfoot"><span class="lab">Generado en 3s · 23 categorías</span><button class="bigbtn">Aprobar y publicar →</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 15 — MORNING DIGEST ============ -->
+<section class="opt"><span class="tag">15 · Resumen matutino</span>
+  <div class="wrap split">
+    <div class="copy">
+      <div class="brand"><b>Reverón</b> &nbsp;· por Tesote&nbsp;AI</div>
+      <h1>Deja de operar tus finanzas. Dirígelas.</h1>
+      <p class="sub">Reverón hace el trabajo. Tú solo apruebas.</p>
+      <a class="cta">Solicitar acceso <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+    </div>
+    <div class="art float">
+      <div class="card">
+        <div class="chd"><span class="t"><span class="av">R</span>&nbsp; Tu caja hoy · 7:00 a.m.</span><span class="m">14 jun</span></div>
+        <div style="padding:14px 18px;font-size:13px;color:#2a2d31;line-height:1.6;border-bottom:1px solid var(--line)">Amaneciste con <b>$312.480</b> en 6 bancos. Todo en orden, salvo dos cosas:</div>
+        <div class="row" style="grid-template-columns:1fr auto auto"><div class="desc">Banco operativo bajo umbral</div><span class="chip wait">Atención</span><button class="appr ghost">Ver</button></div>
+        <div class="row" style="grid-template-columns:1fr auto auto"><div class="desc">3 facturas vencen hoy</div><span class="chip wait">Acción</span><button class="appr">Pagar</button></div>
+        <div class="cfoot"><span class="lab">Resumen enviado a tu Slack</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 16 — FROSTED GLASS ============ -->
+<section class="opt"><span class="tag">16 · Vidrio esmerilado</span>
+  <div class="wrap split">
+    <div class="copy">
+      <div class="brand"><b>Reverón</b> &nbsp;· por Tesote&nbsp;AI</div>
+      <h1>Deja de operar tus finanzas. Dirígelas.</h1>
+      <p class="sub">Reverón hace el trabajo. Tú solo apruebas.</p>
+      <a class="cta">Solicitar acceso <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+    </div>
+    <div class="art float">
+      <div class="card glass">
+        <div class="chd" style="border-color:rgba(255,255,255,.5)"><span class="t"><span class="av">R</span>&nbsp; Trabajo propuesto</span><span class="m">5 pendientes</span></div>
+        <div class="row" style="grid-template-columns:1fr auto auto;border-color:rgba(255,255,255,.5)"><div class="desc">Conciliar 38 movimientos</div><span class="chip ok">Listo</span><button class="appr">Aprobar</button></div>
+        <div class="row" style="grid-template-columns:1fr auto auto;border-color:rgba(255,255,255,.5)"><div class="desc">Categorizar 142 transacciones</div><span class="chip ok">Listo</span><button class="appr">Aprobar</button></div>
+        <div class="row" style="grid-template-columns:1fr auto auto;border:0"><div class="desc">Reporte de flujo de caja</div><span class="chip ok">Listo</span><button class="appr">Aprobar</button></div>
+        <div class="cfoot" style="background:rgba(255,255,255,.4)"><span class="lab">Hecho en 4s</span><button class="bigbtn">Aprobar todo →</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 17 — EDITORIAL (hard shadow, one accent) ============ -->
+<section class="opt"><span class="tag">17 · Editorial (sombra dura)</span>
+  <div class="wrap split">
+    <div class="copy">
+      <div class="brand"><b>Reverón</b> &nbsp;· por Tesote&nbsp;AI</div>
+      <h1>Deja de operar tus finanzas. Dirígelas.</h1>
+      <p class="sub">Reverón hace el trabajo. Tú solo apruebas.</p>
+      <a class="cta">Solicitar acceso <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+    </div>
+    <div class="art">
+      <div class="card editorial" style="border:1.5px solid var(--ink)">
+        <div class="chd" style="border-color:var(--ink)"><span class="t"><span class="av">R</span>&nbsp; Trabajo propuesto</span><span class="m">5 pendientes</span></div>
+        <div class="row" style="grid-template-columns:1fr auto auto"><div class="desc">Conciliar 38 movimientos</div><span class="chip ok">Listo</span><button class="appr">Aprobar</button></div>
+        <div class="row" style="grid-template-columns:1fr auto auto"><div class="desc">Categorizar 142 transacciones</div><span class="chip ok">Listo</span><button class="appr">Aprobar</button></div>
+        <div class="row" style="grid-template-columns:1fr auto auto"><div class="desc">Reporte de flujo de caja</div><span class="chip ok">Listo</span><button class="appr">Aprobar</button></div>
+        <div class="cfoot"><span class="lab">Hecho en 4s</span><button class="bigbtn">Aprobar todo →</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 18 — WIREFRAME / LINE-ART ============ -->
+<section class="opt"><span class="tag">18 · Wireframe (líneas)</span>
+  <div class="wrap split">
+    <div class="copy">
+      <div class="brand"><b>Reverón</b> &nbsp;· por Tesote&nbsp;AI</div>
+      <h1>Deja de operar tus finanzas. Dirígelas.</h1>
+      <p class="sub">Reverón hace el trabajo. Tú solo apruebas.</p>
+      <a class="cta">Solicitar acceso <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+    </div>
+    <div class="art">
+      <div class="card wire">
+        <div class="chd"><span class="t"><span class="av" style="background:none;border:1px solid #23262a;color:#23262a">R</span>&nbsp; Trabajo propuesto</span><span class="m" style="color:#6b7178">5 pendientes</span></div>
+        <div class="row" style="grid-template-columns:1fr auto auto"><div class="desc">Conciliar 38 movimientos</div><span class="chip" style="background:transparent;border:1px solid #23262a;color:#23262a">Listo</span><button class="appr" style="background:transparent;border:1px solid #23262a;color:#23262a">Aprobar</button></div>
+        <div class="row" style="grid-template-columns:1fr auto auto"><div class="desc">Categorizar 142 transacciones</div><span class="chip" style="background:transparent;border:1px solid #23262a;color:#23262a">Listo</span><button class="appr" style="background:transparent;border:1px solid #23262a;color:#23262a">Aprobar</button></div>
+        <div class="row" style="grid-template-columns:1fr auto auto"><div class="desc">Reporte de flujo de caja</div><span class="chip" style="background:transparent;border:1px solid #23262a;color:#23262a">Listo</span><button class="appr" style="background:transparent;border:1px solid #23262a;color:#23262a">Aprobar</button></div>
+        <div class="cfoot" style="background:transparent"><span class="lab" style="color:#6b7178">Hecho en 4s</span><button class="bigbtn" style="background:transparent;border:1px solid #23262a;color:#23262a">Aprobar todo →</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 19 — COPY-DOMINANT, UI quiet ============ -->
+<section class="opt"><span class="tag">19 · Texto protagonista</span>
+  <div class="wrap center">
+    <div>
+      <div class="brand" style="margin-bottom:18px"><b>Reverón</b> &nbsp;· por Tesote&nbsp;AI</div>
+      <h1 style="font-size:clamp(2.6rem,5vw,4rem)">Deja de operar tus finanzas. Dirígelas.</h1>
+      <p class="sub" style="margin:18px auto 0;font-size:1.15rem">Reverón hace el trabajo. Tú solo apruebas.</p>
+      <a class="cta" style="margin-top:26px">Solicitar acceso <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+    </div>
+    <div class="art" style="width:100%;max-width:560px;opacity:.96">
+      <div class="card" style="box-shadow:0 16px 40px -22px rgba(30,34,40,.4)">
+        <div class="row" style="grid-template-columns:1fr auto auto;padding:11px 16px"><div class="desc" style="font-size:12.5px">Conciliar 38 movimientos</div><span class="chip ok">Listo</span><button class="appr" style="padding:5px 11px">Aprobar</button></div>
+        <div class="row" style="grid-template-columns:1fr auto auto;padding:11px 16px"><div class="desc" style="font-size:12.5px">Categorizar 142 transacciones</div><span class="chip ok">Listo</span><button class="appr" style="padding:5px 11px">Aprobar</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 20 — UI SLICE BLEEDING OFF RIGHT ============ -->
+<section class="opt" style="justify-content:flex-start"><span class="tag">20 · Panel al borde (bleed)</span>
+  <div style="display:grid;grid-template-columns:0.9fr 1.1fr;align-items:center;width:100%;height:100%">
+    <div class="copy" style="padding-left:8vw">
+      <div class="brand"><b>Reverón</b> &nbsp;· por Tesote&nbsp;AI</div>
+      <h1>Deja de operar tus finanzas. Dirígelas.</h1>
+      <p class="sub">Reverón hace el trabajo. Tú solo apruebas.</p>
+      <a class="cta">Solicitar acceso <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+    </div>
+    <div style="height:100%;display:flex;align-items:center;justify-content:flex-end">
+      <div class="card" style="width:130%;margin-right:-30%;border-radius:18px 0 0 18px;box-shadow:-30px 0 80px -30px rgba(20,24,30,.4)">
+        <div class="chd" style="padding:18px 22px"><span class="t"><span class="av">R</span>&nbsp; Trabajo propuesto · mayo</span><span class="m">5 pendientes</span></div>
+        <div class="row" style="grid-template-columns:1fr auto auto;padding:15px 22px"><div><div class="desc">Conciliar 38 movimientos</div><div class="meta">Banco ↔ libro</div></div><span class="chip ok">Listo</span><button class="appr">Aprobar</button></div>
+        <div class="row" style="grid-template-columns:1fr auto auto;padding:15px 22px"><div><div class="desc">Categorizar 142 transacciones</div><div class="meta">Confianza 98%</div></div><span class="chip ok">Listo</span><button class="appr">Aprobar</button></div>
+        <div class="row" style="grid-template-columns:1fr auto auto;padding:15px 22px"><div><div class="desc">Programar pago a 5 proveedores</div><div class="meta mono">$23.140</div></div><span class="chip wait">Revisar</span><button class="appr ghost">Ver</button></div>
+        <div class="row" style="grid-template-columns:1fr auto auto;padding:15px 22px"><div><div class="desc">Reporte de flujo de caja</div><div class="meta">PDF + Excel</div></div><span class="chip ok">Listo</span><button class="appr">Aprobar</button></div>
+        <div class="cfoot" style="padding:16px 22px"><span class="lab">Aprobar todo lo listo</span><button class="bigbtn">Aprobar 3 →</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

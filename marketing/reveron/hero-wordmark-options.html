@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Reverón — 20 wordmark-led hero options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{--ink:#0C0D0F;--muted:#44484E;--emb:rgba(255,255,255,.45)}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;background:#9DA1A8}
+
+  .opt{position:relative;height:100vh;min-height:760px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:5vh 6vw;overflow:hidden;border-bottom:1px solid rgba(0,0,0,.18);
+    background:radial-gradient(ellipse 100vw 75vh at 50% 32%,rgba(255,255,255,.55),transparent 62%),
+      linear-gradient(180deg,#D6D9DE,#C3C7CD 52%,#ADB1B9)}
+  .tag{position:absolute;top:18px;left:22px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;color:#3a3d42;z-index:40;background:rgba(255,255,255,.55);padding:5px 10px;border-radius:6px}
+
+  /* wordmark + copy */
+  .word{font-family:'Instrument Serif',serif;font-weight:400;line-height:.84;letter-spacing:-.012em;color:var(--ink);
+    text-shadow:0 1px 0 var(--emb);font-size:clamp(5rem,15vw,12.5rem);position:relative;z-index:5}
+  .endorse{font-family:'JetBrains Mono',monospace;font-weight:500;letter-spacing:.34em;text-transform:uppercase;
+    color:#16181B;font-size:clamp(.85rem,1.4vw,1rem);margin-top:1.4rem;padding-left:.34em;z-index:5}
+  .tagline{font-family:'Instrument Serif',serif;font-style:italic;font-size:clamp(1.3rem,2.5vw,2rem);line-height:1.15;margin-top:2.4rem;z-index:5}
+  .sub{font-weight:300;line-height:1.5;color:var(--muted);font-size:clamp(.92rem,1.4vw,1.05rem);margin-top:.9rem;max-width:38ch;z-index:5}
+  .cta{margin-top:2.2rem;display:inline-flex;align-items:center;gap:.5rem;font-size:.92rem;color:var(--ink);
+    text-decoration:none;border-bottom:1.5px solid var(--ink);padding-bottom:4px;z-index:5}
+  .cta svg{width:13px;height:13px}
+
+  /* small app */
+  .appbox{--s:.42;--w:900px;--h:460px;width:calc(var(--w)*var(--s));height:calc(var(--h)*var(--s));position:relative;flex:none;z-index:5}
+  .appbox .app{position:absolute;top:0;left:0;width:var(--w);height:var(--h);transform:scale(var(--s));transform-origin:top left;
+    box-shadow:0 34px 64px -30px rgba(20,24,30,.5)}
+  .appbox.tlt{perspective:1500px}
+  .appbox.tlt .app{transform:scale(var(--s)) rotateY(-16deg) rotateX(7deg)}
+
+  /* placements (modifiers on .opt) */
+  .p-below .appbox{margin-top:3vh}
+  .p-top{flex-direction:column}.p-top .appbox{order:-1;margin-bottom:3vh}
+  .p-cornerBR .appbox{position:absolute;right:4vw;bottom:6vh}
+  .p-cornerTR .appbox{position:absolute;right:4vw;top:7vh}
+  .p-bleed .appbox{position:absolute;left:50%;bottom:0;margin-left:calc(var(--w)*var(--s)/-2)}
+  .p-behind .appbox{position:absolute;left:50%;top:50%;transform:translate(-50%,-40%);z-index:1;opacity:.96}
+  .p-behind .word{z-index:6;mix-blend-mode:normal}
+  .p-float .appbox{position:absolute;left:50%;top:8vh;margin-left:calc(var(--w)*var(--s)/-2)}
+  .p-strip{justify-content:flex-start;padding-top:13vh}.p-strip .appbox{position:absolute;left:50%;bottom:7vh;margin-left:calc(var(--w)*var(--s)/-2);--s:.5;overflow:hidden;height:120px}
+  .p-sliceR .appbox{position:absolute;right:0;top:50%;transform:translateY(-50%);--s:.52}
+  .p-sliceR .appbox .app{box-shadow:-30px 0 70px -34px rgba(20,24,30,.5)}
+  .p-overlap .appbox{margin-top:-3vh;z-index:6}
+
+  /* asymmetric: text left, app right */
+  .p-right{flex-direction:row;text-align:left;justify-content:center;gap:5%}
+  .p-right .txt{display:flex;flex-direction:column;align-items:flex-start}
+  .p-right .word{font-size:clamp(4.5rem,12vw,10rem)}
+  .p-right .sub{margin-left:0}
+
+  /* wordmark treatments */
+  .w-outline .word{color:transparent;-webkit-text-stroke:2px var(--ink);text-shadow:none}
+  .w-wide .word{letter-spacing:.04em;font-size:clamp(4rem,13vw,11rem)}
+  .w-ghost .word{font-size:clamp(9rem,30vw,24rem);color:rgba(12,13,15,.10);text-shadow:none;position:absolute;z-index:1;white-space:nowrap}
+  .w-big .word{font-size:clamp(6rem,20vw,16rem)}
+
+  .twocards{display:flex;gap:18px;margin-top:3vh;z-index:5}
+
+  /* ===== THE APP (compact) ===== */
+  .app{--bg:#fff;--bg2:#fbfbfc;--side:#101216;--sideink:#9aa0a8;--sideact:#1f232a;--ink:#0c0d0f;--ink2:#8a9098;--bd:#e8e9ec;
+       --userb:#0c0d0f;--userink:#fff;--botb:#f3f4f6;--ok:#1C8A5A;--okbg:#E7F4ED;--wb:#9A6B1C;--wbg:#F6EFD9;--btn:#0c0d0f;--btnink:#fff;
+       display:grid;grid-template-columns:200px 1fr 1.04fr;border-radius:16px;overflow:hidden;border:1px solid var(--bd);background:var(--bg);color:var(--ink);font-size:13px}
+  .app.t-dark{--bg:#101216;--bg2:#0c0d10;--side:#0a0b0d;--sideink:#7b818a;--sideact:#1c2026;--ink:#e6e8ec;--ink2:#7b818a;--bd:#23262c;--userb:#e6e8ec;--userink:#0c0d0f;--botb:#191c22;--okbg:#13231b;--wbg:#241d10;--btn:#e6e8ec;--btnink:#0c0d0f}
+  .app.t-mono{--bg:#f6f7f9;--bg2:#eef0f2;--side:#dde0e4;--sideink:#5c626b;--sideact:#cdd1d6;--bd:#d2d5da;--botb:#e6e8ec;--ok:#3a4750;--okbg:#dfe3e7;--btn:#23262a}
+  .nav{background:var(--side);padding:16px 12px;display:flex;flex-direction:column;gap:3px}
+  .logo{font-family:'Instrument Serif',serif;font-size:19px;color:#fff;padding:2px 8px 12px}
+  .app.t-mono .logo{color:#23262a}
+  .newc{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;font-size:12.5px;color:#dfe2e6;border:1px solid #272b32;background:#171a20;margin-bottom:12px}
+  .app.t-mono .newc{color:#23262a;border-color:#c7cace;background:#e9ebee}
+  .navlbl{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--sideink);opacity:.7;padding:6px 10px}
+  .conv{padding:7px 10px;border-radius:7px;color:var(--sideink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12.5px}
+  .conv.on{background:var(--sideact);color:#fff}.app.t-mono .conv.on{color:#23262a}
+  .navfoot{margin-top:auto;display:flex;align-items:center;gap:8px;padding:8px 10px;font-size:12px;color:var(--sideink)}
+  .udot{width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#5b6470,#2b2e33);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:10px}
+  .chat{display:flex;flex-direction:column;background:var(--bg2);border-left:1px solid var(--bd);border-right:1px solid var(--bd)}
+  .chhd{padding:13px 16px;border-bottom:1px solid var(--bd);font-weight:600;font-size:13px;display:flex;justify-content:space-between;align-items:center}
+  .chhd span{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:400;color:var(--ink2);letter-spacing:.08em;text-transform:uppercase}
+  .msgs{flex:1;padding:16px;display:flex;flex-direction:column;gap:12px;overflow:hidden}
+  .m{max-width:86%;line-height:1.5;font-size:12.5px}
+  .m.u{align-self:flex-end;background:var(--userb);color:var(--userink);padding:9px 13px;border-radius:13px 13px 4px 13px}
+  .m.b{align-self:flex-start;display:flex;gap:9px}
+  .m.b .ba{flex:none;width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#2b2e33,#0c0d0f);color:#fff;font-family:'Instrument Serif',serif;display:flex;align-items:center;justify-content:center;font-size:13px}
+  .m.b .bt{background:var(--botb);padding:9px 13px;border-radius:13px 13px 13px 4px;color:var(--ink)}
+  .composer{margin:13px;display:flex;align-items:center;gap:8px;border:1px solid var(--bd);border-radius:11px;padding:9px 12px;background:var(--bg)}
+  .composer input{flex:1;border:0;outline:0;background:transparent;font:inherit;font-size:12.5px;color:var(--ink)}
+  .composer input::placeholder{color:var(--ink2)}
+  .send{width:26px;height:26px;border-radius:7px;background:var(--btn);color:var(--btnink);border:0;font-size:13px;display:flex;align-items:center;justify-content:center;flex:none}
+  .res{display:flex;flex-direction:column;background:var(--bg)}
+  .reshd{padding:13px 16px;border-bottom:1px solid var(--bd);font-weight:600;font-size:13px;display:flex;justify-content:space-between;align-items:center}
+  .reshd .ct{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;color:var(--ink2)}
+  .rrow{display:grid;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid var(--bd)}
+  .rrow .d{font-weight:500}.rrow .s{font-size:11.5px;color:var(--ink2)}
+  .chip{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;font-size:10.5px;font-weight:500;white-space:nowrap}
+  .chip.ok{background:var(--okbg);color:var(--ok)}.chip.w{background:var(--wbg);color:var(--wb)}
+  .ap{padding:6px 12px;border-radius:8px;background:var(--btn);color:var(--btnink);font-size:11.5px;font-weight:500;border:0;white-space:nowrap}
+  .ap.g{background:transparent;color:var(--ink);border:1px solid var(--bd)}
+  .resfoot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;padding:13px 16px;background:var(--bg2);border-top:1px solid var(--bd)}
+  .resfoot .lab{font-size:11.5px;color:var(--ink2)}
+  .allbtn{padding:8px 15px;border-radius:9px;background:var(--btn);color:var(--btnink);font-size:12px;font-weight:500;border:0}
+  /* snippet (results-only mini card) */
+  .snip{width:330px;border-radius:14px;overflow:hidden;border:1px solid #e8e9ec;background:#fff;box-shadow:0 30px 60px -28px rgba(20,24,30,.45);font-size:13px;color:#0c0d0f}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const HEAD="Deja de operar tus finanzas. Dirígelas.";
+const SUB="Reverón hace el trabajo. Tú solo apruebas.";
+const CTA=`<a class="cta">Solicitar acceso <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>`;
+const CONVS=["Flujo de caja · mayo","Conciliación de mayo","Facturas por cobrar","Pagos a proveedores","Saldos bancarios","Gastos por categoría","Posición diaria","Reporte trimestral"];
+function nav(){return `<div class="nav"><div class="logo">Reverón</div><div class="newc">＋ Nueva conversación</div><div class="navlbl">Conversaciones</div>${CONVS.map((c,i)=>`<div class="conv${i===0?' on':''}">${c}</div>`).join("")}<div class="navfoot"><span class="udot">L</span> Luis · Tesote</div></div>`;}
+function chat(){return `<div class="chat"><div class="chhd">Flujo de caja · mayo <span>por Tesote AI</span></div><div class="msgs"><div class="m u">Categoriza y concilia los movimientos de mayo.</div><div class="m b"><span class="ba">R</span><div class="bt">Listo. Categoricé 142 transacciones y concilié 38 movimientos, sin errores. Te dejo todo a la derecha para tu aprobación.</div></div><div class="m u">Perfecto. Arma también el reporte de flujo de caja.</div><div class="m b"><span class="ba">R</span><div class="bt">Hecho. El reporte ya está en el panel, listo para publicar.</div></div></div><div class="composer"><input placeholder="Pregúntale a Reverón…"/><button class="send">↑</button></div></div>`;}
+function rrow(c,x){return `<div class="rrow" style="grid-template-columns:${c}">${x}</div>`;}
+function resBody(){return `<div class="reshd">Listo para aprobar <span class="ct">5 pendientes</span></div>
+  ${rrow("1fr auto auto",`<div><div class="d">Conciliar 38 movimientos</div><div class="s">Banco ↔ libro</div></div><span class="chip ok">Listo</span><button class="ap">Aprobar</button>`)}
+  ${rrow("1fr auto auto",`<div><div class="d">Categorizar 142 transacciones</div><div class="s">Confianza 98%</div></div><span class="chip ok">Listo</span><button class="ap">Aprobar</button>`)}
+  ${rrow("1fr auto auto",`<div><div class="d">Programar pago a 5 proveedores</div><div class="s">$23.140</div></div><span class="chip w">Revisar</span><button class="ap g">Ver</button>`)}
+  ${rrow("1fr auto auto",`<div><div class="d">Reporte de flujo de caja</div><div class="s">PDF + Excel</div></div><span class="chip ok">Listo</span><button class="ap">Aprobar</button>`)}
+  <div class="resfoot"><span class="lab">Aprobar todo lo listo</span><button class="allbtn">Aprobar 3 →</button></div>`;}
+function app(theme){return `<div class="app t-${theme||'split'}">${nav()}${chat()}<div class="res">${resBody()}</div></div>`;}
+function snippet(){return `<div class="snip">${resBody()}</div>`;}
+
+function appbox(theme,cls,s){return `<div class="appbox ${cls||''}" ${s?`style="--s:${s}"`:''}>${app(theme)}</div>`;}
+
+const W=`<h1 class="word">Reverón</h1>`;
+const E=`<div class="endorse">por Tesote&nbsp;AI</div>`;
+const TG=`<p class="tagline">${HEAD}</p>`;
+const SB=`<p class="sub">${SUB}</p>`;
+
+// each option returns inner HTML of the .opt
+const OPTS=[
+ {n:"01",l:"Clásico · app debajo",cls:"p-below",html:()=>`${W}${E}${TG}${SB}${appbox("split")}${CTA}`},
+ {n:"02",l:"App inclinada debajo",cls:"p-below",html:()=>`${W}${E}${TG}${SB}${appbox("split","tlt",".46")}${CTA}`},
+ {n:"03",l:"App esquina inf. der.",cls:"p-cornerBR",html:()=>`${W}${E}${TG}${SB}${CTA}${appbox("split","",".4")}`},
+ {n:"04",l:"App esquina sup. der.",cls:"p-cornerTR",html:()=>`${W}${E}${TG}${SB}${CTA}${appbox("split","",".4")}`},
+ {n:"05",l:"App asomando (bleed inf.)",cls:"p-bleed",html:()=>`${W}${E}${TG}${SB}${CTA}${appbox("split","",".5")}`},
+ {n:"06",l:"Wordmark fantasma detrás",cls:"p-behind w-ghost",html:()=>`<h1 class="word">Reverón</h1>${appbox("split","",".46")}<div style="position:relative;z-index:6">${E}${TG}${CTA}</div>`},
+ {n:"07",l:"App grande debajo",cls:"p-below",html:()=>`${W}${E}${TG}${SB}${appbox("split","",".54")}${CTA}`},
+ {n:"08",l:"Asimétrico · texto izq / app der.",cls:"p-right",html:()=>`<div class="txt">${W}${E}${TG}${SB}${CTA}</div>${appbox("split","",".46")}`},
+ {n:"09",l:"App superpuesta a la base",cls:"p-overlap w-big",html:()=>`${W}${E}${TG}${appbox("split","",".44")}${CTA}`},
+ {n:"10",l:"Wordmark en contorno",cls:"p-below w-outline",html:()=>`${W}${E}${TG}${SB}${appbox("split","",".42")}${CTA}`},
+ {n:"11",l:"App arriba · word abajo",cls:"p-top",html:()=>`${W}${E}${TG}${SB}${appbox("split","",".42")}${CTA}`},
+ {n:"12",l:"Wordmark ancho (tracking)",cls:"p-below w-wide",html:()=>`${W}${E}${TG}${SB}${appbox("split","",".42")}${CTA}`},
+ {n:"13",l:"App mono/platino debajo",cls:"p-below",html:()=>`${W}${E}${TG}${SB}${appbox("mono","",".44")}${CTA}`},
+ {n:"14",l:"App oscura debajo",cls:"p-below",html:()=>`${W}${E}${TG}${SB}${appbox("dark","",".44")}${CTA}`},
+ {n:"15",l:"App franja delgada inferior",cls:"p-strip",html:()=>`${W}${E}${TG}${SB}${CTA}${appbox("split","",".5")}`},
+ {n:"16",l:"App slice borde derecho",cls:"p-sliceR",html:()=>`${W}${E}${TG}${SB}${CTA}${appbox("split")}`},
+ {n:"17",l:"App flotando arriba",cls:"p-float",html:()=>`${W}${E}${TG}${SB}${CTA}${appbox("split","",".42")}`},
+ {n:"18",l:"Dos mini-apps",cls:"p-below",html:()=>`${W}${E}${TG}${SB}<div class="twocards">${appbox("split","",".34")}${appbox("mono","",".34")}</div>${CTA}`},
+ {n:"19",l:"Snippet de aprobación",cls:"p-below",html:()=>`${W}${E}${TG}${SB}<div style="margin-top:3vh;z-index:5">${snippet()}</div>${CTA}`},
+ {n:"20",l:"Word enorme · app pequeña centro",cls:"p-below w-big",html:()=>`${W}${E}${TG}${appbox("split","",".4")}${CTA}`},
+];
+document.getElementById("root").innerHTML=OPTS.map(o=>`<section class="opt ${o.cls}"><span class="tag">${o.n} · ${o.l}</span>${o.html()}</section>`).join("");
+</script>
+</body>
+</html>

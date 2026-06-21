@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Tesote — April 2026 Cash Flow Baseline</title>
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --muted: #6b7280;
+    --line: #e5e7eb;
+    --accent: #0a4d8c;
+    --bg: #ffffff;
+    --soft: #f8f9fb;
+    --warn: #b45309;
+    --good: #166534;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Helvetica Neue", Arial, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    margin: 0;
+    padding: 48px 32px;
+    line-height: 1.5;
+    max-width: 1040px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  h1 {
+    font-size: 28px;
+    font-weight: 600;
+    margin: 0 0 4px 0;
+    letter-spacing: -0.01em;
+  }
+  .subtitle {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 32px;
+  }
+  h2 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 36px 0 12px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+    letter-spacing: -0.01em;
+  }
+  h3 {
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    margin: 24px 0 8px 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0 16px 0;
+    font-size: 14px;
+  }
+  th {
+    text-align: left;
+    font-weight: 600;
+    padding: 8px 10px;
+    border-bottom: 2px solid var(--ink);
+    color: var(--ink);
+    background: var(--soft);
+  }
+  td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  th.num, td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tr.total td {
+    font-weight: 700;
+    border-top: 2px solid var(--ink);
+    border-bottom: none;
+    background: var(--soft);
+  }
+  tr.subtotal td {
+    font-weight: 600;
+    background: #fafafa;
+  }
+  .note {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .pill {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+  .pill-good { background: #ecfdf5; color: var(--good); }
+  .pill-warn { background: #fef3c7; color: var(--warn); }
+  .pill-info { background: #eff6ff; color: var(--accent); }
+  .callout {
+    background: var(--soft);
+    border-left: 3px solid var(--accent);
+    padding: 12px 16px;
+    margin: 16px 0;
+    font-size: 14px;
+  }
+  .callout strong { color: var(--accent); }
+  ul { padding-left: 18px; margin: 8px 0; }
+  li { margin: 4px 0; font-size: 14px; }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 12px 0 24px 0;
+  }
+  .stat {
+    border: 1px solid var(--line);
+    padding: 12px 16px;
+    border-radius: 6px;
+  }
+  .stat .label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .stat .value {
+    font-size: 22px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat .footnote {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  footer {
+    margin-top: 48px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    font-size: 12px;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<h1>Tesote — April 2026 Cash Flow Baseline</h1>
+<p class="subtitle">Recurring expense run-rate and one-off carve-outs. USD or USD-equivalent at 550 Bs/USD. Card line items now integrated from Rho + Mercury exports.</p>
+
+<div class="grid-3">
+  <div class="stat">
+    <div class="label">Steady-state recurring / mo</div>
+    <div class="value">$124K</div>
+    <div class="footnote">From July onward</div>
+  </div>
+  <div class="stat">
+    <div class="label">April revenue (cash + AR)</div>
+    <div class="value">$89K</div>
+    <div class="footnote">$69K cash + $20K open AR (est.)</div>
+  </div>
+  <div class="stat">
+    <div class="label">April operating gap</div>
+    <div class="value" style="color: var(--warn);">−$40K</div>
+    <div class="footnote">Accrual basis; cash basis −$60K</div>
+  </div>
+</div>
+
+<h2>Recurring monthly outflow — simple view, credit card as one bucket</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Bucket</th>
+      <th class="num">April</th>
+      <th class="num">May</th>
+      <th class="num">June</th>
+      <th class="num">July+</th>
+      <th>Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Payroll</strong></td>
+      <td class="num">$97K</td>
+      <td class="num">$97K</td>
+      <td class="num">$97K</td>
+      <td class="num">$97K</td>
+      <td>Multiplier ($37K) + Gusto NET/TAX ($27K) + Million Web ($11K) + Cesar/Esteban ($5K) + Nicolas ($2.4K) + 4/29 USD contractor batch ($9.2K) + VES Honorarios/Transporte/Servicio ($3.5K).</td>
+    </tr>
+    <tr>
+      <td><strong>Office (rent + utilities)</strong></td>
+      <td class="num">$11.7K</td>
+      <td class="num">$11.7K</td>
+      <td class="num">$9.1K</td>
+      <td class="num"><strong>$6.6K</strong></td>
+      <td>
+        <strong>Steady-state (Jul+):</strong> Regus $2.3K + Dicope $1.8K + Apriori $1.5K + ~$1K small VES (condo/parking/Movistar/Fospuca).<br>
+        <strong>Pre-July adjustments:</strong> Apriori is $4K through June (extra +$2.5K). AOFLEX rent $2.6K runs through May (last month).
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Software</strong></td>
+      <td class="num">$3K</td>
+      <td class="num">$3K</td>
+      <td class="num">$3K</td>
+      <td class="num">$3K</td>
+      <td>Visible portion — LinkedIn $2.1K + Intercom $540 + small subs. Rest hidden inside the Credit Cards bucket below.</td>
+    </tr>
+    <tr>
+      <td><strong>Marketing &amp; Sales</strong></td>
+      <td class="num">$2.1K</td>
+      <td class="num">$2.1K</td>
+      <td class="num">$2.1K</td>
+      <td class="num">$2.1K</td>
+      <td>Visible portion — HubSpot $1.275K + Dripify $514 + Google ads $326 + small. Rest hidden inside Credit Cards.</td>
+    </tr>
+    <tr>
+      <td><strong>Credit Cards (autopay catch-all)</strong></td>
+      <td class="num">$14K</td>
+      <td class="num">$14K</td>
+      <td class="num">$14K</td>
+      <td class="num">$14K</td>
+      <td>Rho $11K + Mercury IO $3K. Breakdown below — heavy Software (Anthropic, Cursor, Plaid, OVH, etc.) plus Caracas-trip airlines in April.</td>
+    </tr>
+    <tr>
+      <td><strong>Taxes</strong></td>
+      <td class="num">$1K</td>
+      <td class="num">$1K</td>
+      <td class="num">$1K</td>
+      <td class="num">$1K</td>
+      <td>SENIAT monthly + BANAVIH payroll-linked. Quarterly bombs possible (March had $13K).</td>
+    </tr>
+    <tr class="total">
+      <td>Total recurring outflow</td>
+      <td class="num">$128.8K</td>
+      <td class="num">$128.8K</td>
+      <td class="num">$126.2K</td>
+      <td class="num">$123.7K</td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Inside the credit card bucket — what's actually being paid for</h2>
+<p class="note">From Rho (Daniel's card, mostly) and Mercury Credit card exports. Real April spend captured here; cash hits the bank as autopay lumps the following month.</p>
+
+<div class="split">
+  <div>
+    <h3>Rho card — $12.7K real April spend</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Bucket</th>
+          <th class="num">Recurring</th>
+          <th class="num">One-off</th>
+          <th class="num">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Software</td>
+          <td class="num">$7.4K</td>
+          <td class="num">$4.4K</td>
+          <td class="num">$11.8K</td>
+        </tr>
+        <tr>
+          <td>Marketing</td>
+          <td class="num">$80</td>
+          <td class="num">—</td>
+          <td class="num">$80</td>
+        </tr>
+        <tr>
+          <td>Travel</td>
+          <td class="num">$69</td>
+          <td class="num">$317</td>
+          <td class="num">$386</td>
+        </tr>
+        <tr>
+          <td>Other</td>
+          <td class="num">$135</td>
+          <td class="num">$376</td>
+          <td class="num">$510</td>
+        </tr>
+        <tr class="total">
+          <td>Total</td>
+          <td class="num">$7.7K</td>
+          <td class="num">$5.1K</td>
+          <td class="num">$12.7K</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="note">Top recurring: Anthropic Claude Team $1,792, Anthropic API $743 + Claude.ai $303 (= <strong>$2.8K Anthropic family</strong>), Plaid $1,526, OVH $1,390, Cursor $609 (+ usage $479 one-off = ~$1.1K), Squarespace $411, Linear $348.</p>
+    <p class="note">Top one-off (Apr): Render.com $1,716, Metabase $599, Coderabbit $360, Digital Ocean $350, Cursor usage $300, Sentry $186, Better Stack $178, Docusign $140, hCaptcha $139, Decodo $130, Skylight $110, Fiorito Miami $317.</p>
+  </div>
+  <div>
+    <h3>Mercury Credit — $5.9K real April spend</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Bucket</th>
+          <th class="num">Recurring</th>
+          <th class="num">One-off</th>
+          <th class="num">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Travel</td>
+          <td class="num">$4,179</td>
+          <td class="num">—</td>
+          <td class="num">$4,179</td>
+        </tr>
+        <tr>
+          <td>Software</td>
+          <td class="num">$133</td>
+          <td class="num">$1,090</td>
+          <td class="num">$1,223</td>
+        </tr>
+        <tr>
+          <td>Marketing</td>
+          <td class="num">—</td>
+          <td class="num">$313</td>
+          <td class="num">$313</td>
+        </tr>
+        <tr>
+          <td>Other</td>
+          <td class="num">$156</td>
+          <td class="num">small</td>
+          <td class="num">$156</td>
+        </tr>
+        <tr class="total">
+          <td>Total</td>
+          <td class="num">$4.5K</td>
+          <td class="num">$1.4K</td>
+          <td class="num">$5.9K</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="note"><strong>Travel = Airlines Rep Xd $4,179</strong> — five charges, all Caracas-trip airfare. <span class="pill pill-warn">One-off</span></p>
+    <p class="note">Software one-offs: Apollo $792, Vacationtracker $100, Ahrefs $29, Gamma $25, Anthropic $20. Software recurring: Zapier $133, Amazon $156.</p>
+    <p class="note">Marketing one-offs: Premium Parking $177, Manychat $153, Livestorm $99.</p>
+  </div>
+</div>
+
+<h3>Real software stack monthly recurring (Rho + Mercury Credit combined)</h3>
+<table>
+  <thead>
+    <tr><th>Tool</th><th class="num">$/mo (Apr)</th><th>Notes</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Anthropic (Claude Team + API + Claude.ai)</td><td class="num">$2,839</td><td>Biggest single Software line — review usage</td></tr>
+    <tr><td>Plaid</td><td class="num">$1,526</td><td>Bank connectivity infra</td></tr>
+    <tr><td>OVH (US Reston)</td><td class="num">$1,390</td><td>Hosting / VPS</td></tr>
+    <tr><td>Cursor (subs + usage)</td><td class="num">$1,088</td><td>Mixed monthly + usage-based</td></tr>
+    <tr><td>Squarespace</td><td class="num">$411</td><td>3x — multiple sites?</td></tr>
+    <tr><td>Linear</td><td class="num">$348</td><td>Team plan</td></tr>
+    <tr><td>Amazon Web Services</td><td class="num">$153</td><td></td></tr>
+    <tr><td>Zapier + Heygen + others (small recurring)</td><td class="num">$280</td><td></td></tr>
+    <tr class="total"><td>Approx recurring software via cards</td><td class="num">~$8.0K</td><td></td></tr>
+  </tbody>
+</table>
+
+<h2>One-off items April (carve out — don't forecast)</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Item</th>
+      <th class="num">$</th>
+      <th>Note</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Severance — Majo de Armas + Gabriela Pavan</td>
+      <td class="num">$13K</td>
+      <td>One-off; relationships ended April</td>
+    </tr>
+    <tr>
+      <td>Caracas trip — airlines (Mercury Credit)</td>
+      <td class="num">$4.2K</td>
+      <td>Caracas trip airfare, one-off</td>
+    </tr>
+    <tr>
+      <td>Render.com (Rho)</td>
+      <td class="num">$1.7K</td>
+      <td>Likely annual/quarterly billing — verify</td>
+    </tr>
+    <tr>
+      <td>Trademark Anticipo Registro Marca</td>
+      <td class="num">$1.8K</td>
+      <td>One-off legal/IP filing</td>
+    </tr>
+    <tr>
+      <td>Apollo (Rho/Mercury)</td>
+      <td class="num">$792</td>
+      <td>Annual sales-intel tool likely</td>
+    </tr>
+    <tr>
+      <td>Caracas trip — lodging + meals + ground</td>
+      <td class="num">$2.7K</td>
+      <td>Castellana Hotel + restaurant debits + Yummy Rides</td>
+    </tr>
+    <tr>
+      <td>Smaller software one-offs (Metabase, Digital Ocean, Coderabbit, Sentry, Better Stack, etc.)</td>
+      <td class="num">$2K</td>
+      <td>Investigate: setup-cost spikes or annual renewals?</td>
+    </tr>
+    <tr class="total">
+      <td>April one-offs total</td>
+      <td class="num">~$26.2K</td>
+      <td>Up from prior $17.5K — Render + airlines + Apollo + small one-offs</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>FX flows (separate column — not operating burn)</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Provider</th>
+      <th>Direction</th>
+      <th class="num">April</th>
+      <th>Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>GANESH MMXXI (OTC)</td>
+      <td>Bs out (≈ USD received off-platform)</td>
+      <td class="num">$34K USD-eq</td>
+      <td>Twice: 4/13 (12.5M Bs) + 4/23 (6.27M Bs)</td>
+    </tr>
+    <tr>
+      <td>GGBRDB LLC</td>
+      <td>USD in (matching FX leg)</td>
+      <td class="num">$22K</td>
+      <td><strong>Previously called "intercompany" — confirmed today it's an FX provider.</strong> Reread the runway story.</td>
+    </tr>
+    <tr>
+      <td>BNC Subasta</td>
+      <td>Bs out + USD in</td>
+      <td class="num">$415</td>
+      <td>Small April; as-needed</td>
+    </tr>
+    <tr class="total">
+      <td>Net FX cost (Bs out − USD in)</td>
+      <td></td>
+      <td class="num">~$12K</td>
+      <td>Real conversion cost</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Real revenue April (Collecting bucket)</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Source</th>
+      <th class="num">USD-eq</th>
+      <th>Pattern</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>VES customer inflows (BNC + Banplus)</td>
+      <td class="num">$32K</td>
+      <td>20+ customers, continuous</td>
+    </tr>
+    <tr>
+      <td>Stripe (USD)</td>
+      <td class="num">$16.4K</td>
+      <td>Continuous</td>
+    </tr>
+    <tr>
+      <td>USD wires (Comerc Inter Mundial, Siderúrgica Zuliana, Pideyummy, Curiara)</td>
+      <td class="num">$3.8K</td>
+      <td>Variable monthly</td>
+    </tr>
+    <tr>
+      <td>USD Zelle (Maria de Pinto, Von Road, Molina, etc.)</td>
+      <td class="num">$6.3K</td>
+      <td>Mix — Cesar Suarez Luzardo $1,000 is an <strong>employee FX swap</strong>, not real revenue</td>
+    </tr>
+    <tr>
+      <td>Caja Chica (petty cash collecting — 12 customers)</td>
+      <td class="num">$10.7K</td>
+      <td>Festejos Mar, SOMOS JOMI x2, Regalos Altavista, EWAY, ARMI, Grupo Landa, Maco, Noordzee, Palos Grandes, Tamayo, Kimiceg</td>
+    </tr>
+    <tr class="subtotal">
+      <td>Cash received April (subtotal)</td>
+      <td class="num">$69.2K</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>+ Open receivables from April (ballpark estimate)</td>
+      <td class="num">$20K</td>
+      <td>Not yet collected — invoiced in April, expected to land in May/June</td>
+    </tr>
+    <tr class="total">
+      <td>Implied April revenue (cash + AR)</td>
+      <td class="num">~$89K</td>
+      <td>In line with analysis-may-2026 $95K/mo run-rate</td>
+    </tr>
+  </tbody>
+</table>
+
+<p class="note">Caja Chica also recorded: small office ops ($60 Wilmer messenger/parking), $1.1K intercompany inflow from Tesote Technologies, and $450 Rebeca Triana payroll. List in <code>april-2026-caja-chica.csv</code> for manual entry into Tesote workspace.</p>
+
+<h2>Firm assumptions to lock</h2>
+
+<div class="callout">
+  <strong>1. Recurring outflow run-rate: $124–129K/mo</strong> depending on month (Apriori reduction July, AOFLEX ending May). Steady-state from July: ~$124K. Locked.
+</div>
+
+<div class="callout">
+  <strong>2. Anthropic is the biggest single Software line (~$2.8K/mo).</strong> Plaid, OVH, Cursor, Render are next tier. Worth a deliberate review.
+</div>
+
+<div class="callout">
+  <strong>3. ~$8K of recurring Software lives inside the Credit Cards bucket</strong> on top of the $3K visible. Total software run-rate is ~$11K/mo, not $3K.
+</div>
+
+<div class="callout">
+  <strong>4. Real revenue run-rate: $80–100K/mo</strong> — operating deficit −$25K to −$45K is the baseline. Range driven by Stripe + cobros velocity.
+</div>
+
+<div class="callout">
+  <strong>5. FX swap activity is real (~$12K/mo cost) and bidirectional.</strong> The GGBRDB inflow that was previously called intercompany is actually FX. The "intercompany YTD $128K" figure in analysis-may-2026 needs to be re-examined.
+</div>
+
+<h2>What's still ambiguous (waiting on Mariel)</h2>
+<ul>
+  <li>Keyla Hernandez — Pago TST flows (4/7 −$248K Bs, 4/10 −$125K Bs). Currently Exchange Operations Out. Payroll or FX?</li>
+  <li>Cédula V023190204 — recurring Pago TST patterns, no counterparty assigned.</li>
+  <li>Esteban (cédula 26334232) 4/23 −$310K Bs Pago TST — no CIOPPS marker so no rule matched.</li>
+  <li>Inbound USD Zelle from individuals — some are customer payments, some are employee FX swaps. Need to distinguish.</li>
+</ul>
+
+<h2>Mystery "Pago Factura" vendors to ID</h2>
+<p class="note">~$5K USD-eq across April, uncategorized, no counterparties — worth a single pass against Odoo invoices.</p>
+<ul>
+  <li>Pago Factura 1364 (4/13 −$305K Bs)</li>
+  <li>Pago Factura 1367 (4/29 −$329K Bs)</li>
+  <li>Pago Factura 000274 (4/16 −$1M + −$211K Bs)</li>
+  <li>Pago Factura 0510 (4/8 −$1M + −$240K Bs)</li>
+  <li>Pago Factura 000495 (4/20 −$58K Bs, CERRAJERIA JB2 counterparty assigned)</li>
+  <li>Pago Factura 0437 (4/13 −$64K Bs)</li>
+  <li>Pago F000061 Chocolates (4/6 −$89K Bs)</li>
+</ul>
+
+<footer>
+  Generated 2026-05-13 from Tesote Finance workspace data + Rho and Mercury credit card CSV exports, cross-validated against analysis-may-2026.md.<br>
+  Source: <code>luis-brain/finance/cash-flow-king/april-2026-baseline.html</code>
+</footer>
+
+</body>
+</html>

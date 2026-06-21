@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tesote · Movimientos (v3 — Mercury-style filters + round-2 feedback)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Aspekta is Lunour's mandated body font (paid); falling back to Inter until self-hosted. -->
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #1661E2;
+      --primary-hover: #184EB5;
+      --primary-light: #EEF8FF;
+      --primary-50: #F5FBFF;
+      --text: #12110F;
+      --text-2: #635D55;
+      --text-3: #857D73;
+      --text-4: #C7C0B5;
+      --border: #E8E3DA;
+      --border-2: #F2EEE6;
+      --bg-sidebar: #F7F5F0;
+      --bg-main: #FFFFFF;
+      --bg-soft: #FCFBF7;
+      --hover: #F2EEE6;
+      --active: #E8E3DA;
+      --green: #1A8C5B;
+      --green-bg: #C9F1E0;
+      --green-text: #0F6E45;
+      --yellow: #CC9500;
+      --yellow-bg: #FFF6CC;
+      --red: #C41E1E;
+      --red-bg: #FFE6E6;
+      --radius: 8px;
+      --radius-lg: 12px;
+      --radius-sm: 4px;
+      --shadow: 0 1px 2px rgba(18, 17, 15, 0.04);
+      --font-display: 'Inter Tight', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Aspekta', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      font-family: var(--font-body);
+      font-size: 14px; background: var(--bg-main); color: var(--text);
+      -webkit-font-smoothing: antialiased; font-feature-settings: 'cv11', 'ss01';
+    }
+
+    h1, h2, h3, .page-title, .totals-amount {
+      font-family: var(--font-display);
+      letter-spacing: -.01em;
+    }
+
+    .app { display: grid; grid-template-columns: 224px 1fr; min-height: 100vh; }
+
+    /* ─── SIDEBAR ──────────────────────────────────────────────────────────── */
+    .sidebar {
+      background: var(--bg-sidebar); border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; min-height: 0; overflow-y: auto;
+    }
+    .sb-top { display: flex; align-items: center; padding: 14px 14px 10px; }
+    .sb-brand {
+      display: flex; align-items: center; gap: 9px; font-size: 14px;
+      font-weight: 600; color: var(--text);
+    }
+    .sb-logo {
+      width: 24px; height: 24px; border-radius: 6px; background: var(--text);
+      display: flex; align-items: center; justify-content: center; color: white;
+      font-family: var(--font-display); font-weight: 700; font-size: 13px;
+    }
+    .sb-pro {
+      font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 4px;
+      background: var(--text); color: white; letter-spacing: .03em; margin-left: 7px;
+    }
+    .sb-search {
+      margin: 0 10px 8px; display: flex; align-items: center; gap: 8px;
+      padding: 7px 10px; border-radius: 6px; background: var(--bg-main);
+      border: 1px solid var(--border); cursor: pointer; color: var(--text-3); font-size: 13px;
+    }
+    .sb-search .kbd {
+      margin-left: auto; font-size: 10px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      padding: 1px 5px; border-radius: 3px; background: var(--bg-soft);
+      border: 1px solid var(--border); color: var(--text-3);
+    }
+    .sb-section { padding: 4px 10px 2px; }
+    .sb-section-label {
+      padding: 10px 10px 6px; font-size: 11px; font-weight: 600;
+      letter-spacing: .08em; text-transform: uppercase; color: var(--text-3);
+    }
+    .sb-item {
+      display: flex; align-items: center; gap: 9px; padding: 6px 10px;
+      border-radius: 6px; font-size: 13px; color: var(--text-2);
+      cursor: pointer; transition: background .12s, color .12s;
+    }
+    .sb-item:hover { background: var(--hover); color: var(--text); }
+    .sb-item.active { background: var(--active); color: var(--text); font-weight: 500; }
+    .sb-item-count {
+      margin-left: auto; font-size: 11px; font-weight: 500; color: var(--text-3);
+      background: var(--bg-main); padding: 1px 6px; border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .sb-bottom { margin-top: auto; padding: 10px; border-top: 1px solid var(--border); }
+    .sb-user { display: flex; align-items: center; gap: 10px; padding: 7px 8px; border-radius: 6px; }
+    .sb-user-avatar {
+      width: 26px; height: 26px; border-radius: 50%; background: var(--primary);
+      color: white; font-size: 11px; font-weight: 600;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .sb-user-name { font-size: 13px; font-weight: 500; }
+    .sb-user-sub { font-size: 11px; color: var(--text-3); }
+
+    /* ─── MAIN ────────────────────────────────────────────────────────────── */
+    .main { display: flex; flex-direction: column; min-width: 0; }
+    .topbar {
+      height: 52px; padding: 0 22px; display: flex; align-items: center; gap: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .topbar-spacer { flex: 1; }
+    .topbar-btn-primary {
+      display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px;
+      border-radius: 8px; font-size: 13px; font-weight: 500; color: white;
+      background: var(--text); border: none; cursor: pointer; font-family: inherit;
+      transition: background .12s;
+    }
+    .topbar-btn-primary:hover { background: #302C25; }
+    .topbar-icon {
+      width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center;
+      justify-content: center; cursor: pointer; color: var(--text-2);
+    }
+    .topbar-icon:hover { background: var(--hover); }
+
+    .content {
+      flex: 1; overflow-y: auto; max-width: 1320px; width: 100%; margin: 0 auto;
+      padding: 28px 32px 60px;
+    }
+
+    .page-head { margin-bottom: 22px; }
+    .page-title { font-size: 26px; font-weight: 700; color: var(--text); }
+    .page-meta {
+      display: flex; align-items: center; gap: 8px; margin-top: 6px;
+      font-size: 13px; color: var(--text-2); flex-wrap: wrap;
+    }
+    .page-meta-dot { color: var(--text-4); }
+
+    /* ─── TOTALS STRIP ─────────────────────────────────────────────────────── */
+    .totals-strip {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      border: 1px solid var(--border); border-radius: var(--radius-lg);
+      background: white; overflow: hidden; margin-bottom: 22px;
+    }
+    .totals-card { padding: 18px 22px; border-right: 1px solid var(--border); }
+    .totals-card:last-child { border-right: none; }
+    .totals-currency {
+      font-size: 11px; font-weight: 600; color: var(--text-3);
+      letter-spacing: .08em; text-transform: uppercase;
+      display: flex; align-items: baseline; gap: 8px;
+    }
+    .totals-count { font-weight: 500; color: var(--text-3); letter-spacing: 0; text-transform: none; font-size: 12px; }
+    .totals-amount-row { display: flex; align-items: center; width: 100%; }
+    .totals-amounts { display: flex; gap: 22px; margin-top: 10px; align-items: baseline; }
+    .totals-amount-block { display: flex; flex-direction: column; }
+    .totals-amount-label {
+      font-size: 11px; color: var(--text-3); font-weight: 500; letter-spacing: .02em;
+    }
+    .totals-amount {
+      font-size: 22px; font-weight: 700; color: var(--text);
+      font-variant-numeric: tabular-nums; margin-top: 2px;
+    }
+    .totals-amount.credit { color: var(--green-text); }
+    .totals-amount.debit  { color: var(--text); }
+    .totals-net {
+      margin-left: auto; text-align: right; padding-left: 12px;
+      border-left: 1px dashed var(--border); align-self: stretch;
+      display: flex; flex-direction: column; justify-content: center;
+    }
+    .totals-net-label { font-size: 11px; color: var(--text-3); font-weight: 500; }
+    .totals-net-amount {
+      font-size: 18px; font-weight: 700; color: var(--text);
+      font-variant-numeric: tabular-nums; margin-top: 2px;
+      font-family: var(--font-display);
+    }
+    .totals-net-amount.positive { color: var(--green-text); }
+    .totals-net-amount.negative { color: var(--text); }
+    .totals-filtered-tag {
+      display: inline-block; font-size: 10px; font-weight: 600;
+      color: var(--primary); margin-left: 6px;
+      padding: 1px 6px; background: var(--primary-light); border-radius: 4px;
+      letter-spacing: .04em; text-transform: uppercase;
+    }
+
+    /* ─── FILTER ROW (Mercury-style: pills + add-filter + search) ──────────── */
+    .filter-row {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    /* Active filter pill */
+    .filter-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 4px 6px 10px; border-radius: 6px;
+      background: var(--primary-light); border: 1px solid #C6DDFB;
+      font-size: 12.5px; color: var(--primary); white-space: nowrap;
+      position: relative;
+    }
+    .filter-pill-dim { font-weight: 600; }
+    .filter-pill-sep { color: var(--primary); opacity: .55; }
+    .filter-pill-value { font-weight: 500; max-width: 220px; overflow: hidden; text-overflow: ellipsis; }
+    .filter-pill-edit {
+      cursor: pointer; padding: 2px 4px; border-radius: 4px;
+    }
+    .filter-pill-edit:hover { background: rgba(22, 97, 226, 0.10); }
+    .filter-pill-remove {
+      cursor: pointer; padding: 2px 4px; border-radius: 4px;
+      color: var(--primary); display: inline-flex; align-items: center; justify-content: center;
+      width: 18px; height: 18px;
+    }
+    .filter-pill-remove:hover { background: rgba(22, 97, 226, 0.14); }
+    .filter-pill-remove svg { width: 10px; height: 10px; }
+
+    .filter-add-btn {
+      display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px;
+      border-radius: 6px; background: white; border: 1px dashed var(--border);
+      font-size: 13px; color: var(--text-2); cursor: pointer; font-family: inherit;
+      position: relative;
+    }
+    .filter-add-btn:hover { background: var(--bg-soft); border-color: var(--text-4); color: var(--text); }
+    .filter-add-btn.open { background: var(--bg-soft); border-color: var(--primary); color: var(--primary); border-style: solid; }
+    .filter-add-btn .plus { font-size: 13px; line-height: 1; }
+
+    .filter-clear-all {
+      font-size: 12px; color: var(--text-3); cursor: pointer;
+      padding: 6px 8px; border-radius: 4px;
+    }
+    .filter-clear-all:hover { color: var(--text); background: var(--hover); }
+
+    .filter-search {
+      margin-left: auto;
+      display: flex; align-items: center; gap: 6px; padding: 7px 10px;
+      border-radius: 6px; background: white; border: 1px solid var(--border);
+      min-width: 240px;
+    }
+    .filter-search-icon { color: var(--text-3); }
+    .filter-search input {
+      border: none; outline: none; flex: 1; font-family: inherit; font-size: 13px;
+      background: transparent; color: var(--text);
+    }
+    .filter-search input::placeholder { color: var(--text-3); }
+
+    /* ─── FILTER POPOVER (two-step: dim list → dim input) ──────────────────── */
+    .filter-popover {
+      position: absolute; top: calc(100% + 6px); left: 0;
+      background: white; border: 1px solid var(--border); border-radius: 10px;
+      padding: 6px; min-width: 280px; max-width: 360px; z-index: 80;
+      box-shadow: 0 12px 36px -8px rgba(18, 17, 15, 0.16);
+      display: none;
+    }
+    .filter-popover.open { display: block; }
+    .filter-popover-head {
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 8px; border-bottom: 1px solid var(--border-2); margin-bottom: 4px;
+      font-size: 11px; font-weight: 600; color: var(--text-3);
+      letter-spacing: .08em; text-transform: uppercase;
+    }
+    .filter-popover-back {
+      cursor: pointer; padding: 2px 4px; border-radius: 4px; color: var(--text-3);
+      display: inline-flex; align-items: center;
+    }
+    .filter-popover-back:hover { background: var(--hover); color: var(--text); }
+    .filter-popover-back svg { width: 12px; height: 12px; }
+
+    .filter-dim-item {
+      display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+      border-radius: 6px; font-size: 13px; color: var(--text); cursor: pointer;
+    }
+    .filter-dim-item:hover { background: var(--bg-soft); }
+    .filter-dim-item-icon {
+      width: 22px; height: 22px; border-radius: 5px;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--bg-soft); color: var(--text-3); font-size: 12px;
+    }
+    .filter-dim-item-arrow { margin-left: auto; color: var(--text-4); font-size: 12px; }
+
+    .filter-input-block { padding: 6px 6px 4px; }
+    .filter-input-search {
+      width: 100%; padding: 8px 10px; font-family: inherit; font-size: 13px;
+      border: 1px solid var(--border); border-radius: 6px; outline: none;
+      margin-bottom: 6px;
+    }
+    .filter-input-search:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+
+    .filter-checklist {
+      max-height: 220px; overflow-y: auto; margin: -2px;
+    }
+    .filter-checklist-item {
+      display: flex; align-items: center; gap: 8px; padding: 7px 10px;
+      border-radius: 5px; font-size: 13px; color: var(--text); cursor: pointer;
+    }
+    .filter-checklist-item:hover { background: var(--bg-soft); }
+    .filter-check {
+      width: 14px; height: 14px; border-radius: 3px;
+      border: 1.5px solid var(--text-4);
+      display: inline-flex; align-items: center; justify-content: center;
+      flex-shrink: 0; font-size: 9px; color: white;
+    }
+    .filter-checklist-item.checked .filter-check {
+      background: var(--primary); border-color: var(--primary);
+    }
+    .filter-checklist-item.checked .filter-check::after { content: '✓'; }
+    .filter-checklist-item-trail { margin-left: auto; color: var(--text-3); font-size: 11.5px; }
+
+    .filter-radio-item {
+      display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+      border-radius: 6px; font-size: 13px; color: var(--text); cursor: pointer;
+    }
+    .filter-radio-item:hover { background: var(--bg-soft); }
+    .filter-radio {
+      width: 14px; height: 14px; border-radius: 50%;
+      border: 1.5px solid var(--text-4); flex-shrink: 0;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .filter-radio-item.checked .filter-radio { border-color: var(--primary); }
+    .filter-radio-item.checked .filter-radio::after {
+      content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--primary);
+    }
+    .filter-radio-item-trail { margin-left: auto; color: var(--text-3); font-size: 11.5px; }
+
+    .filter-monto-block { padding: 6px 6px 0; }
+    .filter-monto-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .filter-monto-grid label { font-size: 11px; color: var(--text-3); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+    .filter-monto-grid input {
+      width: 100%; padding: 8px 10px; font-family: inherit; font-size: 13px;
+      border: 1px solid var(--border); border-radius: 6px; outline: none;
+      margin-top: 4px; font-variant-numeric: tabular-nums;
+    }
+
+    .filter-actions {
+      display: flex; gap: 6px; padding: 8px 6px 4px;
+      border-top: 1px solid var(--border-2); margin-top: 6px;
+    }
+    .filter-action-btn {
+      padding: 7px 12px; border-radius: 6px; font-family: inherit; font-size: 12.5px;
+      font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: white;
+      color: var(--text-2);
+    }
+    .filter-action-btn:hover { background: var(--bg-soft); }
+    .filter-action-btn.primary { background: var(--text); color: white; border-color: var(--text); margin-left: auto; }
+    .filter-action-btn.primary:hover { background: #302C25; }
+
+    /* ─── DATA TABLE — table-layout fixed (load-bearing) ───────────────────── */
+    .data-table-wrap {
+      background: white; border: 1px solid var(--border);
+      border-radius: var(--radius-lg); overflow: hidden;
+    }
+    .data-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    /* Header padding standardized to 10px vertical (browse-density bucket from
+       the proposed archetypes.md table-padding tokens). */
+    .data-table th {
+      text-align: left; padding: 10px 14px; font-size: 11px; font-weight: 600;
+      color: var(--text-3); background: var(--bg-soft);
+      border-bottom: 1px solid var(--border);
+      letter-spacing: .06em; text-transform: uppercase; white-space: nowrap;
+    }
+    .data-table th.numeric { text-align: right; }
+    .data-table th.action-col { text-align: center; }
+    .data-table th.sort-active::after {
+      content: ' ▼'; font-size: 9px; color: var(--text-3);
+    }
+
+    /* Column widths — v3: Contraparte 170→220 */
+    .data-table col.c-fecha     { width: 80px; }
+    .data-table col.c-cuenta    { width: 220px; }
+    .data-table col.c-desc      { /* flex */ }
+    .data-table col.c-cp        { width: 220px; }
+    .data-table col.c-monto     { width: 160px; }
+    .data-table col.c-cat       { width: 150px; }
+    .data-table col.c-action    { width: 60px; }
+
+    /* Fecha→Banco gap tightened (v2 feedback, preserved) */
+    .data-table th:nth-child(1),
+    .data-table td:nth-child(1)  { padding-right: 6px; }
+    .data-table th:nth-child(2),
+    .data-table td:nth-child(2)  { padding-left: 6px; }
+
+    /* Body cells: 7px vertical (browse density) */
+    .data-table td {
+      padding: 7px 14px; border-bottom: 1px solid var(--border-2);
+      font-size: 13px; color: var(--text); vertical-align: middle;
+      height: 36px; line-height: 1.25;
+      overflow: hidden;
+    }
+    .data-table tbody tr { transition: background .08s; }
+    .data-table tbody tr:hover { background: var(--bg-soft); cursor: pointer; }
+    .data-table tbody tr:last-child td { border-bottom: none; }
+    .data-table td.numeric {
+      text-align: right; font-variant-numeric: tabular-nums; font-weight: 500;
+      white-space: nowrap;
+    }
+    .data-table td.action-col {
+      text-align: center; padding-right: 8px; padding-left: 8px;
+    }
+
+    /* Empty state when filters return nothing */
+    .empty-state {
+      padding: 60px 20px; text-align: center;
+    }
+    .empty-state-icon { font-size: 28px; opacity: .4; margin-bottom: 8px; }
+    .empty-state-title { font-family: var(--font-display); font-size: 16px; font-weight: 600; }
+    .empty-state-sub { font-size: 13px; color: var(--text-2); margin-top: 4px; }
+
+    /* ─── COLUMN-SPECIFIC CELLS ───────────────────────────────────────────── */
+    .col-fecha {
+      font-variant-numeric: tabular-nums; color: var(--text-2);
+      white-space: nowrap; font-size: 12.5px;
+    }
+
+    .cuenta-cell {
+      display: inline-flex; align-items: center; gap: 8px; white-space: nowrap;
+      max-width: 100%; overflow: hidden;
+    }
+    .bank-logo {
+      width: 22px; height: 22px; border-radius: 5px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 700; flex-shrink: 0;
+      font-family: var(--font-display);
+    }
+    .bank-logo-bnc       { background: #F6ECFD; color: #641FA3; }
+    .bank-logo-banesco   { background: #C9F1E0; color: #156F49; }
+    .bank-logo-mercantil { background: #FFE6E6; color: #C41E1E; }
+    .bank-logo-bbva      { background: #EEF8FF; color: #184EB5; }
+    .bank-logo-exterior  { background: #FFEDD9; color: #A35100; }
+    .bank-logo-bicent    { background: #E4ECF7; color: #1C77F4; }
+    .bank-name { font-weight: 500; color: var(--text); }
+    .cuenta-label { color: var(--text-3); font-size: 12px; }
+    .cuenta-last4 {
+      color: var(--text-3); font-size: 11.5px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: .02em;
+    }
+
+    .col-desc {
+      color: var(--text-2); font-size: 12.5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+    .desc-ref {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      color: var(--text-3); font-size: 11.5px;
+    }
+
+    .editable {
+      cursor: pointer; position: relative;
+      padding: 4px 8px; border-radius: 5px;
+      border: 1px solid transparent;
+      transition: border-color .12s, background .12s;
+      display: inline-flex; align-items: center; gap: 4px;
+      min-width: 40px; max-width: 100%;
+    }
+    .editable:hover { border-color: var(--border); background: white; }
+    .editable.empty { color: var(--text-4); }
+    .editable .caret { color: var(--text-4); font-size: 9px; opacity: 0; transition: opacity .12s; }
+    .editable:hover .caret { opacity: 1; }
+    .editable.open { background: white; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+    .editable.open .caret { opacity: 1; color: var(--primary); }
+    .editable .cp-text {
+      max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+
+    .edit-dropdown {
+      position: absolute; top: calc(100% + 4px); left: 0;
+      background: white; border: 1px solid var(--border); border-radius: 8px;
+      padding: 4px; min-width: 200px; z-index: 50;
+      box-shadow: 0 8px 24px -6px rgba(18, 17, 15, 0.12);
+      display: none;
+      max-height: 280px; overflow-y: auto;
+    }
+    .edit-dropdown.open { display: block; }
+    .edit-dropdown-search {
+      padding: 6px 8px; border-bottom: 1px solid var(--border-2);
+      margin: -4px -4px 4px;
+    }
+    .edit-dropdown-search input {
+      width: 100%; border: none; outline: none; font-family: inherit; font-size: 13px;
+      background: transparent;
+    }
+    .edit-dropdown-item {
+      display: flex; align-items: center; gap: 8px; padding: 6px 8px;
+      border-radius: 5px; font-size: 13px; color: var(--text); cursor: pointer;
+    }
+    .edit-dropdown-item:hover { background: var(--bg-soft); }
+    .edit-dropdown-item.selected { background: var(--primary-light); color: var(--primary); }
+    .edit-dropdown-section {
+      font-size: 10px; font-weight: 600; color: var(--text-3);
+      letter-spacing: .08em; text-transform: uppercase;
+      padding: 6px 8px 2px;
+    }
+
+    .pill {
+      display: inline-flex; align-items: center;
+      padding: 2px 9px; border-radius: var(--radius-sm);
+      font-size: 11.5px; font-weight: 500; color: var(--text);
+      background: var(--bg-soft); border: none; line-height: 1.5;
+      max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .pill-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      margin-right: 6px; flex-shrink: 0;
+    }
+    .pill-serv     { background: #EEF8FF; } .pill-serv .pill-dot     { background: #1C77F4; }
+    .pill-compras  { background: #FFEDD9; } .pill-compras .pill-dot  { background: #CC7000; }
+    .pill-cobros   { background: #D6E8D5; } .pill-cobros .pill-dot   { background: #1A8C5B; }
+    .pill-bancarios{ background: #F2EEE6; } .pill-bancarios .pill-dot{ background: #857D73; }
+    .pill-software { background: #F6ECFD; } .pill-software .pill-dot { background: #641FA3; }
+    .pill-personal { background: #FFE6E6; } .pill-personal .pill-dot { background: #C41E1E; }
+    .pill-impuesto { background: #FFF6CC; } .pill-impuesto .pill-dot { background: #CC9500; }
+
+    .placeholder-dash {
+      display: inline-block; color: var(--text-4); font-size: 14px;
+      padding: 4px 8px;
+    }
+
+    .col-monto.credit { color: var(--green-text); }
+    .col-monto.debit  { color: var(--text); }
+    .monto-currency {
+      font-size: 11px; font-weight: 600; color: var(--text-3);
+      letter-spacing: .04em; margin-right: 4px;
+    }
+
+    .row-action {
+      width: 28px; height: 28px; border-radius: 6px;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: transparent; border: 1px solid transparent;
+      color: var(--text-4); cursor: pointer; font-family: inherit;
+      transition: background .12s, color .12s, border-color .12s;
+    }
+    .row-action:hover {
+      background: var(--primary-light); color: var(--primary); border-color: #C6DDFB;
+    }
+    .data-table tbody tr:hover .row-action { color: var(--text-3); }
+    .data-table tbody tr:hover .row-action:hover { color: var(--primary); }
+    .row-action svg { width: 14px; height: 14px; }
+
+    /* Modal — same as v2 */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(18,17,15,0.32);
+      display: none; align-items: center; justify-content: center; z-index: 100;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: white; border-radius: var(--radius-lg); width: 460px; max-width: 92vw;
+      box-shadow: 0 16px 48px -8px rgba(18,17,15,0.16);
+      overflow: hidden;
+    }
+    .modal-head {
+      padding: 18px 22px 14px; border-bottom: 1px solid var(--border-2);
+      display: flex; align-items: flex-start; gap: 12px;
+    }
+    .modal-head-icon {
+      width: 36px; height: 36px; border-radius: 8px; background: var(--primary-light);
+      color: var(--primary); display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .modal-head-icon svg { width: 18px; height: 18px; }
+    .modal-title { font-family: var(--font-display); font-size: 16px; font-weight: 600; }
+    .modal-sub { font-size: 12.5px; color: var(--text-2); margin-top: 4px; }
+    .modal-body { padding: 16px 22px; }
+    .modal-row-summary {
+      display: flex; gap: 14px; padding: 12px 14px;
+      background: var(--bg-soft); border: 1px solid var(--border-2); border-radius: 8px;
+      font-size: 13px; flex-wrap: wrap;
+    }
+    .modal-row-summary div { display: flex; flex-direction: column; gap: 2px; }
+    .modal-row-summary .lbl { font-size: 10px; color: var(--text-3); letter-spacing: .06em; text-transform: uppercase; font-weight: 600; }
+    .modal-section-label { font-size: 11px; font-weight: 600; color: var(--text-3); letter-spacing: .06em; text-transform: uppercase; margin: 18px 0 8px; }
+    .modal-input {
+      width: 100%; padding: 9px 12px; font-family: inherit; font-size: 13px;
+      border: 1px solid var(--border); border-radius: 6px; outline: none; background: white;
+    }
+    .modal-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+    .modal-channels { display: flex; gap: 8px; margin-top: 8px; }
+    .modal-channel {
+      flex: 1; padding: 10px 8px; border: 1px solid var(--border); border-radius: 8px;
+      text-align: center; cursor: pointer; font-size: 12px; color: var(--text-2);
+      background: white; transition: all .12s;
+    }
+    .modal-channel:hover { background: var(--bg-soft); }
+    .modal-channel.active { background: var(--primary-light); border-color: #C6DDFB; color: var(--primary); }
+    .modal-foot {
+      padding: 14px 22px; border-top: 1px solid var(--border-2);
+      display: flex; gap: 8px; justify-content: flex-end;
+    }
+    .modal-btn {
+      padding: 8px 14px; border-radius: 6px; font-family: inherit; font-size: 13px;
+      font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: white;
+      color: var(--text-2);
+    }
+    .modal-btn:hover { background: var(--bg-soft); }
+    .modal-btn.primary { background: var(--text); color: white; border-color: var(--text); }
+    .modal-btn.primary:hover { background: #302C25; }
+
+    .icon { display: inline-block; vertical-align: middle; }
+
+    .dev-note {
+      position: fixed; bottom: 12px; right: 14px; z-index: 200;
+      font-size: 11px; color: var(--text-3); background: white;
+      border: 1px solid var(--border); padding: 6px 10px; border-radius: 6px;
+      box-shadow: var(--shadow);
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="sb-top">
+        <div class="sb-brand">
+          <div class="sb-logo">T</div>
+          <span>Tesote</span>
+          <span class="sb-pro">PRO</span>
+        </div>
+      </div>
+      <div class="sb-search">
+        <span class="icon">🔍</span>
+        <span>Buscar</span>
+        <span class="kbd">⌘K</span>
+      </div>
+      <div class="sb-section">
+        <div class="sb-section-label">Empresa</div>
+        <div class="sb-item"><span class="icon">🏠</span>Inicio</div>
+      </div>
+      <div class="sb-section">
+        <div class="sb-section-label">Tesote Connect</div>
+        <div class="sb-item"><span class="icon">💰</span>Saldos</div>
+        <div class="sb-item active"><span class="icon">📋</span>Movimientos</div>
+        <div class="sb-item"><span class="icon">🔗</span>Conexiones bancarias</div>
+      </div>
+      <div class="sb-section">
+        <div class="sb-section-label">Tesote Pagos · Cobros</div>
+        <div class="sb-item"><span class="icon">📤</span>Pagos<span class="sb-item-count">12</span></div>
+        <div class="sb-item"><span class="icon">📥</span>Cobros<span class="sb-item-count">8</span></div>
+        <div class="sb-item"><span class="icon">👥</span>Contrapartes</div>
+      </div>
+      <div class="sb-section">
+        <div class="sb-section-label">Tesote IA</div>
+        <div class="sb-item"><span class="icon">✨</span>Asistente</div>
+      </div>
+      <div class="sb-bottom">
+        <div class="sb-user">
+          <div class="sb-user-avatar">LP</div>
+          <div>
+            <div class="sb-user-name">Luis Pulgar</div>
+            <div class="sb-user-sub">TST Servicios y Consultoría</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="topbar-spacer"></div>
+        <button class="topbar-btn-primary"><span class="icon">↔</span>Mover dinero</button>
+        <div class="topbar-icon">💬</div>
+        <div class="topbar-icon">🔔</div>
+        <div class="topbar-icon">⚙</div>
+      </div>
+
+      <div class="content">
+
+        <div class="page-head">
+          <div class="page-title">Movimientos</div>
+          <div class="page-meta" id="pageMeta">
+            <!-- rendered by JS -->
+          </div>
+        </div>
+
+        <div class="totals-strip" id="totalsStrip">
+          <!-- rendered by JS -->
+        </div>
+
+        <div class="filter-row" id="filterRow">
+          <!-- pills + add-filter button + search rendered by JS -->
+        </div>
+
+        <div class="data-table-wrap">
+          <table class="data-table">
+            <colgroup>
+              <col class="c-fecha" />
+              <col class="c-cuenta" />
+              <col class="c-desc" />
+              <col class="c-cp" />
+              <col class="c-monto" />
+              <col class="c-cat" />
+              <col class="c-action" />
+            </colgroup>
+            <thead>
+              <tr>
+                <th class="sort-active">Fecha</th>
+                <th>Banco / Cuenta</th>
+                <th>Descripción</th>
+                <th>Contraparte</th>
+                <th class="numeric">Monto</th>
+                <th>Categoría</th>
+                <th class="action-col">Envía</th>
+              </tr>
+            </thead>
+            <tbody id="mov-tbody"></tbody>
+          </table>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Send modal -->
+  <div class="modal-overlay" id="sendModal">
+    <div class="modal">
+      <div class="modal-head">
+        <div class="modal-head-icon">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6">
+            <path d="M18 2L9 11M18 2L12 18l-3-7-7-3L18 2z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="modal-title">Enviar movimiento</div>
+          <div class="modal-sub">Comparte este movimiento con un contacto, contraparte o miembro de tu equipo.</div>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="modal-row-summary" id="modalRowSummary"></div>
+        <div class="modal-section-label">Destinatario</div>
+        <input class="modal-input" type="text" placeholder="Nombre, email o contraparte…" />
+        <div class="modal-section-label">Canal</div>
+        <div class="modal-channels">
+          <div class="modal-channel active">Email</div>
+          <div class="modal-channel">WhatsApp</div>
+          <div class="modal-channel">Link</div>
+        </div>
+        <div class="modal-section-label">Mensaje (opcional)</div>
+        <input class="modal-input" type="text" placeholder="Hola — adjunto la confirmación del movimiento…" />
+      </div>
+      <div class="modal-foot">
+        <button class="modal-btn" onclick="closeSendModal()">Cancelar</button>
+        <button class="modal-btn primary">Enviar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="dev-note">v3 · contraparte +50px · "Envía" header · Mercury-style filters (functional)</div>
+
+  <script>
+    /* ─── DATA ────────────────────────────────────────────────────────────── */
+    const BANKS = {
+      bnc:       { name: 'BNC',            cls: 'bank-logo-bnc'      },
+      banesco:   { name: 'Banesco',        cls: 'bank-logo-banesco'  },
+      mercantil: { name: 'Mercantil',      cls: 'bank-logo-mercantil'},
+      bbva:      { name: 'BBVA',           cls: 'bank-logo-bbva'     },
+      exterior:  { name: 'Banco Exterior', cls: 'bank-logo-exterior' },
+      bicent:    { name: 'Bicentenario',   cls: 'bank-logo-bicent'   },
+    };
+
+    const CATEGORIES = [
+      { key: 'serv',      label: 'Servicios',    cls: 'pill-serv' },
+      { key: 'compras',   label: 'Compras',      cls: 'pill-compras' },
+      { key: 'cobros',    label: 'Cobros',       cls: 'pill-cobros' },
+      { key: 'bancarios', label: 'Bancarios',    cls: 'pill-bancarios' },
+      { key: 'software',  label: 'Software',     cls: 'pill-software' },
+      { key: 'personal',  label: 'Personal',     cls: 'pill-personal' },
+      { key: 'impuesto',  label: 'Impuestos',    cls: 'pill-impuesto' },
+    ];
+
+    const COUNTERPARTIES = [
+      'Juan Pérez', 'María García', 'Acme C.A.', 'Distribuidora El Sol',
+      'Polar', 'Stripe Inc.', 'Cliente XYZ', 'Movistar', 'CANTV',
+      'BNC', 'Banesco', 'SENIAT', 'Cervecería Polar',
+      'Empresas Roberto', 'Inversiones VDT',
+    ];
+
+    /* Today reference for date filtering: 2026-05-16 (matches CURRENT DATE) */
+    const TODAY = new Date(2026, 4, 16);
+
+    /* Parse the prototype's DD/MM or DD/MM/YYYY format into a Date */
+    function parseDate(s) {
+      const parts = s.split('/');
+      if (parts.length === 2) return new Date(2026, parseInt(parts[1])-1, parseInt(parts[0]));
+      return new Date(parseInt(parts[2]), parseInt(parts[1])-1, parseInt(parts[0]));
+    }
+
+    const MOVIMIENTOS = [
+      { id: 1,  date: '14/05', bank: 'bnc',       cuenta: 'Ops VES',          last4: '5421', desc: 'Pago Móvil',                                                            ref: '12345678',    cp: 'Juan Pérez',          ccy: 'VES', amount: -8500.00,     cat: 'serv' },
+      { id: 2,  date: '14/05', bank: 'banesco',   cuenta: 'AR USD',           last4: '7782', desc: 'Transferencia recibida BANESCO desde cuenta externa pago parcial',     ref: '88712334',    cp: 'Acme C.A.',           ccy: 'USD', amount: 1200.00,      cat: 'cobros' },
+      { id: 3,  date: '14/05', bank: 'bnc',       cuenta: 'Ops VES',          last4: '5421', desc: 'Débito ACH inicial pago de factura proveedor mensual contrato 2026-Q2', ref: '0021118',     cp: 'Distribuidora El Sol', ccy: 'VES', amount: -55810.16,    cat: 'compras' },
+      { id: 4,  date: '14/05', bank: 'exterior',  cuenta: 'USD Ops',          last4: '0098', desc: 'Wire incoming USD desde JP Morgan Chase NY escrow account closing',    ref: 'WIR-88421',   cp: null,                   ccy: 'USD', amount: 12500.00,     cat: null },
+      { id: 5,  date: '13/05', bank: 'bnc',       cuenta: 'Ops VES',          last4: '5421', desc: 'Comisión SWIFT outgoing',                                              ref: 'SW-00321',    cp: 'BNC',                 ccy: 'VES', amount: -25.00,       cat: 'bancarios' },
+      { id: 6,  date: '13/05', bank: 'banesco',   cuenta: 'Ops VES',          last4: '0117', desc: 'Pago Móvil',                                                            ref: '88421902',    cp: 'María García',        ccy: 'VES', amount: -1500.00,     cat: 'serv' },
+      { id: 7,  date: '13/05', bank: 'bnc',       cuenta: 'Ops VES',          last4: '5421', desc: 'Transferencia C2C — pago semanal proveedor inventario',               ref: '01122455',    cp: 'Polar',               ccy: 'VES', amount: -180000.00,   cat: 'compras' },
+      { id: 8,  date: '12/05', bank: 'exterior',  cuenta: 'USD Ops',          last4: '0098', desc: 'Wire outgoing — SaaS subscription Stripe annual renewal 2026-2027',    ref: 'WIR-90021',   cp: 'Stripe Inc.',         ccy: 'USD', amount: -3400.00,     cat: 'software' },
+      { id: 9,  date: '12/05', bank: 'bnc',       cuenta: 'Ops VES',          last4: '5421', desc: 'Cobro recibido — invoice INV-2031 pago completo cliente corporativo', ref: 'CR-77231',    cp: 'Cliente XYZ',         ccy: 'VES', amount: 850000.00,    cat: 'cobros' },
+      { id: 10, date: '12/05', bank: 'mercantil', cuenta: 'Nómina VES',       last4: '4421', desc: 'Pago Movistar — servicio corporativo línea 04141234567',              ref: 'MOV-2031',    cp: 'Movistar',            ccy: 'VES', amount: -3200.00,     cat: 'serv' },
+      { id: 11, date: '11/05', bank: 'bnc',       cuenta: 'Ops VES',          last4: '5421', desc: 'Pago Móvil',                                                            ref: '12998771',    cp: null,                   ccy: 'VES', amount: -750.00,      cat: null },
+      { id: 12, date: '11/05', bank: 'bbva',      cuenta: 'Ops VES',          last4: '8819', desc: 'Transferencia recibida — pago inversión Q2 2026 ronda inicial',       ref: '0094412',     cp: 'Empresas Roberto',    ccy: 'VES', amount: 2400000.00,   cat: 'cobros' },
+      { id: 13, date: '11/05', bank: 'banesco',   cuenta: 'AR USD',           last4: '7782', desc: 'Transf ACH outgoing — closing investment vehicle',                    ref: '88842110',    cp: 'Inversiones VDT',     ccy: 'USD', amount: -2500.00,     cat: 'compras' },
+      { id: 14, date: '10/05', bank: 'bnc',       cuenta: 'Ops VES',          last4: '5421', desc: 'Comisión mantenimiento mensual cuenta corriente operativa',           ref: 'CM-2026-05',  cp: 'BNC',                 ccy: 'VES', amount: -250.00,      cat: 'bancarios' },
+      { id: 15, date: '10/05', bank: 'bicent',    cuenta: 'Recaudación VES',  last4: '3344', desc: 'Recepción pago corporativo factura',                                   ref: '77231004',    cp: 'Cervecería Polar',    ccy: 'VES', amount: 450000.00,    cat: 'cobros' },
+      { id: 16, date: '09/05', bank: 'exterior',  cuenta: 'USD Ops',          last4: '0098', desc: 'Wire outgoing — payment to vendor monthly retainer engineering',      ref: 'WIR-90119',   cp: 'Stripe Inc.',         ccy: 'USD', amount: -800.00,      cat: 'software' },
+      { id: 17, date: '09/05', bank: 'bnc',       cuenta: 'Ops VES',          last4: '5421', desc: 'Retención ISLR mes abril 2026 declaración mensual SENIAT contribuyente especial', ref: 'ISLR-04', cp: 'SENIAT',           ccy: 'VES', amount: -125000.00,   cat: 'impuesto' },
+      { id: 18, date: '23/12/2025', bank: 'banesco', cuenta: 'AR USD',        last4: '7782', desc: 'Wire incoming — closing 2025 Q4 collections final invoice payment',  ref: 'WIR-77820',   cp: 'Acme C.A.',           ccy: 'USD', amount: 8400.00,      cat: 'cobros' },
+    ];
+
+    /* Attach parsed dates */
+    MOVIMIENTOS.forEach(m => { m._date = parseDate(m.date); });
+
+    /* ─── FILTER STATE ─────────────────────────────────────────────────────── */
+    const DATE_PRESETS = [
+      { key: 'today',  label: 'Hoy',                  days: 0 },
+      { key: 'week',   label: 'Esta semana',          days: 7 },
+      { key: 'month',  label: 'Este mes',             days: 31 },
+      { key: 'last30', label: 'Últimos 30 días',      days: 30 },
+      { key: 'last90', label: 'Últimos 90 días',      days: 90 },
+      { key: 'ytd',    label: 'Año a la fecha (YTD)', days: 'ytd' },
+      { key: 'all',    label: 'Todo el tiempo',       days: 'all' },
+    ];
+
+    const filterState = {
+      fecha: 'last30',           // preset key, or null for none
+      banco: [],                 // selected bank keys
+      cat:   [],                 // selected category keys
+      cp:    [],                 // selected counterparty names
+      monto: { min: null, max: null },
+      tipo:  null,               // 'credit' | 'debit' | null
+      search: '',
+    };
+
+    /* Order in which filter pills render (matches Mercury's stable left→right) */
+    const FILTER_ORDER = ['fecha', 'banco', 'cat', 'cp', 'monto', 'tipo'];
+
+    function isFilterActive(dim) {
+      if (dim === 'fecha') return filterState.fecha !== null;
+      if (dim === 'banco') return filterState.banco.length > 0;
+      if (dim === 'cat')   return filterState.cat.length > 0;
+      if (dim === 'cp')    return filterState.cp.length > 0;
+      if (dim === 'monto') return filterState.monto.min !== null || filterState.monto.max !== null;
+      if (dim === 'tipo')  return filterState.tipo !== null;
+      return false;
+    }
+
+    function activeFilterCount() {
+      return FILTER_ORDER.filter(isFilterActive).length;
+    }
+
+    /* ─── FILTER EVAL ──────────────────────────────────────────────────────── */
+    function getFilteredMovs() {
+      return MOVIMIENTOS.filter(m => {
+        // fecha
+        if (filterState.fecha) {
+          const preset = DATE_PRESETS.find(p => p.key === filterState.fecha);
+          if (preset && preset.days !== 'all') {
+            let cutoff;
+            if (preset.days === 'ytd') {
+              cutoff = new Date(TODAY.getFullYear(), 0, 1);
+            } else if (preset.key === 'month') {
+              cutoff = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1);
+            } else if (preset.key === 'today') {
+              cutoff = new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate());
+            } else {
+              cutoff = new Date(TODAY);
+              cutoff.setDate(cutoff.getDate() - preset.days);
+            }
+            if (m._date < cutoff) return false;
+          }
+        }
+        // banco
+        if (filterState.banco.length && !filterState.banco.includes(m.bank)) return false;
+        // cat
+        if (filterState.cat.length) {
+          if (!m.cat || !filterState.cat.includes(m.cat)) return false;
+        }
+        // cp
+        if (filterState.cp.length) {
+          if (!m.cp || !filterState.cp.includes(m.cp)) return false;
+        }
+        // monto
+        const abs = Math.abs(m.amount);
+        if (filterState.monto.min !== null && abs < filterState.monto.min) return false;
+        if (filterState.monto.max !== null && abs > filterState.monto.max) return false;
+        // tipo
+        if (filterState.tipo === 'credit' && m.amount < 0) return false;
+        if (filterState.tipo === 'debit'  && m.amount >= 0) return false;
+        // search
+        if (filterState.search) {
+          const q = filterState.search.toLowerCase();
+          const hay = [m.desc, m.ref, m.cp || '', BANKS[m.bank].name, m.cuenta]
+            .join(' ').toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return true;
+      });
+    }
+
+    /* ─── RENDERERS ────────────────────────────────────────────────────────── */
+    function fmtAmount(n, ccy) {
+      const abs = Math.abs(n);
+      const sign = n >= 0 ? '+' : '-';
+      const opts = { minimumFractionDigits: 2, maximumFractionDigits: 2 };
+      const num = abs.toLocaleString('es-VE', opts);
+      const cl = ccy === 'USD' ? '$' : 'Bs.';
+      return `${sign}${cl} ${num}`;
+    }
+
+    function fmtAmountUnsigned(n, ccy) {
+      const opts = { minimumFractionDigits: 2, maximumFractionDigits: 2 };
+      const num = Math.abs(n).toLocaleString('es-VE', opts);
+      const cl = ccy === 'USD' ? '$' : 'Bs.';
+      return `${cl} ${num}`;
+    }
+
+    function escapeAttr(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function pillValue(dim) {
+      if (dim === 'fecha') {
+        const p = DATE_PRESETS.find(p => p.key === filterState.fecha);
+        return p ? p.label : '—';
+      }
+      if (dim === 'banco') {
+        if (filterState.banco.length === 1) return BANKS[filterState.banco[0]].name;
+        return `${filterState.banco.length} bancos`;
+      }
+      if (dim === 'cat') {
+        if (filterState.cat.length === 1) {
+          const c = CATEGORIES.find(c => c.key === filterState.cat[0]);
+          return c ? c.label : '—';
+        }
+        return `${filterState.cat.length} categorías`;
+      }
+      if (dim === 'cp') {
+        if (filterState.cp.length === 1) return filterState.cp[0];
+        return `${filterState.cp.length} contrapartes`;
+      }
+      if (dim === 'monto') {
+        const a = filterState.monto.min, b = filterState.monto.max;
+        if (a !== null && b !== null) return `${a.toLocaleString('es-VE')} – ${b.toLocaleString('es-VE')}`;
+        if (a !== null) return `≥ ${a.toLocaleString('es-VE')}`;
+        if (b !== null) return `≤ ${b.toLocaleString('es-VE')}`;
+        return '—';
+      }
+      if (dim === 'tipo') {
+        return filterState.tipo === 'credit' ? 'Crédito' : 'Débito';
+      }
+      return '—';
+    }
+
+    const DIM_LABEL = {
+      fecha: 'Fecha', banco: 'Banco/Cuenta', cat: 'Categoría',
+      cp: 'Contraparte', monto: 'Monto', tipo: 'Tipo',
+    };
+    const DIM_ICON = {
+      fecha: '📅', banco: '🏦', cat: '🏷️', cp: '👤', monto: '💰', tipo: '⇄',
+    };
+
+    function renderFilterRow() {
+      const row = document.getElementById('filterRow');
+      const activeDims = FILTER_ORDER.filter(isFilterActive);
+      let html = '';
+
+      for (const dim of activeDims) {
+        html += `
+          <span class="filter-pill" data-dim="${dim}">
+            <span class="filter-pill-edit" data-edit-dim="${dim}">
+              <span class="filter-pill-dim">${DIM_LABEL[dim]}</span>
+              <span class="filter-pill-sep"> · </span>
+              <span class="filter-pill-value">${pillValue(dim)}</span>
+            </span>
+            <span class="filter-pill-remove" data-remove-dim="${dim}" title="Quitar filtro">
+              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6">
+                <path d="M3 3l6 6M9 3l-6 6"/>
+              </svg>
+            </span>
+          </span>
+        `;
+      }
+
+      html += `
+        <button class="filter-add-btn" id="addFilterBtn">
+          <span class="plus">＋</span>
+          <span>${activeDims.length ? 'Agregar filtro' : 'Filtrar'}</span>
+        </button>
+      `;
+
+      if (activeDims.length > 1) {
+        html += `<span class="filter-clear-all" id="clearAllBtn">Limpiar todo</span>`;
+      }
+
+      html += `
+        <div class="filter-search">
+          <span class="filter-search-icon">🔎</span>
+          <input type="text" id="searchInput" placeholder="Buscar referencia, descripción, contraparte…" value="${escapeAttr(filterState.search)}" />
+        </div>
+      `;
+
+      row.innerHTML = html;
+
+      // wire search
+      document.getElementById('searchInput').addEventListener('input', e => {
+        filterState.search = e.target.value;
+        renderTable();
+        renderTotals();
+        renderMeta();
+      });
+    }
+
+    function renderPageMeta() {
+      const meta = document.getElementById('pageMeta');
+      const movs = getFilteredMovs();
+      const total = movs.length;
+      const fechaLabel = filterState.fecha
+        ? (DATE_PRESETS.find(p => p.key === filterState.fecha)?.label || 'Personalizado')
+        : 'Todo el tiempo';
+      meta.innerHTML = `
+        <span>${fechaLabel}</span>
+        <span class="page-meta-dot">·</span>
+        <span>${total} movimiento${total === 1 ? '' : 's'}</span>
+        <span class="page-meta-dot">·</span>
+        <span>Última actualización: hace 8h</span>
+      `;
+    }
+    const renderMeta = renderPageMeta; // alias for brevity
+
+    function renderTotals() {
+      const movs = getFilteredMovs();
+      const sumBy = (ccy) => {
+        const subset = movs.filter(m => m.ccy === ccy);
+        const ingresos = subset.filter(m => m.amount > 0).reduce((s,m) => s + m.amount, 0);
+        const egresos  = subset.filter(m => m.amount < 0).reduce((s,m) => s + m.amount, 0);
+        return { count: subset.length, ingresos, egresos, neto: ingresos + egresos };
+      };
+      const ves = sumBy('VES');
+      const usd = sumBy('USD');
+      const anyFilter = activeFilterCount() > 1 || filterState.search; // beyond default fecha
+      const tag = anyFilter
+        ? `<span class="totals-filtered-tag">filtrado</span>`
+        : '';
+
+      const card = (currency, summary) => {
+        const netClass = summary.neto >= 0 ? 'positive' : 'negative';
+        const netSign = summary.neto >= 0 ? '+' : '';
+        return `
+          <div class="totals-card">
+            <div class="totals-currency">${currency} ${tag} <span class="totals-count">· ${summary.count} movimiento${summary.count === 1 ? '' : 's'}</span></div>
+            <div class="totals-amount-row">
+              <div class="totals-amounts">
+                <div class="totals-amount-block">
+                  <span class="totals-amount-label">Ingresos</span>
+                  <span class="totals-amount credit">+${fmtAmountUnsigned(summary.ingresos, currency)}</span>
+                </div>
+                <div class="totals-amount-block">
+                  <span class="totals-amount-label">Egresos</span>
+                  <span class="totals-amount debit">${summary.egresos === 0 ? fmtAmountUnsigned(0, currency) : fmtAmount(summary.egresos, currency)}</span>
+                </div>
+              </div>
+              <div class="totals-net">
+                <span class="totals-net-label">Neto</span>
+                <span class="totals-net-amount ${netClass}">${netSign}${fmtAmountUnsigned(summary.neto, currency)}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      };
+      document.getElementById('totalsStrip').innerHTML = card('VES', ves) + card('USD', usd);
+    }
+
+    function renderRow(m) {
+      const bank = BANKS[m.bank];
+      const cat = m.cat ? CATEGORIES.find(c => c.key === m.cat) : null;
+      const isCredit = m.amount >= 0;
+      const fullDesc = `${m.desc} · ${m.ref}`;
+
+      const cpHTML = m.cp
+        ? `<span class="editable" data-field="cp" data-id="${m.id}"><span class="cp-text">${m.cp}</span><span class="caret">▾</span></span>`
+        : `<span class="placeholder-dash editable empty" data-field="cp" data-id="${m.id}" title="Sin contraparte — click para asignar">—</span>`;
+
+      const catHTML = cat
+        ? `<span class="editable" data-field="cat" data-id="${m.id}"><span class="pill ${cat.cls}"><span class="pill-dot"></span>${cat.label}</span><span class="caret">▾</span></span>`
+        : `<span class="placeholder-dash editable empty" data-field="cat" data-id="${m.id}" title="Sin categoría — click para asignar">—</span>`;
+
+      return `
+        <tr data-id="${m.id}">
+          <td class="col-fecha">${m.date}</td>
+          <td>
+            <span class="cuenta-cell">
+              <span class="bank-logo ${bank.cls}">${bank.name[0]}</span>
+              <span class="bank-name">${bank.name}</span>
+              <span class="cuenta-label">· ${m.cuenta}</span>
+              <span class="cuenta-last4">··${m.last4}</span>
+            </span>
+          </td>
+          <td class="col-desc" title="${escapeAttr(fullDesc)}">${m.desc} <span class="desc-ref">· ${m.ref}</span></td>
+          <td>${cpHTML}</td>
+          <td class="numeric col-monto ${isCredit ? 'credit' : 'debit'}">
+            <span class="monto-currency">${m.ccy}</span>${fmtAmount(m.amount, m.ccy)}
+          </td>
+          <td>${catHTML}</td>
+          <td class="action-col">
+            <button class="row-action" data-id="${m.id}" title="Enviar movimiento">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6">
+                <path d="M18 2L9 11M18 2L12 18l-3-7-7-3L18 2z"/>
+              </svg>
+            </button>
+          </td>
+        </tr>
+      `;
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('mov-tbody');
+      const movs = getFilteredMovs();
+      if (movs.length === 0) {
+        tbody.innerHTML = `
+          <tr><td colspan="7">
+            <div class="empty-state">
+              <div class="empty-state-icon">🔍</div>
+              <div class="empty-state-title">Sin movimientos</div>
+              <div class="empty-state-sub">Ningún movimiento cumple con los filtros aplicados.</div>
+            </div>
+          </td></tr>
+        `;
+        return;
+      }
+      tbody.innerHTML = movs.map(renderRow).join('');
+    }
+
+    function renderAll() {
+      renderFilterRow();
+      renderPageMeta();
+      renderTotals();
+      renderTable();
+    }
+
+    /* ─── FILTER POPOVER ───────────────────────────────────────────────────── */
+    let popoverEl = null;
+    let popoverDim = null;        // null = dim list, else specific dim input
+    let popoverEditing = false;   // true when editing an existing filter
+    let popoverDraft = null;      // working copy of state while editing
+
+    function closePopover() {
+      if (popoverEl) popoverEl.remove();
+      popoverEl = null;
+      popoverDim = null;
+      popoverEditing = false;
+      popoverDraft = null;
+      document.querySelectorAll('.filter-add-btn.open').forEach(el => el.classList.remove('open'));
+      document.querySelectorAll('.filter-pill.open').forEach(el => el.classList.remove('open'));
+    }
+
+    function buildDimList() {
+      const dims = FILTER_ORDER.filter(d => !isFilterActive(d));
+      return `
+        <div class="filter-popover-head">Filtrar por</div>
+        ${dims.length === 0
+          ? `<div class="filter-dim-item" style="color: var(--text-3); cursor: default;">Todos los filtros activos</div>`
+          : dims.map(d => `
+            <div class="filter-dim-item" data-pick-dim="${d}">
+              <span class="filter-dim-item-icon">${DIM_ICON[d]}</span>
+              <span>${DIM_LABEL[d]}</span>
+              <span class="filter-dim-item-arrow">›</span>
+            </div>
+          `).join('')
+        }
+      `;
+    }
+
+    function buildDimInput(dim) {
+      const back = `
+        <div class="filter-popover-head">
+          <span class="filter-popover-back" id="popoverBack">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 4L6 8l4 4"/></svg>
+          </span>
+          ${DIM_LABEL[dim]}
+        </div>
+      `;
+      let body = '';
+      if (dim === 'fecha') {
+        body = DATE_PRESETS.map(p => `
+          <div class="filter-radio-item ${popoverDraft.fecha === p.key ? 'checked' : ''}" data-radio="${p.key}">
+            <span class="filter-radio"></span>
+            <span>${p.label}</span>
+          </div>
+        `).join('');
+      } else if (dim === 'banco') {
+        body = `<div class="filter-input-block">
+          <input class="filter-input-search" placeholder="Buscar banco…" />
+        </div>
+        <div class="filter-checklist">
+          ${Object.entries(BANKS).map(([k,v]) => `
+            <div class="filter-checklist-item ${popoverDraft.banco.includes(k) ? 'checked' : ''}" data-check="${k}">
+              <span class="filter-check"></span>
+              <span>${v.name}</span>
+            </div>
+          `).join('')}
+        </div>`;
+      } else if (dim === 'cat') {
+        body = `<div class="filter-checklist">
+          ${CATEGORIES.map(c => `
+            <div class="filter-checklist-item ${popoverDraft.cat.includes(c.key) ? 'checked' : ''}" data-check="${c.key}">
+              <span class="filter-check"></span>
+              <span class="pill ${c.cls}"><span class="pill-dot"></span>${c.label}</span>
+            </div>
+          `).join('')}
+        </div>`;
+      } else if (dim === 'cp') {
+        body = `<div class="filter-input-block">
+          <input class="filter-input-search" placeholder="Buscar contraparte…" />
+        </div>
+        <div class="filter-checklist">
+          ${COUNTERPARTIES.map(c => `
+            <div class="filter-checklist-item ${popoverDraft.cp.includes(c) ? 'checked' : ''}" data-check="${c}">
+              <span class="filter-check"></span>
+              <span>${c}</span>
+            </div>
+          `).join('')}
+        </div>`;
+      } else if (dim === 'monto') {
+        body = `<div class="filter-monto-block">
+          <div class="filter-monto-grid">
+            <div>
+              <label>Mínimo</label>
+              <input type="number" id="montoMin" placeholder="0" value="${popoverDraft.monto.min ?? ''}" />
+            </div>
+            <div>
+              <label>Máximo</label>
+              <input type="number" id="montoMax" placeholder="∞" value="${popoverDraft.monto.max ?? ''}" />
+            </div>
+          </div>
+        </div>`;
+      } else if (dim === 'tipo') {
+        body = `
+          ${['credit','debit'].map(t => `
+            <div class="filter-radio-item ${popoverDraft.tipo === t ? 'checked' : ''}" data-radio="${t}">
+              <span class="filter-radio"></span>
+              <span>${t === 'credit' ? 'Crédito (ingresos)' : 'Débito (egresos)'}</span>
+            </div>
+          `).join('')}
+        `;
+      }
+      const actions = `
+        <div class="filter-actions">
+          <button class="filter-action-btn" id="popoverCancel">Cancelar</button>
+          <button class="filter-action-btn primary" id="popoverApply">Aplicar</button>
+        </div>
+      `;
+      return back + body + actions;
+    }
+
+    function openPopover(anchorEl, opts = {}) {
+      closePopover();
+      popoverEditing = !!opts.dim;
+      popoverDim = opts.dim || null;
+      popoverDraft = JSON.parse(JSON.stringify(filterState)); // working copy
+
+      popoverEl = document.createElement('div');
+      popoverEl.className = 'filter-popover open';
+      popoverEl.innerHTML = popoverDim ? buildDimInput(popoverDim) : buildDimList();
+      anchorEl.appendChild(popoverEl);
+      anchorEl.classList.add('open');
+
+      wirePopover();
+    }
+
+    function wirePopover() {
+      if (!popoverEl) return;
+
+      // back button
+      const back = popoverEl.querySelector('#popoverBack');
+      if (back) {
+        back.addEventListener('click', () => {
+          // If editing an existing filter, "back" cancels the edit (returns to dim list only if no other active filters)
+          popoverDim = null;
+          popoverDraft = JSON.parse(JSON.stringify(filterState));
+          popoverEl.innerHTML = buildDimList();
+          wirePopover();
+        });
+      }
+
+      // dim picker
+      popoverEl.querySelectorAll('[data-pick-dim]').forEach(el => {
+        el.addEventListener('click', () => {
+          popoverDim = el.dataset.pickDim;
+          popoverEl.innerHTML = buildDimInput(popoverDim);
+          wirePopover();
+        });
+      });
+
+      // radio (fecha, tipo)
+      popoverEl.querySelectorAll('[data-radio]').forEach(el => {
+        el.addEventListener('click', () => {
+          popoverEl.querySelectorAll('.filter-radio-item').forEach(r => r.classList.remove('checked'));
+          el.classList.add('checked');
+          if (popoverDim === 'fecha') popoverDraft.fecha = el.dataset.radio;
+          if (popoverDim === 'tipo')  popoverDraft.tipo  = el.dataset.radio;
+        });
+      });
+
+      // checklist (banco, cat, cp)
+      popoverEl.querySelectorAll('[data-check]').forEach(el => {
+        el.addEventListener('click', () => {
+          const v = el.dataset.check;
+          const list = popoverDraft[popoverDim];
+          const idx = list.indexOf(v);
+          if (idx >= 0) list.splice(idx, 1); else list.push(v);
+          el.classList.toggle('checked');
+        });
+      });
+
+      // search inside checklist
+      const cs = popoverEl.querySelector('.filter-input-search');
+      if (cs) {
+        cs.addEventListener('input', e => {
+          const q = e.target.value.toLowerCase();
+          popoverEl.querySelectorAll('.filter-checklist-item').forEach(it => {
+            const txt = it.textContent.toLowerCase();
+            it.style.display = txt.includes(q) ? '' : 'none';
+          });
+        });
+      }
+
+      // apply / cancel
+      const apply = popoverEl.querySelector('#popoverApply');
+      const cancel = popoverEl.querySelector('#popoverCancel');
+      if (apply) apply.addEventListener('click', () => {
+        // capture monto inputs
+        if (popoverDim === 'monto') {
+          const minEl = popoverEl.querySelector('#montoMin');
+          const maxEl = popoverEl.querySelector('#montoMax');
+          popoverDraft.monto.min = minEl.value === '' ? null : parseFloat(minEl.value);
+          popoverDraft.monto.max = maxEl.value === '' ? null : parseFloat(maxEl.value);
+        }
+        // commit draft → state
+        Object.assign(filterState, popoverDraft);
+        closePopover();
+        renderAll();
+      });
+      if (cancel) cancel.addEventListener('click', () => closePopover());
+    }
+
+    /* ─── EVENT DELEGATION ─────────────────────────────────────────────────── */
+    document.addEventListener('click', e => {
+      // close popover when clicking outside
+      const inside = e.target.closest('.filter-popover, .filter-add-btn, .filter-pill');
+      if (!inside) closePopover();
+
+      // close inline edit dropdowns when clicking outside
+      const inEdit = e.target.closest('.editable, .edit-dropdown');
+      if (!inEdit) closeAllDropdowns();
+
+      // + Filter
+      if (e.target.closest('#addFilterBtn')) {
+        e.stopPropagation();
+        const btn = document.getElementById('addFilterBtn');
+        if (btn.classList.contains('open')) closePopover();
+        else openPopover(btn);
+        return;
+      }
+      // Clear all
+      if (e.target.closest('#clearAllBtn')) {
+        Object.assign(filterState, { fecha: null, banco: [], cat: [], cp: [], monto: { min: null, max: null }, tipo: null });
+        renderAll();
+        return;
+      }
+      // Pill remove
+      const rem = e.target.closest('[data-remove-dim]');
+      if (rem) {
+        e.stopPropagation();
+        const dim = rem.dataset.removeDim;
+        if (dim === 'fecha') filterState.fecha = null;
+        else if (dim === 'monto') filterState.monto = { min: null, max: null };
+        else if (dim === 'tipo') filterState.tipo = null;
+        else filterState[dim] = [];
+        renderAll();
+        return;
+      }
+      // Pill edit
+      const edt = e.target.closest('[data-edit-dim]');
+      if (edt) {
+        e.stopPropagation();
+        const dim = edt.dataset.editDim;
+        const pill = edt.closest('.filter-pill');
+        if (pill.classList.contains('open')) { closePopover(); return; }
+        openPopover(pill, { dim });
+        return;
+      }
+    });
+
+    /* ─── INLINE EDIT (Contraparte + Categoría) ────────────────────────────── */
+    function closeAllDropdowns() {
+      document.querySelectorAll('.editable.open').forEach(el => el.classList.remove('open'));
+      document.querySelectorAll('.edit-dropdown').forEach(el => el.remove());
+    }
+
+    function openInlineEdit(triggerEl) {
+      closeAllDropdowns();
+      triggerEl.classList.add('open');
+      const field = triggerEl.dataset.field;
+      const id = parseInt(triggerEl.dataset.id, 10);
+      const mov = MOVIMIENTOS.find(m => m.id === id);
+
+      const dd = document.createElement('div');
+      dd.className = 'edit-dropdown open';
+
+      if (field === 'cp') {
+        dd.innerHTML = `
+          <div class="edit-dropdown-search"><input type="text" placeholder="Buscar contraparte…" /></div>
+          ${COUNTERPARTIES.map(c => `<div class="edit-dropdown-item ${mov.cp === c ? 'selected' : ''}" data-val="${c}">${c}</div>`).join('')}
+        `;
+        dd.addEventListener('click', e => {
+          const item = e.target.closest('.edit-dropdown-item');
+          if (!item) return;
+          mov.cp = item.dataset.val;
+          closeAllDropdowns();
+          renderAll();
+        });
+      } else if (field === 'cat') {
+        dd.innerHTML = `
+          <div class="edit-dropdown-section">Categoría</div>
+          ${CATEGORIES.map(c => `<div class="edit-dropdown-item ${mov.cat === c.key ? 'selected' : ''}" data-val="${c.key}"><span class="pill ${c.cls}"><span class="pill-dot"></span>${c.label}</span></div>`).join('')}
+        `;
+        dd.addEventListener('click', e => {
+          const item = e.target.closest('.edit-dropdown-item');
+          if (!item) return;
+          mov.cat = item.dataset.val;
+          closeAllDropdowns();
+          renderAll();
+        });
+      }
+      triggerEl.appendChild(dd);
+    }
+
+    document.addEventListener('click', e => {
+      const trigger = e.target.closest('.editable');
+      if (trigger && !e.target.closest('.edit-dropdown')) {
+        e.stopPropagation();
+        if (trigger.classList.contains('open')) closeAllDropdowns();
+        else openInlineEdit(trigger);
+      }
+    });
+
+    /* ─── Paperplane → modal ───────────────────────────────────────────────── */
+    function openSendModal(id) {
+      const m = MOVIMIENTOS.find(x => x.id === id);
+      const bank = BANKS[m.bank];
+      const isCredit = m.amount >= 0;
+      document.getElementById('modalRowSummary').innerHTML = `
+        <div><span class="lbl">Fecha</span><span>${m.date}</span></div>
+        <div><span class="lbl">Cuenta</span><span>${bank.name} · ${m.cuenta} ··${m.last4}</span></div>
+        <div><span class="lbl">Contraparte</span><span>${m.cp || '—'}</span></div>
+        <div><span class="lbl">Monto</span><span style="color:${isCredit ? 'var(--green-text)' : 'var(--text)'}; font-weight: 600;">${m.ccy} ${fmtAmount(m.amount, m.ccy)}</span></div>
+      `;
+      document.getElementById('sendModal').classList.add('open');
+    }
+    function closeSendModal() {
+      document.getElementById('sendModal').classList.remove('open');
+    }
+    document.addEventListener('click', e => {
+      const btn = e.target.closest('.row-action');
+      if (btn) {
+        e.stopPropagation();
+        openSendModal(parseInt(btn.dataset.id, 10));
+      }
+    });
+    document.getElementById('sendModal').addEventListener('click', e => {
+      if (e.target.id === 'sendModal') closeSendModal();
+    });
+    document.querySelectorAll('.modal-channel').forEach(ch => {
+      ch.addEventListener('click', () => {
+        document.querySelectorAll('.modal-channel').forEach(c => c.classList.remove('active'));
+        ch.classList.add('active');
+      });
+    });
+
+    /* boot */
+    renderAll();
+  </script>
+</body>
+</html>

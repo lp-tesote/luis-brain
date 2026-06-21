@@ -29,9 +29,44 @@ Content flows **one-way, selectively**: `luis-brain/` → `knowledge-base/`.
 - Function folders here (`sales/`, `product/`, `finance/`, etc.) intentionally mirror the KB's structure so promotion is zero-friction
 - Never symlink or auto-sync — the manual copy is a feature (forces "is this ready to share?" decisions)
 
+## Relationship to treasury (implementation bridge)
+
+Brain docs that will become code don't ship through promotion to the KB — they ship through `/tesote-plan` in `~/Programming/tesote/treasury`. The skill ingests the brain spec + a Linear ticket and produces a structured implementation plan grounded in the actual treasury codebase. Skip this and the team has to re-derive schema / services / multi-tenant impact by hand.
+
+Full workflow doc: [`_workflows/brain-to-treasury.md`](_workflows/brain-to-treasury.md). The short version:
+
+**Trigger this when a brain doc touches:**
+
+- Data model, schemas, services, or APIs
+- Product UI (new components, surface changes, prototypes)
+- Background jobs, integrations, or bank rails work
+- Anything Dan or eng would need to implement
+
+**The workflow:**
+
+1. Finish the PRD/spec in `luis-brain/` using `product/_prd-template.md` — the **"Tesote-Plan Intake"** block at the top is the contract; `/tesote-plan` reads it
+2. File the Linear PRO-* ticket (Linear MCP works from anywhere — don't leave brain to file)
+3. `cd ~/Programming/tesote/treasury`, run `/tesote-plan <Linear URL>`
+4. Plan lands at `treasury/.debugging/plans/[name]/` — hand to Dan, or run `/implement` directly
+
+**For prototypes specifically:** pair `/tesote-plan` with the `redesign-2026-design-system` skill in the same treasury session — catches design-system drift (Mercury pastels, Tailwind defaults, wrong radii, Inter without Tight) before code is written.
+
+**Every product-design session ends with one of three terminal moves:**
+
+- (a) keep drafting in brain
+- (b) promote to KB (team reference)
+- (c) `/tesote-plan` in treasury (becoming code)
+
+If none apply, the session isn't done. Schedule the next move; don't close the loop.
+
+When Luis is drafting something that has eng/UI implications, **proactively flag** `/tesote-plan` and name which treasury skills the run will pull in (`database-design`, `redesign-2026-design-system`, `product-management`, `using-linear`, `using-knowledge-base`).
+
 ## Structure
 
 ```
+── operating system (how Luis + Claude work) ──
+_workflows/            — multi-tool / cross-repo procedures (brain → treasury, etc.)
+
 ── how I think (process / time) ──
 daily/                 — daily notes, session logs, what I'm chewing on today
 decisions/             — decisions I've made + why (before they're team-wide)

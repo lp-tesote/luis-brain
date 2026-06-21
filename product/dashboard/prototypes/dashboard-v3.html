@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tesote · Inicio (dashboard v3 — single-box bento)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Geist+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #1661E2;
+      --primary-hover: #184EB5;
+      --primary-light: #EEF8FF;
+      --primary-border: #C6DDFB;
+      --text: #12110F;
+      --text-2: #635D55;
+      --text-3: #857D73;
+      --text-4: #C7C0B5;
+      --border: #E8E3DA;
+      --border-2: #F2EEE6;
+      --bg-sidebar: #F7F5F0;
+      --bg-main: #FFFFFF;
+      --bg-soft: #FCFBF7;
+      --hover: #F2EEE6;
+      --active: #E8E3DA;
+      --green: #1A8C5B;
+      --green-text: #0F6E45;
+      --yellow: #CC9500;
+      --red: #C41E1E;
+      --orange: #A83E00;
+
+      --pill-paid: #D6E8D5;
+      --pill-new: #E4ECF7;
+      --pill-pending: #F7EDD0;
+      --pill-overdue: #F8D8C0;
+      --pill-draft: #ECE7DD;
+
+      --radius: 8px;
+      --radius-lg: 12px;
+      --radius-sm: 4px;
+      --shadow: 0 1px 2px rgba(18, 17, 15, 0.04);
+      --shadow-md: 0 4px 12px rgba(18, 17, 15, 0.08);
+
+      --font-display: 'Inter Tight', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Aspekta', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'Geist Mono', 'SF Mono', 'Menlo', monospace;
+    }
+
+    body { font-family: var(--font-body); font-size: 14px; background: var(--bg-main); color: var(--text); -webkit-font-smoothing: antialiased; font-feature-settings: 'cv11', 'ss01'; }
+    h1, h2, h3, .pos-figure, .cat-pct { font-family: var(--font-display); letter-spacing: -.01em; }
+    .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+    .app { display: grid; grid-template-columns: 224px 1fr; min-height: 100vh; }
+    .ic { display: inline-block; vertical-align: middle; width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+    .ic-sm { width: 13px; height: 13px; }
+
+    /* ─── SIDEBAR ─────────────────────────────────────────────────────────── */
+    .sidebar { background: var(--bg-sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+    .sb-top { display: flex; align-items: center; padding: 14px 14px 10px; }
+    .sb-brand { display: flex; align-items: center; gap: 9px; font-size: 14px; font-weight: 600; }
+    .sb-logo { width: 24px; height: 24px; border-radius: 6px; background: var(--text); display: flex; align-items: center; justify-content: center; color: white; font-family: var(--font-display); font-weight: 700; font-size: 13px; }
+    .sb-pro { font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 4px; background: var(--text); color: white; letter-spacing: .03em; margin-left: 7px; }
+    .sb-search { margin: 0 10px 8px; display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 6px; background: var(--bg-main); border: 1px solid var(--border); cursor: pointer; color: var(--text-3); font-size: 13px; }
+    .sb-search .kbd { margin-left: auto; font-size: 10px; font-family: var(--font-mono); padding: 1px 5px; border-radius: 3px; background: var(--bg-soft); border: 1px solid var(--border); }
+    .sb-section { padding: 4px 10px 2px; }
+    .sb-section-label { padding: 10px 10px 6px; font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); }
+    .sb-item { display: flex; align-items: center; gap: 10px; padding: 6px 10px; border-radius: 6px; font-size: 13px; color: var(--text-2); cursor: pointer; }
+    .sb-item:hover { background: var(--hover); color: var(--text); }
+    .sb-item.active { background: var(--active); color: var(--text); font-weight: 500; }
+    .sb-item .ic { color: var(--text-3); }
+    .sb-item.active .ic, .sb-item:hover .ic { color: var(--text-2); }
+    .sb-item-count { margin-left: auto; font-size: 11px; font-weight: 500; color: var(--text-3); background: var(--bg-main); padding: 1px 6px; border-radius: 10px; border: 1px solid var(--border); }
+    .sb-bottom { margin-top: auto; padding: 10px; border-top: 1px solid var(--border); }
+    .sb-user { display: flex; align-items: center; gap: 10px; padding: 7px 8px; border-radius: 6px; }
+    .sb-user-avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--primary); color: white; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; }
+    .sb-user-name { font-size: 13px; font-weight: 500; }
+    .sb-user-sub { font-size: 11px; color: var(--text-3); }
+
+    .main { display: flex; flex-direction: column; min-width: 0; }
+    .topbar { height: 52px; padding: 0 22px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); }
+    .topbar-entity { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-2); padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border); background: white; cursor: pointer; }
+    .topbar-entity .caret { width: 12px; height: 12px; opacity: .6; }
+    .topbar-spacer { flex: 1; }
+    .topbar-cta { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: white; background: var(--primary); border: none; padding: 7px 13px; border-radius: 6px; cursor: pointer; font-family: inherit; }
+    .topbar-cta:hover { background: var(--primary-hover); }
+    .topbar-icon { width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-2); }
+    .topbar-icon:hover { background: var(--hover); color: var(--text); }
+
+    .content { flex: 1; overflow-y: auto; max-width: 1280px; width: 100%; margin: 0 auto; padding: 26px 36px 60px; }
+
+    /* ─── PAGE HEAD ───────────────────────────────────────────────────────── */
+    .page-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+    .greeting { font-size: 24px; font-weight: 700; }
+    .greeting-sub { font-size: 13px; color: var(--text-2); margin-top: 4px; }
+    .live { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: var(--green-text); margin-left: 8px; }
+    .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 6px; background: white; font-size: 13px; color: var(--text-2); cursor: pointer; font-family: inherit; border: 1px solid var(--border); white-space: nowrap; }
+    .btn:hover { background: var(--hover); color: var(--text); }
+
+    /* ─── GRID + CARD ─────────────────────────────────────────────────────── */
+    .grid { display: grid; gap: 16px; margin-bottom: 16px; }
+    .g2 { grid-template-columns: 1fr 1fr; }
+    .g3 { grid-template-columns: repeat(3, 1fr); }
+    .g-cash { grid-template-columns: 1.35fr 1fr; }
+
+    .card { background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px 20px; display: flex; flex-direction: column; min-width: 0; }
+    .card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+    .card-title { font-size: 11px; font-weight: 600; color: var(--text-3); letter-spacing: .06em; text-transform: uppercase; }
+    .card-link { font-size: 12px; font-weight: 500; color: var(--text-2); cursor: pointer; display: inline-flex; align-items: center; gap: 4px; padding: 3px 6px; border-radius: 5px; }
+    .card-link:hover { background: var(--hover); color: var(--primary); }
+    .card-menu { width: 24px; height: 24px; border-radius: 5px; display: flex; align-items: center; justify-content: center; color: var(--text-3); cursor: pointer; }
+    .card-menu:hover { background: var(--hover); color: var(--text); }
+
+    /* ─── POSITION HERO ───────────────────────────────────────────────────── */
+    .pos-toprow { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    .pos-label { font-size: 11px; font-weight: 600; color: var(--text-3); letter-spacing: .06em; text-transform: uppercase; }
+    .pos-figure { font-size: 42px; font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; margin-top: 6px; white-space: nowrap; }
+    .pos-figure .cents { font-size: 23px; font-weight: 600; color: var(--text-3); }
+    .pos-deltas { display: flex; gap: 14px; margin-top: 8px; font-size: 12px; font-family: var(--font-mono); font-variant-numeric: tabular-nums; color: var(--text-3); align-items: center; }
+    .pos-deltas .lbl { font-family: var(--font-body); }
+    .pos-delta-in { color: var(--green-text); display: inline-flex; align-items: center; gap: 3px; }
+    .pos-delta-out { color: var(--text-2); display: inline-flex; align-items: center; gap: 3px; }
+    .pos-spark { width: 170px; height: 56px; flex: none; }
+    .pos-spark svg { width: 100%; height: 100%; display: block; overflow: visible; }
+
+    /* USD / Bs split */
+    .pos-split { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-top: 18px; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .pos-split-cell { padding: 13px 16px; }
+    .pos-split-cell + .pos-split-cell { border-left: 1px solid var(--border); }
+    .pss-label { font-size: 10.5px; font-weight: 600; color: var(--text-3); letter-spacing: .05em; text-transform: uppercase; display: flex; align-items: center; gap: 7px; }
+    .pss-cur { width: 20px; height: 20px; border-radius: var(--radius-sm); display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 8.5px; font-weight: 700; color: white; }
+    .bc-usd { background: var(--green); } .bc-ves { background: #2D6FB8; }
+    .pss-amt { font-family: var(--font-mono); font-size: 19px; font-weight: 600; font-variant-numeric: tabular-nums; margin-top: 7px; }
+    .pss-sub { font-size: 11.5px; color: var(--text-3); margin-top: 2px; }
+    .pss-sub b { color: var(--text-2); font-weight: 600; }
+
+    /* Δ decomposition strip */
+    .decomp { display: flex; align-items: stretch; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border-2); }
+    .decomp-cell { flex: 1; padding: 0 16px; }
+    .decomp-cell:first-child { padding-left: 0; }
+    .decomp-cell + .decomp-cell { border-left: 1px solid var(--border-2); }
+    .decomp-k { font-size: 10px; font-weight: 600; color: var(--text-3); letter-spacing: .05em; text-transform: uppercase; display: flex; align-items: center; gap: 5px; }
+    .decomp-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .decomp-v { font-family: var(--font-mono); font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; margin-top: 4px; }
+    .decomp-foot { font-size: 11px; color: var(--text-3); margin-top: 10px; display: flex; align-items: center; gap: 6px; }
+    .decomp-foot .ic-sm { color: var(--green); }
+
+    /* ─── BREAKDOWN BAR-LIST (entidad / banco) ────────────────────────────── */
+    .brk { display: flex; flex-direction: column; gap: 12px; }
+    .brk-row { display: grid; grid-template-columns: 1.1fr 1fr auto; align-items: center; gap: 12px; }
+    .brk-name { display: flex; align-items: center; gap: 9px; min-width: 0; }
+    .brk-name .nm { font-size: 13px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .brk-name .sub { font-size: 11px; color: var(--text-3); display: block; margin-top: 1px; }
+    .brk-bar-track { height: 7px; background: var(--bg-soft); border-radius: 4px; overflow: hidden; }
+    .brk-bar { height: 100%; border-radius: 4px; }
+    .brk-bar.usd { background: var(--primary); } .brk-bar.ves { background: #6FA8DC; }
+    .brk-amt { text-align: right; white-space: nowrap; }
+    .brk-amt .v { font-family: var(--font-mono); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .brk-amt .pct { font-size: 11px; color: var(--text-3); font-family: var(--font-mono); }
+    .bank-logo, .ent-logo { width: 24px; height: 24px; border-radius: var(--radius-sm); display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 9.5px; font-weight: 700; color: white; flex-shrink: 0; }
+    .bl-mercantil { background: #006B3F; } .bl-bnc { background: #C8102E; } .bl-banesco { background: #0067A6; } .bl-bancamiga { background: #00A0DF; } .bl-mercury { background: #2D2A26; }
+    .ent-logo { background: var(--bg-sidebar); border: 1px solid var(--border); color: var(--text-2); }
+
+    /* ─── WEEKLY SUMMARY (IA) ─────────────────────────────────────────────── */
+    .summary { background: var(--bg-soft); }
+    .summary-title { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 600; color: var(--text); }
+    .summary-title .ic { color: var(--primary); }
+    .summary-badge { font-size: 11px; font-weight: 500; color: var(--primary-hover); background: var(--pill-new); border-radius: 4px; padding: 1px 7px; }
+    .summary-body { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .summary-lead { font-size: 13px; line-height: 1.55; color: var(--text-2); }
+    .summary-lead b { color: var(--text); font-weight: 600; }
+    .summary-feed { display: flex; flex-direction: column; gap: 10px; }
+    .feed-item { display: flex; align-items: baseline; gap: 9px; font-size: 12.5px; color: var(--text-2); line-height: 1.4; }
+    .feed-item .ic-sm { flex: none; position: relative; top: 2px; }
+    .feed-item.up .ic-sm { color: var(--green); } .feed-item.fx .ic-sm { color: var(--orange); }
+    .feed-item.new .ic-sm { color: var(--primary); } .feed-item.warn .ic-sm { color: var(--yellow); }
+    .feed-item b { color: var(--text); font-weight: 600; }
+
+    /* ─── KPI: money in/out ───────────────────────────────────────────────── */
+    .flow-figs { display: flex; gap: 18px; margin: 2px 0 4px; }
+    .flow-fig .v { font-family: var(--font-mono); font-size: 19px; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .flow-fig .v.in { color: var(--green-text); } .flow-fig .v.out { color: var(--text); }
+    .flow-fig .k { font-size: 11px; color: var(--text-3); margin-top: 1px; }
+    .flow-net { font-size: 12px; color: var(--text-2); margin-top: 8px; }
+    .flow-net b { font-family: var(--font-mono); color: var(--green-text); font-weight: 600; }
+    .flow-bars { display: flex; align-items: flex-end; gap: 6px; height: 38px; margin-top: 14px; }
+    .flow-bar-day { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 2px; height: 100%; }
+    .flow-bar { width: 100%; border-radius: 2px; }
+    .flow-bar.in { background: #BFE0CC; } .flow-bar.out { background: var(--border); }
+
+    /* ─── KPI: categorization ─────────────────────────────────────────────── */
+    .cat-pct-row { display: flex; align-items: baseline; gap: 8px; margin: 0 0 12px; }
+    .cat-pct { font-size: 34px; font-weight: 700; letter-spacing: -.02em; }
+    .cat-pct-sub { font-size: 12px; color: var(--text-2); line-height: 1.3; }
+    .progress { height: 7px; background: var(--bg-soft); border-radius: 4px; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--green); border-radius: 4px; }
+    .cat-foot { font-size: 12px; color: var(--text-2); margin-top: 12px; display: flex; align-items: center; gap: 6px; }
+    .cat-foot a { color: var(--primary); cursor: pointer; font-weight: 500; }
+
+    /* ─── KPI: nuevo ──────────────────────────────────────────────────────── */
+    .new-list { display: flex; flex-direction: column; gap: 0; }
+    .new-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border-2); }
+    .new-row:last-child { border-bottom: none; }
+    .new-main { flex: 1; min-width: 0; }
+    .new-name { font-size: 13px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .new-meta { font-size: 11px; color: var(--text-3); margin-top: 1px; }
+    .pill { display: inline-flex; align-items: center; gap: 5px; padding: 1px 7px; border-radius: var(--radius-sm); font-size: 10.5px; font-weight: 500; color: var(--text); white-space: nowrap; flex-shrink: 0; }
+    .pill-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+    .pill.new { background: var(--pill-new); } .pill.new .pill-dot { background: var(--primary); }
+    .pill.type { background: var(--pill-pending); } .pill.type .pill-dot { background: var(--yellow); }
+
+    /* ─── CASH FLOW BY CATEGORY ───────────────────────────────────────────── */
+    .cf-sub { font-size: 10.5px; font-weight: 600; color: var(--text-3); letter-spacing: .05em; text-transform: uppercase; display: flex; align-items: center; justify-content: space-between; margin: 4px 0 10px; }
+    .cf-sub .tot { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+    .cf-sub .tot.in { color: var(--green-text); }
+    .cf-list { display: flex; flex-direction: column; gap: 10px; }
+    .cf-row { display: grid; grid-template-columns: 132px 1fr auto; gap: 12px; align-items: center; }
+    .cf-name { font-size: 12.5px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cf-track { height: 8px; background: var(--bg-soft); border-radius: 4px; overflow: hidden; position: relative; }
+    .cf-fill { height: 100%; border-radius: 4px; }
+    .cf-amt { text-align: right; white-space: nowrap; font-family: var(--font-mono); font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .cf-amt.in { color: var(--green-text); }
+    .cf-divider { height: 1px; background: var(--border-2); margin: 16px 0; }
+    .cf-net { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); }
+    .cf-net-label { font-size: 12px; font-weight: 600; color: var(--text); letter-spacing: .03em; text-transform: uppercase; }
+    .cf-net-val { font-family: var(--font-mono); font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .cf-net-val.pos { color: var(--green-text); }
+
+    /* ─── TOP MOVEMENTS ───────────────────────────────────────────────────── */
+    .mov-list { display: flex; flex-direction: column; }
+    .mov-row { display: flex; align-items: center; gap: 11px; padding: 9px 0; border-bottom: 1px solid var(--border-2); }
+    .mov-row:last-child { border-bottom: none; }
+    .mov-rank { font-family: var(--font-mono); font-size: 11px; color: var(--text-4); width: 14px; text-align: right; flex: none; }
+    .mov-main { flex: 1; min-width: 0; }
+    .mov-cp { font-size: 13px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mov-meta { font-size: 11px; color: var(--text-3); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mov-amt { font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; flex: none; }
+    .mov-amt .int { font-size: 13px; font-weight: 600; }
+    .mov-amt .dec { font-size: 11px; opacity: .6; }
+    .mov-amt.credit .int, .mov-amt.credit .dec { color: var(--green-text); }
+    .mov-amt-usd { font-size: 10.5px; color: var(--text-3); margin-top: 1px; }
+  </style>
+</head>
+<body>
+  <div class="app">
+
+    <!-- ─── SIDEBAR ─────────────────────────────────────────────────────── -->
+    <aside class="sidebar">
+      <div class="sb-top">
+        <div class="sb-brand"><div class="sb-logo">T</div><span>Tesote</span><span class="sb-pro">PRO</span></div>
+      </div>
+      <div class="sb-search">
+        <svg class="ic ic-sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        Buscar <span class="kbd">⌘K</span>
+      </div>
+      <div class="sb-section">
+        <div class="sb-item active"><svg class="ic" viewBox="0 0 24 24"><path d="M4 11 12 4l8 7"/><path d="M6 10v9h12v-9"/></svg>Inicio</div>
+      </div>
+      <div class="sb-section">
+        <div class="sb-section-label">Connect</div>
+        <div class="sb-item"><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg>Saldos</div>
+        <div class="sb-item"><svg class="ic" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h12"/></svg>Movimientos<span class="sb-item-count">234</span></div>
+        <div class="sb-item"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 12a3 3 0 0 0 3 3 3 3 0 0 0 3-3"/></svg>Conexiones</div>
+      </div>
+      <div class="sb-section">
+        <div class="sb-section-label">Business</div>
+        <div class="sb-item"><svg class="ic" viewBox="0 0 24 24"><path d="M3 7h18l-2 12H5L3 7z"/></svg>Pagos</div>
+        <div class="sb-item"><svg class="ic" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M4 10h16"/></svg>Cobros</div>
+        <div class="sb-item"><svg class="ic" viewBox="0 0 24 24"><path d="M6 4h12v6H6z"/><path d="M4 14h16v6H4z"/></svg>Contrapartes</div>
+      </div>
+      <div class="sb-bottom">
+        <div class="sb-user"><div class="sb-user-avatar">M</div><div><div class="sb-user-name">Mariel R.</div><div class="sb-user-sub">Tesote Finance</div></div></div>
+      </div>
+    </aside>
+
+    <!-- ─── MAIN ─────────────────────────────────────────────────────────── -->
+    <main class="main">
+      <div class="topbar">
+        <div class="topbar-entity">
+          <svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+          Todas las entidades · 2
+          <svg class="ic caret" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+        <div class="topbar-spacer"></div>
+        <button class="topbar-cta"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>Mover dinero</button>
+        <div class="topbar-icon" title="Notificaciones"><svg class="ic" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0v5l1.5 3h-15L6 13z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg></div>
+      </div>
+
+      <div class="content">
+
+        <!-- Page head -->
+        <div class="page-head">
+          <div>
+            <h1 class="greeting">Hola, Mariel <span class="live"><span class="live-dot"></span>En vivo</span></h1>
+            <div class="greeting-sub">Lunes 08-jun-2026 · tu posición en todos tus bancos, en tiempo real.</div>
+          </div>
+          <button class="btn"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>Personalizar</button>
+        </div>
+
+        <!-- ─── ROW 1: POSITION HERO (aggregated balances) ──────────────── -->
+        <div class="grid">
+          <div class="card">
+            <div class="pos-toprow">
+              <div>
+                <div class="pos-label">Posición total · USD consolidado</div>
+                <div class="pos-figure mono">$521.840<span class="cents">,17</span></div>
+                <div class="pos-deltas">
+                  <span class="lbl">Últimos 30 días</span>
+                  <span class="pos-delta-in"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg>$96.400</span>
+                  <span class="pos-delta-out"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>$63.210</span>
+                </div>
+              </div>
+              <div class="pos-spark">
+                <svg viewBox="0 0 170 56" preserveAspectRatio="none" aria-hidden="true">
+                  <defs><linearGradient id="sp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1661E2" stop-opacity=".30"/><stop offset="1" stop-color="#1661E2" stop-opacity="0"/></linearGradient></defs>
+                  <path d="M0,44 L14,42 L28,45 L42,36 L56,39 L70,30 L84,33 L98,23 L112,28 L126,17 L140,21 L154,11 L170,14 L170,56 L0,56 Z" fill="url(#sp)"/>
+                  <path d="M0,44 L14,42 L28,45 L42,36 L56,39 L70,30 L84,33 L98,23 L112,28 L126,17 L140,21 L154,11 L170,14" fill="none" stroke="#1661E2" stroke-width="1.8"/>
+                  <circle cx="170" cy="14" r="3" fill="#1661E2"/>
+                </svg>
+              </div>
+            </div>
+
+            <!-- USD / Bs split -->
+            <div class="pos-split">
+              <div class="pos-split-cell">
+                <div class="pss-label"><span class="pss-cur bc-usd">USD</span>Saldos en dólares</div>
+                <div class="pss-amt">$457.109<span style="font-size:13px;color:var(--text-3)">,00</span></div>
+                <div class="pss-sub">2 cuentas · 88% de la posición</div>
+              </div>
+              <div class="pos-split-cell">
+                <div class="pss-label"><span class="pss-cur bc-ves">VES</span>Saldos en bolívares</div>
+                <div class="pss-amt">Bs 36.161.741<span style="font-size:13px;color:var(--text-3)">,48</span></div>
+                <div class="pss-sub"><b>≈ $64.731</b> al BCV de hoy · 4 cuentas</div>
+              </div>
+            </div>
+
+            <!-- Δ decomposition -->
+            <div class="decomp">
+              <div class="decomp-cell">
+                <div class="decomp-k"><span class="decomp-dot" style="background:var(--text-3)"></span>Δ ayer</div>
+                <div class="decomp-v">−$3.411</div>
+              </div>
+              <div class="decomp-cell">
+                <div class="decomp-k"><span class="decomp-dot" style="background:var(--text-3)"></span>Flujos</div>
+                <div class="decomp-v">−$2.980</div>
+              </div>
+              <div class="decomp-cell">
+                <div class="decomp-k"><span class="decomp-dot" style="background:var(--orange)"></span>Devaluación</div>
+                <div class="decomp-v">−$431</div>
+              </div>
+              <div class="decomp-cell">
+                <div class="decomp-k"><span class="decomp-dot" style="background:var(--green)"></span>Sin explicar</div>
+                <div class="decomp-v">$0</div>
+              </div>
+            </div>
+            <div class="decomp-foot">
+              <svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+              El cambio de ayer cuadra al centavo: flujos + devaluación + sin explicar = Δ.
+            </div>
+          </div>
+        </div>
+
+        <!-- ─── ROW 2: por entidad | por banco ──────────────────────────── -->
+        <div class="grid g2">
+          <div class="card">
+            <div class="card-head">
+              <span class="card-title">Posición por entidad</span>
+              <span class="card-link">Ver Saldos<svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8"/></svg></span>
+            </div>
+            <div class="brk">
+              <div class="brk-row">
+                <div class="brk-name"><span class="ent-logo">TT</span><span style="min-width:0;overflow:hidden;"><span class="nm">Tesote Technologies Inc.</span><span class="sub">EE. UU. · 2 cuentas · USD</span></span></div>
+                <div class="brk-bar-track"><div class="brk-bar usd" style="width:100%"></div></div>
+                <div class="brk-amt"><span class="v">$457.109</span> <span class="pct">88%</span></div>
+              </div>
+              <div class="brk-row">
+                <div class="brk-name"><span class="ent-logo">TS</span><span style="min-width:0;overflow:hidden;"><span class="nm">TST Servicios y Consultoría</span><span class="sub">Venezuela · 4 cuentas · VES</span></span></div>
+                <div class="brk-bar-track"><div class="brk-bar ves" style="width:14%"></div></div>
+                <div class="brk-amt"><span class="v">$64.731</span> <span class="pct">12%</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <span class="card-title">Posición por banco</span>
+              <span class="card-link">Ver Saldos<svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8"/></svg></span>
+            </div>
+            <div class="brk">
+              <div class="brk-row"><div class="brk-name"><span class="bank-logo bl-mercury">ME</span><span style="min-width:0;overflow:hidden;"><span class="nm">Mercury · Checking</span><span class="sub">··4127 · USD</span></span></div><div class="brk-bar-track"><div class="brk-bar usd" style="width:100%"></div></div><div class="brk-amt"><span class="v">$312.400</span> <span class="pct">60%</span></div></div>
+              <div class="brk-row"><div class="brk-name"><span class="bank-logo bl-mercury">ME</span><span style="min-width:0;overflow:hidden;"><span class="nm">Mercury · Treasury</span><span class="sub">··8830 · USD</span></span></div><div class="brk-bar-track"><div class="brk-bar usd" style="width:46%"></div></div><div class="brk-amt"><span class="v">$144.709</span> <span class="pct">28%</span></div></div>
+              <div class="brk-row"><div class="brk-name"><span class="bank-logo bl-bnc">BN</span><span style="min-width:0;overflow:hidden;"><span class="nm">BNC · Operaciones</span><span class="sub">··5678 · VES</span></span></div><div class="brk-bar-track"><div class="brk-bar ves" style="width:14%"></div></div><div class="brk-amt"><span class="v">$44.522</span> <span class="pct">9%</span></div></div>
+              <div class="brk-row"><div class="brk-name"><span class="bank-logo bl-mercantil">M</span><span style="min-width:0;overflow:hidden;"><span class="nm">Mercantil · Nómina</span><span class="sub">··1234 · VES</span></span></div><div class="brk-bar-track"><div class="brk-bar ves" style="width:5%"></div></div><div class="brk-amt"><span class="v">$14.857</span> <span class="pct">3%</span></div></div>
+              <div class="brk-row"><div class="brk-name"><span class="bank-logo bl-banesco">B</span><span style="min-width:0;overflow:hidden;"><span class="nm">Banesco · Ahorro</span><span class="sub">··4421 · VES</span></span></div><div class="brk-bar-track"><div class="brk-bar ves" style="width:2%"></div></div><div class="brk-amt"><span class="v">$4.421</span> <span class="pct">1%</span></div></div>
+              <div class="brk-row"><div class="brk-name"><span class="bank-logo bl-bancamiga">BA</span><span style="min-width:0;overflow:hidden;"><span class="nm">Bancamiga · Corriente</span><span class="sub">··9012 · VES</span></span></div><div class="brk-bar-track"><div class="brk-bar ves" style="width:1%"></div></div><div class="brk-amt"><span class="v">$931</span> <span class="pct">0%</span></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ─── ROW 3: in/out · categorización · nuevo ──────────────────── -->
+        <div class="grid g3">
+          <div class="card">
+            <div class="card-head"><span class="card-title">Entró / salió · semana</span><span class="card-menu"><svg class="ic ic-sm" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></span></div>
+            <div class="flow-figs">
+              <div class="flow-fig"><div class="v in">$96.400</div><div class="k">Entró</div></div>
+              <div class="flow-fig"><div class="v out">$63.210</div><div class="k">Salió</div></div>
+            </div>
+            <div class="flow-net">Neto <b>+$33.190</b> · 312 movimientos</div>
+            <div class="flow-bars">
+              <div class="flow-bar-day"><div class="flow-bar in" style="height:46%"></div><div class="flow-bar out" style="height:30%"></div></div>
+              <div class="flow-bar-day"><div class="flow-bar in" style="height:62%"></div><div class="flow-bar out" style="height:24%"></div></div>
+              <div class="flow-bar-day"><div class="flow-bar in" style="height:30%"></div><div class="flow-bar out" style="height:52%"></div></div>
+              <div class="flow-bar-day"><div class="flow-bar in" style="height:80%"></div><div class="flow-bar out" style="height:38%"></div></div>
+              <div class="flow-bar-day"><div class="flow-bar in" style="height:44%"></div><div class="flow-bar out" style="height:70%"></div></div>
+              <div class="flow-bar-day"><div class="flow-bar in" style="height:18%"></div><div class="flow-bar out" style="height:14%"></div></div>
+              <div class="flow-bar-day"><div class="flow-bar in" style="height:10%"></div><div class="flow-bar out" style="height:8%"></div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><span class="card-title">Categorización</span><span class="card-menu"><svg class="ic ic-sm" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></span></div>
+            <div class="cat-pct-row"><span class="cat-pct">94%</span><span class="cat-pct-sub">de 234 movimientos<br>categorizados</span></div>
+            <div class="progress"><div class="progress-fill" style="width:94%"></div></div>
+            <div class="cat-foot"><svg class="ic ic-sm" viewBox="0 0 24 24" style="color:var(--yellow)"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/></svg><span><b style="font-weight:600;color:var(--text)">14</b> sin categorizar · <a>Revisar</a></span></div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><span class="card-title">Nuevo en tus cuentas</span><span class="card-link">Ver todo</span></div>
+            <div class="new-list">
+              <div class="new-row"><div class="new-main"><div class="new-name">Lunour LLC</div><div class="new-meta">Mercury ··4127 · primera vez</div></div><span class="pill new"><span class="pill-dot"></span>Contraparte</span></div>
+              <div class="new-row"><div class="new-main"><div class="new-name">Datadog, Inc.</div><div class="new-meta">Mercury ··4127 · primera vez</div></div><span class="pill new"><span class="pill-dot"></span>Contraparte</span></div>
+              <div class="new-row"><div class="new-main"><div class="new-name">Débito directo recurrente</div><div class="new-meta">BNC ··5678 · tipo nuevo</div></div><span class="pill type"><span class="pill-dot"></span>Tipo</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ─── ROW 4: cash flow by category | weekly summary ───────────── -->
+        <div class="grid g-cash">
+          <div class="card">
+            <div class="card-head">
+              <span class="card-title">Flujo de caja por categoría · este mes</span>
+              <span class="card-link">Ver reporte<svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8"/></svg></span>
+            </div>
+
+            <div class="cf-sub">Entradas <span class="tot in">+$90.600</span></div>
+            <div class="cf-list">
+              <div class="cf-row"><span class="cf-name">Cobros de clientes</span><span class="cf-track"><span class="cf-fill" style="width:86%;background:#1A8C5B"></span></span><span class="cf-amt in">+$78.200</span></div>
+              <div class="cf-row"><span class="cf-name">Reembolsos / otros</span><span class="cf-track"><span class="cf-fill" style="width:14%;background:#5FAE86"></span></span><span class="cf-amt in">+$12.400</span></div>
+            </div>
+
+            <div class="cf-divider"></div>
+
+            <div class="cf-sub">Salidas <span class="tot">−$91.980</span></div>
+            <div class="cf-list">
+              <div class="cf-row"><span class="cf-name">Nómina</span><span class="cf-track"><span class="cf-fill" style="width:100%;background:#2D6FB8"></span></span><span class="cf-amt">−$31.400</span></div>
+              <div class="cf-row"><span class="cf-name">Infraestructura</span><span class="cf-track"><span class="cf-fill" style="width:64%;background:#3B7CF5"></span></span><span class="cf-amt">−$20.100</span></div>
+              <div class="cf-row"><span class="cf-name">Proveedores</span><span class="cf-track"><span class="cf-fill" style="width:47%;background:#6FA8DC"></span></span><span class="cf-amt">−$14.850</span></div>
+              <div class="cf-row"><span class="cf-name">Impuestos</span><span class="cf-track"><span class="cf-fill" style="width:30%;background:#CC9500"></span></span><span class="cf-amt">−$9.320</span></div>
+              <div class="cf-row"><span class="cf-name">Servicios bancarios</span><span class="cf-track"><span class="cf-fill" style="width:18%;background:#A83E00"></span></span><span class="cf-amt">−$5.610</span></div>
+              <div class="cf-row"><span class="cf-name">Otras</span><span class="cf-track"><span class="cf-fill" style="width:34%;background:var(--text-4)"></span></span><span class="cf-amt">−$10.700</span></div>
+            </div>
+
+            <div class="cf-net">
+              <span class="cf-net-label">Flujo neto del mes</span>
+              <span class="cf-net-val pos">−$1.380</span>
+            </div>
+          </div>
+
+          <div class="card summary">
+            <div class="card-head"><span class="summary-title"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8z"/><path d="M19 14l.7 1.8L21.5 16.5l-1.8.7L19 19l-.7-1.8L16.5 16.5l1.8-.7z"/></svg>Resumen de la semana</span><span class="summary-badge">Tesote IA</span></div>
+            <div class="summary-body" style="grid-template-columns:1fr;">
+              <p class="summary-lead">Semana tranquila en caja. Entró <b>$96.400</b> y salió <b>$63.210</b> — cerraste <b>+$33.190 neto</b>. La devaluación te costó <b>$431</b> en saldos en bolívares, casi todo en BNC.</p>
+              <div class="summary-feed">
+                <div class="feed-item up"><svg class="ic-sm" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span>El cobro más grande fue <b>POLAR · $8.420</b>, conciliado automáticamente.</span></div>
+                <div class="feed-item fx"><svg class="ic-sm" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span>El <b>BCV subió 0,8%</b> esta semana (554,43 → 558,64). Tus Bs valen menos en USD.</span></div>
+                <div class="feed-item new"><svg class="ic-sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span><b>2 contrapartes nuevas</b>: Lunour LLC y Datadog, ambas salidas.</span></div>
+                <div class="feed-item warn"><svg class="ic-sm" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><span><b>Bancamiga</b> lleva 26 h sin sincronizar — revisá la conexión.</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ─── ROW 5: top movimientos ──────────────────────────────────── -->
+        <div class="grid">
+          <div class="card">
+            <div class="card-head">
+              <span class="card-title">Top movimientos · 30 días</span>
+              <span class="card-link">Ver Movimientos<svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8"/></svg></span>
+            </div>
+            <div class="mov-list" style="display:grid;grid-template-columns:1fr 1fr;column-gap:32px;">
+              <div class="mov-row"><span class="mov-rank">1</span><div class="mov-main"><div class="mov-cp">POLAR · Cervecería</div><div class="mov-meta">Banesco ··4421 · 06-jun · cobro</div></div><div class="mov-amt credit"><span class="int">+$8.420</span><span class="dec">,00</span></div></div>
+              <div class="mov-row"><span class="mov-rank">2</span><div class="mov-main"><div class="mov-cp">CAPCA, C.A.</div><div class="mov-meta">BNC ··5678 · 05-jun · cobro</div></div><div class="mov-amt credit"><div><span class="int">+Bs 5.000.000</span></div><div class="mov-amt-usd">≈ +$8.950</div></div></div>
+              <div class="mov-row"><span class="mov-rank">3</span><div class="mov-main"><div class="mov-cp">Gusto, Inc.</div><div class="mov-meta">Mercury ··4127 · 03-jun · nómina</div></div><div class="mov-amt"><span class="int">−$5.871</span><span class="dec">,00</span></div></div>
+              <div class="mov-row"><span class="mov-rank">4</span><div class="mov-main"><div class="mov-cp">Amazon Web Services</div><div class="mov-meta">Mercury ··4127 · 02-jun · infraestructura</div></div><div class="mov-amt"><span class="int">−$3.200</span><span class="dec">,00</span></div></div>
+              <div class="mov-row"><span class="mov-rank">5</span><div class="mov-main"><div class="mov-cp">Lunour LLC</div><div class="mov-meta">Mercury ··4127 · 01-jun · sin categorizar</div></div><div class="mov-amt"><span class="int">−$2.500</span><span class="dec">,00</span></div></div>
+              <div class="mov-row"><span class="mov-rank">6</span><div class="mov-main"><div class="mov-cp">Tesorería Nacional — IVA</div><div class="mov-meta">Banesco ··4421 · 31-may · impuestos</div></div><div class="mov-amt"><div><span class="int">−Bs 480.000</span></div><div class="mov-amt-usd">≈ −$859</div></div></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</body>
+</html>

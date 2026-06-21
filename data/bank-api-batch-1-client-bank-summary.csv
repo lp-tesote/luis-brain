@@ -1,0 +1,312 @@
+client,client_entities_total,bank,entities_at_bank,accounts_at_bank,active_accounts_at_bank,tx_total,tx_last_90d
+Farmacias San Ignacio,74,BBVA,73,93,84,"467,622","275,038"
+Grupo Abreu,23,BBVA,23,44,44,"55,149","10,376"
+"MangoCenter, C.A.",1,BBVA,1,3,3,"35,215","9,635"
+FARMABIEN,1,BBVA,1,3,3,"9,351","8,342"
+NETUNO,3,BBVA,1,12,11,"29,843","7,559"
+APB GROUP,11,BBVA,11,22,18,"11,900","7,123"
+Cines unidos,2,BBVA,2,7,6,"76,457","7,114"
+"Corporación JSL, C.A.",1,BBVA,1,9,3,"24,680","6,475"
+Protinal,12,BBVA,6,12,6,"6,567","5,321"
+AVICOLA LAS TUNAS,2,BBVA,2,4,3,"9,804","5,080"
+"Alimentos Alvarigua, c.a.",1,BBVA,1,9,5,"19,719","5,020"
+alimentosmunchy,1,BBVA,1,4,3,"24,295","4,748"
+Grupo Ama de casa,3,BBVA,3,10,8,"38,936","4,395"
+Grupo Mimesa,3,BBVA,3,9,8,"32,182","4,241"
+Centro Medico de Oncologia,1,BBVA,1,1,1,"7,091","3,399"
+Asoportuguesa,5,BBVA,4,11,11,"14,061","3,236"
+Gruporica,2,BBVA,2,10,10,"8,194","3,206"
+PASTCA,1,BBVA,1,3,3,"46,853","2,921"
+Empresas Tapa Amarilla,2,BBVA,1,5,4,"9,187","2,499"
+CORPORACION BEL,17,BBVA,2,3,3,"4,090","2,423"
+Maxy Sweet,5,BBVA,2,3,3,"5,240","2,381"
+Grupo Landa,8,BBVA,4,8,7,"15,520","2,201"
+GRUPO MOLINA VIAJES ,2,BBVA,2,3,2,"8,579","2,195"
+INQUIPORT,1,BBVA,1,7,3,"2,227","2,146"
+Covencaucho,1,BBVA,1,17,14,"2,147","2,144"
+MOTASA,4,BBVA,3,5,3,"12,062","2,002"
+Casagri de Lara ,1,BBVA,1,5,3,"5,426","1,967"
+ALIMENTOS LPRADO,2,BBVA,1,2,2,"10,998","1,852"
+"Estar Seguros, S.A.",1,BBVA,1,2,2,"10,409","1,716"
+GRUPO DINAMO,5,BBVA,5,9,8,"11,092","1,709"
+Laboratorios Elmor,3,BBVA,3,4,4,"14,782","1,707"
+MARCAS PROPIAS,2,BBVA,2,4,3,"2,242","1,692"
+Marambio Rivillo Perez Pineda,3,BBVA,3,5,4,"16,676","1,644"
+CAMOR INTERNACIONAL,9,BBVA,3,6,3,"3,539","1,614"
+EUROMERCADO C.A.,2,BBVA,2,5,4,"1,626","1,395"
+Grupo Maralac,4,BBVA,3,4,4,"5,220","1,298"
+Grupo Leiros,13,BBVA,8,10,10,"6,205","1,244"
+suvica,3,BBVA,3,3,3,"4,756","1,199"
+Cencozotti,1,BBVA,1,2,1,"2,241","1,070"
+Megalabs,1,BBVA,1,5,3,"3,383",926
+SEGVEN,1,BBVA,1,4,4,"2,707",908
+Bandecorp,7,BBVA,1,3,3,"2,217",899
+Grupo Ramvall,5,BBVA,1,2,2,"1,867",879
+Grupo Quo Vadis,1,BBVA,1,4,4,"4,556",853
+Pharmakum,2,BBVA,2,4,3,"3,841",847
+Procesadora Marsoca,3,BBVA,1,3,2,"10,656",836
+TORONDOY,2,BBVA,1,5,3,"3,422",740
+Valles del Turbio,2,BBVA,1,5,5,"3,448",716
+Tesote Ventas,1,BBVA,1,5,5,928,714
+Laboratorios Biotech ,2,BBVA,2,3,3,"1,521",525
+Arawak,1,BBVA,1,2,2,503,503
+Capitalfoods,2,BBVA,1,2,2,"3,015",468
+"TAMAYO & CIA.,S.A.",2,BBVA,1,2,2,"3,051",426
+Grupo cashea,1,BBVA,1,5,4,"2,509",414
+Grupo Del Este ,6,BBVA,6,8,6,"2,245",376
+Alimentos Global,5,BBVA,2,2,1,"1,219",318
+KAIZEN,10,BBVA,2,2,2,249,225
+Comercializadora Tiares CA,1,BBVA,1,4,2,186,184
+Tesote Developer,1,BBVA,0,5,3,149,149
+GRUPO MAR,1,BBVA,1,1,1,616,141
+FIVENCA,5,BBVA,3,6,6,253,48
+Real Seguros S.A.,1,BBVA,1,4,3,61,18
+Canguro Venezuela,11,BBVA,1,4,2,94,6
+FLETY,2,BBVA,1,2,1,29,4
+Tesote Finance,1,BBVA,1,2,1,32,4
+"Distribuidora Inmarket, C.A.",1,BBVA,1,2,0,39,0
+Grupo Avila,5,BBVA,4,5,0,239,0
+GRUPO FUTURA,11,BBVA,10,30,0,"16,540",0
+CONSORCIO MEDISOLUTIONS,7,BBVA,4,20,0,777,0
+corpoeureka,1,BBVA,0,2,0,17,0
+Tesote Technologies,1,BBVA,1,2,0,6,0
+CALA,2,BBVA,2,4,0,"2,399",0
+EWAY,1,BBVA,1,1,0,1,0
+"Supermercados Luxor, C.A.",10,BBVA,5,5,0,"1,065",0
+Grupo Abreu,23,Banesco,19,51,36,"917,835","167,913"
+NETUNO,3,Banesco,1,8,8,"492,829","165,055"
+Supermercados Rio Vida,3,Banesco,3,7,5,"332,579","117,208"
+Farmacias San Ignacio,74,Banesco,59,71,57,"220,996","110,143"
+CAMOR INTERNACIONAL,9,Banesco,8,41,32,"222,222","61,511"
+Canguro Venezuela,11,Banesco,10,12,10,"135,352","54,307"
+Grupo UP,3,Banesco,3,15,14,"147,762","38,943"
+FARMABIEN,1,Banesco,1,6,4,"25,832","24,116"
+Cines unidos,2,Banesco,2,8,7,"90,950","18,769"
+MARCAS PROPIAS,2,Banesco,2,4,3,"30,782","17,652"
+Grupo cashea,1,Banesco,1,4,3,"28,825","13,676"
+INVERSIONES PAD 21,8,Banesco,6,13,9,"63,845","13,245"
+Grupo Leiros,13,Banesco,13,15,15,"51,611","10,454"
+"Alimentos Alvarigua, c.a.",1,Banesco,1,3,3,"39,858","9,665"
+ALIMENTOS LPRADO,2,Banesco,2,4,2,"55,262","8,673"
+COSEIMPA,2,Banesco,2,4,4,"37,827","7,977"
+Maxy Sweet,5,Banesco,5,8,7,"15,399","7,681"
+alimentosmunchy,1,Banesco,1,2,1,"29,624","6,912"
+Soluciones Tu Gruero,1,Banesco,1,2,1,"20,194","6,049"
+EOODI,4,Banesco,4,13,12,"21,883","5,785"
+Yummy ,3,Banesco,2,5,3,"14,152","5,736"
+"MangoCenter, C.A.",1,Banesco,1,1,1,"17,641","5,616"
+PLAN B,23,Banesco,15,18,13,"27,595","5,586"
+Grupo Landa,8,Banesco,5,10,5,"25,872","5,556"
+Alimentos Global,5,Banesco,4,15,9,"13,969","5,376"
+CORPORACION BEL,17,Banesco,17,29,9,"12,651","4,583"
+Empresas Tapa Amarilla,2,Banesco,2,2,2,"16,806","4,569"
+"Estar Seguros, S.A.",1,Banesco,1,1,1,"26,479","4,457"
+Grupo Nueve Once,2,Banesco,2,4,2,"27,566","4,447"
+Cruz Roja,1,Banesco,1,11,8,"8,103","4,355"
+PINECO,4,Banesco,4,4,4,"14,868","4,073"
+APB GROUP,11,Banesco,10,22,10,"6,135","3,930"
+Grupo Del Este ,6,Banesco,4,4,4,"12,562","3,882"
+PASTCA,1,Banesco,1,2,1,"23,987","3,750"
+Grupo Mimesa,3,Banesco,3,9,3,"37,234","3,614"
+Megalabs,1,Banesco,1,3,1,"11,344","3,562"
+Grupo Maralac,4,Banesco,4,5,4,"21,841","3,384"
+Capitalfoods,2,Banesco,2,5,3,"10,850","3,171"
+suvica,3,Banesco,2,4,2,"11,206","3,092"
+Casagri de Lara ,1,Banesco,1,2,2,"7,705","3,036"
+Grupo Ramvall,5,Banesco,5,6,6,"6,072","2,866"
+Bandecorp,7,Banesco,2,3,2,"8,006","2,832"
+GRUPO DINAMO,5,Banesco,3,7,3,"14,014","2,503"
+VIVA SUPERCENTRO,1,Banesco,1,3,1,"11,140","2,478"
+Asoportuguesa,5,Banesco,3,6,4,"7,185","2,435"
+Centro Medico de Oncologia,1,Banesco,1,1,1,"4,700","2,144"
+Grupo NSM,14,Banesco,5,6,5,"9,881","2,097"
+"Corporación JSL, C.A.",1,Banesco,1,4,2,"28,017","1,934"
+Noordzee Fantasie Luxury Group,1,Banesco,1,2,1,"2,429","1,911"
+Procesadora Marsoca,3,Banesco,2,2,2,"11,352","1,880"
+Grupo traki,1,Banesco,1,4,1,"10,914","1,855"
+TORONDOY,2,Banesco,1,3,2,"7,852","1,813"
+Comercializadora Tiares CA,1,Banesco,1,3,1,"6,244","1,812"
+Tealca,1,Banesco,1,3,3,"18,860","1,749"
+Grupo Ama de casa,3,Banesco,1,6,5,"13,160","1,602"
+Grupo Quo Vadis,1,Banesco,1,2,2,"9,574","1,358"
+Laboratorios Biotech ,2,Banesco,1,1,1,"3,001","1,236"
+Protinal,12,Banesco,1,2,1,"1,090","1,089"
+"TAMAYO & CIA.,S.A.",2,Banesco,1,1,1,"6,950",920
+Disbattery Lubricantes S.A,1,Banesco,1,2,2,"7,621",883
+Arawak,1,Banesco,1,2,1,"2,983",878
+Besser ,1,Banesco,1,2,2,835,835
+EUROMERCADO C.A.,2,Banesco,2,9,1,917,815
+herramientas sbdk,1,Banesco,1,2,1,804,803
+FLETY,2,Banesco,2,4,2,"5,644",755
+Grupo Velutini,9,Banesco,9,25,16,"11,582",745
+Cencozotti,1,Banesco,1,2,2,"3,596",744
+Sizuca,1,Banesco,1,2,2,"3,338",711
+SEGVEN,1,Banesco,1,2,1,"1,373",711
+GRUPO MOLINA VIAJES ,2,Banesco,1,2,1,"2,393",613
+AVICOLA LAS TUNAS,2,Banesco,1,3,2,"3,699",570
+Real Seguros S.A.,1,Banesco,1,2,1,"1,302",524
+Agroavicola del Llano,1,Banesco,1,2,1,491,490
+Crecer,2,Banesco,2,6,6,"24,813",435
+Grupo Parawa ,4,Banesco,2,4,2,"4,590",425
+La Sante,1,Banesco,1,2,1,"2,971",370
+GRUPO BAZZI,2,Banesco,2,4,2,"3,067",355
+Corporación Tu Aliado Digital ,3,Banesco,1,1,1,212,212
+Sanu Corp,2,Banesco,1,2,1,"3,075",203
+Socado Coffee Bar,1,Banesco,1,2,1,"3,774",182
+Valles del Turbio,2,Banesco,1,2,1,945,175
+Tesote Ventas,1,Banesco,1,2,1,95,94
+Somos Jomi C.A,1,Banesco,1,2,1,249,90
+Laboratorios Elmor,3,Banesco,1,3,1,110,54
+Marambio Rivillo Perez Pineda,3,Banesco,1,2,1,425,40
+Grupo Gipsy,16,Banesco,1,1,1,327,33
+Tendencia Virtual,1,Banesco,1,2,1,"3,558",17
+FIVENCA,5,Banesco,1,2,2,93,17
+Tesote Developer,1,Banesco,1,6,1,164,12
+GRUPO FUTURA,11,Banesco,2,4,0,91,0
+Koopex,1,Banesco,1,1,0,"2,461",0
+EWAY,1,Banesco,1,2,0,183,0
+Grupo Canaima,176,Banesco,176,178,0,"37,519",0
+Hispana de Seguros,1,Banesco,1,1,0,"67,436",0
+Grupo Avila,5,Banesco,1,1,0,"3,802",0
+Granos Sagrados ,1,Banesco,1,1,0,139,0
+ANV,1,Banesco,1,2,0,696,0
+Dimassi,1,Banesco,1,2,0,"3,567",0
+CONSORCIO MEDISOLUTIONS,7,Banesco,5,10,0,"5,843",0
+NETUNO,3,Mercantil,3,10,10,"859,713","205,893"
+FARMABIEN,1,Mercantil,1,13,12,"113,759","97,627"
+Gruporica,2,Mercantil,2,33,20,"134,414","58,321"
+Cines unidos,2,Mercantil,2,6,4,"337,095","29,930"
+CAMOR INTERNACIONAL,9,Mercantil,6,10,6,"116,174","29,550"
+INVERSIONES PAD 21,8,Mercantil,5,10,5,"70,365","25,948"
+"Estar Seguros, S.A.",1,Mercantil,1,2,2,"107,401","19,280"
+Supermercados Rio Vida,3,Mercantil,1,3,2,"152,919","10,600"
+Protinal,12,Mercantil,11,24,13,"11,166","9,479"
+COSEIMPA,2,Mercantil,2,23,9,"26,563","7,338"
+KAIZEN,10,Mercantil,10,10,10,"37,835","6,956"
+AVICOLA LAS TUNAS,2,Mercantil,2,5,4,"16,638","6,951"
+Grupo Gipsy,16,Mercantil,16,35,20,"56,656","6,746"
+Grupo Landa,8,Mercantil,8,21,16,"53,709","6,265"
+Procesadora Marsoca,3,Mercantil,2,3,2,"20,347","5,787"
+Corporación Angles,1,Mercantil,1,12,10,"21,725","5,676"
+Tealca,1,Mercantil,1,3,3,"302,538","4,793"
+Socado Coffee Bar,1,Mercantil,1,10,7,"9,674","4,593"
+"Corporación JSL, C.A.",1,Mercantil,1,4,2,"7,908","3,664"
+Maxy Sweet,5,Mercantil,4,10,4,"4,146","3,405"
+"Alimentos Alvarigua, c.a.",1,Mercantil,1,2,1,"9,511","3,295"
+Comercializadora Tiares CA,1,Mercantil,1,5,5,"9,108","3,204"
+Corporación Tu Aliado Digital ,3,Mercantil,3,11,4,"3,202","3,195"
+VIVA SUPERCENTRO,1,Mercantil,1,3,2,"13,455","2,910"
+alimentosmunchy,1,Mercantil,1,3,2,"11,722","2,809"
+MARCAS PROPIAS,2,Mercantil,2,13,9,"2,496","2,492"
+Casagri de Lara ,1,Mercantil,1,7,3,"6,650","2,402"
+ALIMENTOS LPRADO,2,Mercantil,2,3,2,"13,017","2,348"
+PASTCA,1,Mercantil,1,2,2,"2,140","2,140"
+Centro Medico de Oncologia,1,Mercantil,1,2,1,"4,258","1,988"
+APB GROUP,11,Mercantil,8,22,7,"2,372","1,962"
+MOTASA,4,Mercantil,3,5,4,"5,553","1,915"
+ARMI,1,Mercantil,1,2,2,"8,484","1,855"
+Grupo Quo Vadis,1,Mercantil,1,3,3,"4,400","1,662"
+SEGVEN,1,Mercantil,1,3,3,"4,293","1,585"
+Laboratorios Biotech ,2,Mercantil,1,3,3,"3,942","1,439"
+Asoportuguesa,5,Mercantil,3,11,3,"3,980","1,398"
+Sizuca,1,Mercantil,1,5,4,"9,500","1,317"
+GRUPO MOLINA VIAJES ,2,Mercantil,2,6,5,"6,377","1,241"
+Grupo Ramvall,5,Mercantil,4,8,5,"3,944","1,129"
+Grupo Vertice ,10,Mercantil,10,15,10,"1,124","1,119"
+Valles del Turbio,2,Mercantil,2,5,3,"6,446","1,028"
+Cencozotti,1,Mercantil,1,3,3,"6,408","1,020"
+Prevaler,1,Mercantil,1,3,1,998,996
+Arawak,1,Mercantil,1,1,1,"2,399",961
+Pharmakum,2,Mercantil,2,4,3,"3,338",901
+suvica,3,Mercantil,1,3,1,"2,097",886
+LABORATORIOS KIMICEG C.A,1,Mercantil,1,1,1,"3,057",871
+Capitalfoods,2,Mercantil,2,5,3,"1,788",829
+Megalabs,1,Mercantil,1,2,1,"2,830",825
+Laboratorios Elmor,3,Mercantil,1,2,2,"7,452",801
+Tesote Ventas,1,Mercantil,1,2,1,846,766
+Grupo Leiros,13,Mercantil,1,1,1,688,646
+Alimentos Global,5,Mercantil,2,2,2,"1,339",478
+"MangoCenter, C.A.",1,Mercantil,1,1,1,"1,441",426
+"TAMAYO & CIA.,S.A.",2,Mercantil,2,3,3,"2,726",422
+Grupo Ama de casa,3,Mercantil,1,3,1,"6,066",397
+Grupo Nueve Once,2,Mercantil,1,2,1,"2,243",385
+Grupo Del Este ,6,Mercantil,3,3,3,"1,883",370
+Curiara,1,Mercantil,1,1,1,"5,074",351
+Yummy ,3,Mercantil,2,5,2,"2,134",335
+FIVENCA,5,Mercantil,4,6,6,"1,895",330
+Bandecorp,7,Mercantil,1,2,2,895,299
+Agroavicola del Llano,1,Mercantil,1,2,1,266,265
+Grupo cashea,1,Mercantil,1,5,3,"2,069",242
+Grupo Maralac,4,Mercantil,1,1,1,488,222
+GRUPO DINAMO,5,Mercantil,3,6,3,"1,502",207
+TORONDOY,2,Mercantil,2,7,2,"1,225",184
+Cruz Roja,1,Mercantil,1,9,4,412,182
+PINECO,4,Mercantil,1,1,1,508,126
+Canguro Venezuela,11,Mercantil,1,3,1,"42,518",123
+Sanu Corp,2,Mercantil,2,5,1,169,46
+Noordzee Fantasie Luxury Group,1,Mercantil,1,2,2,41,41
+Real Seguros S.A.,1,Mercantil,1,1,1,50,7
+GRUPO FUTURA,11,Mercantil,5,48,0,"8,660",0
+CONSORCIO MEDISOLUTIONS,7,Mercantil,6,19,0,"1,067",0
+CALA,2,Mercantil,1,3,0,"1,341",0
+Hispana de Seguros,1,Mercantil,1,1,0,"12,108",0
+Ridery,1,Mercantil,1,1,0,40,0
+ROBUST TIRES Finanzas Corporativas,1,Mercantil,1,1,0,910,0
+Grupo Parawa ,4,Mercantil,4,8,0,"24,563",0
+EUROMERCADO C.A.,2,Mercantil,1,1,0,1,0
+"Supermercados Luxor, C.A.",10,Mercantil,9,19,0,"41,810",0
+GRUPO MAR,1,Mercantil,1,1,0,642,0
+goliiive,1,Mercantil,1,6,0,"1,284",0
+Tesote Developer,1,Mercantil,1,7,0,227,0
+Grupoforum,26,Mercantil,26,32,0,"15,758",0
+Victum Legal,1,Mercantil,1,1,0,722,0
+Grupo Canaima,176,Mercantil,1,1,0,462,0
+Welf,1,Mercantil,1,2,0,78,0
+Grupo Abreu,23,Bancaribe,19,31,31,"1,212,383","155,422"
+NETUNO,3,Bancaribe,1,7,4,"13,241","10,820"
+Canguro Venezuela,11,Bancaribe,3,6,4,"19,270","8,533"
+Grupo NSM,14,Bancaribe,13,20,15,"17,156","5,040"
+Supermercados Rio Vida,3,Bancaribe,1,3,2,"28,449","4,583"
+Crixto Venezuela,1,Bancaribe,1,2,1,"4,083","3,773"
+Tealca,1,Bancaribe,1,2,2,"40,181","2,992"
+corpoeureka,1,Bancaribe,1,5,3,"8,183","2,191"
+PLAN B,23,Bancaribe,22,22,22,"8,297","1,701"
+Real Seguros S.A.,1,Bancaribe,1,4,4,"5,157","1,687"
+SEGVEN,1,Bancaribe,1,11,10,"4,673","1,491"
+Bandecorp,7,Bancaribe,7,10,8,"3,898","1,347"
+INVERSIONES PAD 21,8,Bancaribe,5,18,10,"11,441",931
+Grupo Landa,8,Bancaribe,4,9,8,"7,718",795
+APB GROUP,11,Bancaribe,8,16,8,"1,189",671
+Asoportuguesa,5,Bancaribe,3,8,5,"2,413",614
+alimentosmunchy,1,Bancaribe,1,3,2,"2,068",535
+PASTCA,1,Bancaribe,1,3,2,"3,508",507
+Centro Medico de Oncologia,1,Bancaribe,1,2,1,961,506
+"Alimentos Alvarigua, c.a.",1,Bancaribe,1,2,1,"2,174",452
+Capitalfoods,2,Bancaribe,2,4,2,"1,218",362
+Procesadora Marsoca,3,Bancaribe,3,8,4,"3,545",357
+Corporación Tu Aliado Digital ,3,Bancaribe,1,3,2,340,339
+Laboratorios Elmor,3,Bancaribe,1,2,2,"3,786",325
+CORPORACION BEL,17,Bancaribe,1,2,2,486,264
+Casagri de Lara ,1,Bancaribe,1,2,2,685,224
+Grupo Quo Vadis,1,Bancaribe,1,2,2,816,208
+LABORATORIOS KIMICEG C.A,1,Bancaribe,1,2,2,675,193
+ALIMENTOS LPRADO,2,Bancaribe,1,1,1,557,159
+COSEIMPA,2,Bancaribe,2,3,2,757,159
+Valles del Turbio,2,Bancaribe,1,3,2,892,114
+Grupo Mimesa,3,Bancaribe,1,3,2,90,89
+AVICOLA LAS TUNAS,2,Bancaribe,1,2,2,"1,225",88
+TORONDOY,2,Bancaribe,1,3,2,811,83
+Tesote Ventas,1,Bancaribe,1,2,1,788,69
+INQUIPORT,1,Bancaribe,1,2,1,61,60
+Grupo cashea,1,Bancaribe,1,3,2,638,57
+"TAMAYO & CIA.,S.A.",2,Bancaribe,1,2,2,348,49
+Protinal,12,Bancaribe,2,4,1,50,47
+Yummy ,3,Bancaribe,3,6,3,550,28
+FIVENCA,5,Bancaribe,3,3,3,116,27
+Grupo Ama de casa,3,Bancaribe,1,1,1,145,13
+Pharmakum,2,Bancaribe,1,2,1,28,8
+Dimassi,1,Bancaribe,1,2,0,16,0
+herramientas sbdk,1,Bancaribe,1,2,0,2,0
+FLETY,2,Bancaribe,1,2,0,141,0
+La Sante,1,Bancaribe,1,1,0,47,0
+Curiara,1,Bancaribe,1,1,0,"3,123",0

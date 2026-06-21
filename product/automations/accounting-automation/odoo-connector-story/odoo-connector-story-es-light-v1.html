@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dos sistemas, una sola verdad — cómo funciona el conector Tesote ↔ Odoo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fafbfd;
+    --surface: #ffffff;
+    --surface-2: #f1f4f9;
+    --line: rgba(13,17,23,0.10);
+    --text: #0d1117;
+    --text-dim: #4a5260;
+    --text-faint: #97a1ae;
+    --blue: #1661e2;
+    --blue-soft: #4d8dff;
+    --blue-dim: rgba(22,97,226,0.10);
+    --dark: #0d1117;
+    --dark-text: #f2f5f9;
+    --serif: 'Instrument Serif', Georgia, serif;
+    --sans: 'Inter', -apple-system, sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  ::selection { background: var(--blue); color: #fff; }
+
+  /* ---------- progress ---------- */
+  #progress {
+    position: fixed; top: 0; left: 0; height: 2px; width: 0%;
+    background: var(--blue); z-index: 100;
+    transition: width 0.1s linear;
+  }
+
+  /* ---------- shared ---------- */
+  section { position: relative; padding: 16vh 24px; }
+  .wrap { max-width: 680px; margin: 0 auto; }
+  .wrap-wide { max-width: 920px; margin: 0 auto; }
+
+  .kicker {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--blue); margin-bottom: 28px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .kicker::after { content: ''; height: 1px; flex: 1; background: var(--line); }
+
+  h2 {
+    font-family: var(--serif); font-weight: 400; font-size: clamp(34px, 5vw, 52px);
+    line-height: 1.12; letter-spacing: -0.01em; margin-bottom: 28px; color: var(--text);
+  }
+  h2 em { font-style: italic; color: var(--blue); }
+  p { color: var(--text-dim); margin-bottom: 22px; }
+  p strong { color: var(--text); font-weight: 500; }
+  .note { font-family: var(--mono); font-size: 12.5px; color: var(--text-faint); line-height: 1.7; }
+
+  /* reveal */
+  .rv { opacity: 0; transform: translateY(28px); transition: opacity 0.9s cubic-bezier(.2,.7,.3,1), transform 0.9s cubic-bezier(.2,.7,.3,1); }
+  .rv.in { opacity: 1; transform: none; }
+  .rv.d1 { transition-delay: 0.12s; } .rv.d2 { transition-delay: 0.24s; }
+  .rv.d3 { transition-delay: 0.36s; } .rv.d4 { transition-delay: 0.48s; }
+
+  /* ---------- hero ---------- */
+  #hero {
+    min-height: 100vh; display: flex; flex-direction: column;
+    justify-content: center; align-items: center; text-align: center;
+    padding: 24px; position: relative; overflow: hidden;
+  }
+  #hero-grid {
+    position: absolute; inset: 0; opacity: 0.6; pointer-events: none;
+    font-family: var(--mono); font-size: 11px; color: #b9c1cd;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0; align-content: space-between; padding: 4vh 3vw;
+    mask-image: radial-gradient(ellipse 75% 65% at 50% 50%, transparent 32%, black 78%);
+    -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 50%, transparent 32%, black 78%);
+  }
+  #hero-grid span { padding: 1.4vh 0; opacity: 0.55; transition: opacity 2.4s ease, color 2.4s ease; }
+  #hero-grid span.posted { opacity: 0.95; color: var(--blue); }
+  .hero-eyebrow {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--text-faint); margin-bottom: 30px;
+  }
+  h1 {
+    font-family: var(--serif); font-weight: 400;
+    font-size: clamp(54px, 10.5vw, 126px); line-height: 0.98; letter-spacing: -0.015em;
+  }
+  h1 .it { font-style: italic; color: var(--blue); }
+  .hero-sub {
+    margin-top: 34px; max-width: 500px; color: var(--text-dim);
+    font-size: 18px; line-height: 1.6;
+  }
+  .hero-sub em { color: var(--text); font-style: normal; border-bottom: 1px solid var(--blue); }
+  .scroll-hint {
+    position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%);
+    color: var(--text-faint); animation: bob 2.6s ease-in-out infinite;
+  }
+  @keyframes bob { 0%,100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, 8px); } }
+
+  /* ---------- live ledger ---------- */
+  .ledger { margin: 52px 0 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); overflow: hidden; box-shadow: 0 1px 3px rgba(13,17,23,0.05); }
+  .ledger-head {
+    display: flex; align-items: center; gap: 10px; padding: 14px 20px;
+    border-bottom: 1px solid var(--line); background: var(--surface-2);
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-faint);
+  }
+  .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--blue); box-shadow: 0 0 8px rgba(22,97,226,0.5); animation: pulse 2.2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+  .ledger-row {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 14px;
+    padding: 13px 20px; border-bottom: 1px solid var(--line);
+    font-family: var(--mono); font-size: 12.5px;
+  }
+  .ledger-row:last-child { border-bottom: none; }
+  .ledger-row .desc { color: var(--text-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ledger-row .amt { color: var(--text); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .ledger-row .amt.neg { color: var(--text-dim); }
+  .ledger-row .amt.pos { color: var(--blue); }
+
+  /* ---------- pull diagram ---------- */
+  .pull { display: flex; gap: clamp(18px, 4vw, 44px); align-items: stretch; margin: 56px 0 18px; flex-wrap: wrap; }
+  .pull-col { flex: 1; min-width: 240px; }
+  .pull-box {
+    border: 1px solid var(--line); border-radius: 10px; background: var(--surface);
+    padding: 24px 22px; height: 100%; box-shadow: 0 1px 3px rgba(13,17,23,0.05);
+  }
+  .pull-box .pb-t { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 16px; }
+  .obj-chip {
+    display: inline-block; font-family: var(--mono); font-size: 11.5px;
+    color: var(--text-dim); border: 1px solid var(--line); border-radius: 5px;
+    padding: 5px 10px; margin: 0 6px 8px 0; background: var(--surface-2);
+  }
+  .pull-arrow {
+    flex: 0 0 auto; display: flex; align-items: center; justify-content: center;
+    color: var(--blue); min-width: 50px;
+  }
+  .pull-col.dest .pull-box { border-color: rgba(22,97,226,0.45); background: radial-gradient(120% 120% at 50% 0%, rgba(22,97,226,0.06), var(--surface) 70%); }
+  .pull-col.dest .pb-t { color: var(--blue); }
+  .pull-state { font-family: var(--serif); font-size: 22px; line-height: 1.3; color: var(--text); margin-bottom: 10px; }
+  .pull-state em { color: var(--blue); font-style: italic; }
+  .pull-d { font-size: 13.5px; color: var(--text-dim); line-height: 1.6; }
+
+  /* ---------- two-language cards ---------- */
+  .tokens { display: flex; gap: 28px; margin: 56px 0 24px; flex-wrap: wrap; }
+  .token { flex: 1; min-width: 250px; border-radius: 10px; padding: 34px 28px; position: relative; background: var(--surface); }
+  .token.generic { border: 1px dashed rgba(13,17,23,0.25); background: transparent; }
+  .token.generic .tv { color: var(--text-dim); }
+  .token.yours { border: 1px solid rgba(22,97,226,0.5); background: radial-gradient(110% 110% at 50% 0%, rgba(22,97,226,0.07), var(--surface) 70%); box-shadow: 0 1px 3px rgba(13,17,23,0.05); }
+  .token .tt { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 14px; }
+  .token .tv { font-family: var(--mono); font-size: 16px; line-height: 1.5; color: var(--text); margin-bottom: 16px; }
+  .token.yours .tv { color: var(--blue); }
+  .token .tn { font-family: var(--serif); font-size: 24px; line-height: 1.25; color: var(--text); margin-bottom: 10px; }
+  .token .td { font-size: 13.5px; color: var(--text-dim); line-height: 1.6; }
+
+  /* ---------- coding chain ---------- */
+  .chain { margin: 48px 0 8px; position: relative; padding-left: 34px; }
+  .chain::before {
+    content: ''; position: absolute; left: 9px; top: 14px; bottom: 14px;
+    width: 1px; background: linear-gradient(var(--text-faint), var(--blue));
+  }
+  .chain-step { position: relative; padding: 18px 0; }
+  .chain-step::before {
+    content: ''; position: absolute; left: -29px; top: 28px;
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--bg); border: 1.5px solid var(--text-faint);
+  }
+  .chain-step:last-child::before { border-color: var(--blue); background: var(--blue); }
+  .chain-step .t { font-family: var(--serif); font-size: 26px; line-height: 1.25; color: var(--text); }
+  .chain-step:last-child .t { color: var(--blue); }
+  .chain-step .s { font-size: 14px; color: var(--text-faint); margin-top: 6px; }
+
+  /* ---------- mapping table ---------- */
+  .mapping { margin: 56px 0 18px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); overflow: hidden; box-shadow: 0 1px 3px rgba(13,17,23,0.05); }
+  .map-row {
+    display: grid; grid-template-columns: 1fr 44px 1fr; align-items: center;
+    padding: 18px 22px; border-bottom: 1px solid var(--line); gap: 8px;
+  }
+  .map-row:last-of-type { border-bottom: none; }
+  .map-row .from { font-family: var(--mono); font-size: 12.5px; color: var(--text); }
+  .map-row .from small { display: block; color: var(--text-faint); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 4px; }
+  .map-row .to { font-family: var(--mono); font-size: 12.5px; color: var(--text-dim); text-align: right; }
+  .map-row .to small { display: block; color: var(--text-faint); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 4px; }
+  .map-arrow { color: var(--blue); text-align: center; font-family: var(--mono); font-size: 14px; }
+  .map-version {
+    padding: 13px 22px; background: var(--surface-2); border-top: 1px solid var(--line);
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--blue);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+  }
+  .map-version span:last-child { color: var(--text-faint); }
+
+  /* ---------- the law (T-1) ---------- */
+  #law { background: var(--surface-2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); text-align: center; padding: 22vh 24px; }
+  #law .big {
+    font-family: var(--serif); font-weight: 400;
+    font-size: clamp(34px, 5.6vw, 62px); line-height: 1.18; max-width: 880px; margin: 0 auto;
+  }
+  #law .big .fade1 { color: var(--text); }
+  #law .big .fade2 { color: var(--blue); font-style: italic; }
+  #law .seq { display: block; margin-top: 0.4em; }
+  #law .coda { margin-top: 44px; font-family: var(--mono); font-size: 13px; color: var(--text-faint); letter-spacing: 0.08em; }
+
+  /* ---------- timeline ---------- */
+  .timeline { margin: 56px auto 10px; max-width: 760px; position: relative; padding: 28px 0 8px; }
+  .tl-track { position: relative; height: 2px; background: #e2e7f0; border-radius: 2px; overflow: visible; }
+  .tl-fill { position: absolute; left: 0; top: 0; height: 100%; width: 0; background: var(--blue); transition: width 2.6s cubic-bezier(.25,.6,.3,1) 0.4s; }
+  .timeline.in .tl-fill { width: 100%; }
+  .tl-stops { display: flex; justify-content: space-between; margin-top: 22px; gap: 10px; }
+  .tl-stop { flex: 1; }
+  .tl-stop .tt { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--blue); margin-bottom: 8px; }
+  .tl-stop .tn { font-family: var(--serif); font-size: 21px; color: var(--text); line-height: 1.25; margin-bottom: 6px; }
+  .tl-stop .td { font-size: 13px; color: var(--text-dim); line-height: 1.55; }
+  .tl-stop:nth-child(2) { text-align: center; }
+  .tl-stop:last-child { text-align: right; }
+  .tl-dot { position: absolute; top: -4px; width: 10px; height: 10px; border-radius: 50%; background: var(--bg); border: 1.5px solid var(--text-faint); }
+  .tl-dot.b { background: var(--blue); border-color: var(--blue); box-shadow: 0 0 10px rgba(22,97,226,0.5); }
+
+  /* ---------- posted entry mock ---------- */
+  .posted-card {
+    margin: 52px 0 18px; border: 1px solid rgba(22,97,226,0.45); border-radius: 10px;
+    background: radial-gradient(130% 130% at 50% 0%, rgba(22,97,226,0.05), var(--surface) 65%);
+    overflow: hidden; box-shadow: 0 1px 3px rgba(13,17,23,0.05);
+  }
+  .posted-head {
+    padding: 14px 22px; border-bottom: 1px solid var(--line);
+    font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--blue);
+    display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+  }
+  .posted-head span:last-child { color: var(--text-faint); }
+  .posted-line { display: grid; grid-template-columns: 130px 1fr; gap: 14px; padding: 13px 22px; border-bottom: 1px solid var(--line); font-family: var(--mono); font-size: 12.5px; }
+  .posted-line:last-child { border-bottom: none; }
+  .posted-line .k { color: var(--text-faint); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; padding-top: 2px; }
+  .posted-line .v { color: var(--text); line-height: 1.55; }
+  .posted-line .v i { font-style: normal; color: var(--blue); }
+  .posted-line .v small { display: block; color: var(--text-faint); font-size: 11px; margin-top: 2px; }
+
+  /* ---------- three models cards ---------- */
+  .cards { display: flex; gap: 22px; margin-top: 52px; flex-wrap: wrap; }
+  .card {
+    flex: 1; min-width: 240px; border: 1px solid var(--line); border-radius: 10px;
+    padding: 30px 26px; background: var(--surface);
+    display: flex; flex-direction: column; box-shadow: 0 1px 3px rgba(13,17,23,0.05);
+  }
+  .card.dead { opacity: 0.6; box-shadow: none; }
+  .card.prize {
+    background: radial-gradient(120% 120% at 80% 0%, rgba(22,97,226,0.08), var(--surface) 70%);
+    border-color: rgba(22,97,226,0.55);
+    box-shadow: 0 8px 30px rgba(22,97,226,0.10);
+  }
+  .card .cn { font-family: var(--mono); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 14px; }
+  .card.prize .cn { color: var(--blue); }
+  .card .cq { font-family: var(--serif); font-size: 23px; line-height: 1.3; color: var(--text); margin-bottom: 14px; }
+  .card.prize .cq { color: var(--blue); font-style: italic; }
+  .card .cd { font-size: 13.5px; color: var(--text-dim); line-height: 1.6; }
+  .card .cm { margin-top: auto; padding-top: 16px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-faint); }
+  .card.prize .cm { color: var(--blue); }
+
+  /* ---------- stat callout ---------- */
+  .statline { display: flex; align-items: baseline; gap: 24px; margin: 48px 0; flex-wrap: wrap; }
+  .statline .sn { font-family: var(--serif); font-size: clamp(54px, 9vw, 96px); color: var(--blue); line-height: 1; white-space: nowrap; }
+  .statline .sd { flex: 1; min-width: 220px; font-size: 15px; color: var(--text-dim); line-height: 1.6; }
+  .statline .sd b { color: var(--text); font-weight: 500; }
+
+  /* ---------- finale (dark inversion) ---------- */
+  #finale { background: var(--dark); color: var(--dark-text); padding: 20vh 24px; }
+  #finale .kicker { color: var(--blue-soft); }
+  #finale .kicker::after { background: rgba(255,255,255,0.14); }
+  #finale h2 { color: var(--dark-text); }
+  #finale h2 em { color: var(--blue-soft); }
+  #finale p { color: #97a1ae; }
+  #finale .imperatives { margin: 56px 0; }
+  #finale .imp {
+    font-family: var(--serif); font-size: clamp(28px, 4.4vw, 44px); line-height: 1.25;
+    padding: 26px 0; border-top: 1px solid rgba(255,255,255,0.14); color: var(--dark-text);
+  }
+  #finale .imp:last-child { border-bottom: 1px solid rgba(255,255,255,0.14); }
+  #finale .imp .n { font-family: var(--mono); font-size: 13px; color: var(--blue-soft); vertical-align: super; margin-right: 14px; }
+  #finale .imp em { font-style: italic; color: var(--blue-soft); }
+  #finale .closer {
+    margin-top: 64px; font-family: var(--serif); font-style: italic;
+    font-size: clamp(22px, 3vw, 30px); line-height: 1.45; color: var(--dark-text);
+    max-width: 640px;
+  }
+  footer {
+    background: var(--dark); color: #5a6472; padding: 0 24px 60px;
+    font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.06em; line-height: 1.8;
+  }
+  footer .wrap { border-top: 1px solid rgba(255,255,255,0.12); padding-top: 24px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .rv, .tl-fill { transition: none !important; }
+    .rv { opacity: 1; transform: none; }
+    .timeline .tl-fill { width: 100%; }
+    .scroll-hint, .live-dot { animation: none; }
+  }
+  @media (max-width: 640px) {
+    .pull-arrow { width: 100%; transform: rotate(90deg); min-height: 40px; }
+    .tl-stops { flex-direction: column; gap: 24px; }
+    .tl-stop:nth-child(2), .tl-stop:last-child { text-align: left; }
+    .posted-line { grid-template-columns: 1fr; gap: 4px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<!-- ============ HERO ============ -->
+<section id="hero">
+  <div id="hero-grid" aria-hidden="true"></div>
+  <div class="hero-eyebrow rv">cómo funciona el conector tesote ↔ odoo</div>
+  <h1 class="rv d1">Dos sistemas,<br><span class="it">una sola verdad.</span></h1>
+  <p class="hero-sub rv d2">Los datos bancarios viven en Tesote. Los libros viven en Odoo. El conector es la <em>traducción</em> entre ambos — lee en un sentido, postea en el otro, todos los días.</p>
+  <div class="scroll-hint" aria-hidden="true">
+    <svg width="18" height="26" viewBox="0 0 18 26" fill="none"><path d="M9 2v18M3 14l6 7 6-7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+</section>
+
+<!-- ============ 01 EL PUNTO DE PARTIDA ============ -->
+<section id="s01">
+  <div class="wrap">
+    <div class="kicker rv">01 · Dónde empieza</div>
+    <h2 class="rv">La verdad bancaria <em>ya está aquí.</em></h2>
+    <p class="rv d1">Antes de tocar Odoo, Tesote ya tiene el registro más limpio posible de lo que realmente pasó en el banco. Connect extrae cada cuenta, en cada banco, todos los días — normalizado, deduplicado, multi-moneda. <strong>La mayoría de las integraciones nacen en el ERP y pelean por conseguir los datos bancarios. Nosotros empezamos con los datos bancarios y subimos hacia el ERP.</strong></p>
+    <div class="ledger rv d2">
+      <div class="ledger-head"><span class="live-dot"></span><span>en vivo · todos los bancos · todas las cuentas · diario</span></div>
+      <div class="ledger-row"><span class="desc">06-11 · TRF RECIBIDA · DISTRIBUIDORA LUNOUR</span><span class="amt pos">+4,820.00 USD</span></div>
+      <div class="ledger-row"><span class="desc">06-11 · PAGO PROVEEDOR · COMBUSTIBLES ANDINA</span><span class="amt neg">−1,135.20 USD</span></div>
+      <div class="ledger-row"><span class="desc">06-11 · PAGO MÓVIL RECIBIDO · REF 088412</span><span class="amt pos">+312.40 USD</span></div>
+      <div class="ledger-row"><span class="desc">06-11 · COMISIÓN MANTENIMIENTO CTA</span><span class="amt neg">−12.00 USD</span></div>
+      <div class="ledger-row"><span class="desc">06-11 · NÓMINA · LOTE 2026-11Q1</span><span class="amt neg">−8,640.00 USD</span></div>
+    </div>
+    <p class="note rv d3">este es el activo sobre el que se construye todo lo demás — el conector no crea la verdad bancaria, la hereda</p>
+  </div>
+</section>
+
+<!-- ============ 02 EL PULL ============ -->
+<section id="s02">
+  <div class="wrap-wide">
+    <div class="wrap">
+      <div class="kicker rv">02 · La lectura</div>
+      <h2 class="rv">Leemos el grafo contable <em>completo.</em></h2>
+      <p class="rv d1">El conector no es una tubería ciega. Tesote lee el estado contable completo del Odoo del cliente — plan de cuentas, terceros, facturas, asientos, estados de cuenta, impuestos, cuentas analíticas. <strong>Sin acceso de lectura estaríamos adivinando; con él, Tesote puede mostrar exactamente cómo están los libros</strong> — qué está codificado, qué está abierto, qué está conciliado.</p>
+    </div>
+    <div class="pull rv d2">
+      <div class="pull-col">
+        <div class="pull-box">
+          <div class="pb-t">Odoo · sistema de registro</div>
+          <span class="obj-chip">account.account</span>
+          <span class="obj-chip">res.partner</span>
+          <span class="obj-chip">account.move</span>
+          <span class="obj-chip">account.move.line</span>
+          <span class="obj-chip">account.bank.statement</span>
+          <span class="obj-chip">account.tax</span>
+          <span class="obj-chip">account.analytic.account</span>
+          <span class="obj-chip">product.template</span>
+        </div>
+      </div>
+      <div class="pull-arrow" aria-hidden="true">
+        <svg width="44" height="24" viewBox="0 0 44 24" fill="none"><path d="M2 12h36M30 4l8 8-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="pull-col dest">
+        <div class="pull-box">
+          <div class="pb-t">Tesote · estado renderizado</div>
+          <div class="pull-state">Los libros, <em>visibles.</em></div>
+          <div class="pull-d">Codificado vs. sin codificar. Conciliado vs. abierto. Qué terceros existen, qué cuentas están activas, qué impuestos aplican. Todo lo que necesitan los flujos de abajo — extraído al conectar, refrescado en cada sync.</div>
+        </div>
+      </div>
+    </div>
+    <div class="wrap">
+      <p class="note rv d3">pull inicial el día uno: plan de cuentas + todos los terceros + 90 días de asientos, estados de cuenta, impuestos y analíticas</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 03 DOS IDIOMAS ============ -->
+<section id="s03">
+  <div class="wrap">
+    <div class="kicker rv">03 · La distinción clave</div>
+    <h2 class="rv">El negocio y el contador hablan <em>idiomas distintos.</em></h2>
+    <p class="rv d1">Esta es la decisión de diseño más importante de todo el conector. Las categorías de Tesote y el plan de cuentas de Odoo <strong>no son lo mismo — y forzarlos a serlo arruina a los dos.</strong></p>
+    <div class="tokens rv d2">
+      <div class="token yours">
+        <div class="tt">Tesote · categorías</div>
+        <div class="tv">Operaciones &gt; Logística &gt; Combustible</div>
+        <div class="tn">Cómo piensa el negocio</div>
+        <div class="td">Jerárquicas, en lenguaje de negocio, hechas para que alguien que no es contador las navegue a diario. Esta es la taxonomía en la que trabaja el equipo — y la IA.</div>
+      </div>
+      <div class="token generic">
+        <div class="tt">Odoo · plan de cuentas</div>
+        <div class="tv">6.2.1 — Combustibles y Lubricantes</div>
+        <div class="tn">Cómo piensan los libros</div>
+        <div class="td">Plano, numérico, alineado al estándar contable, muchas veces opaco para todos menos el contador. Se queda en Odoo, exactamente donde pertenece.</div>
+      </div>
+    </div>
+    <p class="rv d3"><strong>Tesote es la fuente de verdad de cómo piensa el equipo de finanzas. Odoo es la fuente de verdad de lo que dicen los libros.</strong> La exportación entre ambos es una traducción — no un sync.</p>
+  </div>
+</section>
+
+<!-- ============ 04 CATEGORIZACIÓN INDEPENDIENTE ============ -->
+<section id="s04">
+  <div class="wrap">
+    <div class="kicker rv">04 · Categorización independiente</div>
+    <h2 class="rv">Tesote nunca <em>espera por Odoo.</em></h2>
+    <p class="rv d1">Como la taxonomía es nativa de Tesote, el equipo codifica las transacciones apenas llegan — sin ida y vuelta al ERP, sin "primero crea el proveedor en Odoo", sin depender de que el plan de cuentas esté limpio.</p>
+    <div class="chain rv d2">
+      <div class="chain-step">
+        <div class="t">Llega una transacción del banco.</div>
+        <div class="s">ya normalizada por Connect — fecha, monto, referencia, descripción cruda</div>
+      </div>
+      <div class="chain-step">
+        <div class="t">Reglas + IA sugieren categoría y contraparte — en el idioma de Tesote.</div>
+        <div class="s">la IA sugiere "Operaciones &gt; Logística &gt; Combustible", nunca "cuenta 6.2.1" — explicable para un humano, desacoplada del plan de cuentas de cualquier cliente</div>
+      </div>
+      <div class="chain-step">
+        <div class="t">El equipo aprueba, edita o rechaza. Las contrapartes nuevas se crean al vuelo.</div>
+        <div class="s">cada corrección es data de entrenamiento; los flujos de alta confianza se gradúan a piloto automático</div>
+      </div>
+      <div class="chain-step">
+        <div class="t">La transacción queda completamente codificada — y Odoo todavía no se ha tocado.</div>
+        <div class="s">categorizar y postear son pasos separados, por diseño</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 05 LA CAPA DE MAPEO ============ -->
+<section id="s05">
+  <div class="wrap">
+    <div class="kicker rv">05 · La capa de mapeo</div>
+    <h2 class="rv">La traducción <em>es la integración.</em></h2>
+    <p class="rv d1">Entre los dos idiomas vive un mapeo por cliente, configurado en el onboarding, editable para siempre y <strong>versionado</strong>. Cuando una transacción codificada se postea a Odoo, el mapeo traduce cada primitivo de Tesote a su equivalente en Odoo — de forma determinística.</p>
+    <div class="mapping rv d2">
+      <div class="map-row">
+        <div class="from">Operaciones &gt; Logística &gt; Combustible<small>categoría tesote</small></div>
+        <div class="map-arrow">→</div>
+        <div class="to">6.2.1 Combustibles y Lubricantes<small>account.account</small></div>
+      </div>
+      <div class="map-row">
+        <div class="from">Combustibles Andina<small>contraparte tesote</small></div>
+        <div class="map-arrow">→</div>
+        <div class="to">res.partner #2841, #2906<small>m:n — duplicados absorbidos</small></div>
+      </div>
+      <div class="map-row">
+        <div class="from">Combustible × Venezuela<small>categoría × jurisdicción</small></div>
+        <div class="map-arrow">→</div>
+        <div class="to">IVA 16%<small>account.tax</small></div>
+      </div>
+      <div class="map-row">
+        <div class="from">Sucursal Valencia<small>etiqueta tesote</small></div>
+        <div class="map-arrow">→</div>
+        <div class="to">CC-VAL<small>account.analytic.account</small></div>
+      </div>
+      <div class="map-version"><span>mapeo v14 · vigente</span><span>cada posteo registra la versión vigente — el auditor reproduce esa, no la actual</span></div>
+    </div>
+    <p class="rv d3">Seis meses de refinamientos al mapeo, una librería de reglas afinada y una IA entrenada con las correcciones del propio cliente — <strong>esa configuración es la ventaja defensiva.</strong> Irse significa reconstruirlo todo desde cero.</p>
+  </div>
+</section>
+
+<!-- ============ LA LEY (T-1) ============ -->
+<section id="law">
+  <div class="big">
+    <span class="seq rv fade1">El banco cierra el día.</span>
+    <span class="seq rv d2 fade1">El conector lo traduce durante la noche.</span>
+    <span class="seq rv d4 fade2">Al amanecer, ayer ya está en los libros.</span>
+  </div>
+  <div class="coda rv d4">t-1 · automático · cada día hábil</div>
+</section>
+
+<!-- ============ 06 EL PUSH T-1 ============ -->
+<section id="s06">
+  <div class="wrap-wide">
+    <div class="wrap">
+      <div class="kicker rv">06 · El push</div>
+      <h2 class="rv">Ayer, <em>posteado automáticamente.</em></h2>
+      <p class="rv d1">La escritura corre en ciclo T-1: cuando cierra el día bancario, Tesote toma los movimientos liquidados del día, los pasa por el mapeo y los postea en Odoo como <strong>líneas de estado de cuenta</strong> — nadie sube un archivo, nadie vuelve a teclear un movimiento.</p>
+    </div>
+    <div class="timeline rv d2" id="tl">
+      <div class="tl-track">
+        <div class="tl-fill"></div>
+        <div class="tl-dot" style="left: 0;"></div>
+        <div class="tl-dot" style="left: calc(50% - 5px);"></div>
+        <div class="tl-dot b" style="right: 0;"></div>
+      </div>
+      <div class="tl-stops">
+        <div class="tl-stop">
+          <div class="tt">Día T · horario bancario</div>
+          <div class="tn">Los movimientos se liquidan</div>
+          <div class="td">Connect los captura en vivo en Tesote; el equipo va codificando en la taxonomía de Tesote a medida que llegan.</div>
+        </div>
+        <div class="tl-stop">
+          <div class="tt">Durante la noche</div>
+          <div class="tn">Traducir + postear</div>
+          <div class="td">El mapeo convierte categorías, contrapartes e impuestos; el conector escribe cada movimiento en el diario correcto de Odoo.</div>
+        </div>
+        <div class="tl-stop">
+          <div class="tt">Día T+1 · en la mañana</div>
+          <div class="tn">Los libros están al día</div>
+          <div class="td">Cada línea de ayer ya está en Odoo — limpia, atribuida, auditable.</div>
+        </div>
+      </div>
+    </div>
+    <div class="wrap">
+      <div class="statline rv d3">
+        <div class="sn">T−1</div>
+        <div class="sd"><b>Los libros nunca están a más de un día del banco.</b> Ya está vivo en producción — esta fue la Fase 1, la parte que demostró que podemos escribir a Odoo de forma confiable. Todo lo demás de esta historia se construye sobre una tubería que ya funciona.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 07 QUÉ ATERRIZA ============ -->
+<section id="s07">
+  <div class="wrap">
+    <div class="kicker rv">07 · Qué aterriza en Odoo</div>
+    <h2 class="rv">Limpio, traducido, <em>auditable.</em></h2>
+    <p class="rv d1">Lo que llega del lado de Odoo no es un volcado crudo del banco. Cada línea lleva la traducción completa — y el ruido operativo se queda en Tesote, donde pertenece. La conversación interna del equipo nunca contamina el registro legal; la última decisión sí se convierte en la narración.</p>
+    <div class="posted-card rv d2">
+      <div class="posted-head"><span>account.bank.statement.line</span><span>posteado por tesote · 2026-06-12 05:10 VET</span></div>
+      <div class="posted-line"><span class="k">fecha</span><span class="v">2026-06-11</span></div>
+      <div class="posted-line"><span class="k">monto</span><span class="v">−1,135.20 USD</span></div>
+      <div class="posted-line"><span class="k">partner</span><span class="v">res.partner #2841 <i>← Combustibles Andina</i><small>contraparte tesote, resuelta vía mapeo</small></span></div>
+      <div class="posted-line"><span class="k">cuenta</span><span class="v">6.2.1 Combustibles y Lubricantes <i>← Operaciones &gt; Logística &gt; Combustible</i><small>categoría traducida al momento de postear</small></span></div>
+      <div class="posted-line"><span class="k">narración</span><span class="v">"Factura #5519 aprobada — M. Rodríguez"<small>último comentario en tesote; el ida y vuelta interno se queda en tesote</small></span></div>
+      <div class="posted-line"><span class="k">mapeo</span><span class="v">v14<small>la versión vigente cuando se posteó — reproducible para cualquier auditor</small></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 08 TRES MODELOS ============ -->
+<section id="s08">
+  <div class="wrap-wide">
+    <div class="wrap">
+      <div class="kicker rv">08 · Por qué esta forma</div>
+      <h2 class="rv">Tres maneras de conectar dos sistemas. <em>Dos fallan.</em></h2>
+      <p class="rv d1">Toda integración banco-ERP escoge una de tres arquitecturas, lo sepa o no:</p>
+    </div>
+    <div class="cards rv d2">
+      <div class="card dead">
+        <div class="cn">UI delgada</div>
+        <div class="cq">Todo vive en Odoo; Tesote es una cara.</div>
+        <div class="cd">Cada acción espera a que Odoo esté bien configurado primero — el proveedor tiene que existir, la cuenta tiene que existir. Esa fricción mata el flujo diario.</div>
+        <div class="cm">sin apalancamiento</div>
+      </div>
+      <div class="card dead">
+        <div class="cn">Sync paralelo</div>
+        <div class="cq">Dos sistemas, dos verdades, sync en el medio.</div>
+        <div class="cd">Cada conflicto es un ticket de soporte. Los rastros de auditoría divergen. Los libros y el flujo se van separando hasta que nadie confía en ninguno de los dos.</div>
+        <div class="cm">deriva constante</div>
+      </div>
+      <div class="card prize">
+        <div class="cn">Capa de mapeo · la nuestra</div>
+        <div class="cq">Tesote es dueño del flujo. Odoo es dueño de los libros.</div>
+        <div class="cd">El equipo trabaja en lenguaje de negocio; Odoo recibe asientos limpios y traducidos. Es el playbook de Ramp — categorizar en la taxonomía del producto, mapear al libro mayor una sola vez, nunca mostrarle un número de cuenta a un analista.</div>
+        <div class="cm">el modelo ramp</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 09 HACIA DÓNDE VA ============ -->
+<section id="s09">
+  <div class="wrap">
+    <div class="kicker rv">09 · Hacia dónde va</div>
+    <h2 class="rv">Hoy, una tubería. <em>Después, un cockpit.</em></h2>
+    <p class="rv d1">El push está vivo. El pull está en progreso. La tercera fase es escribir desde el cockpit: colas de codificación, conciliación, automatización de cuentas por pagar — cada acción de finanzas naciendo en Tesote y aterrizando en Odoo como el objeto correcto. <strong>El conector es la base que nos gana el derecho a construirlo.</strong></p>
+    <p class="rv d2">La conciliación es donde el activo inicial paga dos veces: Tesote cruza sus propias líneas bancarias limpias contra los asientos que extrajo de Odoo — monto, fecha, contraparte, referencia — y postea las confirmaciones de vuelta. <strong>Conciliamos con mejores datos bancarios de los que Odoo podría conseguir por su cuenta.</strong></p>
+  </div>
+</section>
+
+<!-- ============ FINALE ============ -->
+<section id="finale">
+  <div class="wrap">
+    <div class="kicker rv">10 · Toda la historia en tres líneas</div>
+    <h2 class="rv">Odoo lleva los libros.<br><em>Tesote lleva al equipo.</em></h2>
+    <div class="imperatives rv d1">
+      <div class="imp"><span class="n">i</span>La verdad bancaria vive en Tesote — cada cuenta, todos los días.</div>
+      <div class="imp"><span class="n">ii</span>El equipo piensa en el idioma de Tesote; el mapeo hace la <em>traducción.</em></div>
+      <div class="imp"><span class="n">iii</span>Odoo amanece cada mañana con ayer ya posteado.</div>
+    </div>
+    <p class="closer rv d2">"Empezamos construyendo una tubería de carga. Estamos terminando con el lugar donde sucede el trabajo de finanzas."</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    una lectura visual del conector tesote ↔ odoo · interno · datos de muestra ilustrativos · renderizado 2026-06-12
+  </div>
+</footer>
+
+<script>
+(function () {
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* progress bar */
+  var bar = document.getElementById('progress');
+  function onScroll() {
+    var h = document.documentElement;
+    var p = h.scrollTop / (h.scrollHeight - h.clientHeight);
+    bar.style.width = (p * 100) + '%';
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  /* hero grid: movimientos bancarios que se van posteando (se vuelven azules) */
+  var grid = document.getElementById('hero-grid');
+  var kinds = ['TRF', 'PAGO MÓVIL', 'NÓMINA', 'COMISIÓN', 'DEP', 'CHQ'];
+  var cells = [];
+  for (var i = 0; i < 48; i++) {
+    var s = document.createElement('span');
+    var k = kinds[i % kinds.length];
+    var ref = String(10000 + ((i * 731) % 89999));
+    var amt = (50 + ((i * 137) % 9000)) + '.' + (10 + ((i * 13) % 89));
+    s.textContent = k + ' ' + ref + ' · ' + amt + ' USD';
+    grid.appendChild(s);
+    cells.push(s);
+  }
+  if (!reduced) {
+    var k2 = 0;
+    setInterval(function () {
+      cells[(k2 * 17) % cells.length].classList.add('posted');
+      k2++;
+    }, 700);
+  }
+
+  /* reveals */
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.18 });
+  document.querySelectorAll('.rv, #tl').forEach(function (el) { io.observe(el); });
+})();
+</script>
+</body>
+</html>

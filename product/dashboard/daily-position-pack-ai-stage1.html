@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Posición Diaria — Stage 1 en Tesote AI (mockup)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #101113;
+    --bg-raised: #17181b;
+    --bg-pane: #131417;
+    --border: #26282d;
+    --border-soft: #1e2024;
+    --text: #e8e6e1;
+    --text-muted: #8b8d93;
+    --text-faint: #5d5f66;
+    --accent: #c3a05e;
+    --accent-soft: rgba(195,160,94,.12);
+    --green: #7fb58a;
+    --red: #c97a6d;
+    --amber: #c9a86d;
+    --mono: 'JetBrains Mono', monospace;
+    --serif: 'Instrument Serif', serif;
+    --r-sm: 4px; --r-md: 8px; --r-lg: 12px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.6;
+    background: var(--bg); color: var(--text);
+    height: 100vh; overflow: hidden;
+  }
+  .app { display: grid; grid-template-columns: 232px minmax(420px, 1fr) 520px; height: 100vh; }
+
+  /* ───────── sidenav ───────── */
+  .sidenav { background: var(--bg-pane); border-right: 1px solid var(--border-soft); padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; }
+  .brand { display: flex; align-items: center; gap: 8px; padding: 4px 8px 16px; }
+  .brand .t-mark { width: 22px; height: 22px; border-radius: var(--r-sm); background: var(--accent); color: #101113; font-family: var(--serif); font-size: 16px; display: flex; align-items: center; justify-content: center; }
+  .brand span { font-weight: 500; font-size: 14px; }
+  .brand .beta { font-size: 10px; color: var(--accent); border: 1px solid var(--accent); border-radius: 3px; padding: 0 4px; margin-left: 2px; letter-spacing: .04em; }
+  .nav-item { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: var(--r-md); font-size: 13px; color: var(--text-muted); cursor: pointer; }
+  .nav-item:hover { background: var(--bg-raised); color: var(--text); }
+  .nav-item svg { width: 15px; height: 15px; stroke-width: 1.5; }
+  .new-conv { border: 1px solid var(--border); color: var(--text); margin: 10px 0 14px; justify-content: flex-start; }
+  .conv-label { font-size: 11px; color: var(--text-faint); letter-spacing: .06em; text-transform: uppercase; padding: 0 8px 6px; }
+  .conv { padding: 5px 8px; border-radius: var(--r-md); font-size: 13px; color: var(--text-muted); cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .conv.active { background: var(--bg-raised); color: var(--text); }
+  .conv:hover { background: var(--bg-raised); }
+
+  /* ───────── chat ───────── */
+  .chat { display: flex; flex-direction: column; border-right: 1px solid var(--border-soft); min-width: 0; }
+  .chat-head { padding: 14px 24px; border-bottom: 1px solid var(--border-soft); font-size: 13px; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
+  .chat-scroll { flex: 1; overflow-y: auto; padding: 28px 24px; display: flex; flex-direction: column; gap: 20px; }
+  .msg-user { align-self: flex-end; max-width: 78%; background: var(--bg-raised); border: 1px solid var(--border-soft); padding: 10px 14px; border-radius: var(--r-lg); border-bottom-right-radius: var(--r-sm); font-size: 14px; }
+  .msg-ai { max-width: 92%; font-size: 14px; color: var(--text); }
+  .msg-ai .who { font-size: 11px; color: var(--text-faint); letter-spacing: .05em; text-transform: uppercase; margin-bottom: 6px; }
+  .tool-strip { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+  .tool-chip { font-family: var(--mono); font-size: 10.5px; color: var(--text-muted); background: var(--bg-raised); border: 1px solid var(--border-soft); border-radius: var(--r-sm); padding: 2px 7px; display: flex; align-items: center; gap: 5px; }
+  .tool-chip svg { width: 10px; height: 10px; stroke-width: 1.5; color: var(--green); }
+  .file-ref { font-family: var(--mono); font-size: 12.5px; color: var(--accent); background: var(--accent-soft); border-radius: var(--r-sm); padding: 1px 5px; cursor: pointer; white-space: nowrap; }
+  .composer { margin: 0 24px 20px; border: 1px solid var(--border); border-radius: var(--r-lg); background: var(--bg-raised); padding: 12px 14px; }
+  .composer .ph { color: var(--text-faint); font-size: 14px; }
+  .composer-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+  .composer-row svg { width: 16px; height: 16px; stroke-width: 1.5; color: var(--text-faint); cursor: pointer; }
+  .send { background: var(--accent); border-radius: var(--r-md); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .send svg { color: #101113; width: 14px; height: 14px; }
+  .hint { font-size: 11px; color: var(--text-faint); padding: 6px 26px 14px; }
+
+  /* ───────── workspace ───────── */
+  .workspace { background: var(--bg-pane); display: flex; flex-direction: column; min-width: 0; }
+  .ws-head { padding: 14px 18px 10px; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--text-faint); display: flex; justify-content: space-between; align-items: center; }
+  .tree { padding: 0 10px 12px; border-bottom: 1px solid var(--border-soft); }
+  .tree-folder { font-family: var(--mono); font-size: 11.5px; color: var(--text-faint); padding: 4px 8px; display: flex; align-items: center; gap: 6px; }
+  .tree-folder svg { width: 12px; height: 12px; stroke-width: 1.5; }
+  .tree-item { font-family: var(--mono); font-size: 12px; color: var(--text-muted); padding: 4px 8px 4px 26px; border-radius: var(--r-md); cursor: pointer; display: flex; align-items: center; gap: 7px; white-space: nowrap; overflow: hidden; }
+  .tree-item svg { width: 12px; height: 12px; stroke-width: 1.5; flex-shrink: 0; }
+  .tree-item:hover { background: var(--bg-raised); }
+  .tree-item.sel { background: var(--accent-soft); color: var(--accent); }
+  .tree-item.child { padding-left: 44px; position: relative; }
+  .tree-item.child::before { content: ''; position: absolute; left: 32px; top: 0; bottom: 50%; width: 7px; border-left: 1px solid var(--border); border-bottom: 1px solid var(--border); border-bottom-left-radius: 3px; }
+  .badge-type { margin-left: auto; font-size: 9px; letter-spacing: .05em; color: var(--text-faint); border: 1px solid var(--border); border-radius: 3px; padding: 0 4px; }
+
+  .viewer { flex: 1; overflow-y: auto; padding: 22px; }
+  .viewer-title { font-size: 12px; font-family: var(--mono); color: var(--text-faint); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .viewer-title svg { width: 13px; height: 13px; stroke-width: 1.5; }
+
+  /* card renderer */
+  .kpi-hero { font-family: var(--serif); font-size: 52px; line-height: 1.1; letter-spacing: -0.01em; }
+  .kpi-sub { font-size: 14px; color: var(--red); margin-top: 2px; }
+  .kpi-decomp { display: flex; gap: 0; margin-top: 22px; border: 1px solid var(--border-soft); border-radius: var(--r-md); overflow: hidden; }
+  .kpi-cell { flex: 1; padding: 12px 14px; border-right: 1px solid var(--border-soft); }
+  .kpi-cell:last-child { border-right: 0; }
+  .kpi-cell .l { font-size: 11px; color: var(--text-faint); letter-spacing: .04em; text-transform: uppercase; }
+  .kpi-cell .v { font-family: var(--mono); font-size: 16px; margin-top: 3px; }
+  .kpi-meta { display: flex; justify-content: space-between; margin-top: 18px; font-size: 12.5px; color: var(--text-muted); }
+  .kpi-meta .mono { font-family: var(--mono); }
+  .manual-note { margin-top: 14px; font-size: 12.5px; color: var(--text-muted); border-left: 2px solid var(--border); padding-left: 10px; }
+
+  /* table renderer */
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  th { text-align: left; font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--text-faint); font-weight: 500; padding: 6px 8px; border-bottom: 1px solid var(--border); }
+  td { padding: 7px 8px; border-bottom: 1px solid var(--border-soft); vertical-align: middle; }
+  td.num, th.num { text-align: right; font-family: var(--mono); white-space: nowrap; }
+  .group-row td { font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--text-muted); background: var(--bg-raised); font-weight: 500; padding: 6px 8px; }
+  .group-row td .sub { float: right; font-family: var(--mono); text-transform: none; letter-spacing: 0; color: var(--text); }
+  .pos { color: var(--green); } .neg { color: var(--red); }
+  .sync { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: var(--text-faint); white-space: nowrap; }
+  .sync svg { width: 11px; height: 11px; stroke-width: 1.5; }
+  .sync.warn { color: var(--amber); }
+  .tag-new { font-size: 10px; color: var(--accent); border: 1px solid var(--accent); border-radius: 3px; padding: 0 4px; margin-left: 6px; white-space: nowrap; }
+  .status-pill { font-size: 10.5px; border-radius: 10px; padding: 1px 8px; white-space: nowrap; }
+  .pill-ok { color: var(--green); border: 1px solid rgba(127,181,138,.4); }
+  .pill-warn { color: var(--amber); border: 1px solid rgba(201,168,109,.4); }
+  .pill-info { color: var(--text-muted); border: 1px solid var(--border); }
+  .tbl-foot { font-size: 11.5px; color: var(--text-faint); padding-top: 10px; }
+
+  /* chat digest */
+  .digest { border-left: 2px solid var(--border); display: flex; flex-direction: column; gap: 7px; padding-left: 12px; }
+  .digest-row { display: flex; gap: 10px; font-size: 13.5px; }
+  .digest-label { flex-shrink: 0; width: 92px; font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--text-faint); padding-top: 3px; }
+  .digest strong { font-weight: 500; }
+
+  /* stage-1 annotation */
+  .annot { margin: 0 18px 14px; border: 1px dashed var(--border); border-radius: var(--r-md); padding: 10px 12px; font-size: 11.5px; color: var(--text-muted); }
+  .annot strong { color: var(--accent); font-weight: 500; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ════════ SIDENAV ════════ -->
+  <nav class="sidenav">
+    <div class="brand"><div class="t-mark">T</div><span>Tesote AI</span><span class="beta">BETA</span></div>
+    <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Tesote Clásico</div>
+    <div class="nav-item new-conv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Nueva conversación</div>
+    <div class="conv-label">Conversaciones</div>
+    <div class="conv active">posición de hoy</div>
+    <div class="conv">conciliación BNC mayo</div>
+    <div class="conv">factura NetUno</div>
+    <div class="conv">cash flow abril vs mayo</div>
+  </nav>
+
+  <!-- ════════ CHAT ════════ -->
+  <main class="chat">
+    <div class="chat-head">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      posición de hoy · miércoles 03-jun-2026
+    </div>
+    <div class="chat-scroll">
+
+      <div class="msg-user">Muéstrame la posición de hoy</div>
+
+      <div class="msg-ai">
+        <div class="who">Tesote AI</div>
+        <div class="tool-strip">
+          <span class="tool-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17l-5-5"/></svg>account.list</span>
+          <span class="tool-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17l-5-5"/></svg>report.run × 2</span>
+          <span class="tool-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17l-5-5"/></svg>exchange_rate.history</span>
+          <span class="tool-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17l-5-5"/></svg>transaction.search</span>
+          <span class="tool-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17l-5-5"/></svg>bank_connection.status</span>
+        </div>
+        <p style="margin-bottom:10px;">Buenos días — tu posición de hoy, miércoles 03-jun:</p>
+        <div class="digest">
+          <div class="digest-row"><span class="digest-label">Posición</span><span><strong>$399.481</strong> <span style="color:var(--red)">−$7.386 vs ayer (−1,8%)</span></span></div>
+          <div class="digest-row"><span class="digest-label">Por qué</span><span>flujos −$7.086 · devaluación <strong>−$300</strong> · sin explicar $0. El BCV subió 0,76% ayer — eso le costó $300 a tus saldos en bolívares (12% de tu posición está en VES).</span></div>
+          <div class="digest-row"><span class="digest-label">Movimientos</span><span>entró <strong>+Bs 5.000.000</strong> de COVENCAUCHO (contraparte nueva); salieron −$14.264 a Million Web y −$1.711 del Rho Card.</span></div>
+          <div class="digest-row"><span class="digest-label">Atención</span><span>Banco Exterior lleva <strong>3 días sin sincronizar</strong> · 12 transacciones sin categorizar (3 de ayer).</span></div>
+        </div>
+        <p style="margin-top:10px;">El detalle está en el paquete: <span class="file-ref" onclick="selectFile('resumen')">posición</span> · <span class="file-ref" onclick="selectFile('cuentas')">cuentas</span> · <span class="file-ref" onclick="selectFile('movs')">movimientos</span> · <span class="file-ref" onclick="selectFile('control')">control</span></p>
+      </div>
+
+    </div>
+    <div class="composer">
+      <div class="ph">¿De qué cuentas salió esa devaluación?…</div>
+      <div class="composer-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+        <div class="send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></div>
+      </div>
+    </div>
+    <div class="hint">⌘ + Enter para enviar</div>
+  </main>
+
+  <!-- ════════ WORKSPACE ════════ -->
+  <aside class="workspace">
+    <div class="ws-head"><span>Espacio de trabajo</span><span style="font-family:var(--mono); text-transform:none; letter-spacing:0;">4 archivos</span></div>
+
+    <div class="tree">
+      <div class="tree-folder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>working/</div>
+
+      <div class="tree-item sel" id="t-resumen" onclick="selectFile('resumen')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9h18M3 15h18M9 3v18"/></svg>
+        posicion-2026-06-03.json <span class="badge-type">table</span>
+      </div>
+      <div class="tree-item child" id="t-cuentas" onclick="selectFile('cuentas')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9h18M3 15h18M9 3v18"/></svg>
+        cuentas-2026-06-03.json <span class="badge-type">table</span>
+      </div>
+      <div class="tree-item child" id="t-movs" onclick="selectFile('movs')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9h18M3 15h18M9 3v18"/></svg>
+        movimientos-2026-06-03.json <span class="badge-type">table</span>
+      </div>
+      <div class="tree-item child" id="t-control" onclick="selectFile('control')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9h18M3 15h18M9 3v18"/></svg>
+        control-2026-06-03.json <span class="badge-type">table</span>
+      </div>
+    </div>
+
+    <div class="viewer" id="viewer"><!-- JS injects --></div>
+
+    <div class="annot"><strong>Stage 1:</strong> un archivo por sección, enlazados por <span style="font-family:var(--mono); font-size:10.5px;">derived_from_id</span>. El visor muestra uno a la vez — navega con el árbol o los enlaces del chat. El tipo compuesto <span style="font-family:var(--mono); font-size:10.5px;">report</span> (todo en un solo archivo, scroll vertical) llega en v1.</div>
+  </aside>
+
+</div>
+
+<script>
+const ic = {
+  ok:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17l-5-5"/></svg>',
+  warn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0zM12 9v4M12 17h.01"/></svg>',
+  card: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 12h4M7 8h7"/></svg>',
+  tbl:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9h18M3 15h18M9 3v18"/></svg>'
+};
+
+const sync = (txt, warn) => `<span class="sync${warn ? ' warn' : ''}">${warn ? ic.warn : ic.ok}${txt}</span>`;
+
+const views = {
+
+  resumen: `
+    <div class="viewer-title">${ic.tbl} posicion-2026-06-03.json</div>
+    <table>
+      <tr><th>Concepto</th><th>Detalle</th><th class="num">USD</th></tr>
+      <tr class="group-row"><td colspan="3">Resumen · mié 03-jun · BCV 558,6436</td></tr>
+      <tr><td style="font-weight:500;">Posición total (verificada)</td><td style="color:var(--text-muted);">17 cuentas activas · 10 bancos</td><td class="num" style="font-weight:500;">399.481</td></tr>
+      <tr><td>Δ vs ayer</td><td style="color:var(--text-muted);">−1,8%</td><td class="num neg">−7.386</td></tr>
+      <tr><td style="padding-left:22px;">Flujos</td><td style="color:var(--text-muted);">3 movimientos ≥ $1.000</td><td class="num neg">−7.086</td></tr>
+      <tr><td style="padding-left:22px;">Devaluación</td><td style="color:var(--text-muted);">BCV +0,76% ayer</td><td class="num neg">−300</td></tr>
+      <tr><td style="padding-left:22px;">Sin explicar</td><td style="color:var(--text-muted);">todos los saldos cuadran</td><td class="num">0</td></tr>
+      <tr class="group-row"><td colspan="3">Por moneda</td></tr>
+      <tr><td>USD <span style="color:var(--text-faint);">· 87,9%</span></td><td class="num" style="text-align:left; font-family:var(--mono); color:var(--text-muted);">$351.139</td><td class="num">351.139</td></tr>
+      <tr><td>VES <span style="color:var(--text-faint);">· 12,1%</span></td><td class="num" style="text-align:left; font-family:var(--mono); color:var(--text-muted);">Bs 27.005.869 <span class="neg" style="font-family:var(--mono); font-size:11px;">· deval −$300</span></td><td class="num">48.342</td></tr>
+      <tr><td>EUR <span style="color:var(--text-faint);">· 0%</span></td><td class="num" style="text-align:left; font-family:var(--mono); color:var(--text-muted);">€0</td><td class="num">0</td></tr>
+      <tr class="group-row"><td colspan="3">Por entidad (USD)</td></tr>
+      <tr><td>Tesote Technologies Inc <span style="color:var(--text-faint);">(US)</span></td><td style="color:var(--text-muted);">5 cuentas · 87,7%</td><td class="num">350.394</td></tr>
+      <tr><td>TST Servicios y Consultoría <span style="color:var(--text-faint);">(VE)</span></td><td style="color:var(--text-muted);">12 cuentas · 12,3%</td><td class="num">49.087</td></tr>
+    </table>
+    <div class="tbl-foot">Cuentas manuales (sin verificación bancaria): $35.864 — fuera del total.</div>
+  `,
+
+  cuentas: `
+    <div class="viewer-title">${ic.tbl} cuentas-2026-06-03.json</div>
+    <table>
+      <tr><th>Cuenta</th><th class="num">Saldo</th><th class="num">USD</th><th>Sync</th></tr>
+      <tr class="group-row"><td colspan="4">TST Servicios y Consultoría (VE) <span class="sub">$49.087</span></td></tr>
+      <tr><td>BNC ··2916</td><td class="num">Bs 25.852.568</td><td class="num">46.277</td><td>${sync('hoy 06:58')}</td></tr>
+      <tr><td>Bancamiga ··6733</td><td class="num">Bs 564.999</td><td class="num">1.011</td><td>${sync('hoy 07:02')}</td></tr>
+      <tr><td>Banplus ··0861</td><td class="num">Bs 553.903</td><td class="num">992</td><td>${sync('hoy 06:45')}</td></tr>
+      <tr><td>BNC ··1729</td><td class="num">$650</td><td class="num">650</td><td>${sync('hoy 06:58')}</td></tr>
+      <tr><td>Bancamiga ··3755</td><td class="num">$95</td><td class="num">95</td><td>${sync('hoy 07:02')}</td></tr>
+      <tr><td>Banco Activo ··6280</td><td class="num">Bs 31.015</td><td class="num">56</td><td>${sync('ayer 22:10')}</td></tr>
+      <tr><td>BBVA ··7086</td><td class="num">Bs 886</td><td class="num">2</td><td>${sync('hace 2 días', true)}</td></tr>
+      <tr><td>Banco Exterior ··1849</td><td class="num">$—</td><td class="num">—</td><td>${sync('hace 3 días', true)}</td></tr>
+      <tr><td style="color:var(--text-faint);">+ 7 cuentas en cero</td><td class="num" style="color:var(--text-faint);">—</td><td class="num" style="color:var(--text-faint);">0</td><td></td></tr>
+      <tr class="group-row"><td colspan="4">Tesote Technologies Inc (US) <span class="sub">$350.394</span></td></tr>
+      <tr><td>Cuenta corporativa ··4061</td><td class="num">$134.276</td><td class="num">134.276</td><td>${sync('hoy 07:05')}</td></tr>
+      <tr><td>Rho Cash (Checking)</td><td class="num">$125.145</td><td class="num">125.145</td><td>${sync('hoy 07:05')}</td></tr>
+      <tr><td>Mercury Checking</td><td class="num">$80.332</td><td class="num">80.332</td><td>${sync('hoy 07:35')}</td></tr>
+      <tr><td>Chase BUS COMPLETE</td><td class="num">$10.641</td><td class="num">10.641</td><td>${sync('ayer 15:39')}</td></tr>
+      <tr class="group-row"><td colspan="4">Cuentas manuales — sin verificación <span class="sub">$35.864</span></td></tr>
+      <tr><td>Caja Chica</td><td class="num">$28.413</td><td class="num">28.413</td><td><span class="sync">manual</span></td></tr>
+      <tr><td>Otro activo</td><td class="num">$7.451</td><td class="num">7.451</td><td><span class="sync">manual</span></td></tr>
+    </table>
+  `,
+
+  movs: `
+    <div class="viewer-title">${ic.tbl} movimientos-2026-06-03.json</div>
+    <table>
+      <tr><th>Movimiento</th><th>Cuenta</th><th class="num">Monto</th><th class="num">USD eq.</th></tr>
+      <tr><td>Pago recibido — COVENCAUCHO INDUSTRIAS <span class="tag-new">nueva contraparte</span></td><td>BNC ··2916</td><td class="num pos">+Bs 5.000.000</td><td class="num pos">+8.950</td></tr>
+      <tr><td>Million Web</td><td>Mercury Checking</td><td class="num neg">−$14.264</td><td class="num neg">−14.264</td></tr>
+      <tr><td>Rho Card Payment</td><td>Rho Cash</td><td class="num neg">−$1.711</td><td class="num neg">−1.711</td></tr>
+    </table>
+    <div class="tbl-foot">4 movimientos más bajo el umbral de $1.000 — pídemelos en el chat si los quieres ver.</div>
+  `,
+
+  control: `
+    <div class="viewer-title">${ic.tbl} control-2026-06-03.json</div>
+    <table>
+      <tr><th>Chequeo</th><th>Detalle</th><th class="num">Estado</th></tr>
+      <tr><td>Saldos vs movimientos (ε)</td><td>Todas las cuentas cuadran al centavo</td><td class="num"><span class="status-pill pill-ok">OK</span></td></tr>
+      <tr><td>Conexiones sin sincronizar &gt;24h</td><td>Banco Exterior (3 días) · BBVA ··7086 (2 días)</td><td class="num"><span class="status-pill pill-warn">Revisar</span></td></tr>
+      <tr><td>Sin categorizar</td><td>12 transacciones (3 de ayer)</td><td class="num"><span class="status-pill pill-warn">Revisar</span></td></tr>
+      <tr><td>Contrapartes nuevas</td><td>COVENCAUCHO INDUSTRIAS — primera vez en tus cuentas</td><td class="num"><span class="status-pill pill-info">Info</span></td></tr>
+    </table>
+    <div class="tbl-foot">Dime "categoriza las 12 pendientes" o "crea la contraparte COVENCAUCHO" y lo resolvemos aquí mismo.</div>
+  `
+};
+
+function selectFile(key) {
+  document.getElementById('viewer').innerHTML = views[key];
+  document.querySelectorAll('.tree-item').forEach(el => el.classList.remove('sel'));
+  document.getElementById('t-' + key).classList.add('sel');
+}
+selectFile('resumen');
+</script>
+</body>
+</html>

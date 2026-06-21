@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Del banco a Odoo, automáticamente — Tesote</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fafbfd;
+    --surface: #ffffff;
+    --surface-2: #f1f4f9;
+    --line: rgba(13,17,23,0.10);
+    --text: #0d1117;
+    --text-dim: #4a5260;
+    --text-faint: #97a1ae;
+    --blue: #1661e2;
+    --blue-soft: #4d8dff;
+    --blue-dim: rgba(22,97,226,0.10);
+    --dark: #0d1117;
+    --dark-text: #f2f5f9;
+    --serif: 'Instrument Serif', Georgia, serif;
+    --sans: 'Inter', -apple-system, sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  ::selection { background: var(--blue); color: #fff; }
+
+  /* ---------- progress ---------- */
+  #progress {
+    position: fixed; top: 0; left: 0; height: 2px; width: 0%;
+    background: var(--blue); z-index: 100;
+    transition: width 0.1s linear;
+  }
+
+  /* ---------- shared ---------- */
+  section { position: relative; padding: 16vh 24px; }
+  .wrap { max-width: 680px; margin: 0 auto; }
+  .wrap-wide { max-width: 920px; margin: 0 auto; }
+
+  .kicker {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--blue); margin-bottom: 28px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .kicker::after { content: ''; height: 1px; flex: 1; background: var(--line); }
+
+  h2 {
+    font-family: var(--serif); font-weight: 400; font-size: clamp(34px, 5vw, 52px);
+    line-height: 1.12; letter-spacing: -0.01em; margin-bottom: 28px; color: var(--text);
+  }
+  h2 em { font-style: italic; color: var(--blue); }
+  p { color: var(--text-dim); margin-bottom: 22px; }
+  p strong { color: var(--text); font-weight: 500; }
+  .note { font-family: var(--mono); font-size: 12.5px; color: var(--text-faint); line-height: 1.7; }
+
+  /* reveal */
+  .rv { opacity: 0; transform: translateY(28px); transition: opacity 0.9s cubic-bezier(.2,.7,.3,1), transform 0.9s cubic-bezier(.2,.7,.3,1); }
+  .rv.in { opacity: 1; transform: none; }
+  .rv.d1 { transition-delay: 0.12s; } .rv.d2 { transition-delay: 0.24s; }
+  .rv.d3 { transition-delay: 0.36s; } .rv.d4 { transition-delay: 0.48s; }
+
+  /* ---------- hero ---------- */
+  #hero {
+    min-height: 100vh; display: flex; flex-direction: column;
+    justify-content: center; align-items: center; text-align: center;
+    padding: 24px; position: relative; overflow: hidden;
+  }
+  #hero-grid {
+    position: absolute; inset: 0; opacity: 0.6; pointer-events: none;
+    font-family: var(--mono); font-size: 11px; color: #b9c1cd;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0; align-content: space-between; padding: 4vh 3vw;
+    mask-image: radial-gradient(ellipse 75% 65% at 50% 50%, transparent 32%, black 78%);
+    -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 50%, transparent 32%, black 78%);
+  }
+  #hero-grid span { padding: 1.4vh 0; opacity: 0.55; transition: opacity 2.4s ease, color 2.4s ease; }
+  #hero-grid span.posted { opacity: 0.95; color: var(--blue); }
+  .hero-eyebrow {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--text-faint); margin-bottom: 30px;
+  }
+  h1 {
+    font-family: var(--serif); font-weight: 400;
+    font-size: clamp(50px, 9.5vw, 116px); line-height: 0.98; letter-spacing: -0.015em;
+  }
+  h1 .it { font-style: italic; color: var(--blue); }
+  .hero-sub {
+    margin-top: 34px; max-width: 520px; color: var(--text-dim);
+    font-size: 18px; line-height: 1.6;
+  }
+  .hero-sub em { color: var(--text); font-style: normal; border-bottom: 1px solid var(--blue); }
+  .scroll-hint {
+    position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%);
+    color: var(--text-faint); animation: bob 2.6s ease-in-out infinite;
+  }
+  @keyframes bob { 0%,100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, 8px); } }
+
+  /* ---------- live ledger ---------- */
+  .ledger { margin: 52px 0 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); overflow: hidden; box-shadow: 0 1px 3px rgba(13,17,23,0.05); }
+  .ledger-head {
+    display: flex; align-items: center; gap: 10px; padding: 14px 20px;
+    border-bottom: 1px solid var(--line); background: var(--surface-2);
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-faint);
+  }
+  .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--blue); box-shadow: 0 0 8px rgba(22,97,226,0.5); animation: pulse 2.2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+  .ledger-row {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 14px;
+    padding: 13px 20px; border-bottom: 1px solid var(--line);
+    font-family: var(--mono); font-size: 12.5px;
+  }
+  .ledger-row:last-child { border-bottom: none; }
+  .ledger-row .desc { color: var(--text-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ledger-row .amt { color: var(--text); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .ledger-row .amt.neg { color: var(--text-dim); }
+  .ledger-row .amt.pos { color: var(--blue); }
+
+  /* ---------- before/after cards ---------- */
+  .tokens { display: flex; gap: 28px; margin: 56px 0 24px; flex-wrap: wrap; align-items: stretch; }
+  .token { flex: 1; min-width: 250px; border-radius: 10px; padding: 34px 28px; position: relative; background: var(--surface); }
+  .token.generic { border: 1px dashed rgba(13,17,23,0.25); background: transparent; }
+  .token.generic .tv { color: var(--text-dim); }
+  .token.yours { border: 1px solid rgba(22,97,226,0.5); background: radial-gradient(110% 110% at 50% 0%, rgba(22,97,226,0.07), var(--surface) 70%); box-shadow: 0 1px 3px rgba(13,17,23,0.05); }
+  .token .tt { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 14px; }
+  .token .tv { font-family: var(--mono); font-size: 13px; line-height: 1.7; color: var(--text); margin-bottom: 16px; }
+  .token.yours .tv { color: var(--blue); }
+  .token .tv b { color: var(--text); font-weight: 500; }
+  .token .tn { font-family: var(--serif); font-size: 24px; line-height: 1.25; color: var(--text); margin-bottom: 10px; }
+  .token .td { font-size: 13.5px; color: var(--text-dim); line-height: 1.6; }
+  .tokens-arrow {
+    flex: 0 0 auto; display: flex; align-items: center; justify-content: center;
+    color: var(--blue); min-width: 40px;
+  }
+
+  /* ---------- the law (T-1) ---------- */
+  #law { background: var(--surface-2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); text-align: center; padding: 22vh 24px; }
+  #law .big {
+    font-family: var(--serif); font-weight: 400;
+    font-size: clamp(34px, 5.6vw, 62px); line-height: 1.18; max-width: 880px; margin: 0 auto;
+  }
+  #law .big .fade1 { color: var(--text); }
+  #law .big .fade2 { color: var(--blue); font-style: italic; }
+  #law .seq { display: block; margin-top: 0.4em; }
+  #law .coda { margin-top: 44px; font-family: var(--mono); font-size: 13px; color: var(--text-faint); letter-spacing: 0.08em; }
+
+  /* ---------- timeline ---------- */
+  .timeline { margin: 56px auto 10px; max-width: 760px; position: relative; padding: 28px 0 8px; }
+  .tl-track { position: relative; height: 2px; background: #e2e7f0; border-radius: 2px; overflow: visible; }
+  .tl-fill { position: absolute; left: 0; top: 0; height: 100%; width: 0; background: var(--blue); transition: width 2.6s cubic-bezier(.25,.6,.3,1) 0.4s; }
+  .timeline.in .tl-fill { width: 100%; }
+  .tl-stops { display: flex; justify-content: space-between; margin-top: 22px; gap: 10px; }
+  .tl-stop { flex: 1; }
+  .tl-stop .tt { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--blue); margin-bottom: 8px; }
+  .tl-stop .tn { font-family: var(--serif); font-size: 21px; color: var(--text); line-height: 1.25; margin-bottom: 6px; }
+  .tl-stop .td { font-size: 13px; color: var(--text-dim); line-height: 1.55; }
+  .tl-stop:nth-child(2) { text-align: center; }
+  .tl-stop:last-child { text-align: right; }
+  .tl-dot { position: absolute; top: -4px; width: 10px; height: 10px; border-radius: 50%; background: var(--bg); border: 1.5px solid var(--text-faint); }
+  .tl-dot.b { background: var(--blue); border-color: var(--blue); box-shadow: 0 0 10px rgba(22,97,226,0.5); }
+
+  /* ---------- stat callout ---------- */
+  .statline { display: flex; align-items: baseline; gap: 24px; margin: 48px 0; flex-wrap: wrap; }
+  .statline .sn { font-family: var(--serif); font-size: clamp(54px, 9vw, 96px); color: var(--blue); line-height: 1; white-space: nowrap; }
+  .statline .sd { flex: 1; min-width: 220px; font-size: 15px; color: var(--text-dim); line-height: 1.6; }
+  .statline .sd b { color: var(--text); font-weight: 500; }
+
+  /* ---------- posted entry mock ---------- */
+  .posted-card {
+    margin: 52px 0 18px; border: 1px solid rgba(22,97,226,0.45); border-radius: 10px;
+    background: radial-gradient(130% 130% at 50% 0%, rgba(22,97,226,0.05), var(--surface) 65%);
+    overflow: hidden; box-shadow: 0 1px 3px rgba(13,17,23,0.05);
+  }
+  .posted-head {
+    padding: 14px 22px; border-bottom: 1px solid var(--line);
+    font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--blue);
+    display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+  }
+  .posted-head span:last-child { color: var(--text-faint); }
+  .posted-line { display: grid; grid-template-columns: 150px 1fr; gap: 14px; padding: 13px 22px; border-bottom: 1px solid var(--line); font-family: var(--mono); font-size: 12.5px; }
+  .posted-line:last-child { border-bottom: none; }
+  .posted-line .k { color: var(--text-faint); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; padding-top: 2px; }
+  .posted-line .v { color: var(--text); line-height: 1.55; }
+  .posted-line .v i { font-style: normal; color: var(--blue); }
+  .posted-line .v small { display: block; color: var(--text-faint); font-size: 11px; margin-top: 2px; }
+
+  /* ---------- mapping table ---------- */
+  .mapping { margin: 56px 0 18px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); overflow: hidden; box-shadow: 0 1px 3px rgba(13,17,23,0.05); }
+  .map-row {
+    display: grid; grid-template-columns: 1fr 44px 1fr; align-items: center;
+    padding: 18px 22px; border-bottom: 1px solid var(--line); gap: 8px;
+  }
+  .map-row:last-of-type { border-bottom: none; }
+  .map-row .from { font-family: var(--mono); font-size: 12.5px; color: var(--text); }
+  .map-row .from small { display: block; color: var(--text-faint); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 4px; }
+  .map-row .to { font-family: var(--mono); font-size: 12.5px; color: var(--text-dim); text-align: right; }
+  .map-row .to small { display: block; color: var(--text-faint); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 4px; }
+  .map-arrow { color: var(--blue); text-align: center; font-family: var(--mono); font-size: 14px; }
+  .map-version {
+    padding: 13px 22px; background: var(--surface-2); border-top: 1px solid var(--line);
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--blue);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+  }
+  .map-version span:last-child { color: var(--text-faint); }
+
+  /* ---------- finale (dark inversion) ---------- */
+  #finale { background: var(--dark); color: var(--dark-text); padding: 20vh 24px; }
+  #finale .kicker { color: var(--blue-soft); }
+  #finale .kicker::after { background: rgba(255,255,255,0.14); }
+  #finale h2 { color: var(--dark-text); }
+  #finale h2 em { color: var(--blue-soft); }
+  #finale p { color: #97a1ae; }
+  #finale .imperatives { margin: 56px 0; }
+  #finale .imp {
+    font-family: var(--serif); font-size: clamp(28px, 4.4vw, 44px); line-height: 1.25;
+    padding: 26px 0; border-top: 1px solid rgba(255,255,255,0.14); color: var(--dark-text);
+  }
+  #finale .imp:last-child { border-bottom: 1px solid rgba(255,255,255,0.14); }
+  #finale .imp .n { font-family: var(--mono); font-size: 13px; color: var(--blue-soft); vertical-align: super; margin-right: 14px; }
+  #finale .imp em { font-style: italic; color: var(--blue-soft); }
+  #finale .closer {
+    margin-top: 64px; font-family: var(--serif); font-style: italic;
+    font-size: clamp(22px, 3vw, 30px); line-height: 1.45; color: var(--dark-text);
+    max-width: 640px;
+  }
+  footer {
+    background: var(--dark); color: #5a6472; padding: 0 24px 60px;
+    font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.06em; line-height: 1.8;
+  }
+  footer .wrap { border-top: 1px solid rgba(255,255,255,0.12); padding-top: 24px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .rv, .tl-fill { transition: none !important; }
+    .rv { opacity: 1; transform: none; }
+    .timeline .tl-fill { width: 100%; }
+    .scroll-hint, .live-dot { animation: none; }
+  }
+  @media (max-width: 640px) {
+    .tokens-arrow { width: 100%; transform: rotate(90deg); min-height: 40px; }
+    .tl-stops { flex-direction: column; gap: 24px; }
+    .tl-stop:nth-child(2), .tl-stop:last-child { text-align: left; }
+    .posted-line { grid-template-columns: 1fr; gap: 4px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<!-- ============ HERO ============ -->
+<section id="hero">
+  <div id="hero-grid" aria-hidden="true"></div>
+  <div class="hero-eyebrow rv">tesote → odoo · carga bancaria automática</div>
+  <h1 class="rv d1">Del banco a Odoo,<br><span class="it">automáticamente.</span></h1>
+  <p class="hero-sub rv d2">Los movimientos bancarios llegan a Tesote, se <em>verifican</em>, y al día siguiente aparecen en Odoo — en su cuenta bancaria, listos para conciliar.</p>
+  <div class="scroll-hint" aria-hidden="true">
+    <svg width="18" height="26" viewBox="0 0 18 26" fill="none"><path d="M9 2v18M3 14l6 7 6-7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+</section>
+
+<!-- ============ 01 LOS DATOS LLEGAN ============ -->
+<section id="s01">
+  <div class="wrap">
+    <div class="kicker rv">01 · Los datos llegan</div>
+    <h2 class="rv">Cada movimiento, <em>apenas sucede.</em></h2>
+    <p class="rv d1">Tesote se conecta a tus bancos y trae cada movimiento de cada cuenta, todos los días — normalizado, sin duplicados, en todas tus monedas. <strong>Nadie descarga estados de cuenta. Nadie transcribe.</strong></p>
+    <div class="ledger rv d2">
+      <div class="ledger-head"><span class="live-dot"></span><span>en vivo · todos los bancos · todas las cuentas · diario</span></div>
+      <div class="ledger-row"><span class="desc">06-11 · TRF RECIBIDA · DISTRIBUIDORA LUNOUR</span><span class="amt pos">+4,820.00 USD</span></div>
+      <div class="ledger-row"><span class="desc">06-11 · PAGO PROVEEDOR · COMBUSTIBLES ANDINA</span><span class="amt neg">−1,135.20 USD</span></div>
+      <div class="ledger-row"><span class="desc">06-11 · PAGO MÓVIL RECIBIDO · REF 088412</span><span class="amt pos">+312.40 USD</span></div>
+      <div class="ledger-row"><span class="desc">06-11 · COMISIÓN MANTENIMIENTO CTA</span><span class="amt neg">−12.00 USD</span></div>
+      <div class="ledger-row"><span class="desc">06-11 · NÓMINA · LOTE 2026-11Q1</span><span class="amt neg">−8,640.00 USD</span></div>
+    </div>
+    <p class="note rv d3">todo empieza aquí: el registro completo y al día de lo que pasó en el banco</p>
+  </div>
+</section>
+
+<!-- ============ 02 TESOTE VERIFICA ============ -->
+<section id="s02">
+  <div class="wrap">
+    <div class="kicker rv">02 · Tesote verifica</div>
+    <h2 class="rv">Antes de tocar tus libros, <em>cada línea se trabaja.</em></h2>
+    <p class="rv d1">En Tesote, cada movimiento se limpia, recibe su <strong>categoría</strong> y su <strong>contraparte</strong>. Las reglas y la IA sugieren; tu equipo aprueba, corrige o completa. Lo que el banco entrega como una línea críptica queda convertido en información de finanzas.</p>
+    <div class="tokens rv d2">
+      <div class="token generic">
+        <div class="tt">Como llega del banco</div>
+        <div class="tv">06-11 · TRF 088412<br>PAGO PROV COMB AND<br>−1,135.20</div>
+        <div class="tn">Una referencia y un monto</div>
+        <div class="td">Quién es, de qué es, a qué corresponde — el banco no lo dice.</div>
+      </div>
+      <div class="tokens-arrow" aria-hidden="true">
+        <svg width="40" height="24" viewBox="0 0 44 24" fill="none"><path d="M2 12h36M30 4l8 8-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="token yours">
+        <div class="tt">Como queda en Tesote</div>
+        <div class="tv"><b>Contraparte</b> · Combustibles Andina<br><b>Categoría</b> · Operaciones &gt; Logística &gt; Combustible<br><b>Estado</b> · Verificado</div>
+        <div class="tn">Información completa</div>
+        <div class="td">Limpia, categorizada y con su contraparte asignada — revisada por tu equipo antes de salir hacia Odoo.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LA LEY (T-1) ============ -->
+<section id="law">
+  <div class="big">
+    <span class="seq rv fade1">El banco cierra el día.</span>
+    <span class="seq rv d2 fade1">Tesote verifica cada movimiento.</span>
+    <span class="seq rv d4 fade2">Al día siguiente, ya está en Odoo.</span>
+  </div>
+  <div class="coda rv d4">t-1 · automático · cada día hábil</div>
+</section>
+
+<!-- ============ 03 LA CARGA ============ -->
+<section id="s03">
+  <div class="wrap-wide">
+    <div class="wrap">
+      <div class="kicker rv">03 · La carga a Odoo</div>
+      <h2 class="rv">Ayer, <em>cargado automáticamente.</em></h2>
+      <p class="rv d1">Cuando cierra el día bancario, Tesote toma los movimientos verificados y los envía a Odoo durante la noche. <strong>Sin archivos, sin cargas manuales, sin volver a teclear nada.</strong></p>
+    </div>
+    <div class="timeline rv d2" id="tl">
+      <div class="tl-track">
+        <div class="tl-fill"></div>
+        <div class="tl-dot" style="left: 0;"></div>
+        <div class="tl-dot" style="left: calc(50% - 5px);"></div>
+        <div class="tl-dot b" style="right: 0;"></div>
+      </div>
+      <div class="tl-stops">
+        <div class="tl-stop">
+          <div class="tt">Durante el día</div>
+          <div class="tn">Los movimientos llegan</div>
+          <div class="td">Tesote los captura en vivo y tu equipo los verifica: categoría, contraparte, listo.</div>
+        </div>
+        <div class="tl-stop">
+          <div class="tt">Durante la noche</div>
+          <div class="tn">Tesote envía</div>
+          <div class="td">Solo datos verificados — cada movimiento viaja a Odoo ya traducido a su cuenta y su tercero.</div>
+        </div>
+        <div class="tl-stop">
+          <div class="tt">A la mañana siguiente</div>
+          <div class="tn">Ya está en Odoo</div>
+          <div class="td">En su cuenta bancaria, completo y ordenado, listo para conciliar.</div>
+        </div>
+      </div>
+    </div>
+    <div class="wrap">
+      <div class="statline rv d3">
+        <div class="sn">T−1</div>
+        <div class="sd"><b>Tus libros nunca están a más de un día del banco.</b> Cada mañana, todo lo de ayer ya está cargado en Odoo — verificado en Tesote antes de tocar la contabilidad.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 04 LO QUE ATERRIZA ============ -->
+<section id="s04">
+  <div class="wrap">
+    <div class="kicker rv">04 · Lo que aterriza en Odoo</div>
+    <h2 class="rv">En su cuenta, <em>listo para conciliar.</em></h2>
+    <p class="rv d1">Cada movimiento llega a la cuenta bancaria que le corresponde en Odoo, con su contraparte y su categoría ya traducidas al plan de cuentas. <strong>El contador no carga datos: concilia.</strong></p>
+    <div class="posted-card rv d2">
+      <div class="posted-head"><span>movimiento en odoo</span><span>cargado por tesote · 2026-06-12 06:00</span></div>
+      <div class="posted-line"><span class="k">fecha</span><span class="v">2026-06-11</span></div>
+      <div class="posted-line"><span class="k">monto</span><span class="v">−1,135.20 USD</span></div>
+      <div class="posted-line"><span class="k">cuenta bancaria</span><span class="v">Diario bancario ****0412 <i>← Cta. corriente USD ****0412</i><small>mapeada al integrar la conexión</small></span></div>
+      <div class="posted-line"><span class="k">tercero</span><span class="v">Combustibles Andina<small>contraparte ya verificada en tesote</small></span></div>
+      <div class="posted-line"><span class="k">cuenta contable</span><span class="v">6.2.1 Combustibles y Lubricantes <i>← Operaciones &gt; Logística &gt; Combustible</i><small>categoría traducida automáticamente</small></span></div>
+      <div class="posted-line"><span class="k">estado</span><span class="v">Listo para conciliar<small>llega como línea de estado de cuenta, en orden y sin duplicados</small></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 05 LA CONFIGURACIÓN ============ -->
+<section id="s05">
+  <div class="wrap">
+    <div class="kicker rv">05 · La configuración</div>
+    <h2 class="rv">Se configura <em>una sola vez.</em></h2>
+    <p class="rv d1">Al integrar la conexión por primera vez se define el mapa: qué cuenta bancaria alimenta qué cuenta en Odoo, y cómo se traducen tus categorías y contrapartes. <strong>Después de eso, todo corre solo.</strong></p>
+    <div class="mapping rv d2">
+      <div class="map-row">
+        <div class="from">Cta. corriente USD ****0412<small>cuenta en tesote</small></div>
+        <div class="map-arrow">→</div>
+        <div class="to">Diario bancario ****0412<small>cuenta bancaria en odoo</small></div>
+      </div>
+      <div class="map-row">
+        <div class="from">Cta. corriente Bs ****8830<small>cuenta en tesote</small></div>
+        <div class="map-arrow">→</div>
+        <div class="to">Diario bancario ****8830<small>cuenta bancaria en odoo</small></div>
+      </div>
+      <div class="map-row">
+        <div class="from">Categorías de Tesote<small>cómo piensa tu negocio</small></div>
+        <div class="map-arrow">→</div>
+        <div class="to">Plan de cuentas<small>cómo piensan tus libros</small></div>
+      </div>
+      <div class="map-row">
+        <div class="from">Contrapartes de Tesote<small>clientes y proveedores</small></div>
+        <div class="map-arrow">→</div>
+        <div class="to">Terceros en Odoo<small>sin duplicados</small></div>
+      </div>
+      <div class="map-version"><span>se define al integrar la conexión</span><span>editable cuando lo necesites — sin tocar lo ya cargado</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FINALE ============ -->
+<section id="finale">
+  <div class="wrap">
+    <div class="kicker rv">06 · En resumen</div>
+    <h2 class="rv">Tu banco y tus libros,<br><em>siempre de acuerdo.</em></h2>
+    <div class="imperatives rv d1">
+      <div class="imp"><span class="n">i</span>Los datos llegan solos — cada banco, todos los días.</div>
+      <div class="imp"><span class="n">ii</span>Llegan <em>verificados</em> — limpios, categorizados, con su contraparte.</div>
+      <div class="imp"><span class="n">iii</span>Llegan listos para <em>conciliar</em> — en su cuenta de Odoo, al día siguiente.</div>
+    </div>
+    <p class="closer rv d2">"Configúralo una vez. Cada mañana, ayer ya está en tus libros."</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    tesote → odoo · carga bancaria automática · datos de muestra ilustrativos
+  </div>
+</footer>
+
+<script>
+(function () {
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* progress bar */
+  var bar = document.getElementById('progress');
+  function onScroll() {
+    var h = document.documentElement;
+    var p = h.scrollTop / (h.scrollHeight - h.clientHeight);
+    bar.style.width = (p * 100) + '%';
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  /* hero grid: movimientos bancarios que se van cargando (se vuelven azules) */
+  var grid = document.getElementById('hero-grid');
+  var kinds = ['TRF', 'PAGO MÓVIL', 'NÓMINA', 'COMISIÓN', 'DEP', 'CHQ'];
+  var cells = [];
+  for (var i = 0; i < 48; i++) {
+    var s = document.createElement('span');
+    var k = kinds[i % kinds.length];
+    var ref = String(10000 + ((i * 731) % 89999));
+    var amt = (50 + ((i * 137) % 9000)) + '.' + (10 + ((i * 13) % 89));
+    s.textContent = k + ' ' + ref + ' · ' + amt + ' USD';
+    grid.appendChild(s);
+    cells.push(s);
+  }
+  if (!reduced) {
+    var k2 = 0;
+    setInterval(function () {
+      cells[(k2 * 17) % cells.length].classList.add('posted');
+      k2++;
+    }, 700);
+  }
+
+  /* reveals */
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.18 });
+  document.querySelectorAll('.rv, #tl').forEach(function (el) { io.observe(el); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1258 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tesote AI — Capability Browser v0.1</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --white: #ffffff;
+    --gray-50: #f7f5f0;
+    --gray-100: #f0ebe0;
+    --gray-200: #e8e3da;
+    --gray-300: #d8d0c2;
+    --gray-400: #b8b0a4;
+    --gray-600: #857d73;
+    --gray-800: #3d3a35;
+    --gray-1000: #12110f;
+    --brand: #1661e2;
+    --brand-soft: #eef8ff;
+
+    --auto: #c9d8c5;       /* autopilot — verde calmo */
+    --auto-tint: #eef3eb;
+    --draft: #f1ddb8;      /* borrador — ámbar */
+    --draft-tint: #f9efd9;
+    --sched: #c8d6e7;      /* agendado — azul */
+    --sched-tint: #e6edf6;
+    --chat: #e0dbd0;       /* chat — neutro */
+    --chat-tint: #efece4;
+    --live: #5b8a4f;       /* shipped */
+
+    --bg: var(--gray-100);
+    --surface: var(--white);
+    --surface-2: var(--gray-50);
+    --border: var(--gray-200);
+    --border-strong: var(--gray-300);
+    --text-primary: var(--gray-1000);
+    --text-secondary: var(--gray-600);
+    --text-muted: var(--gray-400);
+
+    --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --font-serif: 'Instrument Serif', ui-serif, Georgia, serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+    --radius: 6px;
+    --radius-lg: 10px;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.6;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ────────── icons ────────── */
+  .icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px; height: 16px;
+    color: inherit;
+    flex-shrink: 0;
+  }
+  .icon svg { width: 100%; height: 100%; stroke-width: 1.5; }
+  .icon-sm { width: 14px; height: 14px; }
+  .icon-lg { width: 20px; height: 20px; }
+
+  /* ────────── topbar ────────── */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 32px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--text-primary);
+  }
+  .brand-mark {
+    width: 22px; height: 22px;
+    background: var(--gray-1000);
+    color: var(--gray-50);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    font-family: var(--font-serif);
+    font-size: 14px;
+    line-height: 1;
+  }
+  .topbar-search {
+    flex: 1;
+    max-width: 420px;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text-secondary);
+    font-size: 13px;
+  }
+  .topbar-search input {
+    flex: 1;
+    border: 0;
+    background: transparent;
+    outline: 0;
+    font: inherit;
+    color: inherit;
+  }
+  .topbar-search input::placeholder { color: var(--text-muted); }
+  .topbar-meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+  }
+
+  /* ────────── container ────────── */
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 48px 32px 96px;
+  }
+
+  /* ────────── hero ────────── */
+  .hero { margin-bottom: 28px; }
+  .hero h1 {
+    font-family: var(--font-serif);
+    font-size: 44px;
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    margin: 0 0 12px;
+    color: var(--text-primary);
+  }
+  .hero h1 em { font-style: italic; color: var(--text-secondary); }
+  .hero .lede {
+    font-size: 17px;
+    line-height: 1.5;
+    color: var(--text-secondary);
+    margin: 0;
+    max-width: 720px;
+  }
+
+  /* ────────── filters ────────── */
+  .filter-row {
+    margin: 24px 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 28px;
+    padding: 0 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.12s ease;
+  }
+  .chip:hover { background: var(--surface-2); color: var(--text-primary); }
+  .chip[aria-pressed="true"] {
+    background: var(--gray-1000);
+    color: var(--gray-50);
+    border-color: var(--gray-1000);
+  }
+  .chip-count {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-left: 2px;
+  }
+  .chip[aria-pressed="true"] .chip-count { color: var(--gray-300); }
+
+  /* ────────── stats bar ────────── */
+  .stats {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin: 12px 0 32px;
+    padding: 14px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+  .stats strong {
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+  .stats .sep { color: var(--text-muted); }
+
+  /* ────────── job sections ────────── */
+  .jobs {
+    display: grid;
+    gap: 20px;
+  }
+  .job {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 24px 24px 8px;
+  }
+  .job-head {
+    display: grid;
+    grid-template-columns: 32px 1fr auto;
+    align-items: start;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+  .job-number {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    background: var(--gray-50);
+    border: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-secondary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+  }
+  .job-title {
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 1.2;
+    margin: 0 0 4px;
+    color: var(--text-primary);
+  }
+  .job-lede {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text-secondary);
+    margin: 0;
+    max-width: 760px;
+  }
+  .job-counts {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+  }
+  .count-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 22px;
+    padding: 0 8px;
+    border-radius: 4px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1;
+  }
+  .count-pill .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .count-pill.auto .dot { background: var(--auto); }
+  .count-pill.draft .dot { background: var(--draft); }
+  .count-pill.sched .dot { background: var(--sched); }
+  .count-pill.chat .dot { background: var(--chat); }
+
+  /* ────────── mode columns ────────── */
+  .modes {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .mode {
+    background: var(--surface);
+    padding: 14px 14px 18px;
+    min-height: 200px;
+  }
+  .mode-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .mode-head .icon {
+    width: 14px; height: 14px;
+    color: var(--gray-800);
+  }
+  .mode-head .label {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
+  }
+  .mode-head .count {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .mode.auto .mode-head { background: linear-gradient(180deg, var(--auto-tint), transparent); margin: -14px -14px 12px; padding: 14px; border-radius: 0; border-bottom: 1px solid var(--border); }
+  .mode.draft .mode-head { background: linear-gradient(180deg, var(--draft-tint), transparent); margin: -14px -14px 12px; padding: 14px; border-radius: 0; border-bottom: 1px solid var(--border); }
+  .mode.sched .mode-head { background: linear-gradient(180deg, var(--sched-tint), transparent); margin: -14px -14px 12px; padding: 14px; border-radius: 0; border-bottom: 1px solid var(--border); }
+  .mode.chat .mode-head { background: linear-gradient(180deg, var(--chat-tint), transparent); margin: -14px -14px 12px; padding: 14px; border-radius: 0; border-bottom: 1px solid var(--border); }
+
+  /* ────────── workflow rows ────────── */
+  .workflows {
+    display: grid;
+    gap: 4px;
+  }
+  .wf {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 5px;
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--text-primary);
+    background: transparent;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.12s ease;
+  }
+  .wf:hover {
+    background: var(--surface-2);
+    border-color: var(--border);
+  }
+  .wf-text {
+    min-width: 0;
+    word-break: break-word;
+  }
+  .wf-affordance {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+  }
+  .wf:hover .wf-affordance { color: var(--text-secondary); }
+  .wf .live {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--live);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+  }
+  .wf .live .live-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--live);
+  }
+  .wf.empty {
+    color: var(--text-muted);
+    font-style: italic;
+    cursor: default;
+  }
+  .wf.empty:hover { background: transparent; border-color: transparent; }
+
+  .wf-sub {
+    grid-column: 1 / -1;
+    padding: 14px 4px 4px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    border-top: 1px dashed var(--border);
+    margin-top: 6px;
+  }
+  .wf-sub:first-child {
+    padding-top: 0;
+    border-top: 0;
+    margin-top: 0;
+  }
+
+  /* ────────── insight callout ────────── */
+  .insight {
+    grid-column: 1 / -1;
+    margin: 8px 0 16px;
+    padding: 14px 16px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--gray-800);
+    border-radius: var(--radius);
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--text-secondary);
+  }
+  .insight strong { color: var(--text-primary); font-weight: 500; }
+
+  /* ────────── footer ────────── */
+  .footer {
+    margin-top: 64px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    display: flex;
+    gap: 16px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+  .footer code {
+    font: inherit;
+    color: var(--text-secondary);
+  }
+
+  /* ────────── status banner ────────── */
+  .status-banner {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 10px;
+    background: var(--draft-tint);
+    border: 1px solid var(--draft);
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--gray-800);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .status-banner .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--draft);
+    border: 1px solid var(--gray-800);
+  }
+
+  @media (max-width: 1100px) {
+    .modes { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 720px) {
+    .container { padding: 24px 16px 64px; }
+    .hero h1 { font-size: 32px; }
+    .modes { grid-template-columns: 1fr; }
+    .job-head { grid-template-columns: 28px 1fr; }
+    .job-counts { grid-column: 1 / -1; flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─────────────────────────────────────────────────────────────────
+     SVG icon symbols (Lucide). Reused via <use href="#…">.
+     ─────────────────────────────────────────────────────────────── -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-zap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>
+    </symbol>
+    <symbol id="i-pen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+      <path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"/>
+    </symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5"/>
+      <path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h5"/>
+      <path d="M17.5 17.5 16 16.3V14"/>
+      <circle cx="16" cy="16" r="6"/>
+    </symbol>
+    <symbol id="i-msg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4c0-1.1.9-2 2-2h8a2 2 0 0 1 2 2z"/>
+      <path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/>
+    </symbol>
+    <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+    </symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+    </symbol>
+  </defs>
+</svg>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark">T</span>
+    Tesote AI
+    <span style="color: var(--text-muted); margin-left: 4px;">/ capabilities</span>
+  </div>
+  <div class="topbar-search">
+    <span class="icon icon-sm"><svg><use href="#i-search"/></svg></span>
+    <input type="text" placeholder="Buscar capacidad… (ej. retención, BCV, cierre)" />
+  </div>
+  <div class="topbar-meta">v0.1 · 2026-05-23</div>
+</header>
+
+<main class="container">
+
+  <section class="hero">
+    <div class="status-banner">
+      <span class="dot"></span>
+      Mockup — derivado de <code style="font-family:var(--font-mono);text-transform:none;letter-spacing:0;">use-case-taxonomy.md</code>
+    </div>
+    <h1>¿Qué necesita hacer<br><em>tu equipo de finanzas</em> hoy?</h1>
+    <p class="lede">Trabajos organizados por modo de ejecución. Lo que puede ser automático <em>debería</em> ser automático — el chat queda para lo ad-hoc y para configurar las reglas.</p>
+  </section>
+
+  <nav class="filter-row" aria-label="Filtrar por modo">
+    <button class="chip" aria-pressed="true">Todo <span class="chip-count">~80</span></button>
+    <button class="chip">
+      <span class="icon icon-sm" style="color: var(--gray-800)"><svg><use href="#i-zap"/></svg></span>
+      Autopilot <span class="chip-count">23</span>
+    </button>
+    <button class="chip">
+      <span class="icon icon-sm" style="color: var(--gray-800)"><svg><use href="#i-pen"/></svg></span>
+      Borradores <span class="chip-count">21</span>
+    </button>
+    <button class="chip">
+      <span class="icon icon-sm" style="color: var(--gray-800)"><svg><use href="#i-clock"/></svg></span>
+      Agendado <span class="chip-count">15</span>
+    </button>
+    <button class="chip">
+      <span class="icon icon-sm" style="color: var(--gray-800)"><svg><use href="#i-msg"/></svg></span>
+      Chat <span class="chip-count">35</span>
+    </button>
+    <span style="flex:1"></span>
+    <button class="chip" style="background: var(--surface-2);">
+      Solo en producción <span class="chip-count">14</span>
+    </button>
+  </nav>
+
+  <div class="stats">
+    <span><strong>12</strong> trabajos</span>
+    <span class="sep">·</span>
+    <span><strong>~94</strong> workflows mapeados</span>
+    <span class="sep">·</span>
+    <span><strong>14</strong> ya en producción</span>
+    <span class="sep">·</span>
+    <span style="margin-left:auto;">arquitectura: autopilot → <code style="font-family:var(--font-mono); color:var(--text-secondary)">/automations</code> · chat → <code style="font-family:var(--font-mono); color:var(--text-secondary)">/ai</code></span>
+  </div>
+
+  <div class="jobs">
+
+    <!-- ────────── JOB 1 ────────── -->
+    <section class="job">
+      <header class="job-head">
+        <span class="job-number">01</span>
+        <div>
+          <h2 class="job-title">Cerrar libros</h2>
+          <p class="job-lede">Cierre mensual — categorización, conciliación, ajustes FX, asientos de cierre. El trabajo con más pasos secuenciales y el que más se beneficia de automatización.</p>
+        </div>
+        <div class="job-counts">
+          <span class="count-pill auto"><span class="dot"></span>3</span>
+          <span class="count-pill draft"><span class="dot"></span>4</span>
+          <span class="count-pill sched"><span class="dot"></span>2</span>
+          <span class="count-pill chat"><span class="dot"></span>3</span>
+        </div>
+      </header>
+
+      <div class="modes">
+        <div class="mode auto">
+          <div class="mode-head">
+            <span class="icon"><svg><use href="#i-zap"/></svg></span>
+            <span class="label">Autopilot</span>
+            <span class="count">3</span>
+          </div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">Auto-categoriza transacciones por reglas guardadas</span><span class="wf-affordance">ver regla</span></div>
+            <div class="wf"><span class="wf-text">Auto-vincula movimientos a entradas Odoo (monto + fecha + contraparte)</span><span class="wf-affordance">ver regla</span></div>
+            <div class="wf"><span class="wf-text">Auto-crea asientos de provisión para gastos recurrentes</span><span class="wf-affordance">ver regla</span></div>
+          </div>
+        </div>
+        <div class="mode draft">
+          <div class="mode-head">
+            <span class="icon"><svg><use href="#i-pen"/></svg></span>
+            <span class="label">Borradores</span>
+            <span class="count">4</span>
+          </div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">Borrador de categoría + contraparte para txn sin regla</span><span class="wf-affordance">configurar</span></div>
+            <div class="wf"><span class="wf-text">Borrador de matching bank ↔ Odoo (parciales)</span><span class="wf-affordance">configurar</span></div>
+            <div class="wf"><span class="wf-text">Borrador de FX revaluation de fin de mes</span><span class="wf-affordance">configurar</span></div>
+            <div class="wf"><span class="wf-text">Borrador de asientos de cierre (depreciación, provisiones)</span><span class="wf-affordance">configurar</span></div>
+          </div>
+        </div>
+        <div class="mode sched">
+          <div class="mode-head">
+            <span class="icon"><svg><use href="#i-clock"/></svg></span>
+            <span class="label">Agendado</span>
+            <span class="count">2</span>
+          </div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">Diario: pasada de conciliación + conteo de excepciones</span><span class="wf-affordance">ver job</span></div>
+            <div class="wf"><span class="wf-text">Día -3 / día 0: pre-build de checklist de cierre</span><span class="wf-affordance">ver job</span></div>
+          </div>
+        </div>
+        <div class="mode chat">
+          <div class="mode-head">
+            <span class="icon"><svg><use href="#i-msg"/></svg></span>
+            <span class="label">Chat</span>
+            <span class="count">3</span>
+          </div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">¿Qué falta para cerrar mayo?</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf"><span class="wf-text">¿Por qué el saldo de la cuenta X no cuadra?</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf"><span class="wf-text">Cierra mayo (ejecuta secuencia completa)</span><span class="wf-affordance">abrir</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ────────── JOB 2 ────────── -->
+    <section class="job">
+      <header class="job-head">
+        <span class="job-number">02</span>
+        <div>
+          <h2 class="job-title">Pagar a proveedores</h2>
+          <p class="job-lede">AP — ingestión de factura, validación, aprobación, ejecución de pago, confirmación. El gasto deducible y la chase de recibo viven en <strong>Tributario</strong> (07).</p>
+        </div>
+        <div class="job-counts">
+          <span class="count-pill auto"><span class="dot"></span>3</span>
+          <span class="count-pill draft"><span class="dot"></span>3</span>
+          <span class="count-pill sched"><span class="dot"></span>2</span>
+          <span class="count-pill chat"><span class="dot"></span>4</span>
+        </div>
+      </header>
+      <div class="modes">
+        <div class="mode auto">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-zap"/></svg></span><span class="label">Autopilot</span><span class="count">3</span></div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">Extrae factura del email del proveedor → borrador en Odoo</span><span class="wf-affordance">ver regla</span></div>
+            <div class="wf"><span class="wf-text">Aplica IVA + retenciones según RIF del proveedor</span><span class="wf-affordance">ver regla</span></div>
+            <div class="wf"><span class="wf-text">Adjunta el PDF al registro de la factura en Odoo</span><span class="wf-affordance">ver regla</span></div>
+          </div>
+        </div>
+        <div class="mode draft">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-pen"/></svg></span><span class="label">Borradores</span><span class="count">3</span></div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">Borrador de bill → aprobación → posteo en Odoo</span><span class="wf-affordance">configurar</span></div>
+            <div class="wf"><span class="wf-text">Borrador de payment batch para vencimientos próximos</span><span class="wf-affordance">configurar</span></div>
+            <div class="wf"><span class="wf-text">Borrador de email de remesa al proveedor</span><span class="wf-affordance">configurar</span></div>
+          </div>
+        </div>
+        <div class="mode sched">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-clock"/></svg></span><span class="label">Agendado</span><span class="count">2</span></div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">Semanal: reporte de aging de AP + alerta de vencimientos</span><span class="wf-affordance">ver job</span></div>
+            <div class="wf"><span class="wf-text">Diario: scan de inboxes de proveedores configurados</span><span class="wf-affordance">ver job</span></div>
+          </div>
+        </div>
+        <div class="mode chat">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-msg"/></svg></span><span class="label">Chat</span><span class="count">4</span></div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">Carga esta factura en Odoo (PDF adjunto)</span><span class="live"><span class="live-dot"></span>live</span></div>
+            <div class="wf"><span class="wf-text">¿A quién le debo más?</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf"><span class="wf-text">¿Qué facturas vencen esta semana?</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf"><span class="wf-text">Págale a [proveedor] $X</span><span class="wf-affordance">próximo</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ────────── JOB 3 ────────── -->
+    <section class="job">
+      <header class="job-head">
+        <span class="job-number">03</span>
+        <div>
+          <h2 class="job-title">Cobrar a clientes</h2>
+          <p class="job-lede">AR + cobros — emisión, envío, cash application, dunning. Sub-bloque dedicado a <strong>comprobantes de retención</strong> cuando el cliente es contribuyente especial.</p>
+        </div>
+        <div class="job-counts">
+          <span class="count-pill auto"><span class="dot"></span>5</span>
+          <span class="count-pill draft"><span class="dot"></span>5</span>
+          <span class="count-pill sched"><span class="dot"></span>4</span>
+          <span class="count-pill chat"><span class="dot"></span>7</span>
+        </div>
+      </header>
+      <div class="modes">
+        <div class="mode auto">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-zap"/></svg></span><span class="label">Autopilot</span><span class="count">5</span></div>
+          <div class="workflows">
+            <div class="wf-sub">Cobros core</div>
+            <div class="wf"><span class="wf-text">Genera factura recurrente en aniversario + aplica BCV del día</span><span class="wf-affordance">ver regla</span></div>
+            <div class="wf"><span class="wf-text">Envía PDF al billing contact al postear</span><span class="wf-affordance">ver regla</span></div>
+            <div class="wf"><span class="wf-text">Auto-aplica pago entrante cuando monto + referencia matchean</span><span class="wf-affordance">ver regla</span></div>
+            <div class="wf-sub">Retenciones (contribuyentes especiales)</div>
+            <div class="wf"><span class="wf-text">Tagea factura emitida con "comprobante esperado" + % retención</span><span class="wf-affordance">ver regla</span></div>
+            <div class="wf"><span class="wf-text">Detecta short-pay = retención aplicada; abre registro pendiente</span><span class="wf-affordance">ver regla</span></div>
+          </div>
+        </div>
+        <div class="mode draft">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-pen"/></svg></span><span class="label">Borradores</span><span class="count">5</span></div>
+          <div class="workflows">
+            <div class="wf-sub">Cobros core</div>
+            <div class="wf"><span class="wf-text">Borrador de cash application en match parcial</span><span class="wf-affordance">configurar</span></div>
+            <div class="wf"><span class="wf-text">Borrador de email de cobranza (día 7/15/30/45/60)</span><span class="wf-affordance">configurar</span></div>
+            <div class="wf"><span class="wf-text">Borrador de credit note (con cálculo y razón)</span><span class="wf-affordance">configurar</span></div>
+            <div class="wf-sub">Retenciones</div>
+            <div class="wf"><span class="wf-text">Borrador de follow-up al cliente N días después del pago</span><span class="wf-affordance">configurar</span></div>
+            <div class="wf"><span class="wf-text">Borrador de cash application que aplica retención como crédito fiscal</span><span class="wf-affordance">configurar</span></div>
+          </div>
+        </div>
+        <div class="mode sched">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-clock"/></svg></span><span class="label">Agendado</span><span class="count">4</span></div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">Semanal: aging de AR por tier</span><span class="wf-affordance">ver job</span></div>
+            <div class="wf"><span class="wf-text">Mensual: forecast de cobranza</span><span class="wf-affordance">ver job</span></div>
+            <div class="wf"><span class="wf-text">Diario: scan de pagos entrantes</span><span class="wf-affordance">ver job</span></div>
+            <div class="wf"><span class="wf-text">Pre-cierre: bloqueo de facturas pagadas sin comprobante</span><span class="wf-affordance">ver job</span></div>
+          </div>
+        </div>
+        <div class="mode chat">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-msg"/></svg></span><span class="label">Chat</span><span class="count">7</span></div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">Postea la factura de [cliente]</span><span class="live"><span class="live-dot"></span>live</span></div>
+            <div class="wf"><span class="wf-text">¿Quién me debe más?</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf"><span class="wf-text">Mándale recordatorio a [cliente]</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf"><span class="wf-text">¿Cuánto facturé en mayo?</span><span class="live"><span class="live-dot"></span>live</span></div>
+            <div class="wf"><span class="wf-text">¿Qué comprobantes de retención me deben?</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf"><span class="wf-text">Mándale recordatorio a [cliente] por comprobante de factura X</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf"><span class="wf-text">¿Cuánto crédito fiscal espero en comprobantes pendientes?</span><span class="wf-affordance">abrir</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ────────── JOB 4 ────────── -->
+    <section class="job">
+      <header class="job-head">
+        <span class="job-number">04</span>
+        <div>
+          <h2 class="job-title">Conciliar bancos</h2>
+          <p class="job-lede">Diario. Matching movimiento bancario ↔ entrada Odoo. <strong>El trabajo más automatizable</strong> y la base sobre la que se paran 1, 2, 3, 5, 7, 12.</p>
+        </div>
+        <div class="job-counts">
+          <span class="count-pill auto"><span class="dot"></span>3</span>
+          <span class="count-pill draft"><span class="dot"></span>3</span>
+          <span class="count-pill sched"><span class="dot"></span>2</span>
+          <span class="count-pill chat"><span class="dot"></span>4</span>
+        </div>
+      </header>
+      <div class="modes">
+        <div class="mode auto">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-zap"/></svg></span><span class="label">Autopilot</span><span class="count">3</span></div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">Aplica categoría desde regla (descripción, contraparte, banda de monto)</span><span class="wf-affordance">ver regla</span></div>
+            <div class="wf"><span class="wf-text">Auto-match a factura/bill cuando monto + contraparte + fecha alinean</span><span class="wf-affordance">ver regla</span></div>
+            <div class="wf"><span class="wf-text">Auto-marca transferencias internas (banco A → banco B)</span><span class="wf-affordance">ver regla</span></div>
+          </div>
+        </div>
+        <div class="mode draft">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-pen"/></svg></span><span class="label">Borradores</span><span class="count">3</span></div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">Borrador de categoría + contraparte por patrones históricos</span><span class="wf-affordance">configurar</span></div>
+            <div class="wf"><span class="wf-text">Borrador de nueva regla cuando un patrón aparece N veces</span><span class="wf-affordance">configurar</span></div>
+            <div class="wf"><span class="wf-text">Borrador de contraparte cuando nombre nuevo aparece repetido</span><span class="wf-affordance">configurar</span></div>
+          </div>
+        </div>
+        <div class="mode sched">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-clock"/></svg></span><span class="label">Agendado</span><span class="count">2</span></div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">4×/día: pull de movimientos bancarios (job de Connect)</span><span class="wf-affordance">ver job</span></div>
+            <div class="wf"><span class="wf-text">Diario: pasada de conciliación + conteo de excepciones</span><span class="wf-affordance">ver job</span></div>
+          </div>
+        </div>
+        <div class="mode chat">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-msg"/></svg></span><span class="label">Chat</span><span class="count">4</span></div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">¿Cuántas transacciones sin categorizar tengo?</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf"><span class="wf-text">Categoriza todas las de CANTV</span><span class="live"><span class="live-dot"></span>live</span></div>
+            <div class="wf"><span class="wf-text">Crea regla: NOMINA → Sueldos</span><span class="live"><span class="live-dot"></span>live</span></div>
+            <div class="wf"><span class="wf-text">Muéstrame las transacciones raras de mayo</span><span class="wf-affordance">abrir</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ────────── JOB 5 ────────── -->
+    <section class="job">
+      <header class="job-head">
+        <span class="job-number">05</span>
+        <div>
+          <h2 class="job-title">Caja y FX</h2>
+          <p class="job-lede">Tesorería diaria — saldos, tasas (BCV / paralelo / contractual), conversiones, inter-compañía.</p>
+        </div>
+        <div class="job-counts">
+          <span class="count-pill auto"><span class="dot"></span>4</span>
+          <span class="count-pill draft"><span class="dot"></span>2</span>
+          <span class="count-pill sched"><span class="dot"></span>2</span>
+          <span class="count-pill chat"><span class="dot"></span>4</span>
+        </div>
+      </header>
+      <div class="modes">
+        <div class="mode auto">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-zap"/></svg></span><span class="label">Autopilot</span><span class="count">4</span></div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">Refresh diario de tasa BCV desde fuente oficial</span><span class="wf-affordance">ver regla</span></div>
+            <div class="wf"><span class="wf-text">Aplica tasa actual a cálculos USD en todo el workspace</span><span class="wf-affordance">ver regla</span></div>
+            <div class="wf"><span class="wf-text">Re-valúa balances VES a USD en cada carga de dashboard</span><span class="wf-affordance">ver regla</span></div>
+            <div class="wf"><span class="wf-text">Bloquea tasa histórica por transacción (nunca recalcula)</span><span class="wf-affordance">ver regla</span></div>
+          </div>
+        </div>
+        <div class="mode draft">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-pen"/></svg></span><span class="label">Borradores</span><span class="count">2</span></div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">Borrador de override de tasa (paralelo, contractual) con audit row</span><span class="wf-affordance">configurar</span></div>
+            <div class="wf"><span class="wf-text">Borrador de ambos lados de transferencia inter-compañía</span><span class="wf-affordance">configurar</span></div>
+          </div>
+        </div>
+        <div class="mode sched">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-clock"/></svg></span><span class="label">Agendado</span><span class="count">2</span></div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">Diario: snapshot de saldos por banco + moneda</span><span class="wf-affordance">ver job</span></div>
+            <div class="wf"><span class="wf-text">Semanal: histórico FX (BCV vs paralelo vs contractual)</span><span class="wf-affordance">ver job</span></div>
+          </div>
+        </div>
+        <div class="mode chat">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-msg"/></svg></span><span class="label">Chat</span><span class="count">4</span></div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">¿Cuál es la tasa BCV de hoy?</span><span class="live"><span class="live-dot"></span>live</span></div>
+            <div class="wf"><span class="wf-text">Muéstrame mis saldos por banco hoy</span><span class="live"><span class="live-dot"></span>live</span></div>
+            <div class="wf"><span class="wf-text">Guárdame la paralelo a 47.5</span><span class="live"><span class="live-dot"></span>live</span></div>
+            <div class="wf"><span class="wf-text">¿Qué tasa usé el lunes pasado?</span><span class="live"><span class="live-dot"></span>live</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ────────── JOB 6 ────────── -->
+    <section class="job">
+      <header class="job-head">
+        <span class="job-number">06</span>
+        <div>
+          <h2 class="job-title">Forecast de caja</h2>
+          <p class="job-lede">Tesorería / CFO. El "¿tenemos runway?" semanal y mensual. Inherentemente <em>judgment-driven</em> — autopilot mantiene la data, el usuario maneja el cursor.</p>
+        </div>
+        <div class="job-counts">
+          <span class="count-pill auto"><span class="dot"></span>1</span>
+          <span class="count-pill draft"><span class="dot"></span>0</span>
+          <span class="count-pill sched"><span class="dot"></span>2</span>
+          <span class="count-pill chat"><span class="dot"></span>5</span>
+        </div>
+      </header>
+      <div class="modes">
+        <div class="mode auto">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-zap"/></svg></span><span class="label">Autopilot</span><span class="count">1</span></div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">Mantén rolling 13-week cash projection (AP + AR + recurring)</span><span class="wf-affordance">ver regla</span></div>
+          </div>
+        </div>
+        <div class="mode draft">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-pen"/></svg></span><span class="label">Borradores</span><span class="count">0</span></div>
+          <div class="workflows">
+            <div class="wf empty"><span class="wf-text">— forecasts son user-driven, no draft mode útil aún</span><span></span></div>
+          </div>
+        </div>
+        <div class="mode sched">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-clock"/></svg></span><span class="label">Agendado</span><span class="count">2</span></div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">Lunes AM: snapshot de 13-week forecast al inbox del CFO</span><span class="wf-affordance">ver job</span></div>
+            <div class="wf"><span class="wf-text">Fin de mes: reporte de variance projected vs actual</span><span class="wf-affordance">ver job</span></div>
+          </div>
+        </div>
+        <div class="mode chat">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-msg"/></svg></span><span class="label">Chat</span><span class="count">5</span></div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">¿Cuánto cash me queda?</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf"><span class="wf-text">Si pago todas las facturas vencidas, ¿con cuánto me quedo?</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf"><span class="wf-text">Simula: ¿qué pasa si [cliente] paga 15 días tarde?</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf"><span class="wf-text">¿Cuándo me quedo sin caja al ritmo actual?</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf"><span class="wf-text">Compara cash flow real vs proyectado últimos 3 meses</span><span class="wf-affordance">abrir</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ────────── INSIGHT BLOCK ────────── -->
+    <div class="insight">
+      <strong>Patrón cruzado — gestión documental.</strong> Los workflows 7.a (gastos deducibles), 7.b (comprobantes recibidos) y 3 (comprobantes a recibir) son <em>la misma máquina</em> aplicada a tres tipos de documento. Comparten: modelo "documentos esperados", pipeline de ingestión + OCR, validación por tipo, superficie unificada de "documentos en riesgo". Es probablemente el primer build concreto que vale la pena pasar por <code style="font-family:var(--font-mono); color: var(--text-secondary);">/tesote-plan</code>.
+    </div>
+
+    <!-- ────────── JOB 7 ────────── -->
+    <section class="job">
+      <header class="job-head">
+        <span class="job-number">07</span>
+        <div>
+          <h2 class="job-title">Cumplimiento tributario (SENIAT)</h2>
+          <p class="job-lede">IVA, ISLR, retenciones, libros. Altamente determinístico — las reglas están codificadas. Sub-bloques: <strong>gastos deducibles</strong> (chase de recibo en card spend) y <strong>comprobantes recibidos</strong>.</p>
+        </div>
+        <div class="job-counts">
+          <span class="count-pill auto"><span class="dot"></span>7</span>
+          <span class="count-pill draft"><span class="dot"></span>5</span>
+          <span class="count-pill sched"><span class="dot"></span>5</span>
+          <span class="count-pill chat"><span class="dot"></span>10</span>
+        </div>
+      </header>
+      <div class="modes">
+        <div class="mode auto">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-zap"/></svg></span><span class="label">Autopilot</span><span class="count">7</span></div>
+          <div class="workflows">
+            <div class="wf-sub">SENIAT core</div>
+            <div class="wf"><span class="wf-text">Calcula IVA por factura (débito 16% / crédito 16%) según RIF</span><span class="wf-affordance">ver regla</span></div>
+            <div class="wf"><span class="wf-text">Calcula retención de ISLR sobre pago a proveedor</span><span class="wf-affordance">ver regla</span></div>
+            <div class="wf"><span class="wf-text">Mantén libro de compras + libro de ventas en tiempo real</span><span class="wf-affordance">ver regla</span></div>
+            <div class="wf-sub">Gastos deducibles (card spend)</div>
+            <div class="wf"><span class="wf-text">Sobre cada txn de tarjeta: crea pendiente "recibo requerido"</span><span class="wf-affordance">ver regla</span></div>
+            <div class="wf"><span class="wf-text">OCR del recibo entrante; valida razón social + RIF</span><span class="wf-affordance">ver regla</span></div>
+            <div class="wf"><span class="wf-text">Match recibo ↔ txn (monto + fecha + merchant + cardholder)</span><span class="wf-affordance">ver regla</span></div>
+            <div class="wf-sub">Comprobantes recibidos</div>
+            <div class="wf"><span class="wf-text">Aplica retención validada como crédito fiscal vs IVA/ISLR</span><span class="wf-affordance">ver regla</span></div>
+          </div>
+        </div>
+        <div class="mode draft">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-pen"/></svg></span><span class="label">Borradores</span><span class="count">5</span></div>
+          <div class="workflows">
+            <div class="wf-sub">SENIAT core</div>
+            <div class="wf"><span class="wf-text">Mensual: borrador de declaración de IVA (forma 30)</span><span class="wf-affordance">configurar</span></div>
+            <div class="wf"><span class="wf-text">Mensual: borrador de declaración de retenciones (99074)</span><span class="wf-affordance">configurar</span></div>
+            <div class="wf"><span class="wf-text">Anual: borrador de ISLR</span><span class="wf-affordance">configurar</span></div>
+            <div class="wf-sub">Gastos deducibles</div>
+            <div class="wf"><span class="wf-text">Outreach al cardholder N días sin recibo</span><span class="wf-affordance">configurar</span></div>
+            <div class="wf"><span class="wf-text">Pre-cierre: batch de aprobación de spends con recibos válidos</span><span class="wf-affordance">configurar</span></div>
+          </div>
+        </div>
+        <div class="mode sched">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-clock"/></svg></span><span class="label">Agendado</span><span class="count">5</span></div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">1ro de mes: ensamble de libros del mes anterior</span><span class="wf-affordance">ver job</span></div>
+            <div class="wf"><span class="wf-text">Alerta N días antes de cada deadline de declaración</span><span class="wf-affordance">ver job</span></div>
+            <div class="wf"><span class="wf-text">Diario: lista de card spends sin recibo (al cardholder)</span><span class="wf-affordance">ver job</span></div>
+            <div class="wf"><span class="wf-text">Semanal: receipt-chase digest por cardholder</span><span class="wf-affordance">ver job</span></div>
+            <div class="wf"><span class="wf-text">Pre-cierre: bloqueo de spends sin recibo SENIAT-válido</span><span class="wf-affordance">ver job</span></div>
+          </div>
+        </div>
+        <div class="mode chat">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-msg"/></svg></span><span class="label">Chat</span><span class="count">10</span></div>
+          <div class="workflows">
+            <div class="wf-sub">SENIAT core</div>
+            <div class="wf"><span class="wf-text">¿Cuánto IVA debo este mes?</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf"><span class="wf-text">Muéstrame el libro de ventas de mayo</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf"><span class="wf-text">¿Qué facturas no tienen retención cargada?</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf"><span class="wf-text">Valida los RIFs de mis clientes nuevos</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf-sub">Gastos deducibles</div>
+            <div class="wf"><span class="wf-text">¿Qué compras con tarjeta no tienen recibo?</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf"><span class="wf-text">¿Cuánto crédito fiscal estoy dejando sobre la mesa este año?</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf"><span class="wf-text">¿A quién le falta enviar recibos?</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf"><span class="wf-text">Muéstrame los recibos con nombre/RIF incorrecto</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf-sub">Comprobantes recibidos</div>
+            <div class="wf"><span class="wf-text">¿Cuánto crédito fiscal por retenciones aplicado este mes?</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf"><span class="wf-text">Retenciones aplicadas sin comprobante (créditos en riesgo)</span><span class="wf-affordance">abrir</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ────────── JOB 8 ────────── -->
+    <section class="job">
+      <header class="job-head">
+        <span class="job-number">08</span>
+        <div>
+          <h2 class="job-title">Cumplimiento regulatorio</h2>
+          <p class="job-lede">BCV, bancos, AML. Bajo volumen, alto stakes por evento.</p>
+        </div>
+        <div class="job-counts">
+          <span class="count-pill auto"><span class="dot"></span>2</span>
+          <span class="count-pill draft"><span class="dot"></span>2</span>
+          <span class="count-pill sched"><span class="dot"></span>2</span>
+          <span class="count-pill chat"><span class="dot"></span>2</span>
+        </div>
+      </header>
+      <div class="modes">
+        <div class="mode auto">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-zap"/></svg></span><span class="label">Autopilot</span><span class="count">2</span></div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">Marca transacciones sobre umbral de reporte (BCV / banco)</span><span class="wf-affordance">ver regla</span></div>
+            <div class="wf"><span class="wf-text">Etiqueta operaciones cambiarias para bucket separado</span><span class="wf-affordance">ver regla</span></div>
+          </div>
+        </div>
+        <div class="mode draft">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-pen"/></svg></span><span class="label">Borradores</span><span class="count">2</span></div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">Borrador de submission a banco para movimientos grandes</span><span class="wf-affordance">configurar</span></div>
+            <div class="wf"><span class="wf-text">Borrador de update KYC cuando datos cliente/vendor envejecen</span><span class="wf-affordance">configurar</span></div>
+          </div>
+        </div>
+        <div class="mode sched">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-clock"/></svg></span><span class="label">Agendado</span><span class="count">2</span></div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">Mensual: checklist regulatorio al CFO / compliance owner</span><span class="wf-affordance">ver job</span></div>
+            <div class="wf"><span class="wf-text">Por banco: tracking de deadlines de submission</span><span class="wf-affordance">ver job</span></div>
+          </div>
+        </div>
+        <div class="mode chat">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-msg"/></svg></span><span class="label">Chat</span><span class="count">2</span></div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">¿Qué movimientos del mes pasan el umbral de reporte?</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf"><span class="wf-text">Búscame la última carta KYC que mandé a [banco]</span><span class="wf-affordance">abrir</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ────────── JOB 9 ────────── -->
+    <section class="job">
+      <header class="job-head">
+        <span class="job-number">09</span>
+        <div>
+          <h2 class="job-title">Mantener master data</h2>
+          <p class="job-lede">Contactos, cuentas, RIFs, datos bancarios. Aburrido pero crítico — mala data quiebra todo lo demás.</p>
+        </div>
+        <div class="job-counts">
+          <span class="count-pill auto"><span class="dot"></span>2</span>
+          <span class="count-pill draft"><span class="dot"></span>2</span>
+          <span class="count-pill sched"><span class="dot"></span>1</span>
+          <span class="count-pill chat"><span class="dot"></span>4</span>
+        </div>
+      </header>
+      <div class="modes">
+        <div class="mode auto">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-zap"/></svg></span><span class="label">Autopilot</span><span class="count">2</span></div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">Sobre nueva contraparte: crea stub <code style="font-family:var(--font-mono); font-size: 11px;">res.partner</code> en Odoo</span><span class="wf-affordance">ver regla</span></div>
+            <div class="wf"><span class="wf-text">Dedupe candidatos al insertar (fuzzy name + RIF)</span><span class="wf-affordance">ver regla</span></div>
+          </div>
+        </div>
+        <div class="mode draft">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-pen"/></svg></span><span class="label">Borradores</span><span class="count">2</span></div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">Borrador de merge proposal cuando dos contrapartes son la misma</span><span class="wf-affordance">configurar</span></div>
+            <div class="wf"><span class="wf-text">Borrador de enrichment pass (RIF, datos bancarios, dirección)</span><span class="wf-affordance">configurar</span></div>
+          </div>
+        </div>
+        <div class="mode sched">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-clock"/></svg></span><span class="label">Agendado</span><span class="count">1</span></div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">Semanal: reporte de hygiene de master data</span><span class="wf-affordance">ver job</span></div>
+          </div>
+        </div>
+        <div class="mode chat">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-msg"/></svg></span><span class="label">Chat</span><span class="count">4</span></div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">Búscame el partner de [cliente] en Odoo</span><span class="live"><span class="live-dot"></span>live</span></div>
+            <div class="wf"><span class="wf-text">Crea el partner para [nuevo cliente] con estos datos</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf"><span class="wf-text">Estos dos contactos son el mismo, fusiónalos</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf"><span class="wf-text">Valida los datos bancarios de mis top 20 proveedores</span><span class="wf-affordance">abrir</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ────────── JOB 10 ────────── -->
+    <section class="job">
+      <header class="job-head">
+        <span class="job-number">10</span>
+        <div>
+          <h2 class="job-title">Reportar arriba</h2>
+          <p class="job-lede">CEO, board, inversores. Reportes narrativos + cash flow por categoría (money in / money out).</p>
+        </div>
+        <div class="job-counts">
+          <span class="count-pill auto"><span class="dot"></span>1</span>
+          <span class="count-pill draft"><span class="dot"></span>3</span>
+          <span class="count-pill sched"><span class="dot"></span>4</span>
+          <span class="count-pill chat"><span class="dot"></span>10</span>
+        </div>
+      </header>
+      <div class="modes">
+        <div class="mode auto">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-zap"/></svg></span><span class="label">Autopilot</span><span class="count">1</span></div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">Mantén rolling totales cash-in / cash-out por categoría</span><span class="wf-affordance">ver regla</span></div>
+          </div>
+        </div>
+        <div class="mode draft">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-pen"/></svg></span><span class="label">Borradores</span><span class="count">3</span></div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">Borrador de investor snapshot mensual</span><span class="wf-affordance">configurar</span></div>
+            <div class="wf"><span class="wf-text">Borrador de board memo desde KPI snapshot</span><span class="wf-affordance">configurar</span></div>
+            <div class="wf"><span class="wf-text">Borrador de Q&amp;A appendix desde preguntas comunes</span><span class="wf-affordance">configurar</span></div>
+          </div>
+        </div>
+        <div class="mode sched">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-clock"/></svg></span><span class="label">Agendado</span><span class="count">4</span></div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">1ro de mes: snapshot de KPIs (revenue, MoM, runway, cash)</span><span class="wf-affordance">ver job</span></div>
+            <div class="wf"><span class="wf-text">1ro de mes: cash flow statement por categoría</span><span class="wf-affordance">ver job</span></div>
+            <div class="wf"><span class="wf-text">Trimestral: board pack drafts</span><span class="wf-affordance">ver job</span></div>
+            <div class="wf"><span class="wf-text">Semanal: CEO Monday briefing</span><span class="wf-affordance">ver job</span></div>
+          </div>
+        </div>
+        <div class="mode chat">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-msg"/></svg></span><span class="label">Chat</span><span class="count">10</span></div>
+          <div class="workflows">
+            <div class="wf-sub">Narrativos</div>
+            <div class="wf"><span class="wf-text">Ármame el investor update de mayo</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf"><span class="wf-text">¿Cómo vamos vs el último update?</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf"><span class="wf-text">Compara abril vs mayo en una tabla</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf-sub">Cash flow por categoría</div>
+            <div class="wf"><span class="wf-text">Muéstrame entradas y salidas de mayo por categoría</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf"><span class="wf-text">¿En qué gasté más este mes?</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf"><span class="wf-text">Compara gastos de mayo vs abril por categoría</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf"><span class="wf-text">¿Cuánto gasté en [categoría] año a la fecha?</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf"><span class="wf-text">Ármame el cash flow statement de mayo</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf"><span class="wf-text">¿Cuáles son mis gastos recurrentes vs one-off?</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf"><span class="wf-text">¿Qué categorías están creciendo más rápido?</span><span class="wf-affordance">abrir</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ────────── JOB 11 ────────── -->
+    <section class="job">
+      <header class="job-head">
+        <span class="job-number">11</span>
+        <div>
+          <h2 class="job-title">Investigar / auditar</h2>
+          <p class="job-lede">"¿Por qué esto está descuadrado?" El trabajo genuinamente probabilístico — el usuario manejando.</p>
+        </div>
+        <div class="job-counts">
+          <span class="count-pill auto"><span class="dot"></span>0</span>
+          <span class="count-pill draft"><span class="dot"></span>0</span>
+          <span class="count-pill sched"><span class="dot"></span>1</span>
+          <span class="count-pill chat"><span class="dot"></span>5</span>
+        </div>
+      </header>
+      <div class="modes">
+        <div class="mode auto">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-zap"/></svg></span><span class="label">Autopilot</span><span class="count">0</span></div>
+          <div class="workflows">
+            <div class="wf empty"><span class="wf-text">— investigación es el usuario manejando</span><span></span></div>
+          </div>
+        </div>
+        <div class="mode draft">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-pen"/></svg></span><span class="label">Borradores</span><span class="count">0</span></div>
+          <div class="workflows">
+            <div class="wf empty"><span class="wf-text">— raro</span><span></span></div>
+          </div>
+        </div>
+        <div class="mode sched">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-clock"/></svg></span><span class="label">Agendado</span><span class="count">1</span></div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">Semanal: digest de anomalías (txns fuera de norma, etc.)</span><span class="wf-affordance">ver job</span></div>
+          </div>
+        </div>
+        <div class="mode chat">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-msg"/></svg></span><span class="label">Chat</span><span class="count">5</span></div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">¿Por qué el saldo de [cuenta] cambió tanto este mes?</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf"><span class="wf-text">Muéstrame todas las transacciones con [proveedor] del último año</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf"><span class="wf-text">¿Qué pasó con [factura ID]?</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf"><span class="wf-text">Compara margen por categoría: este mes vs hace 3 meses</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf"><span class="wf-text">Sospecho que hay duplicados en [cuenta]; encuéntralos</span><span class="wf-affordance">abrir</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ────────── JOB 12 ────────── -->
+    <section class="job">
+      <header class="job-head">
+        <span class="job-number">12</span>
+        <div>
+          <h2 class="job-title">Touchpoints de nómina</h2>
+          <p class="job-lede">No es nómina completa (HR / nómina software calcula). Finanzas toca el lado contable.</p>
+        </div>
+        <div class="job-counts">
+          <span class="count-pill auto"><span class="dot"></span>2</span>
+          <span class="count-pill draft"><span class="dot"></span>2</span>
+          <span class="count-pill sched"><span class="dot"></span>1</span>
+          <span class="count-pill chat"><span class="dot"></span>2</span>
+        </div>
+      </header>
+      <div class="modes">
+        <div class="mode auto">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-zap"/></svg></span><span class="label">Autopilot</span><span class="count">2</span></div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">Sobre movimiento bank-tagged nómina: split en entradas por empleado</span><span class="wf-affordance">ver regla</span></div>
+            <div class="wf"><span class="wf-text">Concilia disbursement agregado vs source de nómina run</span><span class="wf-affordance">ver regla</span></div>
+          </div>
+        </div>
+        <div class="mode draft">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-pen"/></svg></span><span class="label">Borradores</span><span class="count">2</span></div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">Borrador de provisión fin de mes (vacaciones, utilidades, prestaciones)</span><span class="wf-affordance">configurar</span></div>
+            <div class="wf"><span class="wf-text">Borrador de retención ISLR sobre nómina</span><span class="wf-affordance">configurar</span></div>
+          </div>
+        </div>
+        <div class="mode sched">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-clock"/></svg></span><span class="label">Agendado</span><span class="count">1</span></div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">Mensual: checklist de recon de nómina antes de cierre</span><span class="wf-affordance">ver job</span></div>
+          </div>
+        </div>
+        <div class="mode chat">
+          <div class="mode-head"><span class="icon"><svg><use href="#i-msg"/></svg></span><span class="label">Chat</span><span class="count">2</span></div>
+          <div class="workflows">
+            <div class="wf"><span class="wf-text">¿Cuánto pagué en nómina este mes?</span><span class="wf-affordance">abrir</span></div>
+            <div class="wf"><span class="wf-text">¿Cuánto debo en prestaciones acumuladas?</span><span class="wf-affordance">abrir</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <footer class="footer">
+    <div>
+      Fuente · <code>product/ai/use-case-taxonomy.md</code>
+    </div>
+    <div>
+      Mockup v0.1 · 2026-05-23 · Lunour palette · Inter 15/1.6 · Instrument Serif hero · Lucide 1.5px
+    </div>
+  </footer>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tesote AI — Saludo (prototipo de copy)</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --white: #ffffff;
+    --gray-50: #f7f5f0;
+    --gray-100: #f0ebe0;
+    --gray-200: #e8e3da;
+    --gray-300: #d8d2c4;
+    --gray-400: #b8b0a4;
+    --gray-600: #857d73;
+    --gray-1000: #12110f;
+    --brand: #1661e2;
+    --brand-soft: #eef8ff;
+
+    --bg: var(--gray-100);
+    --surface: var(--white);
+    --border: var(--gray-200);
+    --text-primary: var(--gray-1000);
+    --text-secondary: var(--gray-600);
+    --text-muted: var(--gray-400);
+
+    --font-sans: 'Inter', system-ui, sans-serif;
+    --font-serif: 'Instrument Serif', Georgia, serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ── page wrap ────────────────────────────────────────────────── */
+  .page {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+  }
+
+  /* ── prototype control strip (not part of the real UI) ────────── */
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    padding: 14px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+  .controls .label {
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    margin-right: 4px;
+  }
+  .controls button {
+    appearance: none;
+    border: 1px solid var(--border);
+    background: var(--white);
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 120ms ease, border-color 120ms ease;
+  }
+  .controls button:hover { background: var(--gray-50); border-color: var(--gray-300); }
+  .controls button.is-active {
+    background: var(--gray-1000);
+    color: var(--white);
+    border-color: var(--gray-1000);
+  }
+  .controls .spacer { flex: 1; }
+  .controls .counter { color: var(--text-muted); }
+
+  /* ── window header ────────────────────────────────────────────── */
+  .window {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 1px 0 rgba(18, 17, 15, 0.02), 0 10px 30px -20px rgba(18, 17, 15, 0.15);
+  }
+  .window-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--white);
+  }
+  .window-head .title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+  .window-head .state {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-secondary);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .window-head .state::before {
+    content: "";
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #4caf50;
+  }
+
+  /* ── hero / greeting ──────────────────────────────────────────── */
+  .greeting {
+    padding: 56px 40px 40px;
+  }
+  .hero {
+    font-family: var(--font-serif);
+    font-size: 42px;
+    font-weight: 400;
+    line-height: 1.15;
+    letter-spacing: -0.005em;
+    color: var(--text-primary);
+    margin: 0 0 32px;
+    min-height: 1.15em;
+    transition: opacity 220ms ease;
+  }
+  .hero.is-fading { opacity: 0; }
+  .hero .em { font-style: italic; color: var(--text-secondary); }
+
+  /* ── capability card ─────────────────────────────────────────── */
+  .capability-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 20px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: border-color 120ms ease, transform 120ms ease;
+    text-decoration: none;
+    color: inherit;
+  }
+  .capability-card:hover {
+    border-color: var(--gray-300);
+    transform: translateY(-1px);
+  }
+  .capability-card .icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: var(--gray-50);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+    flex-shrink: 0;
+  }
+  .capability-card .icon svg { width: 18px; height: 18px; }
+  .capability-card .body { flex: 1; min-width: 0; }
+  .capability-card .body .h {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin: 0 0 2px;
+  }
+  .capability-card .body .sub {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+  .capability-card .chev {
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  /* ── quick starts ─────────────────────────────────────────────── */
+  .quick-starts {
+    padding: 28px 40px 40px;
+  }
+  .quick-starts .intro {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 0 0 14px;
+  }
+  .chip-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .chip {
+    appearance: none;
+    border: 1px solid var(--border);
+    background: var(--white);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    line-height: 1;
+    padding: 10px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 120ms ease, border-color 120ms ease;
+  }
+  .chip:hover { background: var(--gray-50); border-color: var(--gray-300); }
+
+  /* ── footnote ─────────────────────────────────────────────────── */
+  .footnote {
+    margin-top: 20px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: center;
+  }
+
+  /* ── shuffle (always-visible, low-key at rest) ─────────────── */
+  .shuffle {
+    appearance: none;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-muted);
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin-left: 6px;
+    transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+  }
+  .shuffle:hover {
+    background: var(--gray-50);
+    color: var(--text-primary);
+    border-color: var(--border);
+  }
+  .shuffle svg { width: 14px; height: 14px; }
+
+  .hero-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 4px;
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- Prototype-only control strip (not part of the shipping UI) -->
+  <div class="controls" aria-label="Prototype controls">
+    <span class="label">Tono:</span>
+    <button data-bucket="todas" class="is-active">todas (60)</button>
+    <button data-bucket="maestria">maestría (14)</button>
+    <button data-bucket="sparring">sparring (13)</button>
+    <button data-bucket="ambicion">ambición (12)</button>
+    <button data-bucket="control">control (8)</button>
+    <button data-bucket="tiempo">tiempo (7)</button>
+    <button data-bucket="velocidad">velocidad (4)</button>
+    <button data-bucket="carrera">carrera (2)</button>
+    <span class="spacer"></span>
+    <span class="counter" id="counter">1 / 60</span>
+  </div>
+
+  <!-- The shipping UI starts here -->
+  <div class="window">
+
+    <div class="window-head">
+      <span class="title">Nueva conversación</span>
+      <span class="state">listo</span>
+    </div>
+
+    <div class="greeting">
+      <div class="hero-row">
+        <h1 class="hero" id="hero">Hagamos de finanzas el área más afilada del negocio.</h1>
+        <button class="shuffle" id="shuffle" aria-label="Otra frase">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="16 3 21 3 21 8"></polyline>
+            <line x1="4" y1="20" x2="21" y2="3"></line>
+            <polyline points="21 16 21 21 16 21"></polyline>
+            <line x1="15" y1="15" x2="21" y2="21"></line>
+            <line x1="4" y1="4" x2="9" y2="9"></line>
+          </svg>
+        </button>
+      </div>
+
+      <a class="capability-card" href="#" role="button">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v18H6.5A2.5 2.5 0 0 0 4 22.5z"></path>
+            <path d="M4 4.5v18"></path>
+          </svg>
+        </span>
+        <span class="body">
+          <p class="h">Lo que puedo hacer por tu equipo de finanzas</p>
+          <p class="sub">20 capacidades agrupadas — listas para usar</p>
+        </span>
+        <span class="chev" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </span>
+      </a>
+    </div>
+
+    <div class="quick-starts">
+      <p class="intro">O prueba algo rápido:</p>
+      <div class="chip-grid">
+        <button class="chip">Crea una factura nueva en Odoo</button>
+        <button class="chip">Sube un PDF y regístralo</button>
+        <button class="chip">Aplica la tasa BCV a una factura</button>
+        <button class="chip">Crea una regla de categorización</button>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="footnote">
+    Prototipo de copy · español VE · Tesote AI · 2026-05-23
+  </p>
+
+</div>
+
+<script>
+  // 60 frases seleccionadas el 2026-05-23 (ver greeting-phrases-selected.md)
+  const phrases = {
+    maestria: [
+      "Hagamos de finanzas el área más afilada del negocio.",
+      "Convirtamos cada movimiento en una decisión.",
+      "Sé el mejor en lo que haces. Yo me encargo del resto.",
+      "El mejor equipo de finanzas de Venezuela empieza por aquí.",
+      "Trabaja como el mejor CFO que conoces.",
+      "Hoy, finanzas no es soporte. Es la palanca.",
+      "Que tu equipo sea el que el negocio no puede dejar de tener.",
+      "Vuelve a finanzas el mejor lugar para trabajar en la empresa.",
+      "Donde otros ven planilla, tú ves estrategia.",
+      "Sé el referente del cierre de mes.",
+      "Que tu nombre aparezca cuando se hable de finanzas en Venezuela.",
+      "Lleva finanzas al nivel que el negocio merece.",
+      "Hagamos un equipo de finanzas que dé qué hablar.",
+      "El estándar lo pones tú."
+    ],
+    tiempo: [
+      "Libera tu cabeza para lo que sí importa.",
+      "Menos planilla, más estrategia.",
+      "Cerremos el mes antes que nadie.",
+      "Que el trabajo manual no sea tu cuello de botella.",
+      "Tú decides. Yo ejecuto.",
+      "Las tareas repetitivas no son tuyas.",
+      "Lo aburrido lo hago yo. Tú piensa."
+    ],
+    control: [
+      "Tu caja, bajo control. ¿Empezamos?",
+      "Que nada se te escape este mes.",
+      "Cada bolívar en su sitio.",
+      "Los números, listos antes de que te los pidan.",
+      "Que el cierre te encuentre listo.",
+      "Lo que ayer era un rompecabezas, hoy es una vista.",
+      "Cada cuenta cuadrada. Cada factura en su sitio.",
+      "Visibilidad total. Cero adivinanzas."
+    ],
+    sparring: [
+      "¿Qué movemos hoy?",
+      "Pensemos esto juntos.",
+      "¿En qué te ayudo a brillar hoy?",
+      "Estoy listo. ¿Por dónde arrancamos?",
+      "Cuéntame qué te tiene atorado.",
+      "Dime el problema. Vamos al siguiente.",
+      "Aquí estoy. Donde sea, cuando sea.",
+      "¿Empezamos por lo difícil o por lo rápido?",
+      "Hablemos finanzas.",
+      "Te toca a ti. Te leo.",
+      "Pensemos como dueños del negocio.",
+      "Vamos a sacar este mes.",
+      "Hagamos esto bien hecho."
+    ],
+    ambicion: [
+      "Hoy multiplicas por diez tu impacto.",
+      "Lo que ayer eran semanas, hoy son minutos.",
+      "Mueve la aguja del negocio desde finanzas.",
+      "Que finanzas no te limite. Que te empuje.",
+      "Piensa en grande. Yo me encargo del detalle.",
+      "Es hora de jugar en otra liga.",
+      "Apunta al cierre más rápido que has hecho.",
+      "Esta semana le subes el listón a tu equipo.",
+      "Conviértete en el equipo de finanzas que todos quieren tener.",
+      "Hagamos historia con este cierre.",
+      "No estás aquí para mantener. Estás aquí para escalar.",
+      "Hoy le toca a finanzas liderar."
+    ],
+    velocidad: [
+      "Empecemos. El mes no espera.",
+      "Cinco minutos para lo que antes te tomaba horas.",
+      "Decide rápido. Yo te doy los números.",
+      "Saca la primera tarea del día. Vamos."
+    ],
+    carrera: [
+      "Conviértete en la persona que tu empresa nunca quiere perder.",
+      "Tu próximo ascenso empieza con este botón."
+    ]
+  };
+
+  // "todas" = unión de todos los buckets (orden de inserción preservado)
+  phrases.todas = Object.keys(phrases).flatMap(k => phrases[k]);
+
+  let currentBucket = 'todas';
+  let currentIdx = Math.floor(Math.random() * phrases.todas.length);
+
+  const heroEl = document.getElementById('hero');
+  const counterEl = document.getElementById('counter');
+  const shuffleBtn = document.getElementById('shuffle');
+
+  function render() {
+    const list = phrases[currentBucket];
+    heroEl.classList.add('is-fading');
+    setTimeout(() => {
+      heroEl.textContent = list[currentIdx];
+      counterEl.textContent = `${currentIdx + 1} / ${list.length}`;
+      heroEl.classList.remove('is-fading');
+    }, 180);
+  }
+
+  // Render inicial (random sobre "todas")
+  render();
+
+  document.querySelectorAll('.controls button[data-bucket]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.controls button[data-bucket]').forEach(b => b.classList.remove('is-active'));
+      btn.classList.add('is-active');
+      currentBucket = btn.dataset.bucket;
+      currentIdx = 0;
+      render();
+    });
+  });
+
+  shuffleBtn.addEventListener('click', () => {
+    const list = phrases[currentBucket];
+    // Avanza al siguiente, evitando repetir la actual cuando la lista > 1
+    currentIdx = list.length > 1
+      ? (currentIdx + 1 + Math.floor(Math.random() * (list.length - 1))) % list.length
+      : 0;
+    render();
+  });
+</script>
+
+</body>
+</html>

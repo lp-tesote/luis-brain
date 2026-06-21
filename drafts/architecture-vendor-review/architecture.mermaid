@@ -1,0 +1,90 @@
+%% Tesote — High-level cloud architecture (vendor-review draft)
+%% Generic, conceptual. No specific vendors, hostnames, schemas, or partner names.
+%% Review and tailor before sending to any external party.
+
+flowchart TB
+    %% ===== Public boundary =====
+    subgraph Public["🌐 Public Internet — TLS 1.2+ / HTTPS"]
+        User["End User<br/>(Customer / Client Admin)"]
+    end
+
+    %% ===== Edge =====
+    subgraph Edge["Edge Layer"]
+        WAF["WAF + DDoS Protection"]
+        CDN["CDN / Static Asset Hosting"]
+    end
+
+    %% ===== Cloud VPC =====
+    subgraph Cloud["Cloud Provider — Private VPC"]
+
+        subgraph FE["Frontend Tier (public-facing)"]
+            WebApp["Web Application (SPA)<br/>served via CDN"]
+        end
+
+        subgraph APITier["Application Tier (private subnet)"]
+            APIGW["API Gateway / Load Balancer<br/>TLS termination"]
+            AppSvc["Application Services<br/>(REST API, business logic)"]
+            Workers["Background Workers<br/>(async jobs, integrations)"]
+        end
+
+        subgraph IdP["Identity & Access"]
+            Auth["Identity Provider<br/>OAuth 2.0 / OIDC<br/>MFA for admin/staff"]
+        end
+
+        subgraph Data["Data Tier — encrypted at rest (AES-256)"]
+            DB[("Primary Database<br/>Managed PostgreSQL<br/>private subnet")]
+            Cache[("Cache / Session Store")]
+            Obj[("Object Storage<br/>(documents, KYC artifacts)")]
+        end
+
+        subgraph Platform["Platform Services"]
+            Secrets["Secrets Manager / KMS"]
+            Logs["Centralized Logs + Metrics"]
+            Backup["Encrypted Backups"]
+        end
+    end
+
+    %% ===== Third-party =====
+    subgraph Third["Third-Party Integrations — TLS 1.2+, signed requests"]
+        Bank["Banking / Payment Rail Partners<br/>(API)"]
+        KYC["KYC / Identity Verification Provider"]
+        Email["Transactional Email / Notifications"]
+        Analytics["Product Analytics / Error Monitoring"]
+    end
+
+    %% ===== Flows =====
+    User -- "HTTPS" --> WAF
+    WAF --> CDN
+    CDN --> WebApp
+    WebApp -- "HTTPS" --> APIGW
+    APIGW --> AppSvc
+    AppSvc --> Auth
+    AppSvc --> DB
+    AppSvc --> Cache
+    AppSvc --> Obj
+    AppSvc --> Workers
+    Workers --> DB
+    Workers -- "TLS" --> Bank
+    Workers -- "TLS" --> KYC
+    AppSvc -- "TLS" --> Email
+    WebApp -. "HTTPS" .-> Analytics
+    AppSvc -. read .-> Secrets
+    Workers -. read .-> Secrets
+    AppSvc --> Logs
+    Workers --> Logs
+    DB -. snapshot .-> Backup
+
+    %% ===== Styling =====
+    classDef public fill:#fde2e2,stroke:#c0392b,color:#000
+    classDef edge fill:#fef3c7,stroke:#d97706,color:#000
+    classDef app fill:#dcfce7,stroke:#16a34a,color:#000
+    classDef data fill:#dbeafe,stroke:#2563eb,color:#000
+    classDef ext fill:#ede9fe,stroke:#7c3aed,color:#000
+    classDef plat fill:#f1f5f9,stroke:#475569,color:#000
+
+    class User public
+    class WAF,CDN edge
+    class WebApp,APIGW,AppSvc,Workers,Auth app
+    class DB,Cache,Obj data
+    class Bank,KYC,Email,Analytics ext
+    class Secrets,Logs,Backup plat

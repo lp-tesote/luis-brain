@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Saldos · Tesote · v4 retrofit (from production sync_dashboard)</title>
+  <style>
+    /* ============================================================
+       Lunour design tokens (locked 2026-05-03)
+       Source of truth: ~/Programming/tesote/treasury/.claude/skills/redesign-2026-design-system/SKILL.md
+    ============================================================ */
+    :root {
+      /* Primary */
+      --white:       #FFFFFF;
+      --gray-1000:   #12110F;  /* primary text — NOT #000 */
+      --gray-50:     #F7F5F0;  /* cream background */
+
+      /* Neutrals */
+      --gray-200:    #E8E3DA;  /* borders */
+      --gray-300:    #D5CFC2;
+      --gray-500:    #A39A8C;
+      --gray-600:    #857D73;  /* muted text */
+      --gray-700:    #635C53;
+
+      /* Brand */
+      --blue-700:    #1661E2;
+      --blue-50:     #EEF8FF;  /* soft brand surface */
+      --blue-100:    #DDEEFE;
+      --blue-200:    #C6DDFB;
+      --blue-600:    #2371E6;
+
+      /* Semantic */
+      --green-600:   #1A8C5B;
+      --yellow-600:  #CC9500;
+      --red-600:     #C41E1E;
+      --orange-700:  #A83E00;
+
+      /* Status pill family (LOCKED — 2026-05-03) */
+      --pill-paid-bg:    #D6E8D5;
+      --pill-paid-dot:   #1A8C5B;
+      --pill-new-bg:     #E4ECF7;
+      --pill-new-dot:    #1C77F4;
+      --pill-pending-bg: #F7EDD0;
+      --pill-pending-dot:#CC9500;
+      --pill-overdue-bg: #F8D8C0;
+      --pill-overdue-dot:#A83E00;
+      --pill-draft-bg:   #ECE7DD;
+      --pill-draft-dot:  #857D73;
+
+      /* Layout */
+      --radius-sm: 4px;
+      --radius:    8px;
+      --radius-lg: 12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Aspekta', 'Inter Tight', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 13px;
+      color: var(--gray-1000);
+      background: var(--gray-50);
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Display font for headings, KPI numbers */
+    .display { font-family: 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif; letter-spacing: -0.01em; }
+
+    /* ============================================================
+       App shell — context only; outside scope of this PRD
+    ============================================================ */
+    .app { display: grid; grid-template-columns: 224px 1fr; min-height: 100vh; }
+    .sidebar {
+      background: var(--white);
+      border-right: 1px solid var(--gray-200);
+      padding: 20px 0;
+      font-size: 13px;
+    }
+    .sb-brand {
+      padding: 0 18px 20px;
+      font-family: 'Inter Tight', sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+    }
+    .sb-section { padding: 16px 12px 4px; font-size: 11px; font-weight: 600;
+      color: var(--gray-600); letter-spacing: 0.05em; text-transform: uppercase; }
+    .sb-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 7px 12px; margin: 0 6px; border-radius: var(--radius-sm);
+      color: var(--gray-700); text-decoration: none; cursor: pointer;
+    }
+    .sb-item:hover { background: var(--gray-50); color: var(--gray-1000); }
+    .sb-item.active {
+      background: var(--blue-50); color: var(--blue-700); font-weight: 500;
+    }
+    .sb-icon { width: 16px; height: 16px; flex-shrink: 0; }
+
+    .main { padding: 32px 36px 60px; max-width: 1400px; }
+
+    /* ============================================================
+       Page header
+    ============================================================ */
+    .page-header {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      margin-bottom: 22px;
+    }
+    .page-title {
+      font-family: 'Inter Tight', sans-serif;
+      font-weight: 600;
+      font-size: 26px;
+      letter-spacing: -0.02em;
+      color: var(--gray-1000);
+    }
+    .page-subtitle {
+      font-size: 13px;
+      color: var(--gray-600);
+      margin-top: 4px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .subtitle-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gray-500); }
+    .subtitle-warn { color: var(--yellow-600); font-weight: 500; }
+
+    /* ============================================================
+       Sync accountability banner (already exists in production)
+    ============================================================ */
+    .banner {
+      display: flex; align-items: center; gap: 14px;
+      background: var(--pill-pending-bg);
+      border: 1px solid #E8D9A8;
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      margin-bottom: 22px;
+    }
+    .banner-icon {
+      width: 28px; height: 28px; flex-shrink: 0;
+      border-radius: 50%; background: var(--yellow-600);
+      color: white; display: flex; align-items: center; justify-content: center;
+    }
+    .banner-content { flex: 1; }
+    .banner-title { font-size: 14px; font-weight: 600; color: var(--gray-1000); }
+    .banner-sub { font-size: 12px; color: var(--gray-700); margin-top: 2px; }
+    .banner-cta {
+      padding: 7px 14px; border-radius: var(--radius);
+      background: var(--gray-1000); color: white;
+      border: none; cursor: pointer;
+      font-family: inherit; font-size: 13px; font-weight: 500;
+    }
+    .banner-cta:hover { background: #302C25; }
+
+    /* ============================================================
+       Currency summary cards — Saldos por moneda
+       Production: text-xl (~20px). Retrofit: 28px Inter Tight with tabular-nums.
+       Auto-step to 22px when integer character count > 13 (10-digit Bs).
+    ============================================================ */
+    .currency-section { margin-bottom: 22px; }
+    .currency-section-label {
+      font-size: 11px; font-weight: 600;
+      color: var(--gray-600); letter-spacing: 0.05em; text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .currency-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+    }
+    .currency-card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      min-width: 0;
+    }
+    .currency-card-head {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 8px;
+    }
+    .currency-code {
+      font-family: 'Inter Tight', sans-serif;
+      font-weight: 600; font-size: 13px; color: var(--gray-1000);
+    }
+    .currency-count {
+      font-size: 11px; color: var(--gray-600);
+    }
+    .currency-amount {
+      font-family: 'Inter Tight', sans-serif;
+      font-weight: 700;
+      font-size: 28px;
+      color: var(--gray-1000);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      letter-spacing: -0.02em;
+    }
+    /* Auto-step down when integer portion exceeds 13 chars */
+    .currency-amount.compact { font-size: 22px; }
+    .currency-cents {
+      font-size: 18px; font-weight: 600; color: var(--gray-600);
+    }
+    .currency-amount.compact .currency-cents { font-size: 15px; }
+    .currency-amount.empty { color: var(--gray-500); font-weight: 500; }
+    .currency-bcv {
+      margin-top: 10px; padding-top: 10px;
+      border-top: 1px solid var(--gray-200);
+      font-size: 11px; color: var(--gray-600);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .currency-bcv-rate { font-weight: 500; color: var(--gray-700); }
+    .currency-bcv-date { color: var(--gray-500); }
+    .currency-bcv-equiv {
+      margin-top: 6px; font-size: 13px; font-weight: 600; color: var(--gray-700);
+      font-variant-numeric: tabular-nums;
+    }
+    .currency-bcv-equiv-tag { font-size: 11px; color: var(--gray-500); font-weight: 400; margin-left: 4px; }
+    .currency-filtered-tag {
+      display: inline-flex; align-items: center;
+      font-size: 10px; font-weight: 600;
+      color: var(--blue-700); background: var(--blue-50);
+      padding: 1px 6px; border-radius: var(--radius-sm);
+      letter-spacing: 0.04em; text-transform: uppercase;
+      margin-left: 6px;
+    }
+
+    /* ============================================================
+       Tab toggle — same architecture as production
+    ============================================================ */
+    .tab-section { margin-bottom: 16px; }
+    .tab-label {
+      font-size: 13px; color: var(--gray-600);
+      margin-right: 10px;
+    }
+    .tab-bar {
+      display: inline-flex; align-items: center; gap: 2px;
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 3px;
+    }
+    .tab-btn {
+      padding: 6px 14px; border-radius: 5px;
+      background: transparent; border: 1px solid transparent;
+      cursor: pointer; font-family: inherit;
+      font-size: 13px; font-weight: 500;
+      color: var(--gray-600);
+    }
+    .tab-btn:hover { color: var(--gray-1000); }
+    .tab-btn.active {
+      background: var(--white); color: var(--gray-1000);
+      border-color: var(--gray-200);
+    }
+    .tab-hint {
+      font-size: 12px; color: var(--gray-600);
+      margin-top: 6px; max-width: 580px;
+    }
+
+    /* ============================================================
+       Filter bar — KEEPING production's 5-fixed-pill pattern,
+       just retrofitting tokens. (Decision point — see annotation.)
+    ============================================================ */
+    .filter-shell {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      margin-bottom: 18px;
+    }
+    .filter-shell.active { border-color: var(--blue-200); }
+    .filter-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 16px;
+      min-height: 52px;
+    }
+    .filter-label-cluster {
+      display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+    }
+    .filter-funnel-icon { width: 14px; height: 14px; color: var(--gray-500); }
+    .filter-shell.active .filter-funnel-icon { color: var(--blue-700); }
+    .filter-label {
+      font-size: 11px; font-weight: 600;
+      color: var(--gray-600); letter-spacing: 0.05em; text-transform: uppercase;
+      user-select: none;
+    }
+    .filter-count-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 18px; height: 18px; padding: 0 5px;
+      font-size: 10px; font-weight: 700; line-height: 1;
+      color: white; background: var(--blue-700);
+      border-radius: 9999px;
+    }
+    .filter-separator {
+      width: 1px; height: 18px; background: var(--gray-200); flex-shrink: 0;
+    }
+    .filter-pills {
+      display: flex; align-items: center; gap: 6px;
+      flex: 1; flex-wrap: wrap; min-width: 0;
+    }
+    .filter-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 10px;
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      background: var(--white);
+      font-size: 13px;
+      color: var(--gray-700);
+      cursor: pointer;
+      transition: background 0.12s, border-color 0.12s;
+    }
+    .filter-pill:hover {
+      background: var(--gray-50);
+      border-color: var(--gray-300);
+    }
+    .filter-pill.active {
+      background: var(--blue-50);
+      border-color: var(--blue-200);
+      color: var(--blue-700);
+    }
+    .filter-pill-icon { width: 13px; height: 13px; color: var(--gray-500); flex-shrink: 0; }
+    .filter-pill.active .filter-pill-icon { color: var(--blue-700); }
+    .filter-pill-caret { width: 11px; height: 11px; color: var(--gray-500); }
+    .filter-pill.active .filter-pill-caret { color: var(--blue-700); }
+    .filter-pill-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 16px; height: 16px; padding: 0 4px;
+      font-size: 10px; font-weight: 700; color: white;
+      background: var(--blue-700); border-radius: 9999px;
+    }
+    .filter-actions {
+      display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 6px 12px; border-radius: var(--radius);
+      background: var(--blue-700); color: white;
+      border: none; cursor: pointer;
+      font-family: inherit; font-size: 12px; font-weight: 600;
+      white-space: nowrap;
+    }
+    .btn-primary:hover { background: var(--blue-600); }
+    .btn-link-danger {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 4px 6px;
+      background: none; border: none; cursor: pointer;
+      font-family: inherit; font-size: 12px;
+      color: var(--gray-600);
+    }
+    .btn-link-danger:hover { color: var(--red-600); }
+    .btn-icon { width: 13px; height: 13px; }
+
+    /* Active filter chips (production's secondary row) */
+    .filter-chips-row {
+      border-top: 1px solid var(--blue-100);
+      padding: 8px 16px;
+      background: rgba(238, 248, 255, 0.4); /* blue-50 at 40% */
+      border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+      display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+    }
+    .filter-chips-label {
+      font-size: 10px; font-weight: 600;
+      color: var(--gray-600); letter-spacing: 0.05em; text-transform: uppercase;
+      margin-right: 4px;
+    }
+    .filter-chip {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 6px 3px 8px;
+      background: var(--white); color: var(--blue-700);
+      border: 1px solid var(--blue-200); border-radius: 9999px;
+      font-size: 11px; font-weight: 500;
+      cursor: pointer;
+    }
+    .filter-chip:hover {
+      background: #FEF2F2; color: var(--red-600); border-color: #FECACA;
+    }
+    .filter-chip-x { width: 11px; height: 11px; opacity: 0.5; }
+    .filter-chip:hover .filter-chip-x { opacity: 0.9; }
+
+    /* ============================================================
+       Group-by control
+    ============================================================ */
+    .groupby-row { margin-bottom: 14px; }
+    .groupby-control {
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .groupby-label {
+      font-size: 12px; color: var(--gray-600);
+    }
+    .groupby-select {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 10px;
+      border: 1px solid var(--gray-200); border-radius: var(--radius);
+      background: var(--white); color: var(--gray-1000);
+      font-family: inherit; font-size: 13px; font-weight: 500;
+      cursor: pointer;
+    }
+    .groupby-select:hover { background: var(--gray-50); }
+
+    /* ============================================================
+       Data table — Manage density (44px rows · 11/16 td · 12/16 th)
+    ============================================================ */
+    .table-card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .data-table {
+      width: 100%; border-collapse: collapse; table-layout: fixed;
+    }
+    .data-table th {
+      text-align: left;
+      padding: 12px 16px;   /* Manage density: 12/16 */
+      font-size: 11px; font-weight: 600;
+      color: var(--gray-600);
+      background: var(--gray-50);
+      border-bottom: 1px solid var(--gray-200);
+      letter-spacing: 0.05em; text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .data-table th.numeric { text-align: right; }
+    .data-table th.center { text-align: center; }
+    .data-table th .sort-link {
+      color: inherit; text-decoration: none;
+      border-bottom: 1px dotted var(--gray-500);
+      cursor: pointer;
+    }
+    .data-table th .sort-link:hover { border-bottom-color: transparent; }
+    .data-table td {
+      padding: 11px 16px;   /* Manage density: 11/16 */
+      border-bottom: 1px solid var(--gray-200);
+      color: var(--gray-1000);
+      vertical-align: middle;
+    }
+    .data-table td.numeric {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      font-weight: 500;
+    }
+    .data-table tbody tr { cursor: pointer; }
+    .data-table tbody tr:hover { background: var(--gray-50); }
+    .data-table tbody tr:last-child td { border-bottom: none; }
+
+    /* Group header row */
+    .group-header td {
+      background: var(--gray-50);
+      font-size: 12px; font-weight: 600;
+      color: var(--gray-700);
+      padding: 9px 16px;
+      border-top: 1px solid var(--gray-200);
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .group-header .group-name { letter-spacing: 0.02em; }
+    .group-header .group-meta { color: var(--gray-600); font-weight: 400; margin-left: 8px; }
+    .group-header .group-subtotals {
+      float: right;
+      font-variant-numeric: tabular-nums;
+      color: var(--gray-700);
+    }
+
+    /* Bank logo bubble */
+    .bank-cell { display: inline-flex; align-items: center; gap: 8px; }
+    .bank-logo {
+      width: 24px; height: 24px; border-radius: var(--radius-sm);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-family: 'Inter Tight', sans-serif;
+      font-size: 11px; font-weight: 700; color: white;
+      flex-shrink: 0;
+    }
+    .bank-logo-mercantil { background: #006B3F; }
+    .bank-logo-bbva      { background: #004481; }
+    .bank-logo-bnc       { background: #C8102E; }
+    .bank-logo-banesco   { background: #0067A6; }
+    .bank-logo-bancamiga { background: #00A0DF; }
+    .bank-logo-activo    { background: #2D2A26; }
+    .bank-logo-manual    { background: var(--gray-500); }
+    .bank-name { color: var(--gray-1000); }
+
+    /* Estado pill — locked family */
+    .pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+      font-size: 11px; font-weight: 500;
+      color: var(--gray-1000);
+      white-space: nowrap;
+    }
+    .pill-dot {
+      width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+    }
+    .pill-ok      { background: var(--pill-paid-bg); }
+    .pill-ok .pill-dot      { background: var(--pill-paid-dot); }
+    .pill-syncing { background: var(--pill-new-bg); }
+    .pill-syncing .pill-dot { background: var(--pill-new-dot); }
+    .pill-warn    { background: var(--pill-pending-bg); }
+    .pill-warn .pill-dot    { background: var(--pill-pending-dot); }
+    .pill-draft   { background: var(--pill-draft-bg); }
+    .pill-draft .pill-dot   { background: var(--pill-draft-dot); }
+    .pill-error   { background: #F8D8C0; }
+    .pill-error .pill-dot   { background: var(--orange-700); }
+
+    /* Validación column (production keeps it — flagged for kill decision) */
+    .validation-tag {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11px; color: var(--gray-700);
+      padding: 2px 7px;
+      background: var(--gray-50); border: 1px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+    }
+    .validation-tag-verified { color: var(--green-600); }
+    .validation-tag-pending { color: var(--yellow-600); }
+
+    /* Account number monospace */
+    .acct-num {
+      font-family: 'SF Mono', Menlo, monospace;
+      font-size: 12px;
+      color: var(--gray-700);
+    }
+
+    /* Connection sync button */
+    .row-sync-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px;
+      border: 1px solid var(--gray-200); border-radius: var(--radius-sm);
+      background: var(--white);
+      cursor: pointer;
+      color: var(--gray-600);
+    }
+    .row-sync-btn:hover { background: var(--gray-50); color: var(--gray-1000); }
+    .row-sync-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* 2FA tag */
+    .twofa-tag {
+      font-size: 11px;
+      padding: 1px 7px; border-radius: var(--radius-sm);
+      background: var(--gray-50); color: var(--gray-700);
+      border: 1px solid var(--gray-200);
+    }
+    .twofa-tag-auto { background: var(--blue-50); color: var(--blue-700); border-color: var(--blue-100); }
+
+    /* Sync schedule */
+    .sync-mode {
+      font-size: 11px; color: var(--gray-700);
+      padding: 1px 7px;
+      background: var(--gray-50); border: 1px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+    }
+
+    /* Subdued meta in cells */
+    .cell-meta { font-size: 11px; color: var(--gray-600); margin-top: 2px; }
+
+    /* Empty state */
+    .empty {
+      text-align: center; padding: 56px 24px;
+    }
+    .empty-icon {
+      width: 48px; height: 48px; margin: 0 auto 12px;
+      background: var(--gray-50);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gray-500);
+    }
+    .empty-title { font-size: 14px; font-weight: 500; color: var(--gray-700); }
+    .empty-sub { font-size: 12px; color: var(--gray-500); margin-top: 4px; }
+
+    /* Table footer */
+    .table-footer {
+      padding: 10px 16px;
+      border-top: 1px solid var(--gray-200);
+      background: var(--gray-50);
+      font-size: 12px; color: var(--gray-600);
+    }
+
+    /* Truncate long text */
+    .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  </style>
+</head>
+<body>
+
+<div class="app">
+  <!-- ============================================================
+       Sidebar — out of scope; shown for context
+       ============================================================ -->
+  <aside class="sidebar">
+    <div class="sb-brand display">tesote</div>
+
+    <div class="sb-section">Connect</div>
+    <div class="sb-item active">
+      <svg class="sb-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="2" y="4" width="12" height="9" rx="1.5"/><path d="M2 7h12"/>
+      </svg>
+      Saldos
+    </div>
+    <div class="sb-item">
+      <svg class="sb-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M2 12l3-3 2.5 2.5L14 4"/><circle cx="14" cy="4" r="1" fill="currentColor"/>
+      </svg>
+      Movimientos
+    </div>
+
+    <div class="sb-section">Negocios</div>
+    <div class="sb-item">Pagos</div>
+    <div class="sb-item">Cobros</div>
+    <div class="sb-item">Contrapartes</div>
+  </aside>
+
+  <!-- ============================================================
+       Main content — IN SCOPE for this retrofit
+       ============================================================ -->
+  <main class="main">
+
+    <!-- Page header -->
+    <header class="page-header">
+      <div>
+        <h1 class="page-title display">Saldos</h1>
+        <div class="page-subtitle">
+          <span>10 conexiones</span>
+          <span class="subtitle-dot"></span>
+          <span>32 cuentas</span>
+          <span class="subtitle-dot"></span>
+          <span class="subtitle-warn">2 con problemas</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Sync accountability banner (already exists in production via SyncAccountability::BannerComponent) -->
+    <div class="banner">
+      <div class="banner-icon">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M8 5v4M8 11v.5"/><circle cx="8" cy="8" r="6.5"/>
+        </svg>
+      </div>
+      <div class="banner-content">
+        <div class="banner-title">2 conexiones necesitan atención</div>
+        <div class="banner-sub">
+          BBVA Provincial — Necesita re-autenticación · afecta 2 cuentas &nbsp;·&nbsp;
+          Banco Activo — Sync falló hace 1 semana · afecta 4 cuentas
+        </div>
+      </div>
+      <button class="banner-cta">Ver conexiones →</button>
+    </div>
+
+    <!-- Currency summary cards — Saldos por Moneda -->
+    <div class="currency-section">
+      <div class="currency-section-label">Saldos por moneda</div>
+      <div class="currency-grid">
+
+        <!-- VES — 10-digit case to demo overflow handling -->
+        <div class="currency-card">
+          <div class="currency-card-head">
+            <span class="currency-code display">VES <span class="currency-filtered-tag">filtrado</span></span>
+            <span class="currency-count">7 cuentas</span>
+          </div>
+          <div class="currency-amount compact">
+            Bs. 23.851.234.567<span class="currency-cents">,89</span>
+          </div>
+          <div class="currency-bcv">
+            <span><span class="currency-bcv-rate">Tasa BCV: 1 USD = 510,79 VES</span></span>
+            <span class="currency-bcv-date">30/04/2026</span>
+          </div>
+          <div class="currency-bcv-equiv">
+            ≈ $46.692.840,12 <span class="currency-bcv-equiv-tag">USD (ref. BCV)</span>
+          </div>
+        </div>
+
+        <!-- USD — normal size -->
+        <div class="currency-card">
+          <div class="currency-card-head">
+            <span class="currency-code display">USD <span class="currency-filtered-tag">filtrado</span></span>
+            <span class="currency-count">15 cuentas</span>
+          </div>
+          <div class="currency-amount">
+            $411.253<span class="currency-cents">,69</span>
+          </div>
+        </div>
+
+        <!-- EUR — zero case -->
+        <div class="currency-card">
+          <div class="currency-card-head">
+            <span class="currency-code display">EUR</span>
+            <span class="currency-count">1 cuenta</span>
+          </div>
+          <div class="currency-amount empty">—</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Tab toggle -->
+    <div class="tab-section">
+      <span class="tab-label">Ver por:</span>
+      <div class="tab-bar">
+        <button class="tab-btn active">Cuentas</button>
+        <button class="tab-btn">Por conexiones bancarias</button>
+      </div>
+      <div class="tab-hint" style="display:none;">
+        Los syncs se realizan por conexión bancaria; al sincronizar una conexión se actualizan todas sus cuentas.
+      </div>
+    </div>
+
+    <!-- Filter bar — PRODUCTION'S 5-FIXED-PILL PATTERN, just visually retrofitted -->
+    <div class="filter-shell active">
+      <div class="filter-row">
+        <div class="filter-label-cluster">
+          <svg class="filter-funnel-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M1.5 2.5h13l-5 6v5l-3-1.5v-3.5l-5-6z"/>
+          </svg>
+          <span class="filter-label">Filtros</span>
+          <span class="filter-count-badge">2</span>
+        </div>
+        <div class="filter-separator"></div>
+
+        <div class="filter-pills">
+          <!-- Cuentas pill -->
+          <button class="filter-pill">
+            <svg class="filter-pill-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="2" y="4" width="12" height="9" rx="1.5"/><path d="M2 7h12"/>
+            </svg>
+            <span>Cuentas</span>
+            <svg class="filter-pill-caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5l3 3 3-3"/></svg>
+          </button>
+          <!-- Compañías pill — ACTIVE -->
+          <button class="filter-pill active">
+            <svg class="filter-pill-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="3" y="2" width="10" height="12" rx="1"/><path d="M6 5h1M6 7h1M6 9h1M9 5h1M9 7h1M9 9h1"/>
+            </svg>
+            <span>Compañías</span>
+            <span class="filter-pill-badge">1</span>
+            <svg class="filter-pill-caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5l3 3 3-3"/></svg>
+          </button>
+          <!-- Bancos pill — ACTIVE -->
+          <button class="filter-pill active">
+            <svg class="filter-pill-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M2 6l6-3 6 3v1H2V6z"/><path d="M3 8v4M6 8v4M10 8v4M13 8v4"/><path d="M1.5 12.5h13"/>
+            </svg>
+            <span>Bancos</span>
+            <span class="filter-pill-badge">3</span>
+            <svg class="filter-pill-caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5l3 3 3-3"/></svg>
+          </button>
+          <!-- Tipo de Cuenta pill -->
+          <button class="filter-pill">
+            <svg class="filter-pill-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M2 6l5-3 7 4-5 3-7-4z"/>
+            </svg>
+            <span>Tipo de Cuenta</span>
+            <svg class="filter-pill-caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5l3 3 3-3"/></svg>
+          </button>
+          <!-- Divisa pill -->
+          <button class="filter-pill">
+            <svg class="filter-pill-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="8" cy="8" r="6"/><path d="M6.5 6.5c0-1 .8-1.5 1.5-1.5s1.5.5 1.5 1.5S6.5 7.5 6.5 9 7.3 10.5 8 10.5s1.5-.5 1.5-1.5M8 4v1M8 11v1"/>
+            </svg>
+            <span>Divisa</span>
+            <svg class="filter-pill-caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5l3 3 3-3"/></svg>
+          </button>
+        </div>
+
+        <div class="filter-actions">
+          <button class="btn-primary">
+            <svg class="btn-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/>
+            </svg>
+            Filtrar
+          </button>
+          <button class="btn-link-danger">
+            <svg class="btn-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="8" cy="8" r="6.5"/><path d="M5.5 5.5l5 5M10.5 5.5l-5 5"/>
+            </svg>
+            Limpiar
+          </button>
+        </div>
+      </div>
+
+      <!-- Active filter chips (production's secondary row) -->
+      <div class="filter-chips-row">
+        <span class="filter-chips-label">Activos:</span>
+        <button class="filter-chip">
+          <span>Compañías: TST CYC</span>
+          <svg class="filter-chip-x" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3l6 6M9 3l-6 6"/></svg>
+        </button>
+        <button class="filter-chip">
+          <span>Bancos: Mercantil, BBVA, BNC</span>
+          <svg class="filter-chip-x" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3l6 6M9 3l-6 6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Group-by control -->
+    <div class="groupby-row">
+      <div class="groupby-control">
+        <span class="groupby-label">Agrupar por:</span>
+        <button class="groupby-select">
+          <span>Entidad</span>
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5l3 3 3-3"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Accounts table — 9 columns including Validación (production's actual columns) -->
+    <div class="table-card">
+      <table class="data-table">
+        <colgroup>
+          <col style="width: 14%"><!-- Compañía -->
+          <col style="width: 16%"><!-- Banco -->
+          <col style="width: 14%"><!-- Cuenta -->
+          <col style="width: 15%"><!-- Saldo -->
+          <col style="width:  8%"><!-- Divisa -->
+          <col style="width: 12%"><!-- Estado -->
+          <col style="width: 11%"><!-- Último sync -->
+          <col style="width: 10%"><!-- Validación (production keeps; design.md says kill) -->
+        </colgroup>
+        <thead>
+          <tr>
+            <th><a class="sort-link">Compañía</a></th>
+            <th><a class="sort-link">Banco</a></th>
+            <th>Cuenta</th>
+            <th class="numeric"><a class="sort-link">Saldo ↓</a></th>
+            <th><a class="sort-link">Divisa</a></th>
+            <th>Estado</th>
+            <th><a class="sort-link">Último sync</a></th>
+            <th>Validación</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <!-- Group: TST SERVICIOS Y CONSULTORIA -->
+          <tr class="group-header">
+            <td colspan="8">
+              <span class="group-name">TST SERVICIOS Y CONSULTORIA, C.A.</span>
+              <span class="group-meta">· 5 cuentas</span>
+              <span class="group-subtotals">Bs. 23.376.234.567,89 · $410.253,69</span>
+            </td>
+          </tr>
+          <tr>
+            <td>TST CYC</td>
+            <td><span class="bank-cell"><span class="bank-logo bank-logo-mercantil">M</span><span class="bank-name">Mercantil</span></span></td>
+            <td><span class="acct-num">··6733</span></td>
+            <td class="numeric">Bs. 475.056,87</td>
+            <td>VES</td>
+            <td><span class="pill pill-ok"><span class="pill-dot"></span>Sincronizada</span></td>
+            <td>hace 8h</td>
+            <td><span class="validation-tag validation-tag-verified">Verificado</span></td>
+          </tr>
+          <tr>
+            <td>TST CYC</td>
+            <td><span class="bank-cell"><span class="bank-logo bank-logo-mercantil">M</span><span class="bank-name">Mercantil</span></span></td>
+            <td><span class="acct-num">··3755</span></td>
+            <td class="numeric">$95.62</td>
+            <td>USD</td>
+            <td><span class="pill pill-ok"><span class="pill-dot"></span>Sincronizada</span></td>
+            <td>hace 8h</td>
+            <td><span class="validation-tag validation-tag-verified">Verificado</span></td>
+          </tr>
+          <tr>
+            <td>TST CYC</td>
+            <td><span class="bank-cell"><span class="bank-logo bank-logo-bbva">B</span><span class="bank-name">BBVA Provincial</span></span></td>
+            <td><span class="acct-num">··0034</span></td>
+            <td class="numeric">Bs. 31.030,00</td>
+            <td>VES</td>
+            <td><span class="pill pill-warn"><span class="pill-dot"></span>Requiere atención</span></td>
+            <td>hace 1 sem</td>
+            <td><span class="validation-tag validation-tag-pending">Pendiente</span></td>
+          </tr>
+          <tr>
+            <td>TST CYC</td>
+            <td><span class="bank-cell"><span class="bank-logo bank-logo-bnc">N</span><span class="bank-name">BNC</span></span></td>
+            <td><span class="acct-num">··5421</span></td>
+            <td class="numeric">Bs. 23.375.000.000,00</td>
+            <td>VES</td>
+            <td><span class="pill pill-syncing"><span class="pill-dot"></span>Sincronizando</span></td>
+            <td>hace 2 min</td>
+            <td><span class="validation-tag validation-tag-verified">Verificado</span></td>
+          </tr>
+          <tr>
+            <td>TST CYC</td>
+            <td><span class="bank-cell"><span class="bank-logo bank-logo-bnc">N</span><span class="bank-name">BNC</span></span></td>
+            <td><span class="acct-num">··5422</span></td>
+            <td class="numeric">$410.158,07</td>
+            <td>USD</td>
+            <td><span class="pill pill-syncing"><span class="pill-dot"></span>Sincronizando</span></td>
+            <td>hace 2 min</td>
+            <td><span class="validation-tag validation-tag-verified">Verificado</span></td>
+          </tr>
+
+          <!-- Group: TESOTE TECHNOLOGIES INC. -->
+          <tr class="group-header">
+            <td colspan="8">
+              <span class="group-name">TESOTE TECHNOLOGIES INC.</span>
+              <span class="group-meta">· 3 cuentas</span>
+              <span class="group-subtotals">$1.000,00</span>
+            </td>
+          </tr>
+          <tr>
+            <td>Tesote Tech</td>
+            <td><span class="bank-cell"><span class="bank-logo bank-logo-manual">$</span><span class="bank-name">Mercury (manual)</span></span></td>
+            <td><span class="acct-num">··2294</span></td>
+            <td class="numeric">$850,00</td>
+            <td>USD</td>
+            <td><span class="pill pill-draft"><span class="pill-dot"></span>Manual</span></td>
+            <td>—</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>Tesote Tech</td>
+            <td><span class="bank-cell"><span class="bank-logo bank-logo-banesco">E</span><span class="bank-name">Banesco</span></span></td>
+            <td><span class="acct-num">··7745</span></td>
+            <td class="numeric">€0,00</td>
+            <td>EUR</td>
+            <td><span class="pill pill-ok"><span class="pill-dot"></span>Sincronizada</span></td>
+            <td>hace 1h</td>
+            <td><span class="validation-tag validation-tag-verified">Verificado</span></td>
+          </tr>
+          <tr>
+            <td>Tesote Tech</td>
+            <td><span class="bank-cell"><span class="bank-logo bank-logo-activo">A</span><span class="bank-name">Banco Activo</span></span></td>
+            <td><span class="acct-num">··3543</span></td>
+            <td class="numeric">$150,00</td>
+            <td>USD</td>
+            <td><span class="pill pill-warn"><span class="pill-dot"></span>Requiere atención</span></td>
+            <td>hace 1 sem</td>
+            <td><span class="validation-tag validation-tag-pending">Pendiente</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Spacer + Connections preview (collapsed by default in tab UX; rendered here as preview) -->
+    <div style="margin-top: 36px;">
+      <h3 style="font-family:'Inter Tight',sans-serif;font-size:13px;font-weight:600;color:var(--gray-600);letter-spacing:.05em;text-transform:uppercase;margin-bottom:10px;">Preview: tab "Por conexiones bancarias" (10 columns — production)</h3>
+
+      <div class="table-card">
+        <table class="data-table">
+          <colgroup>
+            <col style="width: 16%"><col style="width: 9%"><col style="width: 12%"><col style="width: 7%">
+            <col style="width: 13%"><col style="width: 10%"><col style="width: 11%"><col style="width: 10%">
+            <col style="width: 8%"><col style="width: 4%">
+          </colgroup>
+          <thead>
+            <tr>
+              <th>Conexión</th>
+              <th>Usuario</th>
+              <th>Entidades</th>
+              <th class="numeric">Cuentas</th>
+              <th>Estado</th>
+              <th>Último sync</th>
+              <th>Programación</th>
+              <th>Modo de Sync</th>
+              <th>2FA</th>
+              <th class="center"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="bank-cell"><span class="bank-logo bank-logo-mercantil">M</span><span class="bank-name">Mercantil</span></span></td>
+              <td><span class="acct-num">l...e25</span></td>
+              <td>TST CYC</td>
+              <td class="numeric">3</td>
+              <td><span class="pill pill-ok"><span class="pill-dot"></span>Activa</span></td>
+              <td>hace 8h</td>
+              <td><span class="sync-mode">Diario 06:00</span></td>
+              <td><span class="sync-mode">API</span></td>
+              <td><span class="twofa-tag twofa-tag-auto">Auto</span></td>
+              <td class="center"><button class="row-sync-btn"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 4v3h-3M2 12V9h3"/><path d="M3 9a5.5 5.5 0 0010 1M13 7A5.5 5.5 0 003 6"/></svg></button></td>
+            </tr>
+            <tr>
+              <td><span class="bank-cell"><span class="bank-logo bank-logo-bbva">B</span><span class="bank-name">BBVA Provincial</span></span></td>
+              <td><span class="acct-num">l...@e7</span></td>
+              <td>TST CYC</td>
+              <td class="numeric">2</td>
+              <td><span class="pill pill-warn"><span class="pill-dot"></span>Cambio credenciales</span></td>
+              <td>hace 10h</td>
+              <td><span class="sync-mode">Diario 06:00</span></td>
+              <td><span class="sync-mode">API</span></td>
+              <td><span class="twofa-tag">Manual</span></td>
+              <td class="center"><button class="row-sync-btn" disabled><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 4v3h-3M2 12V9h3"/><path d="M3 9a5.5 5.5 0 0010 1M13 7A5.5 5.5 0 003 6"/></svg></button></td>
+            </tr>
+            <tr>
+              <td><span class="bank-cell"><span class="bank-logo bank-logo-bnc">N</span><span class="bank-name">BNC</span></span></td>
+              <td><span class="acct-num">a...@25</span></td>
+              <td>TST CYC</td>
+              <td class="numeric">2</td>
+              <td><span class="pill pill-syncing"><span class="pill-dot"></span>Sincronizando</span></td>
+              <td>hace 2 min</td>
+              <td><span class="sync-mode">Cada 4h</span></td>
+              <td><span class="sync-mode">API</span></td>
+              <td><span class="twofa-tag twofa-tag-auto">Auto</span></td>
+              <td class="center"><button class="row-sync-btn" disabled><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 4v3h-3M2 12V9h3"/><path d="M3 9a5.5 5.5 0 0010 1M13 7A5.5 5.5 0 003 6"/></svg></button></td>
+            </tr>
+            <tr>
+              <td><span class="bank-cell"><span class="bank-logo bank-logo-activo">A</span><span class="bank-name">Banco Activo</span></span></td>
+              <td><span class="acct-num">a...@25</span></td>
+              <td>Tesote Tech</td>
+              <td class="numeric">4</td>
+              <td><span class="pill pill-error"><span class="pill-dot"></span>Sync falló</span></td>
+              <td>hace 1 sem</td>
+              <td><span class="sync-mode">Diario 06:00</span></td>
+              <td><span class="sync-mode">API</span></td>
+              <td><span class="twofa-tag">Manual</span></td>
+              <td class="center"><button class="row-sync-btn"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 4v3h-3M2 12V9h3"/><path d="M3 9a5.5 5.5 0 0010 1M13 7A5.5 5.5 0 003 6"/></svg></button></td>
+            </tr>
+            <tr>
+              <td><span class="bank-cell"><span class="bank-logo bank-logo-manual">$</span><span class="bank-name">Mercury (manual)</span></span></td>
+              <td>—</td>
+              <td>Tesote Tech</td>
+              <td class="numeric">1</td>
+              <td><span class="pill pill-draft"><span class="pill-dot"></span>Manual</span></td>
+              <td>—</td>
+              <td>—</td>
+              <td><span class="sync-mode">Manual</span></td>
+              <td>—</td>
+              <td class="center">—</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="table-footer">5 conexiones bancarias</div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+</body>
+</html>

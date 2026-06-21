@@ -1,0 +1,23 @@
+date,category,counterparty,reference,amount_usd,direction,note
+2026-04-10,Collecting,"Festejos Mar, C.A.",FA00A1F6-0024,450.00,in,
+2026-04-10,Collecting,SOMOS JOMI CA,F508FEE3-0013,350.00,in,
+2026-04-10,Collecting,Regalos Altavista CA,"71A49742-0007, 71A49742-0008",2100.00,in,
+2026-04-10,Office Expenses,Wilmer Albornoz,NA,20.00,out,Messenger
+2026-04-13,Office Expenses,Wilmer Albornoz,NA,5.00,out,Parking
+2026-04-13,Collecting,"PLATAFORMA DE SERVICIOS EWAY, C.A.","3755A282-0017, 3755A282-0018",898.00,in,
+2026-04-14,Collecting,"ARMI LOGISTICS INVERSIONES, S.A.",,300.00,in,
+2026-04-14,Collecting,Grupo Landa Consultores,,1125.00,in,
+2026-04-14,Office Expenses,Wilmer Albornoz,NA,10.00,out,Messenger
+2026-04-16,Collecting,"ALIMENTOS MACO 2020, C.A.",,999.00,in,
+2026-04-16,Collecting,"NOORDZEE FANTASIE LUXURY GROUP,C.A",NT6Y4YS3-0006,1700.00,in,
+2026-04-16,Office Expenses,Wilmer Albornoz,NA,10.00,out,Messenger
+2026-04-17,Collecting,PALOS GRANDES DEVELOPMENT LTD,HIULGQVM-0007,750.00,in,
+2026-04-17,Office Expenses,Wilmer Albornoz,NA,5.00,out,Messenger
+2026-04-20,Collecting,"TAMAYO & CIA., S.A.",0DF6859A-0020,300.00,in,
+2026-04-20,Office Expenses,Wilmer Albornoz,NA,5.00,out,Messenger
+2026-04-23,Internal Transfers In,Tesote Technologies,NA,1000.00,in,
+2026-04-23,Collecting,"LABORATORIOS KIMICEG, C.A.",,1347.00,in,
+2026-04-30,Internal Transfers In,Tesote Technologies,NA,100.00,in,
+2026-04-30,Collecting,SOMOS JOMI CA,F508FEE3-0014,350.00,in,
+2026-04-30,Office Expenses,Wilmer Albornoz,NA,5.00,out,Messenger
+2026-04-30,Payroll,Rebeca Triana,NA,450.00,out,

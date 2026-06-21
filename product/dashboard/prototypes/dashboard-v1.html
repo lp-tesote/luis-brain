@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tesote · Posición (dashboard v1 — cockpit posición-first)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Geist+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* Lunour brand */
+      --primary: #1661E2;
+      --primary-hover: #184EB5;
+      --primary-light: #EEF8FF;
+      --primary-border: #C6DDFB;
+      --text: #12110F;
+      --text-2: #635D55;
+      --text-3: #857D73;
+      --text-4: #C7C0B5;
+      --border: #E8E3DA;
+      --border-2: #F2EEE6;
+      --bg-sidebar: #F7F5F0;
+      --bg-main: #FFFFFF;
+      --bg-soft: #FCFBF7;
+      --hover: #F2EEE6;
+      --active: #E8E3DA;
+      --green: #1A8C5B;
+      --green-text: #0F6E45;
+      --yellow: #CC9500;
+      --red: #C41E1E;
+      --orange: #A83E00;
+
+      /* Pill family (locked) */
+      --pill-paid: #D6E8D5;
+      --pill-new: #E4ECF7;
+      --pill-pending: #F7EDD0;
+      --pill-overdue: #F8D8C0;
+      --pill-draft: #ECE7DD;
+
+      --radius: 8px;
+      --radius-lg: 12px;
+      --radius-sm: 4px;
+      --shadow: 0 1px 2px rgba(18, 17, 15, 0.04);
+
+      --font-display: 'Inter Tight', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Aspekta', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'Geist Mono', 'SF Mono', 'Menlo', monospace;
+    }
+
+    body {
+      font-family: var(--font-body);
+      font-size: 14px;
+      background: var(--bg-main);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      font-feature-settings: 'cv11', 'ss01';
+    }
+
+    h1, h2, h3, .page-title { font-family: var(--font-display); letter-spacing: -.01em; }
+    .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+    .app { display: grid; grid-template-columns: 224px 1fr; min-height: 100vh; }
+
+    .ic { display: inline-block; vertical-align: middle; width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+    .ic-sm { width: 13px; height: 13px; }
+
+    /* ─── SIDEBAR (identical shell to movimientos-v7) ─────────────────────── */
+    .sidebar { background: var(--bg-sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+    .sb-top { display: flex; align-items: center; padding: 14px 14px 10px; }
+    .sb-brand { display: flex; align-items: center; gap: 9px; font-size: 14px; font-weight: 600; }
+    .sb-logo { width: 24px; height: 24px; border-radius: 6px; background: var(--text); display: flex; align-items: center; justify-content: center; color: white; font-family: var(--font-display); font-weight: 700; font-size: 13px; }
+    .sb-pro { font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 4px; background: var(--text); color: white; letter-spacing: .03em; margin-left: 7px; }
+    .sb-search { margin: 0 10px 8px; display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 6px; background: var(--bg-main); border: 1px solid var(--border); cursor: pointer; color: var(--text-3); font-size: 13px; }
+    .sb-search .kbd { margin-left: auto; font-size: 10px; font-family: var(--font-mono); padding: 1px 5px; border-radius: 3px; background: var(--bg-soft); border: 1px solid var(--border); }
+    .sb-section { padding: 4px 10px 2px; }
+    .sb-section-label { padding: 10px 10px 6px; font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); }
+    .sb-item { display: flex; align-items: center; gap: 10px; padding: 6px 10px; border-radius: 6px; font-size: 13px; color: var(--text-2); cursor: pointer; }
+    .sb-item:hover { background: var(--hover); color: var(--text); }
+    .sb-item.active { background: var(--active); color: var(--text); font-weight: 500; }
+    .sb-item .ic { color: var(--text-3); }
+    .sb-item.active .ic, .sb-item:hover .ic { color: var(--text-2); }
+    .sb-item-count { margin-left: auto; font-size: 11px; font-weight: 500; color: var(--text-3); background: var(--bg-main); padding: 1px 6px; border-radius: 10px; border: 1px solid var(--border); }
+    .sb-bottom { margin-top: auto; padding: 10px; border-top: 1px solid var(--border); }
+    .sb-user { display: flex; align-items: center; gap: 10px; padding: 7px 8px; border-radius: 6px; }
+    .sb-user-avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--primary); color: white; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; }
+    .sb-user-name { font-size: 13px; font-weight: 500; }
+    .sb-user-sub { font-size: 11px; color: var(--text-3); }
+
+    .main { display: flex; flex-direction: column; min-width: 0; }
+    .topbar { height: 52px; padding: 0 22px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); }
+    .topbar-spacer { flex: 1; }
+    .topbar-icon { width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-2); }
+    .topbar-icon:hover { background: var(--hover); color: var(--text); }
+
+    .content { flex: 1; overflow-y: auto; max-width: 1280px; width: 100%; margin: 0 auto; padding: 28px 36px 60px; }
+
+    .page-head { margin-bottom: 18px; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    .page-title { font-size: 26px; font-weight: 700; }
+    .page-meta { display: flex; align-items: center; gap: 8px; margin-top: 6px; font-size: 13px; color: var(--text-2); flex-wrap: wrap; }
+    .page-meta-dot { color: var(--text-4); }
+    .page-actions { display: flex; align-items: center; gap: 8px; padding-top: 4px; }
+
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 6px; background: white; font-size: 13px; color: var(--text-2); cursor: pointer; font-family: inherit; border: 1px solid var(--border); }
+    .btn:hover { background: var(--hover); color: var(--text); }
+    .btn .caret { width: 11px; height: 11px; opacity: .65; }
+
+    /* ─── HERO: posición + Δ decomposition ───────────────────────────────── */
+    .hero { display: grid; grid-template-columns: 1fr 320px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: white; overflow: hidden; margin-bottom: 18px; }
+    .hero-left { padding: 20px 24px 18px; min-width: 0; }
+    .hero-label { font-size: 10.5px; font-weight: 600; color: var(--text-3); letter-spacing: .08em; text-transform: uppercase; display: flex; align-items: baseline; gap: 8px; }
+    .hero-label-note { font-weight: 500; letter-spacing: 0; text-transform: none; font-size: 11px; color: var(--text-3); }
+    .hero-amount { font-family: var(--font-display); font-size: 38px; font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; margin-top: 8px; white-space: nowrap; }
+    .hero-amount .dec { font-size: 22px; font-weight: 600; color: var(--text-3); }
+    .hero-delta { display: flex; align-items: center; gap: 8px; margin-top: 6px; font-size: 13px; color: var(--text-2); }
+    .hero-delta .mono { font-weight: 600; color: var(--text); }
+    .hero-delta .ic-sm { color: var(--text-3); }
+
+    .decomp { display: grid; grid-template-columns: repeat(3, auto) 1fr; align-items: stretch; gap: 0 22px; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border-2); }
+    .decomp-cell { position: relative; padding-right: 22px; }
+    .decomp-cell + .decomp-cell { border-left: 1px solid var(--border-2); padding-left: 22px; }
+    .decomp-k { font-size: 10.5px; font-weight: 600; color: var(--text-3); letter-spacing: .06em; text-transform: uppercase; display: flex; align-items: center; gap: 5px; }
+    .decomp-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .decomp-v { font-family: var(--font-mono); font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; margin-top: 5px; white-space: nowrap; }
+    .decomp-v.credit { color: var(--green-text); }
+    .decomp-sub { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+    .decomp-note { align-self: end; justify-self: end; font-size: 11px; color: var(--text-3); display: flex; align-items: center; gap: 5px; padding-bottom: 2px; }
+    .decomp-note .ic-sm { color: var(--green); width: 12px; height: 12px; }
+
+    .hero-right { border-left: 1px solid var(--border); background: var(--bg-soft); padding: 16px 20px 14px; display: flex; flex-direction: column; }
+    .spark-head { display: flex; align-items: baseline; justify-content: space-between; }
+    .spark-title { font-size: 10.5px; font-weight: 600; color: var(--text-3); letter-spacing: .08em; text-transform: uppercase; }
+    .spark-range { font-size: 11px; color: var(--text-3); font-family: var(--font-mono); }
+    .spark { margin-top: 10px; flex: 1; min-height: 64px; }
+    .spark svg { width: 100%; height: 100%; display: block; overflow: visible; }
+    .bcv-box { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); display: flex; align-items: baseline; justify-content: space-between; font-size: 12px; }
+    .bcv-k { color: var(--text-3); font-weight: 500; }
+    .bcv-v { font-family: var(--font-mono); font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
+    .bcv-chip { font-size: 10.5px; font-weight: 600; color: var(--orange); background: var(--pill-overdue); padding: 1px 6px; border-radius: 3px; margin-left: 6px; }
+
+    /* ─── SECTION SCAFFOLD ────────────────────────────────────────────────── */
+    .section-head { display: flex; align-items: center; justify-content: space-between; margin: 22px 0 10px; }
+    .section-title { font-size: 11px; font-weight: 600; color: var(--text-3); letter-spacing: .08em; text-transform: uppercase; }
+    .section-link { font-size: 12px; font-weight: 500; color: var(--text-2); cursor: pointer; display: inline-flex; align-items: center; gap: 4px; padding: 3px 6px; border-radius: 5px; }
+    .section-link:hover { background: var(--hover); color: var(--primary); }
+
+    .card { background: white; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+
+    /* ─── POSITION TABLE ──────────────────────────────────────────────────── */
+    .data-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    .data-table th { text-align: left; padding: 11px 14px; font-size: 11px; font-weight: 600; color: var(--text-3); background: var(--bg-soft); border-bottom: 1px solid var(--border); letter-spacing: .05em; text-transform: uppercase; white-space: nowrap; }
+    .data-table th.num { text-align: right; }
+    .data-table td { padding: 10px 14px; border-bottom: 1px solid var(--border-2); vertical-align: middle; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .data-table tbody tr:hover { background: var(--bg-soft); }
+    .data-table tbody tr:last-child td { border-bottom: none; }
+    .td-num { font-family: var(--font-mono); text-align: right; font-variant-numeric: tabular-nums; font-size: 13px; font-weight: 500; }
+    .td-num .dec { font-size: 11px; opacity: .6; }
+    .td-num.credit { color: var(--green-text); }
+    .td-num.muted { color: var(--text-4); font-weight: 400; }
+    .td-num.strong { font-weight: 600; }
+
+    .group-row td { background: var(--bg-soft); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 8px 14px; }
+    .group-row:first-child td { border-top: none; }
+    .group-name { font-size: 12px; font-weight: 600; color: var(--text-2); }
+    .group-meta { font-size: 11px; font-weight: 400; color: var(--text-3); margin-left: 8px; }
+    .group-row .td-num { font-size: 12px; color: var(--text-2); }
+
+    .acct { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .bank-logo { width: 24px; height: 24px; border-radius: var(--radius-sm); display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 10px; font-weight: 700; color: white; flex-shrink: 0; }
+    .bl-mercantil { background: #006B3F; }
+    .bl-bnc { background: #C8102E; }
+    .bl-banesco { background: #0067A6; }
+    .bl-bancamiga { background: #00A0DF; }
+    .bl-mercury { background: #2D2A26; }
+    .acct-name { font-size: 13px; font-weight: 500; color: var(--text); overflow: hidden; text-overflow: ellipsis; }
+    .acct-sub { font-size: 11px; color: var(--text-3); font-family: var(--font-mono); }
+
+    .sync { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-2); }
+    .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+    .sync.warn { color: var(--orange); font-weight: 500; }
+    .sync.warn .sync-dot { background: var(--orange); }
+
+    .tfoot td { background: var(--bg-soft); border-top: 1px solid var(--border); padding: 10px 14px; font-weight: 600; }
+    .tfoot .label { font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--text-2); }
+    .tfoot .td-num { font-size: 13.5px; font-weight: 600; }
+
+    /* ─── LOWER GRID: movimientos + excepciones ──────────────────────────── */
+    .lower { display: grid; grid-template-columns: 1.5fr 1fr; gap: 16px; align-items: start; }
+
+    .mov-row { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--border-2); }
+    .mov-row:last-child { border-bottom: none; }
+    .mov-row:hover { background: var(--bg-soft); }
+    .mov-main { min-width: 0; flex: 1; }
+    .mov-cp { font-size: 13px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 7px; }
+    .mov-meta { font-size: 11.5px; color: var(--text-3); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mov-amt { font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; flex-shrink: 0; }
+    .mov-amt .int { font-size: 13.5px; font-weight: 600; }
+    .mov-amt .dec { font-size: 11px; font-weight: 500; opacity: .6; }
+    .mov-amt.credit .int, .mov-amt.credit .dec { color: var(--green-text); }
+    .mov-amt-usd { font-size: 11px; color: var(--text-3); font-family: var(--font-mono); margin-top: 1px; }
+
+    .pill { display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: var(--radius-sm); font-size: 11px; font-weight: 500; color: var(--text); white-space: nowrap; flex-shrink: 0; }
+    .pill-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .pill.new { background: var(--pill-new); }     .pill.new .pill-dot { background: var(--primary); }
+    .pill.pending { background: var(--pill-pending); } .pill.pending .pill-dot { background: var(--yellow); }
+    .pill.overdue { background: var(--pill-overdue); } .pill.overdue .pill-dot { background: var(--orange); }
+    .pill.paid { background: var(--pill-paid); }   .pill.paid .pill-dot { background: var(--green); }
+
+    .exc-row { display: flex; align-items: center; gap: 10px; padding: 11px 16px; border-bottom: 1px solid var(--border-2); }
+    .exc-row:last-child { border-bottom: none; }
+    .exc-main { flex: 1; min-width: 0; }
+    .exc-title { font-size: 13px; font-weight: 500; color: var(--text); }
+    .exc-sub { font-size: 11.5px; color: var(--text-3); margin-top: 1px; }
+    .exc-action { font-size: 12px; font-weight: 500; color: var(--text-2); cursor: pointer; padding: 4px 8px; border-radius: 5px; border: 1px solid var(--border); background: white; flex-shrink: 0; }
+    .exc-action:hover { background: var(--primary-light); border-color: var(--primary-border); color: var(--primary); }
+
+    .fresh-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 14px; padding: 10px 16px 12px; }
+    .fresh-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12px; padding: 3px 0; }
+    .fresh-bank { color: var(--text-2); display: inline-flex; align-items: center; gap: 7px; }
+    .fresh-time { font-family: var(--font-mono); color: var(--text-3); font-size: 11.5px; }
+    .fresh-row.warn .fresh-bank, .fresh-row.warn .fresh-time { color: var(--orange); font-weight: 500; }
+    .fresh-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+    .fresh-row.warn .fresh-dot { background: var(--orange); }
+
+    /* ─── DELIVERY BANNER (ties to Posición Diaria pack) ─────────────────── */
+    .delivery { margin-top: 22px; border: 1px solid var(--primary-border); background: var(--primary-light); border-radius: var(--radius); padding: 14px 18px; display: flex; align-items: center; gap: 14px; }
+    .delivery .ic { color: var(--primary); width: 18px; height: 18px; }
+    .delivery-text { flex: 1; font-size: 13px; color: var(--text-2); }
+    .delivery-text strong { color: var(--text); font-weight: 600; }
+    .delivery-btn { font-size: 12.5px; font-weight: 600; color: white; background: var(--primary); border: none; padding: 7px 14px; border-radius: 6px; cursor: pointer; font-family: inherit; flex-shrink: 0; }
+    .delivery-btn:hover { background: var(--primary-hover); }
+  </style>
+</head>
+<body>
+  <div class="app">
+
+    <!-- ─── SIDEBAR ─────────────────────────────────────────────────────── -->
+    <aside class="sidebar">
+      <div class="sb-top">
+        <div class="sb-brand">
+          <div class="sb-logo">T</div>
+          <span>Tesote</span>
+          <span class="sb-pro">PRO</span>
+        </div>
+      </div>
+      <div class="sb-search">
+        <svg class="ic ic-sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        Buscar
+        <span class="kbd">⌘K</span>
+      </div>
+      <div class="sb-section">
+        <div class="sb-item active">
+          <svg class="ic" viewBox="0 0 24 24"><path d="M4 11 12 4l8 7"/><path d="M6 10v9h12v-9"/></svg>
+          Inicio
+        </div>
+      </div>
+      <div class="sb-section">
+        <div class="sb-section-label">Connect</div>
+        <div class="sb-item">
+          <svg class="ic" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg>
+          Saldos
+        </div>
+        <div class="sb-item">
+          <svg class="ic" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h12"/></svg>
+          Movimientos
+          <span class="sb-item-count">234</span>
+        </div>
+        <div class="sb-item">
+          <svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 12a3 3 0 0 0 3 3 3 3 0 0 0 3-3"/></svg>
+          Conexiones
+        </div>
+      </div>
+      <div class="sb-section">
+        <div class="sb-section-label">Business</div>
+        <div class="sb-item">
+          <svg class="ic" viewBox="0 0 24 24"><path d="M3 7h18l-2 12H5L3 7z"/></svg>
+          Pagos
+        </div>
+        <div class="sb-item">
+          <svg class="ic" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M4 10h16"/></svg>
+          Cobros
+        </div>
+        <div class="sb-item">
+          <svg class="ic" viewBox="0 0 24 24"><path d="M6 4h12v6H6z"/><path d="M4 14h16v6H4z"/></svg>
+          Contrapartes
+        </div>
+      </div>
+      <div class="sb-bottom">
+        <div class="sb-user">
+          <div class="sb-user-avatar">M</div>
+          <div>
+            <div class="sb-user-name">Mariel R.</div>
+            <div class="sb-user-sub">Tesote Finance</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ─── MAIN ─────────────────────────────────────────────────────────── -->
+    <main class="main">
+      <div class="topbar">
+        <div class="topbar-spacer"></div>
+        <div class="topbar-icon" title="Ayuda">
+          <svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.8.4-1 .9-1 1.7M12 17h.01"/></svg>
+        </div>
+        <div class="topbar-icon" title="Notificaciones">
+          <svg class="ic" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0v5l1.5 3h-15L6 13z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+        </div>
+      </div>
+
+      <div class="content">
+
+        <!-- Page head -->
+        <div class="page-head">
+          <div>
+            <h1 class="page-title">Posición</h1>
+            <div class="page-meta">
+              <span>viernes 06-jun-2026</span>
+              <span class="page-meta-dot">·</span>
+              <span>Actualizado hace 12 min</span>
+              <span class="page-meta-dot">·</span>
+              <span><strong style="color:var(--text); font-weight:600;">6</strong> cuentas en <strong style="color:var(--text); font-weight:600;">2</strong> entidades</span>
+            </div>
+          </div>
+          <div class="page-actions">
+            <button class="btn">
+              <svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+              Todas las entidades
+              <svg class="ic caret" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <button class="btn">
+              Dolarizado (USD)
+              <svg class="ic caret" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- ─── HERO: posición total + Δ decomposition ──────────────────── -->
+        <section class="hero" aria-label="Posición total">
+          <div class="hero-left">
+            <div class="hero-label">
+              Posición total
+              <span class="hero-label-note">USD-consolidada · BCV del día</span>
+            </div>
+            <div class="hero-amount mono">$521,840<span class="dec">.17</span></div>
+            <div class="hero-delta">
+              <svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7" transform="rotate(180 12 12)"/></svg>
+              <span class="mono">−$3,411</span>
+              <span>vs ayer</span>
+            </div>
+
+            <div class="decomp">
+              <div class="decomp-cell">
+                <div class="decomp-k"><span class="decomp-dot" style="background: var(--text-3);"></span>Flujos</div>
+                <div class="decomp-v">−$2,980</div>
+                <div class="decomp-sub">movimientos de ayer, a tasa de hoy</div>
+              </div>
+              <div class="decomp-cell">
+                <div class="decomp-k"><span class="decomp-dot" style="background: var(--orange);"></span>Devaluación</div>
+                <div class="decomp-v">−$431</div>
+                <div class="decomp-sub">revaluación de saldos en Bs</div>
+              </div>
+              <div class="decomp-cell">
+                <div class="decomp-k"><span class="decomp-dot" style="background: var(--green);"></span>Sin explicar</div>
+                <div class="decomp-v">$0</div>
+                <div class="decomp-sub">movimientos sin capturar (ε)</div>
+              </div>
+              <div class="decomp-note">
+                <svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+                La identidad cuadra al centavo
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-right">
+            <div class="spark-head">
+              <span class="spark-title">Posición · 30 días</span>
+              <span class="spark-range">$498k – $531k</span>
+            </div>
+            <div class="spark">
+              <svg viewBox="0 0 280 64" preserveAspectRatio="none" aria-hidden="true">
+                <defs>
+                  <linearGradient id="sparkfill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#1661E2" stop-opacity=".14"/>
+                    <stop offset="1" stop-color="#1661E2" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+                <path d="M0,52 L10,50 L20,51 L30,46 L40,47 L50,42 L60,44 L70,38 L80,40 L90,34 L100,36 L110,30 L120,32 L130,25 L140,28 L150,22 L160,26 L170,18 L180,22 L190,14 L200,18 L210,10 L220,15 L230,8 L240,13 L250,11 L260,16 L270,12 L280,15 L280,64 L0,64 Z" fill="url(#sparkfill)"/>
+                <path d="M0,52 L10,50 L20,51 L30,46 L40,47 L50,42 L60,44 L70,38 L80,40 L90,34 L100,36 L110,30 L120,32 L130,25 L140,28 L150,22 L160,26 L170,18 L180,22 L190,14 L200,18 L210,10 L220,15 L230,8 L240,13 L250,11 L260,16 L270,12 L280,15" fill="none" stroke="#1661E2" stroke-width="1.8"/>
+                <circle cx="280" cy="15" r="3" fill="#1661E2"/>
+              </svg>
+            </div>
+            <div class="bcv-box">
+              <span class="bcv-k">BCV hoy</span>
+              <span>
+                <span class="bcv-v">Bs 558,6436</span>
+                <span class="bcv-chip">+0,76% vs ayer</span>
+              </span>
+            </div>
+          </div>
+        </section>
+
+        <!-- ─── POSITION BY ENTITY ──────────────────────────────────────── -->
+        <div class="section-head">
+          <span class="section-title">Posición por entidad</span>
+          <span class="section-link">
+            Ver Saldos
+            <svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8"/></svg>
+          </span>
+        </div>
+        <div class="card">
+          <table class="data-table">
+            <colgroup>
+              <col style="width: 250px;">
+              <col style="width: 112px;">
+              <col style="width: 178px;">
+              <col style="width: 118px;">
+              <col style="width: 104px;">
+              <col style="width: 118px;">
+              <col style="width: 108px;">
+            </colgroup>
+            <thead>
+              <tr>
+                <th>Cuenta</th>
+                <th>Último sync</th>
+                <th class="num">Saldo nativo</th>
+                <th class="num">Valor USD</th>
+                <th class="num">Flujos</th>
+                <th class="num">Devaluación</th>
+                <th class="num">Δ del día</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="group-row">
+                <td colspan="3"><span class="group-name">TST Servicios y Consultoría, C.A.</span><span class="group-meta">Venezuela · 4 cuentas</span></td>
+                <td class="td-num">$64,731</td>
+                <td class="td-num credit">+$8,091</td>
+                <td class="td-num">−$431</td>
+                <td class="td-num credit">+$7,660</td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="acct">
+                    <span class="bank-logo bl-bnc">BN</span>
+                    <span>
+                      <span class="acct-name">BNC Corriente</span>
+                      <span class="acct-sub">··5678 · VES</span>
+                    </span>
+                  </div>
+                </td>
+                <td><span class="sync"><span class="sync-dot"></span>hace 3 h</span></td>
+                <td class="td-num">Bs 24.871.741<span class="dec">,48</span></td>
+                <td class="td-num strong">$44,522</td>
+                <td class="td-num credit">+$8,950</td>
+                <td class="td-num">−$271</td>
+                <td class="td-num credit strong">+$8,679</td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="acct">
+                    <span class="bank-logo bl-mercantil">M</span>
+                    <span>
+                      <span class="acct-name">Mercantil Corriente</span>
+                      <span class="acct-sub">··1234 · VES</span>
+                    </span>
+                  </div>
+                </td>
+                <td><span class="sync"><span class="sync-dot"></span>hace 2 h</span></td>
+                <td class="td-num">Bs 8.300.000<span class="dec">,00</span></td>
+                <td class="td-num strong">$14,857</td>
+                <td class="td-num muted">—</td>
+                <td class="td-num">−$113</td>
+                <td class="td-num strong">−$113</td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="acct">
+                    <span class="bank-logo bl-banesco">B</span>
+                    <span>
+                      <span class="acct-name">Banesco Corriente</span>
+                      <span class="acct-sub">··4421 · VES</span>
+                    </span>
+                  </div>
+                </td>
+                <td><span class="sync"><span class="sync-dot"></span>hace 2 h</span></td>
+                <td class="td-num">Bs 2.470.000<span class="dec">,00</span></td>
+                <td class="td-num strong">$4,421</td>
+                <td class="td-num">−$859</td>
+                <td class="td-num">−$40</td>
+                <td class="td-num strong">−$899</td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="acct">
+                    <span class="bank-logo bl-bancamiga">BA</span>
+                    <span>
+                      <span class="acct-name">Bancamiga Corriente</span>
+                      <span class="acct-sub">··9012 · VES</span>
+                    </span>
+                  </div>
+                </td>
+                <td><span class="sync warn"><span class="sync-dot"></span>hace 26 h</span></td>
+                <td class="td-num">Bs 520.000<span class="dec">,00</span></td>
+                <td class="td-num strong">$931</td>
+                <td class="td-num muted">—</td>
+                <td class="td-num">−$7</td>
+                <td class="td-num strong">−$7</td>
+              </tr>
+              <tr class="group-row">
+                <td colspan="3"><span class="group-name">Tesote Technologies Inc.</span><span class="group-meta">Delaware, EE. UU. · 2 cuentas</span></td>
+                <td class="td-num">$457,109</td>
+                <td class="td-num">−$11,071</td>
+                <td class="td-num muted">—</td>
+                <td class="td-num">−$11,071</td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="acct">
+                    <span class="bank-logo bl-mercury">ME</span>
+                    <span>
+                      <span class="acct-name">Mercury Checking</span>
+                      <span class="acct-sub">··4127 · USD</span>
+                    </span>
+                  </div>
+                </td>
+                <td><span class="sync"><span class="sync-dot"></span>hace 1 h</span></td>
+                <td class="td-num">$312,400<span class="dec">.00</span></td>
+                <td class="td-num strong">$312,400</td>
+                <td class="td-num">−$11,071</td>
+                <td class="td-num muted">—</td>
+                <td class="td-num strong">−$11,071</td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="acct">
+                    <span class="bank-logo bl-mercury">ME</span>
+                    <span>
+                      <span class="acct-name">Mercury Treasury</span>
+                      <span class="acct-sub">··8830 · USD</span>
+                    </span>
+                  </div>
+                </td>
+                <td><span class="sync"><span class="sync-dot"></span>hace 1 h</span></td>
+                <td class="td-num">$144,709<span class="dec">.00</span></td>
+                <td class="td-num strong">$144,709</td>
+                <td class="td-num muted">—</td>
+                <td class="td-num muted">—</td>
+                <td class="td-num muted">$0</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr class="tfoot">
+                <td colspan="3" class="label">Total consolidado</td>
+                <td class="td-num">$521,840</td>
+                <td class="td-num">−$2,980</td>
+                <td class="td-num">−$431</td>
+                <td class="td-num">−$3,411</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- ─── LOWER: movimientos de ayer + excepciones ────────────────── -->
+        <div class="lower" style="margin-top: 22px;">
+
+          <div>
+            <div class="section-head" style="margin-top: 0;">
+              <span class="section-title">Movimientos de ayer · ≥ $1,000</span>
+              <span class="section-link">
+                Ver Movimientos
+                <svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8"/></svg>
+              </span>
+            </div>
+            <div class="card">
+              <div class="mov-row">
+                <div class="mov-main">
+                  <div class="mov-cp">CAPCA, C.A.</div>
+                  <div class="mov-meta">BNC ··5678 · Cobro de factura</div>
+                </div>
+                <div>
+                  <div class="mov-amt credit"><span class="int">+Bs 5.000.000</span><span class="dec">,00</span></div>
+                  <div class="mov-amt-usd">≈ +$8,950</div>
+                </div>
+              </div>
+              <div class="mov-row">
+                <div class="mov-main">
+                  <div class="mov-cp">Gusto, Inc.</div>
+                  <div class="mov-meta">Mercury ··4127 · Nómina EE. UU.</div>
+                </div>
+                <div class="mov-amt"><span class="int">−$5,871</span><span class="dec">.00</span></div>
+              </div>
+              <div class="mov-row">
+                <div class="mov-main">
+                  <div class="mov-cp">Amazon Web Services</div>
+                  <div class="mov-meta">Mercury ··4127 · Infraestructura</div>
+                </div>
+                <div class="mov-amt"><span class="int">−$3,200</span><span class="dec">.00</span></div>
+              </div>
+              <div class="mov-row">
+                <div class="mov-main">
+                  <div class="mov-cp">
+                    Lunour LLC
+                    <span class="pill new"><span class="pill-dot"></span>Contraparte nueva</span>
+                  </div>
+                  <div class="mov-meta">Mercury ··4127 · Sin categorizar</div>
+                </div>
+                <div class="mov-amt"><span class="int">−$2,500</span><span class="dec">.00</span></div>
+              </div>
+              <div class="mov-row">
+                <div class="mov-main">
+                  <div class="mov-cp">Stripe Payments</div>
+                  <div class="mov-meta">Mercury ··4127 · Liquidación de cobros</div>
+                </div>
+                <div class="mov-amt credit"><span class="int">+$1,500</span><span class="dec">.00</span></div>
+              </div>
+              <div class="mov-row">
+                <div class="mov-main">
+                  <div class="mov-cp">Datadog, Inc.</div>
+                  <div class="mov-meta">Mercury ··4127 · Infraestructura</div>
+                </div>
+                <div class="mov-amt"><span class="int">−$1,000</span><span class="dec">.00</span></div>
+              </div>
+              <div class="mov-row">
+                <div class="mov-main">
+                  <div class="mov-cp">Tesorería Nacional — IVA</div>
+                  <div class="mov-meta">Banesco ··4421 · Impuestos</div>
+                </div>
+                <div>
+                  <div class="mov-amt"><span class="int">−Bs 480.000</span><span class="dec">,00</span></div>
+                  <div class="mov-amt-usd">≈ −$859</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="section-head" style="margin-top: 0;">
+              <span class="section-title">Excepciones</span>
+            </div>
+            <div class="card">
+              <div class="exc-row">
+                <span class="pill pending"><span class="pill-dot"></span>4</span>
+                <div class="exc-main">
+                  <div class="exc-title">Movimientos sin categorizar</div>
+                  <div class="exc-sub">3 en Mercury · 1 en BNC</div>
+                </div>
+                <button class="exc-action">Revisar</button>
+              </div>
+              <div class="exc-row">
+                <span class="pill new"><span class="pill-dot"></span>1</span>
+                <div class="exc-main">
+                  <div class="exc-title">Contraparte nueva</div>
+                  <div class="exc-sub">Lunour LLC · primera vez en tus cuentas</div>
+                </div>
+                <button class="exc-action">Revisar</button>
+              </div>
+              <div class="exc-row">
+                <span class="pill overdue"><span class="pill-dot"></span>1</span>
+                <div class="exc-main">
+                  <div class="exc-title">Conexión desactualizada</div>
+                  <div class="exc-sub">Bancamiga · último sync hace 26 h</div>
+                </div>
+                <button class="exc-action">Conexión</button>
+              </div>
+              <div class="exc-row">
+                <span class="pill paid"><span class="pill-dot"></span>ε</span>
+                <div class="exc-main">
+                  <div class="exc-title">Sin movimientos sin capturar</div>
+                  <div class="exc-sub">La identidad cuadra al centavo en las 6 cuentas</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-head">
+              <span class="section-title">Frescura de datos</span>
+            </div>
+            <div class="card">
+              <div class="fresh-grid">
+                <div class="fresh-row"><span class="fresh-bank"><span class="fresh-dot"></span>Mercury</span><span class="fresh-time">hace 1 h</span></div>
+                <div class="fresh-row"><span class="fresh-bank"><span class="fresh-dot"></span>Mercantil</span><span class="fresh-time">hace 2 h</span></div>
+                <div class="fresh-row"><span class="fresh-bank"><span class="fresh-dot"></span>Banesco</span><span class="fresh-time">hace 2 h</span></div>
+                <div class="fresh-row"><span class="fresh-bank"><span class="fresh-dot"></span>BNC</span><span class="fresh-time">hace 3 h</span></div>
+                <div class="fresh-row warn"><span class="fresh-bank"><span class="fresh-dot"></span>Bancamiga</span><span class="fresh-time">hace 26 h</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ─── DELIVERY BANNER ─────────────────────────────────────────── -->
+        <div class="delivery">
+          <svg class="ic" viewBox="0 0 24 24"><path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/></svg>
+          <div class="delivery-text">
+            <strong>Recibe esta posición cada mañana.</strong>
+            Te enviamos la Posición Diaria a las 7:30 a. m. — con el Δ explicado y las excepciones del día.
+          </div>
+          <button class="delivery-btn">Configurar entrega</button>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</body>
+</html>

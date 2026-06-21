@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Reverón · por Tesote AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --carbon:  #0B0C0E;
+    --carbon2: #101216;
+    --ink:     #D9DCE1;
+    --muted:   #767C85;
+    --faint:   #4A4F57;
+    --hair:    rgba(216, 222, 230, 0.10);
+    --hair2:   rgba(216, 222, 230, 0.06);
+    --plat-hi: #FFFFFF;
+    --plat-lo: #9AA0A8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--carbon);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  .sheen {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background:
+      radial-gradient(ellipse 90vw 60vh at 50% -8%, rgba(196, 206, 220, 0.13), transparent 60%),
+      radial-gradient(ellipse 120vw 80vh at 50% 118%, rgba(120, 130, 145, 0.07), transparent 60%);
+  }
+
+  main { position: relative; z-index: 1; }
+
+  .section {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 14vh 7vw;
+  }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; font-weight: 400;
+    letter-spacing: 0.4em; text-transform: uppercase;
+    color: var(--muted); padding-left: 0.4em;
+  }
+
+  /* ——— hero (40k ft) ——— */
+  .wordmark {
+    font-family: 'Instrument Serif', serif; font-weight: 400;
+    font-size: clamp(5.5rem, 19vw, 15rem); line-height: 0.9; letter-spacing: -0.012em;
+    background: linear-gradient(176deg, var(--plat-hi) 0%, #D6DAE0 26%, var(--plat-lo) 52%, #E9ECF0 76%, #B7BCC4 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter: drop-shadow(0 1px 0 rgba(255,255,255,0.10)) drop-shadow(0 14px 34px rgba(0,0,0,0.55));
+  }
+  .endorsement {
+    margin-top: 1.9rem; font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; letter-spacing: 0.4em; text-transform: uppercase;
+    color: var(--muted); padding-left: 0.4em;
+  }
+  .tagline {
+    font-family: 'Instrument Serif', serif; font-style: italic;
+    font-size: clamp(1.7rem, 3.6vw, 2.8rem); line-height: 1.2;
+    color: var(--ink); margin-top: 4.4rem; max-width: 16ch;
+  }
+  .sub {
+    margin-top: 1.6rem; font-size: clamp(1rem, 1.55vw, 1.18rem);
+    font-weight: 300; line-height: 1.7; color: var(--muted); max-width: 48ch;
+  }
+  .cta {
+    margin-top: 3.4rem; display: inline-flex; align-items: center; gap: 0.6rem;
+    font-size: 0.95rem; font-weight: 400; letter-spacing: 0.02em; color: var(--ink);
+    text-decoration: none; padding-bottom: 0.35rem; border-bottom: 1px solid var(--ink);
+    transition: color .35s, border-color .35s, gap .35s;
+  }
+  .cta:hover { color: var(--plat-hi); border-color: var(--plat-hi); gap: 0.95rem; }
+  .cta svg { width: 14px; height: 14px; }
+
+  .em {
+    font-style: italic;
+    background: linear-gradient(176deg, var(--plat-hi), var(--plat-lo));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+
+  /* ——— the shift (provocation) ——— */
+  .shift p {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(1.7rem, 3.6vw, 2.9rem); line-height: 1.28;
+    max-width: 22ch; margin: 0 auto;
+  }
+  .shift p + p { margin-top: 2.4rem; }
+  .shift .dim { color: var(--muted); }
+  .shift .kicker { margin-top: 3rem; }
+
+  /* ——— on the ground (proof) ——— */
+  .ground { padding-top: 16vh; padding-bottom: 16vh; }
+  .ground .lead {
+    font-family: 'Instrument Serif', serif; font-style: italic;
+    font-size: clamp(1.4rem, 2.8vw, 2rem); color: var(--ink);
+    max-width: 24ch; margin: 1.4rem auto 8vh;
+  }
+  .exchanges { width: 100%; max-width: 720px; text-align: left; }
+  .xc {
+    padding: 3.4vh 0; border-top: 1px solid var(--hair2);
+  }
+  .xc .prompt {
+    font-family: 'JetBrains Mono', monospace; font-size: clamp(0.92rem, 1.5vw, 1.08rem);
+    font-weight: 400; color: var(--ink); line-height: 1.55; display: flex; gap: 0.7em;
+  }
+  .xc .prompt .caret { color: var(--plat-lo); flex: none; }
+  .xc .outcome {
+    margin-top: 1rem; padding-left: 1.7em;
+    font-family: 'Instrument Serif', serif; font-size: clamp(1.15rem, 2vw, 1.5rem);
+    line-height: 1.35; color: var(--ink);
+  }
+  .xc .impact {
+    margin-top: 1.1rem; padding-left: 1.7em;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+    letter-spacing: 0.06em; color: var(--faint); text-transform: uppercase;
+  }
+  .xc .impact .arrow { color: var(--plat-lo); margin: 0 0.6em; }
+
+  /* ——— the leap (close) ——— */
+  .leap p {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(1.5rem, 3.1vw, 2.4rem); line-height: 1.32;
+    max-width: 24ch; margin: 0 auto;
+  }
+  .leap p + p { margin-top: 2.4rem; }
+  .leap .dim { color: var(--muted); }
+
+  /* ——— footer ——— */
+  footer { padding: 8vh 7vw 9vh; text-align: center; }
+  .whisper {
+    font-family: 'Instrument Serif', serif; font-style: italic;
+    font-size: clamp(1rem, 1.8vw, 1.2rem); color: var(--muted);
+    max-width: 34ch; margin: 0 auto 3rem; line-height: 1.4;
+  }
+  .legal {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.66rem;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--faint);
+  }
+  .legal .dot { margin: 0 0.7em; opacity: 0.5; }
+
+  @media (max-width: 600px) {
+    .endorsement, .eyebrow { letter-spacing: 0.28em; }
+    .xc .outcome, .xc .impact { padding-left: 0; }
+  }
+</style>
+</head>
+<body>
+  <div class="sheen"></div>
+
+  <main>
+    <!-- 40,000 ft -->
+    <section class="section hero">
+      <h1 class="wordmark">Reverón</h1>
+      <div class="endorsement">por Tesote&nbsp;AI</div>
+      <p class="tagline">Inteligencia artificial, dentro de tus finanzas.</p>
+      <p class="sub">El cambio más grande que vivirá tu departamento de finanzas en una década. De horas de trabajo manual a respuestas, reportes y decisiones — en segundos.</p>
+      <a class="cta" href="#acceso">
+        Solicitar acceso
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </section>
+
+    <!-- the shift -->
+    <section class="section shift">
+      <p>La inteligencia artificial ya cambió cómo el mundo escribe, programa, investiga y decide.</p>
+      <p class="dim">Tu departamento de finanzas todavía trabaja como hace diez años: exportando, copiando, cuadrando a mano.</p>
+      <p class="kicker">Eso cambia <span class="em">hoy</span>.</p>
+    </section>
+
+    <!-- on the ground -->
+    <section class="section ground">
+      <div class="eyebrow">En concreto</div>
+      <p class="lead">No es magia. Le hablas como a tu mejor analista — y responde como ninguno.</p>
+
+      <div class="exchanges">
+        <div class="xc">
+          <div class="prompt"><span class="caret">›</span><span>¿Cuánto le debemos a cada proveedor, vencido a más de 30 días, en dólares?</span></div>
+          <div class="outcome">La respuesta desglosada y lista, en segundos.</div>
+          <div class="impact">Media mañana en Excel <span class="arrow">→</span> una frase</div>
+        </div>
+        <div class="xc">
+          <div class="prompt"><span class="caret">›</span><span>Construye el flujo de caja de mayo, por banco y por moneda.</span></div>
+          <div class="outcome">El reporte armado solo, sin pedírselo a nadie.</div>
+          <div class="impact">Días esperando al equipo <span class="arrow">→</span> al instante</div>
+        </div>
+        <div class="xc">
+          <div class="prompt"><span class="caret">›</span><span>Avísame cada mañana si algún banco amanece con saldo bajo.</span></div>
+          <div class="outcome">Una automatización que corre sola, todos los días, antes de que llegues.</div>
+          <div class="impact">Revisión manual diaria <span class="arrow">→</span> cero</div>
+        </div>
+        <div class="xc">
+          <div class="prompt"><span class="caret">›</span><span>¿Por qué subió tanto el gasto este mes? Compáralo con los últimos seis.</span></div>
+          <div class="outcome">El análisis con la causa señalada — no solo el número.</div>
+          <div class="impact">Horas de tabla dinámica <span class="arrow">→</span> una conversación</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- the leap -->
+    <section class="section leap">
+      <p class="dim">Años conectando cada banco y ordenando cada dato fueron la preparación.</p>
+      <p>Reverón es el salto: el primer integrante de tu equipo de finanzas que piensa a la velocidad de la <span class="em">inteligencia artificial</span>.</p>
+      <a class="cta" href="#acceso" style="margin-top: 3.8rem;">
+        Solicitar acceso
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </section>
+
+    <footer id="acceso">
+      <p class="whisper">Por la obsesión venezolana de ver lo que nadie más ve.</p>
+      <div class="legal">Reverón <span class="dot">·</span> por Tesote AI <span class="dot">·</span> 2026</div>
+    </footer>
+  </main>
+</body>
+</html>

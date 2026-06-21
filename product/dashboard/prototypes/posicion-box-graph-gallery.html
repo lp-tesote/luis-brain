@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tesote · Posición — graph-forward (10 iteraciones)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Geist+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #1661E2; --primary-hover: #184EB5; --primary-light: #EEF8FF; --primary-border: #C6DDFB;
+      --text: #12110F; --text-2: #635D55; --text-3: #857D73; --text-4: #C7C0B5;
+      --border: #E8E3DA; --border-2: #F2EEE6;
+      --bg-main: #FFFFFF; --bg-soft: #FCFBF7; --hover: #F2EEE6;
+      --green: #1A8C5B; --green-text: #0F6E45; --yellow: #CC9500; --red: #C41E1E; --orange: #A83E00;
+      --ves-bar: #6FA8DC; --pill-new: #E4ECF7;
+      --radius: 8px; --radius-lg: 12px; --radius-sm: 4px;
+      --shadow: 0 1px 2px rgba(18,17,15,.04);
+      --font-display: 'Inter Tight','Inter',sans-serif;
+      --font-body: 'Aspekta','Inter',sans-serif;
+      --font-mono: 'Geist Mono','SF Mono','Menlo',monospace;
+    }
+    body { font-family: var(--font-body); font-size: 14px; background: var(--bg-soft); color: var(--text); -webkit-font-smoothing: antialiased; font-feature-settings: 'cv11','ss01'; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 40px 24px 80px; gap: 8px; }
+    .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+    h1,.fig,.cur-amt { font-family: var(--font-display); letter-spacing: -.01em; }
+    .ic { display: inline-block; vertical-align: middle; width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+    .ic-sm { width: 13px; height: 13px; }
+
+    .page-head { width: 720px; max-width: 100%; margin-bottom: 12px; }
+    .page-head h1 { font-size: 20px; font-weight: 700; }
+    .page-head p { font-size: 13px; color: var(--text-2); margin-top: 6px; line-height: 1.5; }
+    .variant { width: 720px; max-width: 100%; margin-top: 26px; }
+    .vlabel { font-size: 12px; color: var(--text-3); margin-bottom: 8px; display: flex; align-items: baseline; gap: 8px; }
+    .vlabel b { font-family: var(--font-mono); font-size: 12px; color: var(--primary); font-weight: 700; }
+    .vlabel .t { color: var(--text); font-weight: 600; font-size: 13px; }
+
+    .card { background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px 20px; display: flex; flex-direction: column; }
+
+    /* header */
+    .hd { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    .lbl { font-size: 11px; font-weight: 600; color: var(--text-3); letter-spacing: .06em; text-transform: uppercase; }
+    .fig { font-size: 38px; font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; margin-top: 5px; white-space: nowrap; line-height: 1.02; }
+    .fig .cents { font-size: 20px; font-weight: 600; color: var(--text-3); }
+    .var-chip { display: inline-flex; align-items: center; gap: 4px; font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--green-text); background: #E7F2EA; border-radius: 6px; padding: 4px 9px; }
+    .var-chip.sub { background: transparent; color: var(--text-3); font-weight: 500; padding: 4px 0; }
+
+    /* chart */
+    .chart { margin-top: 14px; }
+    .chart svg { width: 100%; display: block; }
+    .chart text { font-family: var(--font-mono); fill: var(--text-3); }
+
+    /* range chips */
+    .rng { display: inline-flex; padding: 2px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: 7px; gap: 2px; }
+    .rng button { font-family: inherit; font-size: 11.5px; font-weight: 500; color: var(--text-2); padding: 4px 10px; border-radius: 5px; border: none; background: transparent; cursor: pointer; }
+    .rng button.on { background: white; color: var(--text); box-shadow: var(--shadow); font-weight: 600; }
+
+    /* legend */
+    .lg { display: flex; gap: 16px; margin-top: 10px; }
+    .lg-i { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-2); }
+    .lg-i .sw { width: 10px; height: 10px; border-radius: 2px; }
+
+    /* decomposition band (v8) */
+    .dband { margin-top: 14px; padding-top: 13px; border-top: 1px solid var(--border-2); display: flex; gap: 22px; }
+    .dband .di { font-size: 11.5px; color: var(--text-3); }
+    .dband .di .v { font-family: var(--font-mono); font-weight: 600; font-size: 13px; display: block; margin-top: 2px; color: var(--text); }
+    .dband .di .v.in { color: var(--green-text); } .dband .di .v.dev { color: var(--orange); }
+
+    /* currency boxes underneath */
+    .cur-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+    .cur-cell { border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 13px; }
+    .cur-top { display: flex; align-items: center; gap: 7px; }
+    .cur-nm { font-size: 12px; font-weight: 600; }
+    .cur-sh { margin-left: auto; font-size: 11px; font-family: var(--font-mono); color: var(--text-3); font-weight: 600; }
+    .cur-amt { font-family: var(--font-mono); font-size: 19px; font-weight: 700; font-variant-numeric: tabular-nums; margin-top: 9px; white-space: nowrap; }
+    .cur-sub { font-size: 11.5px; color: var(--text-3); font-family: var(--font-mono); margin-top: 2px; }
+    .cur-dl { display: flex; gap: 7px; margin-top: 10px; padding-top: 9px; border-top: 1px solid var(--border-2); font-size: 11.5px; color: var(--text-3); }
+    .cur-dl .da { font-family: var(--font-mono); font-weight: 600; color: var(--text-2); }
+    .cur-dl .dev { margin-left: auto; color: var(--orange); font-family: var(--font-mono); }
+    .badge { width: 20px; height: 20px; border-radius: var(--radius-sm); display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 8.5px; font-weight: 700; color: white; flex-shrink: 0; }
+    .b-usd { background: var(--green); } .b-ves { background: #2D6FB8; }
+
+    /* overlay figure (v6) */
+    .chart-wrap { position: relative; margin-top: 4px; }
+    .overlay { position: absolute; top: 6px; left: 2px; }
+    .overlay .lbl { color: var(--text-2); }
+  </style>
+</head>
+<body>
+  <div class="page-head">
+    <h1>Posición — gráfica protagonista</h1>
+    <p>La idea: el saldo total consolidado en USD se dibuja como una <b>gráfica grande</b> (la suma de todos los saldos, en dólares, día a día), y debajo quedan las cajas de <b>USD / VES</b>. 10 maneras de tratar la gráfica. Sin tocar el dashboard.</p>
+  </div>
+
+  <!-- variants injected by JS -->
+  <div id="root"></div>
+
+  <script>
+    // ── data: 30 daily closes of the consolidated USD position (thousands) ──
+    const S = [489.2,491.0,490.1,493.5,492.0,495.8,494.2,498.6,497.0,501.3,
+               499.8,503.9,502.1,506.4,505.0,509.2,507.6,511.8,510.0,514.3,
+               512.5,516.0,514.8,518.2,517.0,520.6,519.0,522.4,520.9,521.84].map(v => v*1000);
+    // VES-held portion (thousands of USD-equiv), for the stacked composition variant
+    const V = [62,61,63,62,64,63,65,64,66,65,64,66,65,63,64,62,63,61,62,60,
+               61,63,62,64,63,65,64,66,65,64.731].map(v => v*1000);
+
+    const NF = n => '$' + Math.round(n).toLocaleString('es-VE');
+    const NK = n => '$' + Math.round(n/1000) + 'K';
+
+    function geom(o) {
+      const W = o.w, H = o.h;
+      const padL = o.yAxis ? 46 : 4, padR = 8, padT = 12, padB = o.xAxis ? 22 : 8;
+      return { W, H, padL, padR, padT, padB, plotW: W-padL-padR, plotH: H-padT-padB };
+    }
+    function project(series, g, lo, hi) {
+      const n = series.length;
+      return series.map((v,i) => ({
+        x: g.padL + (n===1 ? 0 : i*g.plotW/(n-1)),
+        y: g.padT + (1-(v-lo)/(hi-lo))*g.plotH
+      }));
+    }
+    function linePath(P) { return 'M' + P.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' L'); }
+    function smoothPath(P) {
+      if (P.length < 3) return linePath(P);
+      let d = `M${P[0].x.toFixed(1)},${P[0].y.toFixed(1)}`;
+      for (let i=0;i<P.length-1;i++){
+        const p0=P[i-1]||P[i], p1=P[i], p2=P[i+1], p3=P[i+2]||p2;
+        const c1x=p1.x+(p2.x-p0.x)/6, c1y=p1.y+(p2.y-p0.y)/6;
+        const c2x=p2.x-(p3.x-p1.x)/6, c2y=p2.y-(p3.y-p1.y)/6;
+        d += ` C${c1x.toFixed(1)},${c1y.toFixed(1)} ${c2x.toFixed(1)},${c2y.toFixed(1)} ${p2.x.toFixed(1)},${p2.y.toFixed(1)}`;
+      }
+      return d;
+    }
+
+    function chart(o) {
+      o = Object.assign({ w: 680, h: 210 }, o);
+      const g = geom(o);
+      const baseY = g.padT + g.plotH;
+
+      // ── stacked composition (USD held vs VES held), absolute from 0 ──
+      if (o.type === 'stacked') {
+        const lo = 0, hi = 560000;
+        const usd = S.map((v,i)=>v - V[i]);
+        const Ptot = project(S, g, lo, hi);
+        const Pusd = project(usd, g, lo, hi);
+        const areaUsd = smoothPath(Pusd) + ` L${Pusd[Pusd.length-1].x.toFixed(1)},${baseY} L${Pusd[0].x.toFixed(1)},${baseY} Z`;
+        const areaTot = smoothPath(Ptot) + ' L' + smoothPath(Pusd).slice(1).split(' ').reverse().join(' '); // not reliable
+        // build VES band as polygon between tot and usd
+        const top = smoothPath(Ptot);
+        const bot = Pusd.slice().reverse().map(p=>`${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' L');
+        const vesBand = top + ' L' + bot + ' Z';
+        let ax = grid(g, lo, hi, baseY, o);
+        return svgWrap(o, `
+          ${ax}
+          <path d="${vesBand}" fill="${'#DCEAF7'}" stroke="none"/>
+          <path d="${areaUsd}" fill="url(#gUsd)" stroke="none"/>
+          <path d="${smoothPath(Pusd)}" fill="none" stroke="${'#1661E2'}" stroke-width="1.6"/>
+          <path d="${top}" fill="none" stroke="${'#6FA8DC'}" stroke-width="1.4"/>
+        `);
+      }
+
+      // ── zoomed scale for line/area/bars ──
+      const lo = 484000, hi = 526000;
+      const P = project(S, g, lo, hi);
+      let body = '';
+
+      if (o.type === 'bars') {
+        const n = S.length, bw = g.plotW/n*0.62;
+        body += S.map((v,i) => {
+          const x = g.padL + i*g.plotW/(n-1) - bw/2;
+          const y = P[i].y, h = baseY - y, last = i===n-1;
+          return `<rect x="${(x).toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="1.5" fill="${last?'#1661E2':'#CFE0F6'}"/>`;
+        }).join('');
+      } else {
+        const path = o.curve ? smoothPath(P) : linePath(P);
+        if (o.type === 'area') {
+          body += `<path d="${path} L${P[P.length-1].x.toFixed(1)},${baseY} L${P[0].x.toFixed(1)},${baseY} Z" fill="url(#gArea)"/>`;
+        }
+        body += `<path d="${path}" fill="none" stroke="#1661E2" stroke-width="${o.thin?1.4:1.9}"/>`;
+        if (o.dots) body += P.map(p=>`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="1.7" fill="#1661E2"/>`).join('');
+        if (o.startDot) body += `<circle cx="${P[0].x.toFixed(1)}" cy="${P[0].y.toFixed(1)}" r="2.4" fill="#C7C0B5"/>`;
+        if (o.endDot) body += `<circle cx="${P[P.length-1].x.toFixed(1)}" cy="${P[P.length-1].y.toFixed(1)}" r="3.4" fill="#1661E2" stroke="white" stroke-width="1.5"/>`;
+      }
+
+      if (o.baseline) {
+        const by = P[0].y.toFixed(1);
+        body += `<line x1="${g.padL}" y1="${by}" x2="${g.W-g.padR}" y2="${by}" stroke="#E8E3DA" stroke-width="1" stroke-dasharray="2 3"/>`;
+      }
+
+      // annotations: peak / trough / now
+      if (o.annotate) {
+        let maxI=0,minI=0; S.forEach((v,i)=>{ if(v>S[maxI])maxI=i; if(v<S[minI])minI=i; });
+        const mk = (i,label,below) => {
+          const p=P[i];
+          return `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="2.6" fill="#1661E2"/>
+            <text x="${p.x.toFixed(1)}" y="${(p.y+(below?14:-7)).toFixed(1)}" text-anchor="middle" font-size="9.5" font-weight="600" fill="#857D73">${label}</text>`;
+        };
+        body += mk(maxI, 'Máx ' + NK(S[maxI]), false);
+        body += mk(minI, 'Mín ' + NK(S[minI]), true);
+      }
+
+      // callout bubble on latest point
+      if (o.callout) {
+        const p = P[P.length-1];
+        const bx = p.x-150, by = p.y-34, bw=142, bh=26;
+        body += `<g>
+          <rect x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="6" fill="#12110F"/>
+          <text x="${bx+11}" y="${by+17}" font-size="11" font-weight="600" fill="white" font-family="Geist Mono">▲ +$33.190 · 30 d</text>
+          <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3.6" fill="#1661E2" stroke="white" stroke-width="1.6"/>
+        </g>`;
+      }
+
+      const ax = grid(g, lo, hi, baseY, o);
+      return svgWrap(o, ax + body);
+    }
+
+    function grid(g, lo, hi, baseY, o) {
+      let s = '';
+      if (o.yAxis) {
+        const ticks = o.fewTicks ? 3 : 4;
+        for (let t=0;t<ticks;t++){
+          const v = lo + (hi-lo)*t/(ticks-1);
+          const y = g.padT + (1-(v-lo)/(hi-lo))*g.plotH;
+          s += `<line x1="${g.padL}" y1="${y.toFixed(1)}" x2="${g.W-g.padR}" y2="${y.toFixed(1)}" stroke="${o.faint?'#F2EEE6':'#F2EEE6'}" stroke-width="1"/>`;
+          s += `<text x="${g.padL-8}" y="${(y+3).toFixed(1)}" text-anchor="end" font-size="9.5">${NK(v)}</text>`;
+        }
+      }
+      if (o.xAxis) {
+        s += `<text x="${g.padL}" y="${g.H-6}" text-anchor="start" font-size="9.5">hace 30 d</text>`;
+        s += `<text x="${(g.padL+(g.W-g.padL-g.padR)/2).toFixed(1)}" y="${g.H-6}" text-anchor="middle" font-size="9.5">15 d</text>`;
+        s += `<text x="${g.W-g.padR}" y="${g.H-6}" text-anchor="end" font-size="9.5">hoy</text>`;
+      }
+      return s;
+    }
+
+    function svgWrap(o, inner) {
+      return `<svg viewBox="0 0 ${o.w} ${o.h}" preserveAspectRatio="xMidYMid meet" style="height:${o.h}px;max-height:${o.h}px">
+        <defs>
+          <linearGradient id="gArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1661E2" stop-opacity=".22"/><stop offset="1" stop-color="#1661E2" stop-opacity="0"/></linearGradient>
+          <linearGradient id="gUsd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1661E2" stop-opacity=".20"/><stop offset="1" stop-color="#1661E2" stop-opacity=".02"/></linearGradient>
+        </defs>
+        ${inner}
+      </svg>`;
+    }
+
+    // ── shared blocks ──
+    const HD = (chip) => `
+      <div class="hd">
+        <div>
+          <div class="lbl">Posición total · USD consolidado</div>
+          <div class="fig mono">$521.840<span class="cents">,17</span></div>
+        </div>
+        ${chip||''}
+      </div>`;
+    const CHIP = `<span class="var-chip"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg>+$33.190 · 30 d</span>`;
+    const RNG = (active) => `<div class="rng">${['7 D','30 D','90 D','1 A'].map(r=>`<button class="${r===active?'on':''}">${r}</button>`).join('')}</div>`;
+    const CUR = `
+      <div class="cur-grid">
+        <div class="cur-cell">
+          <div class="cur-top"><span class="badge b-usd">USD</span><span class="cur-nm">Dólares</span><span class="cur-sh">88%</span></div>
+          <div class="cur-amt">$457.109</div>
+          <div class="cur-sub">2 cuentas · Mercury</div>
+          <div class="cur-dl">Δ ayer <span class="da">−$1.200</span></div>
+        </div>
+        <div class="cur-cell">
+          <div class="cur-top"><span class="badge b-ves">VES</span><span class="cur-nm">Bolívares</span><span class="cur-sh">12%</span></div>
+          <div class="cur-amt">Bs 36.161.741,48</div>
+          <div class="cur-sub">≈ $64.731</div>
+          <div class="cur-dl">Δ ayer <span class="da">−$2.211</span><span class="dev">−$431 dev.</span></div>
+        </div>
+      </div>`;
+
+    // ── variants ──
+    const variants = [
+      { id:'v1', t:'Área con degradado + selector de rango', build: () => `
+        <div class="card">
+          <div class="hd"><div><div class="lbl">Posición total · USD consolidado</div><div class="fig mono">$521.840<span class="cents">,17</span></div></div>${RNG('30 D')}</div>
+          <div class="chart">${chart({type:'area',curve:true,endDot:true,h:200})}</div>
+          ${CUR}
+        </div>` },
+
+      { id:'v2', t:'Línea analítica con ejes (Y en $, X fechas)', build: () => `
+        <div class="card">
+          ${HD(CHIP)}
+          <div class="chart">${chart({type:'line',curve:false,dots:true,yAxis:true,xAxis:true,h:210})}</div>
+          ${CUR}
+        </div>` },
+
+      { id:'v3', t:'Área apilada — composición USD vs Bs en el tiempo', build: () => `
+        <div class="card">
+          ${HD('')}
+          <div class="chart">${chart({type:'stacked',yAxis:true,h:210})}</div>
+          <div class="lg"><span class="lg-i"><span class="sw" style="background:#1661E2"></span>Saldo en dólares</span><span class="lg-i"><span class="sw" style="background:#6FA8DC"></span>Saldo en bolívares (USD-equiv.)</span></div>
+          ${CUR}
+        </div>` },
+
+      { id:'v4', t:'Barras diarias — nivel de posición por día', build: () => `
+        <div class="card">
+          ${HD(CHIP)}
+          <div class="chart">${chart({type:'bars',xAxis:true,h:200})}</div>
+          ${CUR}
+        </div>` },
+
+      { id:'v5', t:'Área con anotaciones (máx / mín / hoy)', build: () => `
+        <div class="card">
+          ${HD(CHIP)}
+          <div class="chart">${chart({type:'area',curve:true,annotate:true,endDot:true,h:210})}</div>
+          ${CUR}
+        </div>` },
+
+      { id:'v6', t:'Figura sobre la gráfica (full-bleed)', build: () => `
+        <div class="card">
+          <div class="chart-wrap">
+            <div class="overlay">
+              <div class="lbl">Posición total · USD consolidado</div>
+              <div class="fig mono">$521.840<span class="cents">,17</span></div>
+              <span class="var-chip sub"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg>+$33.190 · 30 d</span>
+            </div>
+            <div class="chart" style="margin-top:0">${chart({type:'area',curve:true,endDot:true,h:230})}</div>
+          </div>
+          ${CUR}
+        </div>` },
+
+      { id:'v7', t:'Línea con callout en el último punto', build: () => `
+        <div class="card">
+          ${HD('')}
+          <div class="chart">${chart({type:'line',curve:true,callout:true,h:210})}</div>
+          ${CUR}
+        </div>` },
+
+      { id:'v8', t:'Área + franja de descomposición (flujos / devaluación)', build: () => `
+        <div class="card">
+          ${HD('')}
+          <div class="chart">${chart({type:'area',curve:true,endDot:true,h:184})}</div>
+          <div class="dband">
+            <div class="di">Entró · 30 d<span class="v in">+$96.400</span></div>
+            <div class="di">Salió · 30 d<span class="v">−$63.210</span></div>
+            <div class="di">Devaluación · 30 d<span class="v dev">−$1.900</span></div>
+            <div class="di" style="margin-left:auto;text-align:right">Variación neta<span class="v in">+$33.190</span></div>
+          </div>
+          ${CUR}
+        </div>` },
+
+      { id:'v9', t:'Spline minimalista + línea base (hace 30 d)', build: () => `
+        <div class="card">
+          ${HD(CHIP)}
+          <div class="chart">${chart({type:'area',curve:true,baseline:true,startDot:true,endDot:true,h:200})}</div>
+          ${CUR}
+        </div>` },
+
+      { id:'v10', t:'Línea fina "fintech" — mucho aire, ejes tenues', build: () => `
+        <div class="card">
+          <div class="hd"><div><div class="lbl">Posición total · USD consolidado</div><div class="fig mono">$521.840<span class="cents">,17</span></div></div>${RNG('30 D')}</div>
+          <div class="chart">${chart({type:'line',curve:true,thin:true,yAxis:true,xAxis:true,fewTicks:true,faint:true,endDot:true,h:220})}</div>
+          ${CUR}
+        </div>` },
+    ];
+
+    document.getElementById('root').innerHTML = variants.map(v => `
+      <div class="variant">
+        <div class="vlabel"><b>${v.id}</b><span class="t">${v.t}</span></div>
+        ${v.build()}
+      </div>`).join('');
+  </script>
+</body>
+</html>

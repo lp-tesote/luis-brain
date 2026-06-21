@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Veconinter × Tesote — Blueprint de Trabajo (v1)</title>
+<style>
+  :root {
+    --ink: #1a1d24;
+    --muted: #5b626e;
+    --line: #e3e6ea;
+    --accent: #1f6feb;
+    --soft: #f5f7fa;
+    --note: #fff8e6;
+    --note-border: #f0d98a;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    font-size: 11pt;
+    line-height: 1.5;
+    margin: 0;
+  }
+  .page { max-width: 760px; margin: 0 auto; padding: 0 8px; }
+
+  header.doc {
+    border-bottom: 3px solid var(--accent);
+    padding-bottom: 14px;
+    margin-bottom: 22px;
+  }
+  header.doc h1 {
+    font-size: 22pt;
+    margin: 0 0 6px;
+    letter-spacing: -0.02em;
+  }
+  header.doc .meta {
+    color: var(--muted);
+    font-size: 9.5pt;
+  }
+  header.doc .lede {
+    margin-top: 12px;
+    color: var(--ink);
+    font-size: 10.5pt;
+  }
+
+  h2 {
+    font-size: 13.5pt;
+    margin: 26px 0 8px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--line);
+    letter-spacing: -0.01em;
+  }
+  h3 {
+    font-size: 11.5pt;
+    margin: 18px 0 6px;
+    color: var(--ink);
+  }
+  p { margin: 6px 0; }
+  ul, ol { margin: 6px 0; padding-left: 20px; }
+  li { margin: 3px 0; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 10pt;
+  }
+  th, td {
+    text-align: left;
+    padding: 7px 10px;
+    border: 1px solid var(--line);
+    vertical-align: top;
+  }
+  th {
+    background: var(--soft);
+    font-weight: 600;
+  }
+  td strong { color: var(--accent); }
+
+  blockquote {
+    margin: 10px 0;
+    padding: 9px 14px;
+    background: var(--note);
+    border-left: 4px solid var(--note-border);
+    border-radius: 0 4px 4px 0;
+    font-size: 10pt;
+  }
+  blockquote p { margin: 4px 0; }
+  blockquote ul { margin: 4px 0; }
+
+  .accent { color: var(--accent); }
+  strong { font-weight: 600; }
+  hr { border: none; border-top: 1px solid var(--line); margin: 22px 0; }
+
+  h2, h3 { page-break-after: avoid; }
+  table, blockquote { page-break-inside: avoid; }
+
+  @page { margin: 16mm 14mm; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="doc">
+  <h1>Veconinter × Tesote — Blueprint de Trabajo</h1>
+  <div class="meta"><strong>Versión:</strong> v1 &middot; <strong>Fecha:</strong> 2026-06-18 &middot; <strong>Origen:</strong> sesión de discovery posterior a la reunión intro del 2026-06-01</div>
+  <p class="lede">Este documento resume cómo trabajaríamos juntos: qué casos de uso cubrimos, cómo hacemos las integraciones, con qué frecuencia se actualiza la data y en qué fases avanzamos. Es un borrador de trabajo para validar y afinar en la sesión de hoy.</p>
+</header>
+
+<h2>1. Objetivo</h2>
+<p>Automatizar la tesorería de Veconinter en Venezuela: eliminar el trabajo manual de entrar banco por banco, descargar el libro banco, armar el flujo de caja en Excel y cargar las plantillas de ingresos al sistema interno (SCI). El objetivo de salida de hoy es dejar acordado este blueprint para pasar a propuesta.</p>
+
+<h2>2. Alcance — Fase 1 (Venezuela)</h2>
+<ul>
+  <li><strong>13 cuentas en Venezuela</strong> (prioridad).</li>
+  <li><strong>2 cuentas en USD</strong> asociadas a la entidad VE: <strong>Facebank</strong> y <strong>Mercantil Panamá</strong>.</li>
+  <li>Estados Unidos y demás mercados quedan explícitamente para una <strong>Fase 2</strong> (paralela), no se pierden de vista.</li>
+</ul>
+<blockquote><p><strong>Por validar hoy:</strong> confirmar el inventario de cuentas (la plantilla que enviamos) para cerrar el alcance exacto de Fase 1.</p></blockquote>
+
+<h2>3. Casos de uso</h2>
+
+<h3>3.1 Conexión bancaria automatizada — la base</h3>
+<p>Tesote se conecta una sola vez en el setup y mantiene la conexión persistente. El equipo deja de entrar manualmente a cada portal: las actualizaciones son automáticas / a un clic.</p>
+<p><strong>Cómo lo hacemos hoy y hacia dónde vamos:</strong></p>
+<table>
+  <thead><tr><th>Banco</th><th>Hoy</th><th>Hacia dónde vamos</th></tr></thead>
+  <tbody>
+    <tr><td>Banesco</td><td>Scraper</td><td><strong>API en tiempo real</strong> (en hoja de ruta)</td></tr>
+    <tr><td>Banco de Venezuela</td><td>Scraper</td><td><strong>API en tiempo real</strong> (en hoja de ruta)</td></tr>
+    <tr><td>BNC</td><td><strong>API en tiempo real</strong> (ya disponible, 24/7)</td><td>—</td></tr>
+    <tr><td>Banco Exterior</td><td>Scraper</td><td><strong>API en tiempo real</strong> (en hoja de ruta)</td></tr>
+    <tr><td>Mercantil</td><td>Scraper</td><td>Sin API en tiempo real disponible → <strong>seguimos con scraper</strong></td></tr>
+    <tr><td>Provincial</td><td>Scraper</td><td>Sin API en tiempo real disponible → <strong>seguimos con scraper</strong></td></tr>
+  </tbody>
+</table>
+<p><strong>Cómo lo posicionamos hoy:</strong> arrancamos con <strong>scrapers para todos los bancos VE</strong> — funciona desde el día uno y cubre el 100% de la cobertura bancaria que necesitan. En paralelo migramos a <strong>APIs en tiempo real</strong> con <strong>Banesco, Banco de Venezuela, BNC (ya) y Banco Exterior</strong>, que son más estables. <strong>Mercantil y Provincial no ofrecen API en tiempo real</strong>, así que se quedan con el scraper.</p>
+<blockquote><p>Esto cierra una de las razones por las que se cayó el piloto anterior: ahora hay <strong>cobertura completa de banca venezolana</strong> y la conexión no exige entrar manualmente a cada portal.</p></blockquote>
+
+<h3>3.2 Integración con el sistema interno (SCI / Odoo)</h3>
+<p>Tesote carga automáticamente el <strong>libro banco</strong> al sistema de Veconinter vía <strong>API</strong>, eliminando el descargue + carga manual de plantillas de ingresos — que hoy es donde se va la mayor cantidad de horas del equipo.</p>
+<ul>
+  <li>Conexión vía API directa al SCI / Odoo.</li>
+  <li>La conciliación operativa↔financiera (match por <strong>número de referencia</strong>) se mantiene; Tesote alimenta la data, el SCI hace el match.</li>
+</ul>
+<blockquote><p><strong>Caveat importante a transparentar:</strong> la data que cargamos en tiempo real <strong>no es data "certificada"</strong> — los movimientos pueden cambiar/ajustarse en <strong>T-1</strong> (cierre del día siguiente). Sirve para operar y confirmar ingresos en el momento, pero el dato definitivo se concilia contra el cierre. Hay que dejar claro cómo manejan ustedes esa distinción internamente.</p></blockquote>
+
+<h3>3.3 Categorías, contrapartes y reporte intradía</h3>
+<ul>
+  <li><strong>Categorización automática</strong> de transacciones y reconocimiento de <strong>contrapartes</strong> (quién paga / a quién se paga), que se va afinando con el uso.</li>
+  <li><strong>Reporte intradía:</strong> dado que el equipo corre el flujo de caja <strong>3 veces al día como mínimo (hasta 6–7)</strong>, el reporte intradía mostraría la <strong>posición bancaria consolidada al momento</strong>, con desglose por tipo de ingreso y tipo de egreso (proveedores, reembolsos, intercompañía, etc.) — reemplazando el Excel que reconstruyen manualmente varias veces al día.</li>
+</ul>
+<blockquote><p><strong>Por definir con Bertha:</strong> estructura ideal del reporte (dimensiones: sociedad, moneda, tipo de ingreso/egreso) y la <strong>posición consolidada del grupo en USD</strong>.</p></blockquote>
+
+<h3>3.4 Botón de Pagos (cobros) — por validar</h3>
+<p>Tesote tiene una función de <strong>Botón de Pago</strong> para cobros: permite que los clientes/consignatarios paguen de forma digital y que el ingreso se confirme automáticamente, en lugar de verificar manualmente cada pago entrante.</p>
+<blockquote>
+  <p><strong>Preguntas a validar hoy:</strong></p>
+  <ul>
+    <li>¿Es el Botón de Pago una opción para Veconinter, dado su modelo de cobranza?</li>
+    <li><strong>¿Cómo pagan hoy sus clientes / consignatarios?</strong> (transferencia, depósito, etc.)</li>
+    <li>Si los cobros entran por canales que podemos instrumentar con el Botón, esto ataca directamente su SLA de confirmación de 15–20 min.</li>
+  </ul>
+</blockquote>
+
+<h3>3.5 Pagos salientes — por validar volumen</h3>
+<p>Tesorería controla todos los <strong>débitos/pagos</strong>. Tesote puede ejecutar pagos, pero su utilidad depende del volumen.</p>
+<blockquote><p><strong>Pregunta a validar hoy:</strong> <strong>¿Cuántos pagos corren al día / a la semana?</strong> Con eso evaluamos si la función de pagos aporta valor real o si la dejamos para una fase posterior.</p></blockquote>
+
+<h2>4. Frecuencia de actualización (punto técnico clave)</h2>
+<p>La necesidad de Veconinter es alta: corren flujo de caja <strong>3–7 veces al día</strong> y entran <strong>cada hora</strong> a los bancos de alto movimiento. Hay que alinear expectativas por banco:</p>
+<ul>
+  <li><strong>Scraper (conexión a portal):</strong> disponible las 24 horas, frecuencia alta, pero algo menos estable.</li>
+  <li><strong>API en tiempo real:</strong> más estable, pero algunos bancos imponen <strong>límites de frecuencia</strong> (ej. ciertas APIs limitan a 1–3 actualizaciones/día; BNC es ilimitado 24/7).</li>
+</ul>
+<blockquote><p><strong>A acordar hoy:</strong> estrategia por banco (scraper vs. API) para los de alto movimiento — <strong>Banesco, Mercantil, Provincial</strong> especialmente — de modo que la cadencia que necesitan no se vea como una sorpresa más adelante.</p></blockquote>
+
+<h2>5. Tipo de cambio (FX)</h2>
+<p>Veconinter consolida en USD a la <strong>tasa a la que efectivamente acceden a dólares</strong> (no BCV/oficial), distinta por mercado y definida manualmente, para <strong>reporting interno</strong>.</p>
+<blockquote><p><strong>A confirmar hoy:</strong> Tesote permite <strong>override manual de tasa</strong> por moneda/reporte para la consolidación interna. Definir qué monedas y qué tasas.</p></blockquote>
+
+<h2>6. Preguntas abiertas para hoy</h2>
+<ol>
+  <li>¿Está completa la <strong>plantilla de inventario de cuentas</strong>? (cierra el alcance de Fase 1)</li>
+  <li><strong>Formato exacto</strong> que ingiere el SCI hoy (columnas, estructura) — ¿la carga es vía Odoo o sistema aparte?</li>
+  <li><strong>Cadencia requerida por banco</strong> vs. nuestros límites — ¿algún punto que sea no-negociable?</li>
+  <li><strong>Estructura ideal del reporte</strong> de flujo de caja (Bertha): dimensiones y consolidado USD.</li>
+  <li><strong>Override de FX manual:</strong> ¿qué monedas, qué tasas?</li>
+  <li><strong>Botón de Pago:</strong> ¿aplica? ¿Cómo pagan hoy sus clientes?</li>
+  <li><strong>Volumen de pagos</strong> diario/semanal.</li>
+  <li>¿Quién aprueba y cuál es la realidad de presupuesto/tiempos en este ciclo?</li>
+</ol>
+
+<h2>7. Fases (propuesta)</h2>
+<ul>
+  <li><strong>Fase 1 — Venezuela:</strong> 13 cuentas VE + Facebank + Mercantil Panamá. Scrapers para todos; migración progresiva a API tiempo real (Banesco, Banco de Venezuela, BNC, Banco Exterior). Integración de carga automática al SCI/Odoo. Reporte intradía + categorías/contrapartes.</li>
+  <li><strong>Fase 1.5 (según validación):</strong> Botón de Pago para cobros y/o ejecución de pagos salientes, según volumen.</li>
+  <li><strong>Fase 2 — Estados Unidos y demás mercados:</strong> stack US (TD Bank y subcuentas, Stripe/Interusa) y mercados adicionales según disponibilidad de API/archivo por banco.</li>
+</ul>
+
+</div>
+</body>
+</html>

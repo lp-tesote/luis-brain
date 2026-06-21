@@ -1,0 +1,2065 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tesote — Unified App v3 (flujos completos)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Geist+Mono:wght@500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+<style>
+/* =================================================================
+   TESOTE UNIFIED DESIGN SYSTEM — one token set, one shell, shared
+   components across Inicio / Saldos / Movimientos.
+   Tokens: Lunour. Numbers: Geist Mono. Display: Inter Tight.
+   Body: Inter. AI voice: Instrument Serif.
+================================================================= */
+:root{
+  --primary:#1661E2; --primary-hover:#184EB5; --primary-light:#EEF8FF; --primary-border:#C6DDFB;
+  --text:#12110F; --text-2:#635D55; --text-3:#857D73; --text-4:#C7C0B5;
+  --border:#E8E3DA; --border-2:#F2EEE6;
+  --bg-sidebar:#F7F5F0; --bg-main:#FFFFFF; --bg-soft:#FCFBF7; --hover:#F2EEE6; --active:#E8E3DA;
+  --green:#1A8C5B; --green-text:#0F6E45; --yellow:#CC9500; --red:#C41E1E; --orange:#A83E00; --ves-bar:#6FA8DC;
+  --pill-paid:#D6E8D5; --pill-new:#E4ECF7; --pill-pending:#F7EDD0; --pill-overdue:#F8D8C0; --pill-draft:#ECE7DD;
+  /* category-tag palette (own family, from Lunour ramps — never the status pastels) */
+  --cat-green:#1A8C5B; --cat-blue:#1661E2; --cat-purple:#7E29C8; --cat-orange:#CC4D00; --cat-yellow:#CC9500; --cat-red:#C41E1E; --cat-gray:#857D73;
+  --radius-sm:4px; --radius:8px; --radius-lg:12px;
+  --shadow:0 1px 2px rgba(18,17,15,.04);
+  --font-display:'Inter Tight','Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  --font-body:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  --font-mono:'Geist Mono','SF Mono',Menlo,monospace;
+  --font-serif:'Instrument Serif',Georgia,serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font-body);font-size:14px;background:var(--bg-main);color:var(--text);-webkit-font-smoothing:antialiased;font-feature-settings:'cv11','ss01';}
+h1,h2,h3,.page-title,.fig,.cur-amt,.card-figure{font-family:var(--font-display);letter-spacing:-.01em;}
+.mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums;}
+.ic{display:inline-block;vertical-align:middle;width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
+.ic-sm{width:13px;height:13px;} .ic-lg{width:18px;height:18px;}
+
+/* ---------- APP SHELL ---------- */
+.app{display:grid;grid-template-columns:224px 1fr;min-height:100vh;}
+.sidebar{background:var(--bg-sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column;}
+.sb-top{display:flex;align-items:center;padding:14px 14px 10px;}
+.sb-brand{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:600;}
+.sb-logo{width:24px;height:24px;border-radius:6px;background:var(--text);display:flex;align-items:center;justify-content:center;color:white;font-family:var(--font-display);font-weight:700;font-size:13px;}
+.sb-pro{font-size:10px;font-weight:600;padding:2px 6px;border-radius:4px;background:var(--text);color:white;letter-spacing:.03em;margin-left:7px;}
+.sb-search{margin:0 10px 8px;display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;background:var(--bg-main);border:1px solid var(--border);cursor:pointer;color:var(--text-3);font-size:13px;}
+.sb-search .kbd{margin-left:auto;font-size:10px;font-family:var(--font-mono);padding:1px 5px;border-radius:3px;background:var(--bg-soft);border:1px solid var(--border);}
+.sb-section{padding:4px 10px 2px;}
+.sb-section-label{padding:10px 10px 6px;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);}
+.sb-item{display:flex;align-items:center;gap:10px;padding:6px 10px;border-radius:6px;font-size:13px;color:var(--text-2);cursor:pointer;border:none;background:none;width:100%;font-family:inherit;text-align:left;}
+.sb-item:hover{background:var(--hover);color:var(--text);}
+.sb-item.active{background:var(--active);color:var(--text);font-weight:500;}
+.sb-item .ic{color:var(--text-3);}
+.sb-item:hover .ic{color:var(--text-2);}
+.sb-item.active .ic{color:var(--text);}
+.sb-item-count{margin-left:auto;font-size:11px;font-weight:500;color:var(--text-3);background:var(--bg-main);padding:1px 6px;border-radius:10px;border:1px solid var(--border);}
+.sb-bottom{margin-top:auto;padding:10px;border-top:1px solid var(--border);}
+.sb-user{display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:6px;}
+.sb-user-avatar{width:26px;height:26px;border-radius:50%;background:var(--primary);color:white;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;}
+.sb-user-name{font-size:13px;font-weight:500;} .sb-user-sub{font-size:11px;color:var(--text-3);}
+
+.main{display:flex;flex-direction:column;min-width:0;}
+.topbar{height:52px;padding:0 22px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg-main);z-index:10;}
+.topbar-entity{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--text-2);padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:white;cursor:pointer;}
+.topbar-entity .caret{width:12px;height:12px;opacity:.6;}
+.topbar-spacer{flex:1;}
+.topbar-cta{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:white;background:var(--text);border:none;padding:7px 13px;border-radius:6px;cursor:pointer;font-family:inherit;}
+.topbar-cta:hover{background:#302C25;}
+.topbar-icon{width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-2);}
+.topbar-icon:hover{background:var(--hover);color:var(--text);}
+.content{flex:1;overflow-y:auto;max-width:1320px;width:100%;margin:0 auto;padding:26px 36px 60px;}
+
+/* ---------- PAGE HEADER (unified) ---------- */
+.page-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px;}
+.page-title{font-size:26px;font-weight:600;letter-spacing:-.02em;}
+.page-meta{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:13px;color:var(--text-2);flex-wrap:wrap;}
+.page-meta-dot{color:var(--text-4);} .page-meta .warn{color:var(--yellow);font-weight:500;}
+/* Inicio workspace identity */
+.ws{display:flex;align-items:center;gap:13px;}
+.ws-logo{width:42px;height:42px;flex:none;} .ws-logo svg{display:block;border-radius:50%;}
+.greeting{font-size:24px;font-weight:700;}
+
+/* ---------- SHARED: cards / sections ---------- */
+.grid{display:grid;gap:16px;}
+.grid-hero{grid-template-columns:1.62fr 1fr;margin-bottom:16px;align-items:stretch;}
+.grid-3{grid-template-columns:repeat(3,1fr);margin-bottom:16px;}
+.grid-2{grid-template-columns:1.25fr 1fr;margin-bottom:16px;}
+.grid-1{margin-bottom:16px;}
+.card{background:white;border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;display:flex;flex-direction:column;min-width:0;}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;}
+.card-title{font-size:11px;font-weight:600;color:var(--text-3);letter-spacing:.06em;text-transform:uppercase;}
+.card-range{font-size:11px;color:var(--text-3);margin-top:3px;}
+.card-link{font-size:12px;font-weight:500;color:var(--text-2);cursor:pointer;display:inline-flex;align-items:center;gap:4px;padding:3px 6px;border-radius:5px;}
+.card-link:hover{background:var(--hover);color:var(--primary);}
+.card-menu{width:24px;height:24px;border-radius:5px;display:flex;align-items:center;justify-content:center;color:var(--text-3);cursor:pointer;}
+.card-menu:hover{background:var(--hover);color:var(--text);}
+.section-label{font-size:11px;font-weight:600;color:var(--text-3);letter-spacing:.06em;text-transform:uppercase;}
+
+/* ---------- SHARED: buttons ---------- */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:6px;background:white;font-size:13px;color:var(--text-2);cursor:pointer;font-family:inherit;border:1px solid var(--border);white-space:nowrap;}
+.btn:hover{background:var(--hover);color:var(--text);}
+.btn.active,.btn[aria-expanded="true"]{background:var(--primary-light);border-color:var(--primary-border);color:var(--primary);}
+.btn-primary{background:var(--text);color:white;border:none;} .btn-primary:hover{background:#302C25;color:white;}
+.btn-ghost{background:transparent;border:1px solid transparent;color:var(--text-2);} .btn-ghost:hover{background:var(--hover);}
+
+/* ---------- SHARED: bank monogram (canonical 2-letter) ---------- */
+.bank-logo{width:24px;height:24px;border-radius:var(--radius-sm);display:inline-flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:10px;font-weight:700;color:white;flex-shrink:0;letter-spacing:.02em;}
+.bank-logo.sm{width:18px;height:18px;font-size:9px;}
+.bl-mercury{background:#2D2A26;} .bl-bnc{background:#C8102E;} .bl-mercantil{background:#006B3F;}
+.bl-banesco{background:#0067A6;} .bl-bancamiga{background:#00A0DF;} .bl-bbva{background:#004481;}
+.bl-activo{background:#2D2A26;} .bl-bdv{background:#16A085;} .bl-exterior{background:#6C5CE7;}
+.bl-bicentenario{background:#C0392B;} .bl-mibanco{background:#2C3E50;} .bl-manual{background:var(--text-3);}
+.ent-xs{width:18px;height:18px;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:9px;font-weight:700;flex-shrink:0;background:var(--bg-main);border:1px solid var(--border);color:var(--text-2);}
+.bank-cell{display:inline-flex;align-items:center;gap:8px;} .bank-name{color:var(--text);font-weight:500;}
+.acct-num{font-family:var(--font-mono);font-size:12px;color:var(--text-3);}
+
+/* ---------- SHARED: pills (ONE shape = 4px) ---------- */
+.pill{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:var(--radius-sm);font-size:11px;font-weight:500;color:var(--text);white-space:nowrap;}
+.pill-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.pill.paid{background:var(--pill-paid);} .pill.paid .pill-dot{background:var(--green);}
+.pill.new{background:var(--pill-new);} .pill.new .pill-dot{background:var(--primary);}
+.pill.pending{background:var(--pill-pending);} .pill.pending .pill-dot{background:var(--yellow);}
+.pill.overdue{background:var(--pill-overdue);} .pill.overdue .pill-dot{background:var(--orange);}
+.pill.draft{background:var(--pill-draft);} .pill.draft .pill-dot{background:var(--text-3);}
+/* category chip = neutral fill + a colored CATEGORY dot (own palette, never status pastels). Status pastels stay reserved for state; editability is the caret, not color/shape. */
+.pill.cat{background:var(--pill-draft);color:var(--text);}
+.pill.cat .pill-dot{background:var(--text-3);}
+.pill.cat.h-green .pill-dot{background:var(--cat-green);}
+.pill.cat.h-blue .pill-dot{background:var(--cat-blue);}
+.pill.cat.h-purple .pill-dot{background:var(--cat-purple);}
+.pill.cat.h-orange .pill-dot{background:var(--cat-orange);}
+.pill.cat.h-yellow .pill-dot{background:var(--cat-yellow);}
+.pill.cat.h-red .pill-dot{background:var(--cat-red);}
+.pill.cat.h-gray .pill-dot{background:var(--cat-gray);}
+
+/* ---------- SHARED: tables ---------- */
+.table-card{background:white;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;}
+table.tbl{width:100%;border-collapse:collapse;table-layout:fixed;}
+table.tbl thead th{font-size:11px;font-weight:600;color:var(--text-3);letter-spacing:.04em;text-transform:uppercase;text-align:left;padding:11px 16px;border-bottom:1px solid var(--border);background:var(--bg-soft);white-space:nowrap;}
+table.tbl thead th.right{text-align:right;} table.tbl thead th.center{text-align:center;}
+table.tbl tbody td{padding:0 16px;height:44px;border-bottom:1px solid var(--border-2);font-size:13px;vertical-align:middle;color:var(--text);overflow:hidden;}
+table.tbl.dense tbody td{height:40px;}
+table.tbl tbody tr{cursor:pointer;} table.tbl tbody tr:hover td{background:var(--bg-soft);}
+table.tbl tbody tr:last-child td{border-bottom:none;}
+td.num,th.num{text-align:right;font-family:var(--font-mono);font-variant-numeric:tabular-nums;white-space:nowrap;}
+.cell-amount{font-family:var(--font-mono);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;display:inline-flex;align-items:baseline;gap:1px;justify-content:flex-end;width:100%;}
+.cell-amount .int{font-size:13.5px;font-weight:600;} .cell-amount .dec{font-size:11px;font-weight:500;opacity:.6;}
+.cell-amount.credit .int,.cell-amount.credit .dec{color:var(--green-text);}
+.cell-amount .ccy{font-family:var(--font-body);font-size:10px;font-weight:600;color:var(--text-3);margin-left:5px;padding:1px 5px;background:var(--bg-soft);border-radius:3px;letter-spacing:.04em;}
+.cell-date{font-family:var(--font-mono);font-size:12px;color:var(--text-2);font-variant-numeric:tabular-nums;white-space:nowrap;}
+/* inline-editable cell (caret = the editability signal, always visible) */
+.cell-edit{display:inline-flex;align-items:center;gap:6px;color:var(--text);cursor:pointer;border-radius:5px;padding:3px 4px 3px 6px;margin:-3px -4px;max-width:100%;}
+.cell-edit:hover{background:var(--hover);} .cell-edit.empty{color:var(--text-4);}
+.cell-edit .lbl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.cell-edit .caret{width:12px;height:12px;color:var(--text-4);flex-shrink:0;opacity:.65;}
+.cell-edit:hover .caret{color:var(--text-2);opacity:1;}
+.cp-avatar{width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:9px;font-weight:700;color:white;flex-shrink:0;}
+.cp-1{background:#1A8C5B;}.cp-2{background:#1661E2;}.cp-3{background:#C41E1E;}.cp-4{background:#6C5CE7;}.cp-5{background:#CC9500;}.cp-6{background:#E67E22;}
+.table-footer{padding:10px 16px;border-top:1px solid var(--border);background:var(--bg-soft);font-size:12px;color:var(--text-3);}
+
+/* ---------- SHARED: filter builder (Movimientos = canonical) ---------- */
+.filter-bar{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+.filter-count-badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--primary);color:white;font-size:11px;font-weight:600;}
+.filter-search{margin-left:auto;display:flex;align-items:center;gap:8px;padding:7px 12px;border-radius:6px;background:white;border:1px solid var(--border);width:280px;}
+.filter-search input{border:none;outline:none;font-size:13px;font-family:inherit;color:var(--text);flex:1;background:transparent;}
+.filter-search .ic{color:var(--text-3);}
+.filter-panel{background:var(--bg-soft);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:14px;display:none;}
+.filter-panel.open{display:block;}
+.filter-section+.filter-section{margin-top:16px;padding-top:16px;border-top:1px solid var(--border-2);}
+.filter-section-title{font-size:11px;font-weight:600;color:var(--text-3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;}
+.filter-grid{display:grid;gap:10px 12px;} .filter-grid.cols-3{grid-template-columns:repeat(3,1fr);} .filter-grid.cols-4{grid-template-columns:repeat(4,1fr);}
+.filter-field{display:flex;flex-direction:column;gap:5px;} .filter-label{font-size:11px;font-weight:500;color:var(--text-2);}
+.filter-select{padding:7px 10px;border-radius:6px;border:1px solid var(--border);background:white;font-size:13px;font-family:inherit;color:var(--text);outline:none;}
+.multi-select{display:flex;flex-wrap:wrap;gap:4px;padding:7px 10px;border-radius:6px;border:1px solid var(--border);background:white;min-height:34px;align-items:center;cursor:pointer;}
+.multi-select-placeholder{font-size:12px;color:var(--text-3);}
+.filter-radio-group{display:flex;gap:6px;flex-wrap:wrap;}
+.filter-radio{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:white;font-size:12px;cursor:pointer;}
+.filter-radio.selected{border-color:var(--primary);background:var(--primary-light);color:var(--primary);font-weight:500;}
+.filter-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px;padding-top:14px;border-top:1px solid var(--border-2);}
+.chips-row{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:5px 4px 5px 10px;border-radius:6px;background:var(--primary-light);border:1px solid var(--primary-border);font-size:12.5px;color:var(--primary);white-space:nowrap;}
+.chip .dim{font-weight:600;} .chip .sep{opacity:.55;} .chip .val{font-weight:500;}
+.chip .x{cursor:pointer;padding:2px 5px;border-radius:4px;display:inline-flex;} .chip .x:hover{background:rgba(22,97,226,.14);} .chip .x svg{width:10px;height:10px;}
+.chips-clear{font-size:12px;color:var(--text-3);cursor:pointer;padding:4px 8px;border-radius:4px;} .chips-clear:hover{background:var(--hover);color:var(--text);}
+
+/* ---------- SHARED: forms ---------- */
+.form-card{background:white;border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px 22px;max-width:560px;}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+.field:last-child{margin-bottom:0;}
+.field-label{font-size:12px;font-weight:500;color:var(--text-2);}
+.field-help{font-size:11.5px;color:var(--text-3);line-height:1.45;}
+.input{padding:8px 11px;border-radius:6px;border:1px solid var(--border);font-size:13px;font-family:inherit;color:var(--text);outline:none;background:white;width:100%;}
+.input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(22,97,226,.12);}
+.input[readonly]{background:var(--bg-soft);color:var(--text-3);}
+textarea.input{min-height:74px;resize:vertical;}
+.form-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px;padding-top:16px;border-top:1px solid var(--border-2);}
+.check-row{display:flex;align-items:flex-start;gap:9px;padding:9px 11px;border:1px solid var(--border);border-radius:6px;background:white;cursor:pointer;font-size:12.5px;}
+.check-row:hover{background:var(--bg-soft);}
+.check-row input{margin-top:2px;accent-color:var(--text);flex:none;}
+.check-row .ck-t{font-weight:500;color:var(--text);}
+.check-row .ck-s{font-size:11px;color:var(--text-3);margin-top:1px;line-height:1.4;}
+.check-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.check-grid.cols-2{grid-template-columns:1fr 1fr;}
+.back-link{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text-3);cursor:pointer;padding:4px 8px;border-radius:5px;margin-bottom:10px;margin-left:-8px;}
+.back-link:hover{background:var(--hover);color:var(--text);}
+
+/* ---------- SHARED: slide-over detail panel (archetype 2) ---------- */
+.overlay{position:fixed;inset:0;background:rgba(18,17,15,.32);z-index:50;display:none;}
+.overlay.open{display:block;}
+.panel{position:fixed;top:0;right:0;bottom:0;width:460px;max-width:94vw;background:white;border-left:1px solid var(--border);z-index:51;display:none;flex-direction:column;}
+.panel.open{display:flex;}
+.panel-head{padding:18px 20px 14px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:10px;}
+.panel-title{font-size:22px;font-weight:600;font-family:var(--font-display);letter-spacing:-.01em;line-height:1.15;}
+.panel-meta{font-size:13px;color:var(--text-3);margin-top:4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.panel-x{margin-left:auto;width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-3);border:none;background:none;flex:none;}
+.panel-x:hover{background:var(--hover);color:var(--text);}
+.panel-body{flex:1;overflow-y:auto;padding:4px 20px 20px;}
+.panel-sec{padding:15px 0;border-bottom:1px solid var(--border-2);}
+.panel-sec:last-child{border-bottom:none;}
+.panel-sec-t{font-size:11px;font-weight:600;color:var(--text-3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;}
+.dl-row{display:flex;gap:12px;padding:5px 0;font-size:13px;align-items:baseline;}
+.dl-k{width:42%;color:var(--text-3);font-size:12px;flex:none;}
+.dl-v{color:var(--text);min-width:0;}
+.dl-v.muted{color:var(--text-4);}
+.panel-foot{padding:12px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px;background:white;}
+.method-card{border:1px solid var(--border);border-radius:var(--radius);padding:11px 13px;display:flex;align-items:center;gap:10px;}
+.method-card+.method-card{margin-top:8px;}
+.method-main{flex:1;min-width:0;}
+.method-t{font-size:13px;font-weight:500;display:flex;align-items:center;gap:7px;}
+.method-s{font-size:11.5px;color:var(--text-3);margin-top:2px;font-family:var(--font-mono);}
+
+/* ---------- SHARED: danger zone ---------- */
+.danger{border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;display:flex;align-items:center;gap:14px;background:var(--bg-soft);}
+.danger+.danger{margin-top:8px;}
+.danger-main{flex:1;}
+.danger-t{font-size:12.5px;font-weight:500;}
+.danger-s{font-size:11.5px;color:var(--text-3);margin-top:2px;line-height:1.4;}
+.btn-danger{border:1px solid var(--border);color:var(--red);background:white;}
+.btn-danger:hover{background:#FFF5F5;border-color:#FFD1D1;color:var(--red);}
+
+/* ---------- SHARED: in-cell progress (reportes) ---------- */
+.prog-cell{display:flex;align-items:center;gap:9px;min-width:0;}
+.prog-track{flex:1;height:5px;background:var(--bg-soft);border:1px solid var(--border-2);border-radius:3px;overflow:hidden;min-width:46px;}
+.prog-fill{height:100%;background:var(--primary);border-radius:3px;}
+.prog-txt{font-family:var(--font-mono);font-size:11px;color:var(--text-3);white-space:nowrap;}
+.prog-done{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--green-text);font-weight:500;}
+.prog-fail{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--red);font-weight:500;}
+
+/* ---------- SHARED: avatar stack (permisos) ---------- */
+.av-stack{display:inline-flex;align-items:center;}
+.av-stack .cp-avatar{width:24px;height:24px;font-size:9px;border:2px solid white;margin-left:-7px;}
+.av-stack .cp-avatar:first-child{margin-left:0;}
+.av-more{width:24px;height:24px;border-radius:50%;background:var(--bg-soft);border:2px solid white;margin-left:-7px;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:var(--text-2);font-family:var(--font-mono);flex:none;}
+.av-count{margin-left:9px;font-size:12px;color:var(--text-3);}
+
+/* ---------- SHARED: settings hub rows ---------- */
+.hub-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;}
+.hub-col{display:flex;flex-direction:column;gap:16px;min-width:0;}
+.hub-row{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid var(--border-2);cursor:pointer;}
+.hub-row:last-child{border-bottom:none;}
+.hub-row:hover{background:var(--bg-soft);}
+.hub-row:hover .hub-chev{color:var(--primary);}
+.hub-main{flex:1;min-width:0;}
+.hub-k{font-size:13px;font-weight:500;color:var(--text);}
+.hub-s{font-size:11.5px;color:var(--text-3);margin-top:1px;}
+.hub-right{margin-left:auto;display:inline-flex;align-items:center;gap:10px;flex:none;}
+.hub-v{font-size:12.5px;color:var(--text-2);}
+.hub-chev{width:13px;height:13px;color:var(--text-4);}
+
+/* ---------- SHARED: switch toggle ---------- */
+.switch{position:relative;width:32px;height:18px;border-radius:10px;background:var(--border);cursor:pointer;flex:none;transition:background .15s;border:none;padding:0;}
+.switch::after{content:'';position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:white;transition:left .15s;}
+.switch.on{background:var(--primary);}
+.switch.on::after{left:16px;}
+
+/* ---------- SHARED: empty state ---------- */
+.empty{display:flex;flex-direction:column;align-items:center;text-align:center;padding:54px 20px;}
+.empty-ic{width:44px;height:44px;border-radius:12px;background:var(--bg-sidebar);display:flex;align-items:center;justify-content:center;color:var(--text-3);margin-bottom:14px;}
+.empty-t{font-size:14px;font-weight:600;}
+.empty-s{font-size:12px;color:var(--text-3);margin-top:4px;max-width:360px;line-height:1.5;}
+
+/* ---------- SHARED: collapsible archived section ---------- */
+.arch-toggle{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--text-2);cursor:pointer;padding:6px 10px;border-radius:6px;border:none;background:none;font-family:inherit;margin-top:14px;}
+.arch-toggle:hover{background:var(--hover);}
+.arch-toggle .caret{width:12px;height:12px;transition:transform .15s;}
+.arch-toggle.open .caret{transform:rotate(90deg);}
+.arch-body{display:none;margin-top:8px;}
+.arch-body.open{display:block;}
+
+/* ---------- SHARED: modal ---------- */
+.modal-overlay{position:fixed;inset:0;background:rgba(18,17,15,.32);z-index:60;display:none;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:white;border-radius:var(--radius-lg);width:440px;max-width:92vw;padding:20px 22px;border:1px solid var(--border);}
+.modal-t{font-size:16px;font-weight:600;font-family:var(--font-display);}
+.modal-s{font-size:12.5px;color:var(--text-2);margin-top:4px;line-height:1.45;}
+
+/* ---------- SHARED: misc (warn subrow · quick-select · perm matrix) ---------- */
+.warn-sub{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--yellow);margin-top:3px;}
+.qsel{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
+.perm-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.perm-acct{border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;}
+.perm-acct-top{display:flex;align-items:center;gap:9px;}
+.perm-acct-top input{accent-color:var(--text);flex:none;}
+.perm-acct-top .nm{font-size:13px;font-weight:500;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.perm-acct-top .meta{font-size:11px;color:var(--text-3);font-family:var(--font-mono);}
+.mini-checks{display:flex;gap:10px;margin-top:9px;padding-top:8px;border-top:1px solid var(--border-2);flex-wrap:wrap;}
+.mini-check{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:var(--text-2);cursor:pointer;}
+.mini-check input{accent-color:var(--text);width:13px;height:13px;}
+
+/* ---------- SHARED: full-screen flow overlay (archetype 3) ---------- */
+.flow{position:fixed;inset:0;background:var(--bg-main);z-index:70;display:none;flex-direction:column;}
+.flow.open{display:flex;}
+.flow-top{height:56px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:11px;padding:0 18px;flex:none;}
+.flow-top .sb-logo{width:26px;height:26px;font-size:14px;}
+.flow-title{font-size:14px;font-weight:600;}
+.flow-x{margin-left:auto;width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-3);border:none;background:none;}
+.flow-x:hover{background:var(--hover);color:var(--text);}
+.flow-body{flex:1;overflow-y:auto;padding:30px 20px 40px;}
+.steps{display:flex;align-items:flex-start;justify-content:center;margin-bottom:30px;}
+.step{display:flex;flex-direction:column;align-items:center;gap:6px;width:96px;}
+.step-dot{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--border);background:white;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--text-3);font-family:var(--font-mono);}
+.step.done .step-dot{background:var(--text);border-color:var(--text);color:white;}
+.step.cur .step-dot{border-color:var(--text);color:var(--text);}
+.step-lbl{font-size:11px;color:var(--text-3);}
+.step.cur .step-lbl,.step.done .step-lbl{color:var(--text);font-weight:500;}
+.step-line{flex:none;width:44px;height:1.5px;background:var(--border);margin-top:10px;}
+.step-line.done{background:var(--text);}
+.flow-col{max-width:520px;margin:0 auto;}
+.flow-h{font-size:22px;font-weight:600;font-family:var(--font-display);letter-spacing:-.01em;}
+.flow-s{font-size:13px;color:var(--text-2);margin-top:4px;margin-bottom:18px;line-height:1.45;}
+.flow-foot{height:56px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:0 20px;background:white;flex:none;}
+.flow-step{display:none;} .flow-step.cur{display:block;}
+.bank-pick{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.bank-opt{display:flex;align-items:center;gap:9px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;background:white;font-family:inherit;text-align:left;}
+.bank-opt:hover{background:var(--bg-soft);}
+.bank-opt.sel{border-color:var(--primary);background:var(--primary-light);}
+.flow-success{display:flex;flex-direction:column;align-items:center;text-align:center;padding:26px 0 8px;}
+.flow-success-ic{width:52px;height:52px;border-radius:50%;background:var(--text);color:white;display:flex;align-items:center;justify-content:center;margin-bottom:16px;}
+
+/* ---------- PROTOTYPE-ONLY chrome (never ships) ---------- */
+.proto-link{font-size:11px;color:var(--text-4);cursor:pointer;border-bottom:1px dashed var(--text-4);float:right;}
+.proto-link:hover{color:var(--text-3);}
+
+/* ---------- PROTOTYPE-ONLY: comment layer (Figma-style pins) ---------- */
+.page,.modal{position:relative;}
+body.cmt-mode,body.cmt-mode *{cursor:crosshair !important;}
+.cmt-fab{position:fixed;right:18px;bottom:18px;z-index:200;display:flex;align-items:center;gap:8px;}
+.cmt-btn{display:inline-flex;align-items:center;gap:7px;padding:9px 14px;border-radius:999px;border:1.5px dashed #CC9500;background:#FFFBEA;color:#805A00;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;box-shadow:0 2px 8px rgba(18,17,15,.10);}
+.cmt-btn:hover{background:#FFF6CC;}
+.cmt-btn.on{background:#CC9500;color:white;border-style:solid;}
+.cmt-badge{min-width:18px;height:18px;border-radius:9px;background:#CC9500;color:white;font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;padding:0 5px;font-family:var(--font-mono);}
+.cmt-btn.on .cmt-badge{background:white;color:#805A00;}
+.cmt-pin{position:absolute;width:24px;height:24px;border-radius:50% 50% 50% 4px;background:#CC9500;color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:120;font-family:var(--font-mono);box-shadow:0 2px 6px rgba(18,17,15,.25);border:2px solid white;transform:translate(-50%,-100%);}
+.cmt-pin:hover{background:#A37400;}
+.cmt-pop{position:absolute;z-index:130;width:260px;background:white;border:1.5px dashed #CC9500;border-radius:10px;padding:11px 12px;box-shadow:0 8px 24px rgba(18,17,15,.16);transform:translate(-50%,8px);}
+.cmt-pop textarea{width:100%;border:1px solid var(--border);border-radius:6px;font-family:inherit;font-size:12.5px;padding:7px 9px;min-height:58px;resize:vertical;outline:none;color:var(--text);}
+.cmt-pop textarea:focus{border-color:#CC9500;}
+.cmt-pop-actions{display:flex;justify-content:space-between;align-items:center;margin-top:8px;}
+.cmt-del{font-size:11.5px;color:var(--red);cursor:pointer;padding:3px 6px;border-radius:4px;background:none;border:none;font-family:inherit;}
+.cmt-del:hover{background:#FFF5F5;}
+.cmt-save{font-size:12px;font-weight:600;color:white;background:#CC9500;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-family:inherit;}
+.cmt-panel{position:fixed;right:18px;bottom:66px;z-index:199;width:330px;max-height:55vh;background:white;border:1.5px dashed #CC9500;border-radius:12px;display:none;flex-direction:column;box-shadow:0 12px 32px rgba(18,17,15,.18);}
+.cmt-panel.open{display:flex;}
+.cmt-panel-head{padding:11px 14px;border-bottom:1px solid var(--border-2);display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:#805A00;}
+.cmt-panel-body{flex:1;overflow-y:auto;padding:6px 0;}
+.cmt-item{display:flex;gap:9px;padding:8px 14px;font-size:12px;color:var(--text-2);cursor:pointer;align-items:baseline;}
+.cmt-item:hover{background:var(--bg-soft);}
+.cmt-item .n{flex:none;width:18px;height:18px;border-radius:50%;background:#CC9500;color:white;font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;font-family:var(--font-mono);position:relative;top:3px;}
+.cmt-item .where{font-size:10.5px;color:var(--text-4);display:block;text-transform:uppercase;letter-spacing:.04em;}
+.cmt-panel-foot{padding:10px 14px;border-top:1px solid var(--border-2);display:flex;gap:8px;justify-content:space-between;}
+.cmt-empty{padding:22px 14px;text-align:center;font-size:12px;color:var(--text-3);}
+
+/* ---------- PAGE: pages visibility ---------- */
+.page{display:none;} .page.active{display:block;}
+
+/* ============ INICIO-specific ============ */
+.live{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:var(--green-text);margin-left:8px;}
+.pos-toprow{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;}
+.pos-figure{font-size:40px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin-top:6px;white-space:nowrap;line-height:1.04;font-family:var(--font-mono);}
+.pos-figure .cents{font-size:22px;font-weight:600;color:var(--text-3);}
+.var-chip{display:inline-flex;align-items:center;gap:4px;font-family:var(--font-mono);font-size:12px;font-weight:600;color:var(--green-text);background:#E7F2EA;border-radius:6px;padding:4px 9px;}
+.pos-chart{margin-top:8px;} .pos-chart svg{width:100%;display:block;}
+.dband{margin-top:10px;padding-top:11px;border-top:1px solid var(--border-2);display:flex;gap:22px;}
+.dband .di{font-size:11.5px;color:var(--text-3);flex:1;}
+.dband .di .v{font-family:var(--font-mono);font-weight:600;font-size:14px;display:block;margin-top:3px;color:var(--text);font-variant-numeric:tabular-nums;}
+.dband .di .v.net{color:var(--primary-hover);}
+.sec{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;padding-top:11px;border-top:1px solid var(--border-2);}
+.sec.flush{border-top:none;padding-top:0;}
+.cur-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px;}
+.cur-cell{border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;display:flex;flex-direction:column;}
+.cur-top{display:flex;align-items:center;gap:7px;} .cur-nm{font-size:12px;font-weight:600;}
+.cur-sh{margin-left:auto;font-size:11px;font-family:var(--font-mono);color:var(--text-3);font-weight:600;}
+.cur-amt{font-family:var(--font-mono);font-size:19px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:7px;white-space:nowrap;}
+.cur-sub{font-size:11.5px;color:var(--text-3);font-family:var(--font-mono);font-variant-numeric:tabular-nums;margin-top:2px;}
+.cur-sub.lg{font-size:14px;color:var(--text-2);}
+.cur-dl{display:flex;align-items:baseline;gap:7px;margin-top:8px;padding-top:7px;border-top:1px solid var(--border-2);font-size:11.5px;color:var(--text-3);}
+.cur-dl .da{font-family:var(--font-mono);font-weight:600;color:var(--text-2);} .cur-dl .dev{margin-left:auto;color:var(--orange);font-family:var(--font-mono);}
+.dg2{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:14px;}
+.dgcol-t{font-size:10px;font-weight:600;color:var(--text-3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:9px;}
+.c-row{padding:8px 0;} .c-row+.c-row{border-top:1px solid var(--border-2);}
+.c-top{display:flex;align-items:center;gap:8px;}
+.c-top .nm{font-size:13px;color:var(--text);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0;}
+.c-top .v{font-family:var(--font-mono);font-size:12.5px;font-weight:600;color:var(--text);white-space:nowrap;}
+.c-top .p{font-family:var(--font-mono);font-size:11px;color:var(--text-3);margin-left:6px;}
+.c-bar{height:6px;border-radius:3px;background:var(--bg-soft);overflow:hidden;margin-top:7px;} .c-bar i{display:block;height:100%;border-radius:3px;}
+.f-usd{background:var(--primary);} .f-ves{background:var(--ves-bar);}
+.ai{background:var(--bg-soft);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 18px 16px;display:flex;flex-direction:column;}
+.ai-head{display:flex;align-items:center;gap:8px;} .ai-mark{width:24px;height:24px;border-radius:6px;background:var(--primary);display:flex;align-items:center;justify-content:center;color:white;}
+.ai-name{font-size:13px;font-weight:600;}
+.ai-lead{font-family:var(--font-serif);font-size:24px;line-height:1.28;color:var(--text);margin:15px 0 4px;} .ai-lead b{font-style:italic;font-weight:400;}
+.ai-report-h{font-size:11px;font-weight:600;color:var(--text-3);letter-spacing:.06em;text-transform:uppercase;margin:14px 0 11px;padding-top:14px;border-top:1px solid var(--border-2);}
+.ai-feed{display:flex;flex-direction:column;gap:10px;} .feed-item{display:flex;align-items:baseline;gap:9px;font-size:12.5px;color:var(--text-2);line-height:1.45;}
+.feed-item .ic-sm{flex:none;position:relative;top:2px;}
+.feed-item.up .ic-sm{color:var(--green);} .feed-item.fx .ic-sm{color:var(--orange);} .feed-item.warn .ic-sm{color:var(--yellow);}
+.feed-item b{color:var(--text);font-weight:600;}
+.ai-suggest{display:flex;flex-direction:column;gap:7px;margin-top:15px;} .ai-sug-t{font-size:10px;font-weight:600;color:var(--text-3);letter-spacing:.06em;text-transform:uppercase;}
+.sug{display:inline-flex;align-items:center;gap:8px;padding:8px 11px;background:white;border:1px solid var(--border);border-radius:8px;font-size:12.5px;color:var(--text-2);cursor:pointer;text-align:left;font-family:inherit;}
+.sug:hover{border-color:var(--primary-border);color:var(--text);background:var(--primary-light);} .sug .ic-sm{color:var(--text-4);flex:none;} .sug:hover .ic-sm{color:var(--primary);}
+.ai-input{margin-top:14px;display:flex;align-items:center;gap:8px;background:white;border:1px solid var(--border);border-radius:9px;padding:8px 8px 8px 12px;}
+.ai-input input{flex:1;border:none;outline:none;font-family:inherit;font-size:13px;color:var(--text);background:transparent;}
+.ai-send{width:30px;height:30px;border-radius:6px;background:var(--text);border:none;display:flex;align-items:center;justify-content:center;color:white;cursor:pointer;flex:none;}
+.ai-send:hover{background:#302C25;}
+.flow-figs{display:flex;gap:18px;margin:12px 0 4px;} .flow-fig .v{font-family:var(--font-mono);font-size:19px;font-weight:600;font-variant-numeric:tabular-nums;}
+.flow-fig .v.in{color:var(--green-text);} .flow-fig .k{font-size:11px;color:var(--text-3);margin-top:1px;}
+.flow-net{font-size:12px;color:var(--text-2);margin-top:8px;} .flow-net b{font-family:var(--font-mono);color:var(--green-text);font-weight:600;}
+.flow-bars{display:flex;align-items:flex-end;gap:6px;height:40px;margin-top:14px;}
+.flow-bar-day{flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:2px;height:100%;} .flow-bar{width:100%;border-radius:2px;}
+.flow-bar.in{background:#BFE0CC;} .flow-bar.out{background:var(--border);}
+.cat-pct-row{display:flex;align-items:baseline;gap:8px;margin:10px 0 12px;} .cat-pct{font-family:var(--font-display);font-size:34px;font-weight:700;letter-spacing:-.02em;} .cat-pct-sub{font-size:12px;color:var(--text-2);}
+.progress{height:7px;background:var(--bg-soft);border-radius:4px;overflow:hidden;} .progress-fill{height:100%;background:var(--green);border-radius:4px;}
+.cat-foot{font-size:12px;color:var(--text-2);margin-top:12px;display:flex;align-items:center;gap:6px;} .cat-foot a{color:var(--primary);cursor:pointer;font-weight:500;}
+.new-list{display:flex;flex-direction:column;gap:2px;margin-top:2px;} .new-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border-2);} .new-row:last-child{border-bottom:none;}
+.new-main{flex:1;min-width:0;} .new-name{font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;} .new-meta{font-size:11px;color:var(--text-3);margin-top:1px;}
+.cf-summary{display:flex;align-items:baseline;gap:18px;margin:2px 0 4px;flex-wrap:wrap;} .cf-net{font-family:var(--font-mono);font-size:28px;font-weight:700;letter-spacing:-.02em;} .cf-net.pos{color:var(--green-text);} .cf-net-lbl{font-size:11px;font-weight:600;color:var(--text-3);letter-spacing:.05em;text-transform:uppercase;}
+.cf-io{display:flex;gap:16px;font-size:12.5px;color:var(--text-3);font-family:var(--font-mono);} .cf-io b{font-weight:600;} .cf-io .in b{color:var(--green-text);} .cf-io .out b{color:var(--text);}
+.cf-group{margin-top:14px;} .cf-group-h{display:flex;align-items:baseline;justify-content:space-between;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3);padding-bottom:7px;border-bottom:1px solid var(--border-2);} .cf-group-h .tot{font-family:var(--font-mono);font-size:11px;} .cf-group-h .tot.in{color:var(--green-text);} .cf-group-h .tot.out{color:var(--text-2);}
+.cf-row{display:grid;grid-template-columns:140px 1fr auto;gap:12px;align-items:center;padding:7px 0;border-bottom:1px solid var(--border-2);} .cf-row:last-child{border-bottom:none;} .cf-name{font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cf-track{height:7px;background:var(--bg-soft);border-radius:4px;overflow:hidden;} .cf-track i{display:block;height:100%;border-radius:4px;} .cf-track i.in{background:var(--green);} .cf-track i.out{background:#C98A5B;}
+.cf-amt{font-family:var(--font-mono);font-size:12.5px;font-weight:600;text-align:right;white-space:nowrap;} .cf-amt.in{color:var(--green-text);} .cf-amt.out{color:var(--text);}
+.acct-list{display:flex;flex-direction:column;margin-top:2px;}
+.acct-item{display:grid;grid-template-columns:minmax(220px,1.5fr) 1fr auto;gap:18px;align-items:center;padding:11px 0;border-bottom:1px solid var(--border-2);} .acct-item:last-child{border-bottom:none;}
+.acct-id{display:flex;align-items:center;gap:9px;min-width:0;} .acct-id .nm{font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;} .acct-id .meta{font-size:11px;color:var(--text-3);font-family:var(--font-mono);white-space:nowrap;} .acct-id .meta .ent{font-family:var(--font-body);}
+.acct-track{height:6px;background:var(--bg-soft);border-radius:3px;overflow:hidden;} .acct-track i{display:block;height:100%;border-radius:3px;}
+.acct-val{text-align:right;white-space:nowrap;} .acct-val .v{font-family:var(--font-mono);font-size:13px;font-weight:600;} .acct-val .pct{font-family:var(--font-mono);font-size:11px;color:var(--text-3);margin-left:7px;}
+
+/* ============ SALDOS-specific ============ */
+.banner{display:flex;align-items:center;gap:14px;background:var(--bg-soft);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;margin-bottom:22px;}
+.banner-icon{width:28px;height:28px;flex-shrink:0;border-radius:50%;background:var(--text);color:white;display:flex;align-items:center;justify-content:center;}
+.banner-title{font-size:14px;font-weight:600;} .banner-sub{font-size:12px;color:var(--text-2);margin-top:2px;}
+.cur-section-label{font-size:11px;font-weight:600;color:var(--text-3);letter-spacing:.05em;text-transform:uppercase;margin-bottom:10px;}
+.currency-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px;}
+.currency-card{background:white;border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;min-width:0;}
+.cc-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.cc-code{font-family:var(--font-display);font-weight:600;font-size:13px;} .cc-count{font-size:11px;color:var(--text-3);}
+.cc-amount{font-family:var(--font-mono);font-weight:700;font-size:28px;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.01em;}
+.cc-amount.compact{font-size:22px;} .cc-amount .cents{font-size:18px;font-weight:600;color:var(--text-3);} .cc-amount.compact .cents{font-size:15px;} .cc-amount.empty{color:var(--text-4);font-weight:500;}
+.cc-bcv{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;color:var(--text-3);display:flex;justify-content:space-between;}
+.cc-bcv .rate{font-weight:500;color:var(--text-2);}
+.cc-equiv{margin-top:6px;font-size:14px;font-weight:600;color:var(--text-2);font-family:var(--font-mono);} .cc-equiv .tag{font-size:11px;color:var(--text-3);font-weight:400;font-family:var(--font-body);margin-left:4px;}
+.tab-bar{display:inline-flex;align-items:center;gap:2px;background:var(--bg-soft);border:1px solid var(--border);border-radius:var(--radius);padding:3px;}
+.tab-btn{padding:6px 14px;border-radius:5px;background:transparent;border:1px solid transparent;cursor:pointer;font-family:inherit;font-size:13px;font-weight:500;color:var(--text-3);}
+.tab-btn.active{background:white;color:var(--text);border-color:var(--border);}
+.groupby{display:inline-flex;align-items:center;gap:8px;margin:16px 0 14px;} .groupby-label{font-size:12px;color:var(--text-3);}
+.groupby-select{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius);background:white;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;}
+.group-header td{background:var(--bg-soft);font-size:12px;font-weight:600;color:var(--text-2);padding:9px 16px !important;height:auto !important;border-top:1px solid var(--border);}
+.group-header .gmeta{color:var(--text-3);font-weight:400;margin-left:8px;} .group-header .gsub{float:right;font-family:var(--font-mono);color:var(--text-2);font-weight:600;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ PERSISTENT SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="sb-top">
+      <div class="sb-brand"><div class="sb-logo">T</div><span>Tesote</span><span class="sb-pro">PRO</span></div>
+    </div>
+    <div class="sb-search"><svg class="ic ic-sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Buscar<span class="kbd">⌘K</span></div>
+
+    <div class="sb-section">
+      <button class="sb-item nav-item" data-page="inicio">
+        <svg class="ic" viewBox="0 0 24 24"><path d="M4 11 12 4l8 7"/><path d="M6 10v9h12v-9"/></svg>Inicio
+      </button>
+    </div>
+    <div class="sb-section">
+      <div class="sb-section-label">Connect</div>
+      <button class="sb-item nav-item" data-page="saldos">
+        <svg class="ic" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg>Saldos
+      </button>
+      <button class="sb-item nav-item" data-page="movimientos">
+        <svg class="ic" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h12"/></svg>Movimientos<span class="sb-item-count">234</span>
+      </button>
+      <button class="sb-item nav-item" data-page="conexiones">
+        <svg class="ic" viewBox="0 0 24 24"><path d="M8 12h8M5 9a3 3 0 0 1 0 6h3M19 9a3 3 0 0 1 0 6h-3"/></svg>Conexiones
+      </button>
+      <button class="sb-item nav-item" data-page="companias">
+        <svg class="ic" viewBox="0 0 24 24"><path d="M4 21V5l8-2v18M12 21h8V9l-8-2"/><path d="M7 9h.01M7 13h.01M7 17h.01"/></svg>Compañías
+      </button>
+    </div>
+    <div class="sb-section">
+      <div class="sb-section-label">Negocios</div>
+      <button class="sb-item"><svg class="ic" viewBox="0 0 24 24"><path d="M3 7h18l-2 12H5L3 7z"/></svg>Pagos</button>
+      <button class="sb-item"><svg class="ic" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M4 10h16"/></svg>Cobros</button>
+      <button class="sb-item nav-item" data-page="contrapartes"><svg class="ic" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 5a3.5 3.5 0 0 1 0 7M21 20c0-2.8-1.9-5.1-4.5-5.8"/></svg>Contrapartes</button>
+    </div>
+    <div class="sb-section">
+      <div class="sb-section-label">Automatizaciones</div>
+      <button class="sb-item nav-item" data-page="reportes">
+        <svg class="ic" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 13h6M9 17h6"/></svg>Reportes
+      </button>
+      <button class="sb-item nav-item" data-page="sincronizaciones">
+        <svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Sincronizaciones
+      </button>
+    </div>
+    <div class="sb-section">
+      <div class="sb-section-label">Espacio de Trabajo</div>
+      <button class="sb-item nav-item" data-page="equipo">
+        <svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.5 3.1-6 7-6s7 2.5 7 6"/></svg>Mi equipo
+      </button>
+      <button class="sb-item nav-item" data-page="permisos">
+        <svg class="ic" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Permisos
+      </button>
+      <button class="sb-item nav-item" data-page="configuracion">
+        <svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.5-2-3.5-2.4 1a7 7 0 0 0-2-1.2L14 3h-4l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.5 2 1.5A7 7 0 0 0 5 12c0 .4 0 .8.1 1.2l-2 1.5 2 3.5 2.4-1a7 7 0 0 0 2 1.2L10 21h4l.5-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.5-2-1.5c.1-.4.1-.8.1-1.2z"/></svg>Configuración
+      </button>
+    </div>
+    <div class="sb-bottom">
+      <div class="sb-user"><div class="sb-user-avatar">M</div><div><div class="sb-user-name">Mariel R.</div><div class="sb-user-sub">Tesote Finance</div></div></div>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+    <!-- persistent topbar -->
+    <div class="topbar">
+      <div class="topbar-entity"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></svg>Todas las entidades · 2<svg class="ic caret" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></div>
+      <div class="topbar-spacer"></div>
+      <button class="topbar-cta"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>Mover dinero</button>
+      <div class="topbar-icon"><svg class="ic" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0v5l1.5 3h-15L6 13z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg></div>
+    </div>
+
+    <div class="content">
+
+      <!-- ====================== INICIO ====================== -->
+      <div class="page active" id="page-inicio">
+        <div class="page-head">
+          <div class="ws">
+            <div class="ws-logo"><svg viewBox="0 0 42 42" width="42" height="42"><circle cx="21" cy="21" r="21" fill="#12110F"/><g fill="#fff"><path d="M21 21 L21 5 L33 11 Z"/><path d="M21 21 L21 5 L33 11 Z" transform="rotate(90 21 21)"/><path d="M21 21 L21 5 L33 11 Z" transform="rotate(180 21 21)"/><path d="M21 21 L21 5 L33 11 Z" transform="rotate(270 21 21)"/></g></svg></div>
+            <div><h1 class="greeting">Tesote Ventas</h1></div>
+          </div>
+        </div>
+
+        <div class="grid grid-hero">
+          <!-- POSICIÓN -->
+          <div class="card">
+            <div class="pos-toprow">
+              <div><div class="section-label">Posición total · USD consolidado</div><div class="pos-figure">$521.840<span class="cents">,17</span></div></div>
+              <span class="var-chip"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg>+$31.290 · 30 d</span>
+            </div>
+            <div class="pos-chart" id="pos-chart"></div>
+            <div class="dband">
+              <div class="di"><span class="k">Entró · 30 d</span><span class="v">+$96.400</span></div>
+              <div class="di"><span class="k">Salió · 30 d</span><span class="v">−$63.210</span></div>
+              <div class="di"><span class="k">Variación neta</span><span class="v net">+$33.190</span></div>
+              <div class="di"><span class="k">Devaluación · 30 d</span><span class="v">−$1.900</span></div>
+            </div>
+            <div class="sec flush"><span class="section-label">Por moneda</span></div>
+            <div class="cur-grid">
+              <div class="cur-cell">
+                <div class="cur-top"><span class="cur-nm">Dólares</span><span class="cur-sh">88%</span></div>
+                <div class="cur-amt">$457.109</div>
+                <div class="cur-dl">Δ ayer <span class="da">−$1.200</span></div>
+              </div>
+              <div class="cur-cell">
+                <div class="cur-top"><span class="cur-nm">Bolívares</span><span class="cur-sh">12%</span></div>
+                <div class="cur-amt">Bs 36.161.741,48</div>
+                <div class="cur-sub lg">≈ $64.731</div>
+                <div class="cur-dl">Δ ayer <span class="da">−$2.211</span><span class="dev">−$431 dev.</span></div>
+              </div>
+            </div>
+            <div class="dg2">
+              <div>
+                <div class="dgcol-t">Por banco</div>
+                <div class="c-row"><div class="c-top"><span class="bank-logo sm bl-mercury">ME</span><span class="nm">Mercury</span><span class="v">$457.109</span><span class="p">88%</span></div><div class="c-bar"><i class="f-usd" style="width:88%"></i></div></div>
+                <div class="c-row"><div class="c-top"><span class="bank-logo sm bl-bnc">BN</span><span class="nm">BNC</span><span class="v">$44.522</span><span class="p">9%</span></div><div class="c-bar"><i class="f-ves" style="width:9%"></i></div></div>
+                <div class="c-row"><div class="c-top"><span class="bank-logo sm bl-mercantil">MC</span><span class="nm">Mercantil</span><span class="v">$14.857</span><span class="p">3%</span></div><div class="c-bar"><i class="f-ves" style="width:3%"></i></div></div>
+                <div class="c-row"><div class="c-top"><span class="bank-logo sm bl-banesco">BS</span><span class="nm">Banesco</span><span class="v">$4.421</span><span class="p">1%</span></div><div class="c-bar"><i class="f-ves" style="width:1.2%"></i></div></div>
+                <div class="c-row"><div class="c-top"><span class="bank-logo sm bl-bancamiga">BM</span><span class="nm">Bancamiga</span><span class="v">$931</span><span class="p">0%</span></div><div class="c-bar"><i class="f-ves" style="width:.8%"></i></div></div>
+              </div>
+              <div>
+                <div class="dgcol-t">Por entidad</div>
+                <div class="c-row"><div class="c-top"><span class="ent-xs">TT</span><span class="nm">Tesote Technologies Inc.</span><span class="v">$457.109</span><span class="p">88%</span></div><div class="c-bar"><i class="f-usd" style="width:88%"></i></div></div>
+                <div class="c-row"><div class="c-top"><span class="ent-xs">TS</span><span class="nm">TST Servicios y Consultoría</span><span class="v">$64.731</span><span class="p">12%</span></div><div class="c-bar"><i class="f-ves" style="width:12%"></i></div></div>
+              </div>
+            </div>
+          </div>
+          <!-- TESOTE AI -->
+          <div class="ai">
+            <div class="ai-head"><span class="ai-mark"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8z"/></svg></span><span class="ai-name">Tesote AI</span></div>
+            <p class="ai-lead">Buena semana, Mariel — tu posición sigue en <b>máximos</b>.</p>
+            <div class="ai-report-h">Tu semana hasta hoy</div>
+            <div class="ai-feed">
+              <div class="feed-item up"><svg class="ic-sm" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg><span>Entró <b>$26.800</b> y salió <b>$18.450</b>: vas <b>+$8.350 neto</b> en la semana, sobre 78 movimientos.</span></div>
+              <div class="feed-item up"><svg class="ic-sm" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span>Tu mayor cobro fue <b>POLAR · $8.420</b>, conciliado automáticamente.</span></div>
+              <div class="feed-item fx"><svg class="ic-sm" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span>El <b>BCV subió 0,8%</b>; la devaluación te restó <b>~$430</b> en bolívares esta semana.</span></div>
+              <div class="feed-item warn"><svg class="ic-sm" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><span><b>Bancamiga</b> lleva 26 h sin sincronizar — su saldo de $931 podría estar desactualizado.</span></div>
+            </div>
+            <div class="ai-suggest">
+              <span class="ai-sug-t">Pregúntale sobre tu posición</span>
+              <button class="sug"><svg class="ic-sm" viewBox="0 0 24 24"><path d="M12 3v18M3 12h18"/></svg>¿Por qué bajó mi posición ayer?</button>
+              <button class="sug"><svg class="ic-sm" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>¿Cuánto debería pasar de bolívares a dólares?</button>
+              <button class="sug"><svg class="ic-sm" viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 7-7"/></svg>Proyecta mi flujo de caja a 30 días</button>
+            </div>
+            <div style="flex:1 1 auto;min-height:8px"></div>
+            <div class="ai-input"><input type="text" placeholder="Pregúntale a Tesote AI…" /><button class="ai-send"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
+          </div>
+        </div>
+
+        <div class="grid grid-3">
+          <div class="card">
+            <div class="card-head" style="margin-bottom:0;"><div><span class="card-title">Entró / salió</span><div class="card-range">Esta semana · 02–08 jun 2026</div></div><span class="card-menu"><svg class="ic ic-sm" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></span></div>
+            <div class="flow-figs"><div class="flow-fig"><div class="v in">$26.800</div><div class="k">Entró</div></div><div class="flow-fig"><div class="v">$18.450</div><div class="k">Salió</div></div></div>
+            <div class="flow-net">Neto <b>+$8.350</b> · 78 movimientos</div>
+            <div class="flow-bars">
+              <div class="flow-bar-day"><div class="flow-bar in" style="height:46%"></div><div class="flow-bar out" style="height:30%"></div></div>
+              <div class="flow-bar-day"><div class="flow-bar in" style="height:62%"></div><div class="flow-bar out" style="height:24%"></div></div>
+              <div class="flow-bar-day"><div class="flow-bar in" style="height:30%"></div><div class="flow-bar out" style="height:52%"></div></div>
+              <div class="flow-bar-day"><div class="flow-bar in" style="height:80%"></div><div class="flow-bar out" style="height:38%"></div></div>
+              <div class="flow-bar-day"><div class="flow-bar in" style="height:44%"></div><div class="flow-bar out" style="height:70%"></div></div>
+              <div class="flow-bar-day"><div class="flow-bar in" style="height:18%"></div><div class="flow-bar out" style="height:14%"></div></div>
+              <div class="flow-bar-day"><div class="flow-bar in" style="height:10%"></div><div class="flow-bar out" style="height:8%"></div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head" style="margin-bottom:0;"><div><span class="card-title">Categorización</span><div class="card-range">Últimos 30 días · 234 movimientos</div></div><span class="card-menu"><svg class="ic ic-sm" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></span></div>
+            <div class="cat-pct-row"><span class="cat-pct">94%</span><span class="cat-pct-sub">de 234 movimientos<br>categorizados</span></div>
+            <div class="progress"><div class="progress-fill" style="width:94%"></div></div>
+            <div class="cat-foot"><svg class="ic ic-sm" viewBox="0 0 24 24" style="color:var(--yellow)"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/></svg><span><b style="color:var(--text)">14</b> sin categorizar · <a>Revisar</a></span></div>
+          </div>
+          <div class="card">
+            <div class="card-head" style="margin-bottom:6px;"><span class="card-title">Nuevo en tus cuentas</span><span class="card-link">Ver todo</span></div>
+            <div class="new-list">
+              <div class="new-row"><div class="new-main"><div class="new-name">Lunour LLC</div><div class="new-meta">Mercury ··4127 · primera vez</div></div><span class="pill cat h-blue"><span class="pill-dot"></span>Contraparte</span></div>
+              <div class="new-row"><div class="new-main"><div class="new-name">Datadog, Inc.</div><div class="new-meta">Mercury ··4127 · primera vez</div></div><span class="pill cat h-blue"><span class="pill-dot"></span>Contraparte</span></div>
+              <div class="new-row"><div class="new-main"><div class="new-name">Débito directo recurrente</div><div class="new-meta">BNC ··5678 · tipo nuevo</div></div><span class="pill cat h-yellow"><span class="pill-dot"></span>Tipo</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="card">
+            <div class="card-head" style="margin-bottom:10px;"><div><span class="card-title">Flujo de caja por categoría</span><div class="card-range">Este mes · método directo (créditos − débitos)</div></div><span class="card-link">Ver Movimientos<svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8"/></svg></span></div>
+            <div class="cf-summary"><div><div class="cf-net pos">+$32.820</div><div class="cf-net-lbl">Flujo neto del mes</div></div><div class="cf-io"><span class="in">Entradas <b>+$124.800</b></span><span class="out">Salidas <b>−$91.980</b></span></div></div>
+            <div class="cf-group">
+              <div class="cf-group-h"><span>Entradas</span><span class="tot in">+$124.800</span></div>
+              <div class="cf-row"><span class="cf-name">Cobros de clientes</span><span class="cf-track"><i class="in" style="width:100%"></i></span><span class="cf-amt in">+$112.400</span></div>
+              <div class="cf-row"><span class="cf-name">Reembolsos / NC</span><span class="cf-track"><i class="in" style="width:7%"></i></span><span class="cf-amt in">+$8.300</span></div>
+              <div class="cf-row"><span class="cf-name">Intereses y otros</span><span class="cf-track"><i class="in" style="width:4%"></i></span><span class="cf-amt in">+$4.100</span></div>
+            </div>
+            <div class="cf-group">
+              <div class="cf-group-h"><span>Salidas</span><span class="tot out">−$91.980</span></div>
+              <div class="cf-row"><span class="cf-name">Nómina</span><span class="cf-track"><i class="out" style="width:28%"></i></span><span class="cf-amt out">−$31.400</span></div>
+              <div class="cf-row"><span class="cf-name">Infraestructura</span><span class="cf-track"><i class="out" style="width:18%"></i></span><span class="cf-amt out">−$20.100</span></div>
+              <div class="cf-row"><span class="cf-name">Proveedores</span><span class="cf-track"><i class="out" style="width:13%"></i></span><span class="cf-amt out">−$14.850</span></div>
+              <div class="cf-row"><span class="cf-name">Impuestos</span><span class="cf-track"><i class="out" style="width:8%"></i></span><span class="cf-amt out">−$9.320</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="card-title">Top movimientos · 30 días</span><span class="card-link">Ver Movimientos<svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8"/></svg></span></div>
+            <div class="new-list">
+              <div class="new-row"><div class="new-main"><div class="new-name">POLAR · Cervecería</div><div class="new-meta">Banesco ··4421 · 06-jun · cobro</div></div><span class="mono" style="color:var(--green-text);font-weight:600;font-size:13px">+$8.420</span></div>
+              <div class="new-row"><div class="new-main"><div class="new-name">CAPCA, C.A.</div><div class="new-meta">BNC ··5678 · 05-jun · cobro</div></div><div style="text-align:right"><div class="mono" style="color:var(--green-text);font-weight:600;font-size:13px">+Bs 5.000.000</div><div class="mono" style="color:var(--text-3);font-size:10.5px">≈ +$8.950</div></div></div>
+              <div class="new-row"><div class="new-main"><div class="new-name">Gusto, Inc.</div><div class="new-meta">Mercury ··4127 · 03-jun · nómina</div></div><span class="mono" style="font-weight:600;font-size:13px">−$5.871</span></div>
+              <div class="new-row"><div class="new-main"><div class="new-name">Amazon Web Services</div><div class="new-meta">Mercury ··4127 · 02-jun · infraestructura</div></div><span class="mono" style="font-weight:600;font-size:13px">−$3.200</span></div>
+              <div class="new-row"><div class="new-main"><div class="new-name">Tesorería Nacional — IVA</div><div class="new-meta">Banesco ··4421 · 31-may · impuestos</div></div><div style="text-align:right"><div class="mono" style="font-weight:600;font-size:13px">−Bs 480.000</div><div class="mono" style="color:var(--text-3);font-size:10.5px">≈ −$859</div></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="card">
+            <div class="card-head"><div><span class="card-title">Saldos por cuenta</span><div class="card-range">6 cuentas · 5 bancos · 2 entidades</div></div><span class="card-link">Ver Saldos<svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8"/></svg></span></div>
+            <div class="acct-list">
+              <div class="acct-item"><div class="acct-id"><span class="bank-logo sm bl-mercury">ME</span><span class="nm">Mercury · Checking</span><span class="meta">··4127 · <span class="ent" title="Tesote Technologies Inc.">Tesote Technolo…</span> · USD</span></div><div class="acct-track"><i class="f-usd" style="width:100%"></i></div><div class="acct-val"><span class="v">$312.400</span><span class="pct">60%</span></div></div>
+              <div class="acct-item"><div class="acct-id"><span class="bank-logo sm bl-mercury">ME</span><span class="nm">Mercury · Treasury</span><span class="meta">··8830 · <span class="ent" title="Tesote Technologies Inc.">Tesote Technolo…</span> · USD</span></div><div class="acct-track"><i class="f-usd" style="width:46%"></i></div><div class="acct-val"><span class="v">$144.709</span><span class="pct">28%</span></div></div>
+              <div class="acct-item"><div class="acct-id"><span class="bank-logo sm bl-bnc">BN</span><span class="nm">BNC · Operaciones</span><span class="meta">··5678 · <span class="ent" title="TST Servicios y Consultoría">TST Servicios y…</span> · VES</span></div><div class="acct-track"><i class="f-ves" style="width:14%"></i></div><div class="acct-val"><span class="v">$44.522</span><span class="pct">9%</span></div></div>
+              <div class="acct-item"><div class="acct-id"><span class="bank-logo sm bl-mercantil">MC</span><span class="nm">Mercantil · Nómina</span><span class="meta">··1234 · <span class="ent" title="TST Servicios y Consultoría">TST Servicios y…</span> · VES</span></div><div class="acct-track"><i class="f-ves" style="width:5%"></i></div><div class="acct-val"><span class="v">$14.857</span><span class="pct">3%</span></div></div>
+              <div class="acct-item"><div class="acct-id"><span class="bank-logo sm bl-banesco">BS</span><span class="nm">Banesco · Ahorro</span><span class="meta">··4421 · <span class="ent" title="TST Servicios y Consultoría">TST Servicios y…</span> · VES</span></div><div class="acct-track"><i class="f-ves" style="width:1.4%"></i></div><div class="acct-val"><span class="v">$4.421</span><span class="pct">1%</span></div></div>
+              <div class="acct-item"><div class="acct-id"><span class="bank-logo sm bl-bancamiga">BM</span><span class="nm">Bancamiga · Corriente</span><span class="meta">··9012 · <span class="ent" title="TST Servicios y Consultoría">TST Servicios y…</span> · VES</span></div><div class="acct-track"><i class="f-ves" style="width:.6%"></i></div><div class="acct-val"><span class="v">$931</span><span class="pct">0%</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====================== SALDOS ====================== -->
+      <div class="page" id="page-saldos">
+        <div class="page-head">
+          <div>
+            <h1 class="page-title">Saldos</h1>
+            <div class="page-meta"><span>10 conexiones</span><span class="page-meta-dot">·</span><span>32 cuentas</span><span class="page-meta-dot">·</span><span class="warn">2 con problemas</span></div>
+          </div>
+        </div>
+
+        <div class="banner">
+          <div class="banner-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 5v4M8 11v.5"/><circle cx="8" cy="8" r="6.5"/></svg></div>
+          <div style="flex:1"><div class="banner-title">2 conexiones necesitan atención</div><div class="banner-sub">BBVA Provincial — Necesita re-autenticación · afecta 2 cuentas &nbsp;·&nbsp; Banco Activo — Sync falló hace 1 semana · afecta 4 cuentas</div></div>
+          <button class="btn btn-primary" data-go="conexiones">Ver conexiones →</button>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+          <span style="font-size:13px;color:var(--text-3)">Ver por:</span>
+          <div class="tab-bar"><button class="tab-btn active">Cuentas</button><button class="tab-btn">Por conexiones bancarias</button></div>
+        </div>
+
+        <div class="groupby"><span class="groupby-label">Agrupar por:</span><button class="groupby-select">Entidad<svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5l3 3 3-3"/></svg></button></div>
+
+        <div class="table-card">
+          <table class="tbl">
+            <colgroup><col style="width:16%"><col style="width:18%"><col style="width:14%"><col style="width:16%"><col style="width:8%"><col style="width:14%"><col style="width:14%"></colgroup>
+            <thead><tr><th>Compañía</th><th>Banco</th><th>Cuenta</th><th class="num">Saldo</th><th>Divisa</th><th>Estado</th><th>Último sync</th></tr></thead>
+            <tbody>
+              <tr class="group-header"><td colspan="7"><span>TST SERVICIOS Y CONSULTORIA, C.A.</span><span class="gmeta">· 5 cuentas</span><span class="gsub">Bs. 23.376.234.567,89 · $410.253,69</span></td></tr>
+              <tr><td>TST CYC</td><td><span class="bank-cell"><span class="bank-logo bl-mercantil">MC</span><span class="bank-name">Mercantil</span></span></td><td><span class="acct-num">··6733</span></td><td class="num">Bs. 475.056,87</td><td>VES</td><td><span class="pill paid"><span class="pill-dot"></span>Sincronizada</span></td><td>hace 8h</td></tr>
+              <tr><td>TST CYC</td><td><span class="bank-cell"><span class="bank-logo bl-mercantil">MC</span><span class="bank-name">Mercantil</span></span></td><td><span class="acct-num">··3755</span></td><td class="num">$95,62</td><td>USD</td><td><span class="pill paid"><span class="pill-dot"></span>Sincronizada</span></td><td>hace 8h</td></tr>
+              <tr><td>TST CYC</td><td><span class="bank-cell"><span class="bank-logo bl-bbva">BB</span><span class="bank-name">BBVA Provincial</span></span></td><td><span class="acct-num">··0034</span></td><td class="num">Bs. 31.030,00</td><td>VES</td><td><span class="pill pending"><span class="pill-dot"></span>Requiere atención</span></td><td>hace 1 sem</td></tr>
+              <tr><td>TST CYC</td><td><span class="bank-cell"><span class="bank-logo bl-bnc">BN</span><span class="bank-name">BNC</span></span></td><td><span class="acct-num">··5421</span></td><td class="num">Bs. 23.375.000.000,00</td><td>VES</td><td><span class="pill new"><span class="pill-dot"></span>Sincronizando</span></td><td>hace 2 min</td></tr>
+              <tr><td>TST CYC</td><td><span class="bank-cell"><span class="bank-logo bl-bnc">BN</span><span class="bank-name">BNC</span></span></td><td><span class="acct-num">··5422</span></td><td class="num">$410.158,07</td><td>USD</td><td><span class="pill new"><span class="pill-dot"></span>Sincronizando</span></td><td>hace 2 min</td></tr>
+              <tr class="group-header"><td colspan="7"><span>TESOTE TECHNOLOGIES INC.</span><span class="gmeta">· 3 cuentas</span><span class="gsub">$1.000,00</span></td></tr>
+              <tr><td>Tesote Tech</td><td><span class="bank-cell"><span class="bank-logo bl-manual">$</span><span class="bank-name">Mercury (manual)</span></span></td><td><span class="acct-num">··2294</span></td><td class="num">$850,00</td><td>USD</td><td><span class="pill draft"><span class="pill-dot"></span>Manual</span></td><td>—</td></tr>
+              <tr><td>Tesote Tech</td><td><span class="bank-cell"><span class="bank-logo bl-banesco">BS</span><span class="bank-name">Banesco</span></span></td><td><span class="acct-num">··7745</span></td><td class="num">€0,00</td><td>EUR</td><td><span class="pill paid"><span class="pill-dot"></span>Sincronizada</span></td><td>hace 1h</td></tr>
+              <tr><td>Tesote Tech</td><td><span class="bank-cell"><span class="bank-logo bl-activo">AC</span><span class="bank-name">Banco Activo</span></span></td><td><span class="acct-num">··3543</span></td><td class="num">$150,00</td><td>USD</td><td><span class="pill pending"><span class="pill-dot"></span>Requiere atención</span></td><td>hace 1 sem</td></tr>
+            </tbody>
+          </table>
+          <div class="table-footer">8 cuentas · 2 entidades</div>
+        </div>
+      </div>
+
+      <!-- ====================== MOVIMIENTOS ====================== -->
+      <div class="page" id="page-movimientos">
+        <div class="page-head">
+          <div>
+            <h1 class="page-title">Movimientos</h1>
+            <div class="page-meta"><span>Últimos 30 días</span><span class="page-meta-dot">·</span><span><b style="color:var(--text)">234</b> movimientos</span><span class="page-meta-dot">·</span><span>Última actualización: hace 8h</span></div>
+          </div>
+        </div>
+
+        <div class="filter-bar">
+          <button class="btn" id="filter-toggle" aria-expanded="false" onclick="document.getElementById('filter-panel').classList.toggle('open');this.setAttribute('aria-expanded', document.getElementById('filter-panel').classList.contains('open'))">
+            <svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M3 5h18l-7 9v6l-4-2v-4z"/></svg>Filtros<span class="filter-count-badge">1</span>
+          </button>
+          <button class="btn"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M6 4h12v16l-6-4-6 4z"/></svg>Filtros Guardados<span class="filter-count-badge" style="background:var(--hover);color:var(--text-3)">3</span></button>
+          <button class="btn btn-ghost" onclick="document.getElementById('modal-export').classList.add('open')"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Exportar</button>
+          <div class="filter-search"><svg class="ic ic-sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="text" placeholder="Buscar en todo…" /></div>
+        </div>
+
+        <div class="filter-panel" id="filter-panel">
+          <div class="filter-section">
+            <div class="filter-section-title">Compañías, Cuentas y Bancos</div>
+            <div class="filter-grid cols-3">
+              <div class="filter-field"><div class="filter-label">Cuentas</div><div class="multi-select"><span class="multi-select-placeholder">Todas las cuentas</span></div></div>
+              <div class="filter-field"><div class="filter-label">Compañías</div><div class="multi-select"><span class="multi-select-placeholder">Todas las compañías</span></div></div>
+              <div class="filter-field"><div class="filter-label">Bancos</div><div class="multi-select"><span class="multi-select-placeholder">Todos los bancos</span></div></div>
+            </div>
+          </div>
+          <div class="filter-section">
+            <div class="filter-section-title">Monto y Fecha</div>
+            <div class="filter-grid cols-4">
+              <div class="filter-field"><div class="filter-label">Divisa</div><select class="filter-select"><option>Todas</option><option>VES</option><option>USD</option><option>EUR</option></select></div>
+              <div class="filter-field"><div class="filter-label">Tipo</div><select class="filter-select"><option>Cualquiera</option><option>Crédito</option><option>Débito</option></select></div>
+              <div class="filter-field" style="grid-column:span 2"><div class="filter-label">Periodo</div><div class="filter-radio-group"><div class="filter-radio">Hoy</div><div class="filter-radio">7 días</div><div class="filter-radio selected">30 días</div><div class="filter-radio">Este mes</div></div></div>
+            </div>
+          </div>
+          <div class="filter-actions"><button class="btn">Restablecer</button><button class="btn btn-primary">Aplicar Filtros<svg class="ic ic-sm" viewBox="0 0 24 24" style="margin-left:2px"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
+        </div>
+
+        <div class="chips-row">
+          <span class="chip"><span class="dim">Fecha</span><span class="sep">·</span><span class="val">Últimos 30 días</span><span class="x"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2.4"><path d="M6 6l12 12M18 6l-12 12"/></svg></span></span>
+        </div>
+
+        <div class="table-card">
+          <table class="tbl dense">
+            <colgroup><col style="width:80px"><col style="width:200px"><col style="width:auto"><col style="width:190px"><col style="width:150px"><col style="width:150px"></colgroup>
+            <thead><tr><th>Fecha</th><th>Banco/Cuenta</th><th>Descripción</th><th>Contraparte</th><th class="right">Monto</th><th>Categoría</th></tr></thead>
+            <tbody id="mov-body"></tbody>
+          </table>
+          <div class="table-footer">1–14 de 234 movimientos</div>
+        </div>
+      </div>
+
+      <!-- ====================== CONEXIONES BANCARIAS ====================== -->
+      <div class="page" id="page-conexiones">
+        <div class="page-head">
+          <div>
+            <h1 class="page-title">Conexiones bancarias</h1>
+            <div class="page-meta"><span>10 conexiones</span><span class="page-meta-dot">·</span><span>32 cuentas</span><span class="page-meta-dot">·</span><span class="warn">2 requieren atención</span></div>
+          </div>
+          <button class="btn btn-primary" onclick="openFlow('flow-conexion')"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Nueva conexión</button>
+        </div>
+
+        <div class="banner">
+          <div class="banner-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 5v4M8 11v.5"/><circle cx="8" cy="8" r="6.5"/></svg></div>
+          <div style="flex:1"><div class="banner-title">2 conexiones necesitan atención</div><div class="banner-sub">BBVA Provincial — Necesita re-autenticación · afecta 2 cuentas &nbsp;·&nbsp; Banco Activo — Sync falló hace 1 semana · afecta 4 cuentas</div></div>
+          <button class="btn btn-primary" onclick="openPanel('panel-conexion')">Reparar conexiones</button>
+        </div>
+
+        <div class="filter-bar">
+          <button class="btn" aria-expanded="false" onclick="document.getElementById('fp-conexiones').classList.toggle('open');this.setAttribute('aria-expanded', document.getElementById('fp-conexiones').classList.contains('open'))">
+            <svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M3 5h18l-7 9v6l-4-2v-4z"/></svg>Filtros
+          </button>
+          <button class="btn"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M6 4h12v16l-6-4-6 4z"/></svg>Filtros Guardados</button>
+          <button class="btn btn-ghost"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Exportar</button>
+          <div class="filter-search"><svg class="ic ic-sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="text" placeholder="Buscar conexiones…" /></div>
+        </div>
+        <div class="filter-panel" id="fp-conexiones">
+          <div class="filter-section">
+            <div class="filter-section-title">Bancos, Estado y Compañías</div>
+            <div class="filter-grid cols-3">
+              <div class="filter-field"><div class="filter-label">Bancos</div><div class="multi-select"><span class="multi-select-placeholder">Todos los bancos</span></div></div>
+              <div class="filter-field"><div class="filter-label">Estado</div><div class="multi-select"><span class="multi-select-placeholder">Todos los estados</span></div></div>
+              <div class="filter-field"><div class="filter-label">Compañías</div><div class="multi-select"><span class="multi-select-placeholder">Todas las compañías</span></div></div>
+            </div>
+          </div>
+          <div class="filter-actions"><button class="btn">Restablecer</button><button class="btn btn-primary">Aplicar Filtros</button></div>
+        </div>
+
+        <div class="table-card">
+          <table class="tbl">
+            <colgroup><col style="width:32%"><col style="width:19%"><col style="width:11%"><col style="width:19%"><col style="width:19%"></colgroup>
+            <thead><tr><th>Banco / Compañía</th><th>Estatus</th><th class="num">Cuentas</th><th>Última sinc.</th><th>Creado</th></tr></thead>
+            <tbody>
+              <tr><td><span class="bank-cell"><span class="bank-logo bl-mercantil">MC</span><span><span class="bank-name">Mercantil</span><div style="font-size:11px;color:var(--text-3)">TST Servicios y Consultoría</div></span></span></td><td><span class="pill paid"><span class="pill-dot"></span>Activa</span></td><td class="num">4</td><td><span class="cell-date">hace 8 h</span></td><td><span class="cell-date">12-01-2026</span></td></tr>
+              <tr><td><span class="bank-cell"><span class="bank-logo bl-bnc">BN</span><span><span class="bank-name">BNC</span><div style="font-size:11px;color:var(--text-3)">TST Servicios y Consultoría</div></span></span></td><td><span class="pill paid"><span class="pill-dot"></span>Activa</span></td><td class="num">5</td><td><span class="cell-date">hace 2 min</span></td><td><span class="cell-date">03-02-2026</span></td></tr>
+              <tr onclick="openPanel('panel-conexion')"><td><span class="bank-cell"><span class="bank-logo bl-bbva">BB</span><span><span class="bank-name">BBVA Provincial</span><div style="font-size:11px;color:var(--text-3)">TST Servicios y Consultoría</div><span class="warn-sub"><svg class="ic" style="width:11px;height:11px" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>Sincronización programada desactivada</span></span></span></td><td><span class="pill pending"><span class="pill-dot"></span>Requiere atención</span></td><td class="num">2</td><td><span class="cell-date">hace 1 sem</span></td><td><span class="cell-date">15-03-2026</span></td></tr>
+              <tr><td><span class="bank-cell"><span class="bank-logo bl-activo">AC</span><span><span class="bank-name">Banco Activo</span><div style="font-size:11px;color:var(--text-3)">Tesote Technologies Inc.</div></span></span></td><td><span class="pill pending"><span class="pill-dot"></span>Requiere atención</span></td><td class="num">4</td><td><span class="cell-date">hace 1 sem</span></td><td><span class="cell-date">20-02-2026</span></td></tr>
+              <tr><td><span class="bank-cell"><span class="bank-logo bl-banesco">BS</span><span><span class="bank-name">Banesco</span><div style="font-size:11px;color:var(--text-3)">TST Servicios y Consultoría</div></span></span></td><td><span class="pill paid"><span class="pill-dot"></span>Activa</span></td><td class="num">3</td><td><span class="cell-date">hace 1 h</span></td><td><span class="cell-date">28-01-2026</span></td></tr>
+              <tr><td><span class="bank-cell"><span class="bank-logo bl-mercury">ME</span><span><span class="bank-name">Mercury</span><div style="font-size:11px;color:var(--text-3)">Tesote Technologies Inc.</div></span></span></td><td><span class="pill paid"><span class="pill-dot"></span>Activa</span></td><td class="num">2</td><td><span class="cell-date">hace 20 min</span></td><td><span class="cell-date">12-01-2026</span></td></tr>
+              <tr><td><span class="bank-cell"><span class="bank-logo bl-bancamiga">BM</span><span><span class="bank-name">Bancamiga</span><div style="font-size:11px;color:var(--text-3)">TST Servicios y Consultoría</div></span></span></td><td><span class="pill paid"><span class="pill-dot"></span>Activa</span></td><td class="num">1</td><td><span class="cell-date">hace 26 h</span></td><td><span class="cell-date">09-04-2026</span></td></tr>
+              <tr><td><span class="bank-cell"><span class="bank-logo bl-bdv">BV</span><span><span class="bank-name">Banco de Venezuela</span><div style="font-size:11px;color:var(--text-3)">TST Servicios y Consultoría</div></span></span></td><td><span class="pill new"><span class="pill-dot"></span>Pendiente</span></td><td class="num">1</td><td><span class="cell-date">—</span></td><td><span class="cell-date">06-06-2026</span></td></tr>
+            </tbody>
+          </table>
+          <div class="table-footer">8 conexiones activas · 2 archivadas</div>
+        </div>
+
+        <button class="arch-toggle" onclick="toggleArch(this,'arch-conexiones')"><svg class="ic caret" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>Conexiones archivadas (2)</button>
+        <div class="arch-body" id="arch-conexiones">
+          <div class="table-card">
+            <table class="tbl dense">
+              <colgroup><col style="width:40%"><col style="width:22%"><col style="width:22%"><col style="width:16%"></colgroup>
+              <thead><tr><th>Banco / Compañía</th><th>Archivada</th><th>Cuentas</th><th class="center">Acciones</th></tr></thead>
+              <tbody>
+                <tr><td><span class="bank-cell"><span class="bank-logo sm bl-bicentenario">BT</span><span class="bank-name">Bicentenario</span></span></td><td><span class="cell-date">14-04-2026</span></td><td>1 cuenta</td><td style="text-align:center"><button class="btn btn-ghost" style="padding:4px 9px;font-size:12px"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Restaurar</button></td></tr>
+                <tr><td><span class="bank-cell"><span class="bank-logo sm bl-mibanco">MB</span><span class="bank-name">Mi Banco</span></span></td><td><span class="cell-date">02-03-2026</span></td><td>1 cuenta</td><td style="text-align:center"><button class="btn btn-ghost" style="padding:4px 9px;font-size:12px"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Restaurar</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <!-- /page-conexiones -->
+
+      <!-- ====================== COMPAÑÍAS ====================== -->
+      <div class="page" id="page-companias">
+        <div class="page-head">
+          <div>
+            <h1 class="page-title">Compañías</h1>
+            <div class="page-meta"><span>3 compañías</span><span class="page-meta-dot">·</span><span>2 entidades con cuentas</span></div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="btn" data-go="unidades"><svg class="ic ic-sm" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="6" rx="1.5"/><rect x="3" y="14" width="18" height="6" rx="1.5"/></svg>Unidades de negocio</button>
+            <button class="btn" data-go="saldos"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Organizar cuentas</button>
+            <button class="btn btn-primary" data-go="companias-nueva"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Nueva compañía</button>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <table class="tbl">
+            <colgroup><col style="width:38%"><col style="width:22%"><col style="width:18%"><col style="width:22%"></colgroup>
+            <thead><tr><th>Nombre</th><th>Unidad de negocio</th><th class="num">Cuentas</th><th>Creado</th></tr></thead>
+            <tbody>
+              <tr><td><span style="font-weight:500">TST Servicios y Consultoría, C.A.</span><div style="font-size:11px;color:var(--text-3);font-family:var(--font-mono)">RIF J-31750733-9</div></td><td>Operaciones VE</td><td class="num">5</td><td><span class="cell-date">12-01-2026</span></td></tr>
+              <tr><td><span style="font-weight:500">Tesote Technologies Inc.</span><div style="font-size:11px;color:var(--text-3);font-family:var(--font-mono)">EIN 88-1234567</div></td><td>Holding US</td><td class="num">3</td><td><span class="cell-date">12-01-2026</span></td></tr>
+              <tr onclick="openPanel('panel-compania')"><td><span style="font-weight:500">TST Inversiones, C.A.</span><div style="font-size:11px;color:var(--text-3);font-family:var(--font-mono)">RIF J-50234411-0</div></td><td><span style="color:var(--text-4)">Sin unidad</span></td><td class="num" style="color:var(--text-4)">—</td><td><span class="cell-date">02-05-2026</span></td></tr>
+            </tbody>
+          </table>
+          <div class="table-footer">3 compañías · 2 unidades de negocio</div>
+        </div>
+
+        <button class="arch-toggle" onclick="toggleArch(this,'arch-companias')"><svg class="ic caret" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>Compañías archivadas (1)</button>
+        <div class="arch-body" id="arch-companias">
+          <div class="table-card">
+            <table class="tbl dense">
+              <colgroup><col style="width:44%"><col style="width:20%"><col style="width:20%"><col style="width:16%"></colgroup>
+              <thead><tr><th>Compañía</th><th>Unidad de negocio</th><th>Archivada</th><th class="center">Acciones</th></tr></thead>
+              <tbody>
+                <tr><td>TST Importaciones, C.A.</td><td><span style="color:var(--text-4)">Sin unidad</span></td><td><span class="cell-date">20-03-2026</span></td><td style="text-align:center"><button class="btn btn-ghost" style="padding:4px 9px;font-size:12px"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Restaurar</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <!-- /page-companias -->
+
+      <!-- ====================== CONTRAPARTES ====================== -->
+      <div class="page" id="page-contrapartes">
+        <div class="page-head">
+          <div>
+            <h1 class="page-title">Contrapartes</h1>
+            <div class="page-meta"><span><b style="color:var(--text)">248</b> contrapartes</span><span class="page-meta-dot">·</span><span>231 activas</span><span class="page-meta-dot">·</span><span>17 archivadas</span></div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="btn" data-go="sugerencias"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8z"/></svg>Sugerencias<span class="filter-count-badge">12</span></button>
+            <button class="btn btn-primary" data-go="contrapartes-nueva"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Nueva contraparte</button>
+          </div>
+        </div>
+
+        <div class="filter-bar">
+          <button class="btn" aria-expanded="false" onclick="document.getElementById('fp-contrapartes').classList.toggle('open');this.setAttribute('aria-expanded', document.getElementById('fp-contrapartes').classList.contains('open'))">
+            <svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M3 5h18l-7 9v6l-4-2v-4z"/></svg>Filtros
+          </button>
+          <button class="btn"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M6 4h12v16l-6-4-6 4z"/></svg>Filtros Guardados</button>
+          <button class="btn btn-ghost"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Exportar</button>
+          <div class="filter-search"><svg class="ic ic-sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="text" placeholder="Buscar contrapartes…" /></div>
+        </div>
+        <div class="filter-panel" id="fp-contrapartes">
+          <div class="filter-section">
+            <div class="filter-section-title">Identificación y Estado</div>
+            <div class="filter-grid cols-4">
+              <div class="filter-field"><div class="filter-label">Estado</div><select class="filter-select"><option>Activas</option><option>Archivadas</option><option>Todas</option></select></div>
+              <div class="filter-field"><div class="filter-label">Origen</div><select class="filter-select"><option>Cualquiera</option><option>Manual</option><option>Automática</option></select></div>
+              <div class="filter-field"><div class="filter-label">Correo electrónico</div><input class="input" type="text" placeholder="Buscar por correo…"/></div>
+              <div class="filter-field"><div class="filter-label">ID externo</div><input class="input" type="text" placeholder="Ej: CP-001, RIF…"/></div>
+            </div>
+          </div>
+          <div class="filter-actions"><button class="btn">Restablecer</button><button class="btn btn-primary">Aplicar Filtros</button></div>
+        </div>
+
+        <div class="table-card">
+          <table class="tbl">
+            <colgroup><col style="width:32%"><col style="width:26%"><col style="width:20%"><col style="width:14%"></colgroup>
+            <thead><tr><th>Nombre</th><th>Correo electrónico</th><th>ID externo</th><th>Creado</th></tr></thead>
+            <tbody id="cp-body"></tbody>
+          </table>
+          <div class="table-footer">1–9 de 248 contrapartes</div>
+        </div>
+      </div>
+      <!-- /page-contrapartes -->
+
+      <!-- ====================== HISTORIAL DE REPORTES ====================== -->
+      <div class="page" id="page-reportes">
+        <div class="page-head">
+          <div>
+            <h1 class="page-title">Historial de reportes</h1>
+            <div class="page-meta"><span>23 reportes generados</span><span class="page-meta-dot">·</span><span>1 en proceso</span><span class="page-meta-dot">·</span><span>Los reportes se generan desde Movimientos y Saldos con sus filtros aplicados</span></div>
+          </div>
+          <button class="btn btn-primary" onclick="document.getElementById('modal-export').classList.add('open')"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Nuevo reporte</button>
+        </div>
+
+        <div class="table-card">
+          <table class="tbl dense">
+            <colgroup><col style="width:30%"><col style="width:15%"><col style="width:14%"><col style="width:25%"><col style="width:16%"></colgroup>
+            <thead><tr><th>Nombre</th><th>Creado</th><th>Estado</th><th>Progreso</th><th class="center">Acciones</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><span style="font-weight:500">Transacciones BNC · Q2</span><div style="font-size:11px;color:var(--text-3);font-family:var(--font-mono)">01/04/2026 – 09/06/2026</div></td>
+                <td><span class="cell-date">09-06 09:42</span></td>
+                <td><span class="pill new"><span class="pill-dot"></span>Procesando</span></td>
+                <td><div class="prog-cell"><div class="prog-track"><div class="prog-fill" style="width:64%"></div></div><span class="prog-txt">64% · 1.498/2.340</span></div></td>
+                <td style="text-align:center"><button class="btn btn-ghost" style="padding:4px 9px;font-size:12px"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6l-12 12"/></svg>Cancelar</button></td>
+              </tr>
+              <tr>
+                <td><span style="font-weight:500">Movimientos mayo 2026</span><div style="font-size:11px;color:var(--text-3);font-family:var(--font-mono)">01/05/2026 – 31/05/2026</div></td>
+                <td><span class="cell-date">01-06 09:12</span></td>
+                <td><span class="pill paid"><span class="pill-dot"></span>Completado</span></td>
+                <td><span class="prog-done"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>2.184 filas</span></td>
+                <td style="text-align:center"><button class="btn btn-ghost" style="padding:4px 9px;font-size:12px"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M12 4v12M6 10l6 6 6-6"/><path d="M4 20h16"/></svg>Descargar</button></td>
+              </tr>
+              <tr>
+                <td><span style="font-weight:500">Saldos por cuenta · cierre mayo</span><div style="font-size:11px;color:var(--text-3);font-family:var(--font-mono)">31/05/2026</div></td>
+                <td><span class="cell-date">31-05 18:03</span></td>
+                <td><span class="pill paid"><span class="pill-dot"></span>Completado</span></td>
+                <td><span class="prog-done"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>32 cuentas</span></td>
+                <td style="text-align:center"><button class="btn btn-ghost" style="padding:4px 9px;font-size:12px"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M12 4v12M6 10l6 6 6-6"/><path d="M4 20h16"/></svg>Descargar</button></td>
+              </tr>
+              <tr>
+                <td><span style="font-weight:500">Conciliación diaria · abril</span><div style="font-size:11px;color:var(--text-3);font-family:var(--font-mono)">01/04/2026 – 30/04/2026</div></td>
+                <td><span class="cell-date">02-05 08:30</span></td>
+                <td><span class="pill paid"><span class="pill-dot"></span>Completado</span></td>
+                <td><span class="prog-done"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>30 días</span></td>
+                <td style="text-align:center"><button class="btn btn-ghost" style="padding:4px 9px;font-size:12px"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M12 4v12M6 10l6 6 6-6"/><path d="M4 20h16"/></svg>Descargar</button></td>
+              </tr>
+              <tr>
+                <td><span style="font-weight:500">Movimientos USD · enero–marzo</span><div style="font-size:11px;color:var(--text-3);font-family:var(--font-mono)">01/01/2026 – 31/03/2026</div></td>
+                <td><span class="cell-date">15-04 11:20</span></td>
+                <td><span class="pill overdue"><span class="pill-dot"></span>Fallido</span></td>
+                <td><span class="prog-fail"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6l-12 12"/></svg>Rango excede 90 días</span></td>
+                <td style="text-align:center"><button class="btn btn-ghost" style="padding:4px 9px;font-size:12px"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Reintentar</button></td>
+              </tr>
+              <tr>
+                <td><span style="font-weight:500">Transacciones CAPCA · 2025</span><div style="font-size:11px;color:var(--text-3);font-family:var(--font-mono)">01/01/2025 – 31/12/2025</div></td>
+                <td><span class="cell-date">09-06 10:01</span></td>
+                <td><span class="pill draft"><span class="pill-dot"></span>Pendiente</span></td>
+                <td><span class="prog-txt">En cola</span></td>
+                <td style="text-align:center"><button class="btn btn-ghost" style="padding:4px 9px;font-size:12px"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6l-12 12"/></svg>Cancelar</button></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="table-footer">1–6 de 23 reportes <span class="proto-link" onclick="toggleEmpty('reportes')">prototipo: ver estado vacío</span></div>
+        </div>
+        <div class="table-card" id="es-reportes" style="display:none">
+          <div class="empty">
+            <div class="empty-ic"><svg class="ic ic-lg" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 13h6M9 17h6"/></svg></div>
+            <div class="empty-t">No hay reportes disponibles</div>
+            <div class="empty-s">Genera tu primer reporte desde Movimientos o Saldos: aplica los filtros que quieras y usa "Exportar". El archivo aparecerá aquí.</div>
+            <button class="btn btn-primary" style="margin-top:14px" onclick="document.getElementById('modal-export').classList.add('open')">Nuevo reporte</button>
+            <div style="margin-top:10px"><span class="proto-link" style="float:none" onclick="toggleEmpty('reportes')">prototipo: volver a datos</span></div>
+          </div>
+        </div>
+      </div>
+      <!-- /page-reportes -->
+
+      <!-- ====================== SINCRONIZACIONES PROGRAMADAS ====================== -->
+      <div class="page" id="page-sincronizaciones">
+        <div class="page-head">
+          <div>
+            <h1 class="page-title">Sincronizaciones programadas</h1>
+            <div class="page-meta"><span>5 sincronizaciones</span><span class="page-meta-dot">·</span><span>3 activas</span><span class="page-meta-dot">·</span><span class="warn">1 fallida</span></div>
+          </div>
+          <button class="btn btn-primary" data-go="sync-nueva"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Nueva sincronización</button>
+        </div>
+
+        <div class="table-card">
+          <table class="tbl">
+            <colgroup><col style="width:20%"><col style="width:13%"><col style="width:20%"><col style="width:21%"><col style="width:10%"><col style="width:10%"><col style="width:6%"></colgroup>
+            <thead><tr><th>Banco</th><th>Estado</th><th>Tipo</th><th>Frecuencia</th><th>Última</th><th>Próxima</th><th></th></tr></thead>
+            <tbody>
+              <tr>
+                <td><span class="bank-cell"><span class="bank-logo sm bl-bnc">BN</span><span><span class="bank-name">BNC</span><div style="font-size:11px;color:var(--text-3)">5 cuentas</div></span></span></td>
+                <td><span class="pill paid"><span class="pill-dot"></span>Activa</span></td>
+                <td style="font-size:12.5px">Saldo y transacciones</td>
+                <td style="font-size:12px;color:var(--text-2)">Lun–Vie · 06:00–08:00<div style="font-size:10.5px;color:var(--text-4);font-family:var(--font-mono)">GMT-4 Caracas</div></td>
+                <td><span class="cell-date">09-06 06:12</span></td>
+                <td><span class="cell-date">10-06 06:00</span></td>
+                <td style="text-align:right"><button class="btn btn-ghost" style="padding:5px 7px" title="Pausar" onclick="event.stopPropagation();document.getElementById('modal-pause').classList.add('open')"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M9 5v14M15 5v14"/></svg></button></td>
+              </tr>
+              <tr>
+                <td><span class="bank-cell"><span class="bank-logo sm bl-mercantil">MC</span><span><span class="bank-name">Mercantil</span><div style="font-size:11px;color:var(--text-3)">4 cuentas</div></span></span></td>
+                <td><span class="pill paid"><span class="pill-dot"></span>Activa</span></td>
+                <td style="font-size:12.5px">Solo saldos <span class="pill cat h-green" style="margin-left:4px"><span class="pill-dot"></span>Más rápido</span></td>
+                <td style="font-size:12px;color:var(--text-2)">Todos los días · 07:00–09:00<div style="font-size:10.5px;color:var(--text-4);font-family:var(--font-mono)">GMT-4 Caracas</div></td>
+                <td><span class="cell-date">09-06 07:05</span></td>
+                <td><span class="cell-date">10-06 07:00</span></td>
+                <td style="text-align:right"><button class="btn btn-ghost" style="padding:5px 7px" title="Pausar" onclick="event.stopPropagation();document.getElementById('modal-pause').classList.add('open')"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M9 5v14M15 5v14"/></svg></button></td>
+              </tr>
+              <tr>
+                <td><span class="bank-cell"><span class="bank-logo sm bl-bbva">BB</span><span><span class="bank-name">BBVA Provincial</span><div style="font-size:11px;color:var(--text-3)">2 cuentas</div></span></span></td>
+                <td><span class="pill overdue"><span class="pill-dot"></span>Fallida</span></td>
+                <td style="font-size:12.5px">Saldo y transacciones</td>
+                <td style="font-size:12px;color:var(--text-2)">Lun–Vie · 06:00–08:00<div style="font-size:10.5px;color:var(--text-4);font-family:var(--font-mono)">GMT-4 Caracas</div></td>
+                <td><span class="cell-date">02-06 06:40</span></td>
+                <td><span class="cell-date" style="color:var(--text-4)">—</span></td>
+                <td style="text-align:right"><button class="btn btn-ghost" style="padding:5px 7px;opacity:.45;cursor:not-allowed" title="Repara la conexión para reanudar"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button></td>
+              </tr>
+              <tr>
+                <td><span class="bank-cell"><span class="bank-logo sm bl-banesco">BS</span><span><span class="bank-name">Banesco</span><div style="font-size:11px;color:var(--text-3)">3 cuentas</div></span></span></td>
+                <td><span class="pill draft"><span class="pill-dot"></span>Pausada</span></td>
+                <td style="font-size:12.5px">Solo transacciones</td>
+                <td style="font-size:12px;color:var(--text-2)">Lun · Mié · Vie · 08:00–10:00<div style="font-size:10.5px;color:var(--text-4);font-family:var(--font-mono)">GMT-4 Caracas</div></td>
+                <td><span class="cell-date">02-06 08:15</span></td>
+                <td><span class="cell-date" style="color:var(--text-4)">—</span></td>
+                <td style="text-align:right"><button class="btn btn-ghost" style="padding:5px 7px" title="Reanudar"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button></td>
+              </tr>
+              <tr>
+                <td><span class="bank-cell"><span class="bank-logo sm bl-bdv">BV</span><span><span class="bank-name">Banco de Venezuela</span><div style="font-size:11px;color:var(--text-3)">1 cuenta</div></span></span></td>
+                <td><span class="pill new"><span class="pill-dot"></span>En revisión</span></td>
+                <td style="font-size:12.5px">Saldo y transacciones</td>
+                <td style="font-size:12px;color:var(--text-3);font-style:italic">Pendiente por revisión</td>
+                <td><span class="cell-date" style="color:var(--text-4)">—</span></td>
+                <td><span class="cell-date" style="color:var(--text-4)">—</span></td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="table-footer">5 sincronizaciones · el horario exacto se optimiza tras la aprobación <span class="proto-link" onclick="toggleEmpty('sincronizaciones')">prototipo: ver estado vacío</span></div>
+        </div>
+        <div class="table-card" id="es-sincronizaciones" style="display:none">
+          <div class="empty">
+            <div class="empty-ic"><svg class="ic ic-lg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+            <div class="empty-t">No hay sincronizaciones programadas</div>
+            <div class="empty-s">Configura sincronizaciones automáticas para mantener tus datos al día sin tener que pedirlas manualmente.</div>
+            <button class="btn btn-primary" style="margin-top:14px" data-go="sync-nueva">Nueva sincronización</button>
+            <div style="margin-top:10px"><span class="proto-link" style="float:none" onclick="toggleEmpty('sincronizaciones')">prototipo: volver a datos</span></div>
+          </div>
+        </div>
+      </div>
+      <!-- /page-sincronizaciones -->
+
+      <!-- ====================== NUEVA SINCRONIZACIÓN (form) ====================== -->
+      <div class="page" id="page-sync-nueva">
+        <div class="back-link" data-go="sincronizaciones"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Sincronizaciones programadas</div>
+        <div class="page-head">
+          <div>
+            <h1 class="page-title">Nueva sincronización programada</h1>
+            <div class="page-meta"><span>Configura una sincronización automática para tus cuentas</span></div>
+          </div>
+        </div>
+        <div class="form-card">
+          <div class="field">
+            <div class="field-label">Conexión bancaria</div>
+            <select class="input"><option>BNC · TST Servicios y Consultoría · 5 cuentas</option><option>Mercantil · TST Servicios y Consultoría · 4 cuentas</option><option>Banesco · TST Servicios y Consultoría · 3 cuentas</option><option>Mercury · Tesote Technologies Inc. · 2 cuentas</option></select>
+          </div>
+          <div class="field">
+            <div class="field-label">Zona horaria</div>
+            <select class="input"><option>América/Caracas (GMT-4)</option><option>América/Santo Domingo (GMT-4)</option><option>América/Nueva York (GMT-5)</option></select>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="field"><div class="field-label">Hora de inicio</div><input class="input" type="time" value="06:00"/></div>
+            <div class="field"><div class="field-label">Hora de fin</div><input class="input" type="time" value="08:00" readonly/><div class="field-help">Se calcula automáticamente: 2 horas después del inicio</div></div>
+          </div>
+          <div class="field">
+            <div class="field-label">Días de la semana</div>
+            <div class="filter-radio-group">
+              <div class="filter-radio selected">Lun</div><div class="filter-radio selected">Mar</div><div class="filter-radio selected">Mié</div><div class="filter-radio selected">Jue</div><div class="filter-radio selected">Vie</div><div class="filter-radio">Sáb</div><div class="filter-radio">Dom</div>
+            </div>
+          </div>
+          <div class="field">
+            <div class="field-label">Acciones de sincronización</div>
+            <div class="check-grid cols-2">
+              <label class="check-row"><input type="checkbox" checked/><span><span class="ck-t">Saldo y transacciones</span><div class="ck-s">Sincronización completa de la conexión</div></span></label>
+              <label class="check-row"><input type="checkbox"/><span><span class="ck-t">Solo saldos</span><div class="ck-s">Más rápido; no descarga movimientos</div></span></label>
+            </div>
+          </div>
+          <div class="banner" style="margin-bottom:0;padding:11px 14px">
+            <div class="banner-icon" style="width:24px;height:24px"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 5v4M8 11v.5"/><circle cx="8" cy="8" r="6.5"/></svg></div>
+            <div style="flex:1"><div class="banner-sub" style="margin-top:0">El equipo de soporte optimizará el horario exacto dentro de tu rango después de aprobar la solicitud.</div></div>
+          </div>
+          <div class="form-actions"><button class="btn" data-go="sincronizaciones">Cancelar</button><button class="btn btn-primary" data-go="sincronizaciones">Crear sincronización</button></div>
+        </div>
+      </div>
+      <!-- /page-sync-nueva -->
+
+      <!-- ====================== MI EQUIPO ====================== -->
+      <div class="page" id="page-equipo">
+        <div class="page-head">
+          <div>
+            <h1 class="page-title">Mi equipo</h1>
+            <div class="page-meta"><span>6 miembros</span><span class="page-meta-dot">·</span><span>4 activos</span><span class="page-meta-dot">·</span><span>2 invitaciones pendientes</span></div>
+          </div>
+          <button class="btn btn-primary" data-go="equipo-invitar"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Nuevo usuario</button>
+        </div>
+
+        <div class="table-card">
+          <table class="tbl">
+            <colgroup><col style="width:30%"><col style="width:30%"><col style="width:40%"></colgroup>
+            <thead><tr><th>Usuario</th><th>Correo electrónico</th><th>Estado</th></tr></thead>
+            <tbody>
+              <tr><td><span class="bank-cell"><span class="cp-avatar cp-2">MR</span><span style="font-weight:500">Mariel Rodríguez</span></span></td><td style="color:var(--text-2)">mariel@tstservicios.com</td><td><span class="pill paid"><span class="pill-dot"></span>Activo</span></td></tr>
+              <tr><td><span class="bank-cell"><span class="cp-avatar cp-1">LP</span><span style="font-weight:500">Luis Pulgar</span></span></td><td style="color:var(--text-2)">luis@tstservicios.com</td><td><span class="pill paid"><span class="pill-dot"></span>Activo</span></td></tr>
+              <tr><td><span class="bank-cell"><span class="cp-avatar cp-4">AU</span><span style="font-weight:500">Andrés Urdaneta</span></span></td><td style="color:var(--text-2)">andres@tstservicios.com</td><td><span class="pill paid"><span class="pill-dot"></span>Activo</span></td></tr>
+              <tr><td><span class="bank-cell"><span class="cp-avatar cp-5">JH</span><span style="font-weight:500">José Hernández</span></span></td><td style="color:var(--text-2)">jose@tstservicios.com</td><td><span class="pill paid"><span class="pill-dot"></span>Activo</span></td></tr>
+              <tr><td><span class="bank-cell"><span class="cp-avatar cp-3">CM</span><span style="font-weight:500">Carla Méndez</span></span></td><td style="color:var(--text-2)">carla@tstservicios.com</td><td><div style="display:flex;align-items:center;gap:10px"><span class="pill pending"><span class="pill-dot"></span>Pendiente</span><button class="btn btn-ghost" style="padding:4px 9px;font-size:12px" onclick="copyLink(this)"><svg class="ic ic-sm" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span class="cl">Copiar enlace</span></button></div></td></tr>
+              <tr><td><span class="bank-cell"><span class="cp-avatar cp-6">RT</span><span style="font-weight:500">Roberto Terán</span></span></td><td style="color:var(--text-2)">roberto@tstservicios.com</td><td><div style="display:flex;align-items:center;gap:10px"><span class="pill pending"><span class="pill-dot"></span>Pendiente</span><button class="btn btn-ghost" style="padding:4px 9px;font-size:12px" onclick="copyLink(this)"><svg class="ic ic-sm" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span class="cl">Copiar enlace</span></button></div></td></tr>
+            </tbody>
+          </table>
+          <div class="table-footer">6 miembros · las invitaciones expiran a los 14 días</div>
+        </div>
+      </div>
+      <!-- /page-equipo -->
+
+      <!-- ====================== INVITAR USUARIO (form) ====================== -->
+      <div class="page" id="page-equipo-invitar">
+        <div class="back-link" data-go="equipo"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Mi equipo</div>
+        <div class="page-head">
+          <div>
+            <h1 class="page-title">Invitar usuario</h1>
+            <div class="page-meta"><span>El usuario recibirá una invitación por correo con los pasos para iniciar sesión</span></div>
+          </div>
+        </div>
+        <div class="form-card">
+          <div class="field"><div class="field-label">Correo electrónico</div><input class="input" type="email" placeholder="usuario@empresa.com"/></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="field"><div class="field-label">Nombre</div><input class="input" type="text"/></div>
+            <div class="field"><div class="field-label">Apellido</div><input class="input" type="text"/></div>
+          </div>
+          <div class="field">
+            <div class="field-label">Grupo de permisos</div>
+            <div class="field-help" style="margin-bottom:4px">Asigna el usuario a un grupo; sin grupo no podrá ver ninguna cuenta.</div>
+            <div class="check-grid cols-2">
+              <label class="check-row"><input type="radio" name="grupo"/><span><span class="ck-t">Administradores</span><div class="ck-s">Acceso total · 3 miembros</div></span></label>
+              <label class="check-row"><input type="radio" name="grupo" checked/><span><span class="ck-t">Finanzas</span><div class="ck-s">Cuentas operativas · 5 miembros</div></span></label>
+              <label class="check-row"><input type="radio" name="grupo"/><span><span class="ck-t">Solo lectura — Saldos</span><div class="ck-s">Sin movimientos · 2 miembros</div></span></label>
+              <label class="check-row"><input type="radio" name="grupo"/><span><span class="ck-t">Auditores externos</span><div class="ck-s">Acceso temporal · 1 miembro</div></span></label>
+            </div>
+          </div>
+          <div class="form-actions"><button class="btn" data-go="equipo">Cancelar</button><button class="btn btn-primary" data-go="equipo">Enviar invitación</button></div>
+        </div>
+      </div>
+      <!-- /page-equipo-invitar -->
+
+      <!-- ====================== PERMISOS ====================== -->
+      <div class="page" id="page-permisos">
+        <div class="page-head">
+          <div>
+            <h1 class="page-title">Permisos</h1>
+            <div class="page-meta"><span>4 grupos</span><span class="page-meta-dot">·</span><span>Los permisos se asignan por grupo, nunca por usuario individual</span></div>
+          </div>
+          <button class="btn btn-primary" data-go="permisos-editor"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Nuevo grupo</button>
+        </div>
+
+        <div class="table-card">
+          <table class="tbl">
+            <colgroup><col style="width:34%"><col style="width:42%"><col style="width:24%"></colgroup>
+            <thead><tr><th>Nombre</th><th>Miembros</th><th>Creado</th></tr></thead>
+            <tbody>
+              <tr data-go="permisos-editor"><td><span style="font-weight:500">Administradores</span><div style="font-size:11px;color:var(--text-3)">Acceso total al espacio de trabajo</div></td><td><span class="av-stack"><span class="cp-avatar cp-2">MR</span><span class="cp-avatar cp-1">LP</span><span class="cp-avatar cp-4">AU</span><span class="av-count">3 miembros</span></span></td><td><span class="cell-date">12-01-2026</span></td></tr>
+              <tr data-go="permisos-editor"><td><span style="font-weight:500">Finanzas</span><div style="font-size:11px;color:var(--text-3)">Cuentas operativas · débitos y créditos</div></td><td><span class="av-stack"><span class="cp-avatar cp-2">MR</span><span class="cp-avatar cp-5">JH</span><span class="cp-avatar cp-3">CM</span><span class="av-more">+2</span><span class="av-count">5 miembros</span></span></td><td><span class="cell-date">15-01-2026</span></td></tr>
+              <tr data-go="permisos-editor"><td><span style="font-weight:500">Solo lectura — Saldos</span><div style="font-size:11px;color:var(--text-3)">Ver saldos, sin movimientos ni administración</div></td><td><span class="av-stack"><span class="cp-avatar cp-6">RT</span><span class="cp-avatar cp-3">CM</span><span class="av-count">2 miembros</span></span></td><td><span class="cell-date">20-03-2026</span></td></tr>
+              <tr data-go="permisos-editor"><td><span style="font-weight:500">Auditores externos</span><div style="font-size:11px;color:var(--text-3)">Acceso temporal de revisión</div></td><td><span class="av-stack"><span class="cp-avatar cp-5">JH</span><span class="av-count">1 miembro</span></span></td><td><span class="cell-date">02-05-2026</span></td></tr>
+            </tbody>
+          </table>
+          <div class="table-footer">4 grupos · un usuario puede pertenecer a varios grupos</div>
+        </div>
+      </div>
+      <!-- /page-permisos -->
+
+      <!-- ====================== EDITOR DE GRUPO (form) ====================== -->
+      <div class="page" id="page-permisos-editor">
+        <div class="back-link" data-go="permisos"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Permisos</div>
+        <div class="page-head">
+          <div>
+            <h1 class="page-title">Editar grupo · Finanzas</h1>
+            <div class="page-meta"><span>5 miembros</span><span class="page-meta-dot">·</span><span>4 cuentas asignadas</span></div>
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="card">
+            <div class="card-head"><span class="card-title">Nombre del grupo</span></div>
+            <input class="input" type="text" value="Finanzas" style="max-width:380px"/>
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="card">
+            <div class="card-head"><div><span class="card-title">Usuarios</span><div class="card-range">Selecciona los usuarios que pertenecen a este grupo</div></div></div>
+            <div class="check-grid">
+              <label class="check-row"><input type="checkbox" checked/><span class="bank-cell"><span class="cp-avatar cp-2">MR</span><span><span class="ck-t">Mariel Rodríguez</span><div class="ck-s">mariel@tstservicios.com</div></span></span></label>
+              <label class="check-row"><input type="checkbox"/><span class="bank-cell"><span class="cp-avatar cp-1">LP</span><span><span class="ck-t">Luis Pulgar</span><div class="ck-s">luis@tstservicios.com</div></span></span></label>
+              <label class="check-row"><input type="checkbox"/><span class="bank-cell"><span class="cp-avatar cp-4">AU</span><span><span class="ck-t">Andrés Urdaneta</span><div class="ck-s">andres@tstservicios.com</div></span></span></label>
+              <label class="check-row"><input type="checkbox" checked/><span class="bank-cell"><span class="cp-avatar cp-5">JH</span><span><span class="ck-t">José Hernández</span><div class="ck-s">jose@tstservicios.com</div></span></span></label>
+              <label class="check-row"><input type="checkbox" checked/><span class="bank-cell"><span class="cp-avatar cp-3">CM</span><span><span class="ck-t">Carla Méndez</span><div class="ck-s">carla@tstservicios.com</div></span></span></label>
+              <label class="check-row"><input type="checkbox" checked/><span class="bank-cell"><span class="cp-avatar cp-6">RT</span><span><span class="ck-t">Roberto Terán</span><div class="ck-s">roberto@tstservicios.com</div></span></span></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="card">
+            <div class="card-head"><div><span class="card-title">Permisos del espacio de trabajo</span><div class="card-range">Permisos administrativos que tendrá este grupo</div></div></div>
+            <div class="check-grid">
+              <label class="check-row"><input type="checkbox"/><span><span class="ck-t">Administrar configuración</span><div class="ck-s">Editar el espacio de trabajo y sus ajustes</div></span></label>
+              <label class="check-row"><input type="checkbox"/><span><span class="ck-t">Administrar miembros</span><div class="ck-s">Invitar usuarios y asignar grupos</div></span></label>
+              <label class="check-row"><input type="checkbox" checked/><span><span class="ck-t">Administrar conexiones bancarias</span><div class="ck-s">Crear, reparar y archivar conexiones</div></span></label>
+              <label class="check-row"><input type="checkbox"/><span><span class="ck-t">Administrar visibilidad de cuentas</span><div class="ck-s">Decidir qué cuentas ve cada grupo</div></span></label>
+              <label class="check-row"><input type="checkbox"/><span><span class="ck-t">Administrar seguridad</span><div class="ck-s">Política 2FA y sesiones</div></span></label>
+              <label class="check-row"><input type="checkbox" checked/><span><span class="ck-t">Ver pagos</span><div class="ck-s">Acceso de lectura al módulo de pagos</div></span></label>
+              <label class="check-row"><input type="checkbox" checked/><span><span class="ck-t">Enviar y solicitar pagos</span><div class="ck-s">Iniciar pagos y cobros</div></span></label>
+              <label class="check-row"><input type="checkbox"/><span><span class="ck-t">Aprobar pagos</span><div class="ck-s">Autorizar pagos iniciados por otros</div></span></label>
+              <label class="check-row"><input type="checkbox"/><span><span class="ck-t">Administrar métodos de pago</span><div class="ck-s">Cuentas destino de contrapartes</div></span></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-1">
+          <div class="card">
+            <div class="card-head"><div><span class="card-title">Cuentas y permisos</span><div class="card-range">Qué cuentas ve este grupo y con qué nivel de detalle</div></div></div>
+            <div class="qsel">
+              <button class="btn" style="font-size:12px;padding:5px 10px">Marcar todas</button>
+              <button class="btn" style="font-size:12px;padding:5px 10px">Solo débitos</button>
+              <button class="btn" style="font-size:12px;padding:5px 10px">Solo créditos</button>
+              <button class="btn" style="font-size:12px;padding:5px 10px">Solo saldos</button>
+            </div>
+            <div class="perm-grid">
+              <div class="perm-acct"><div class="perm-acct-top"><input type="checkbox" checked/><span class="bank-logo sm bl-mercury">ME</span><span class="nm">Mercury · Checking</span><span class="meta">··4127</span></div><div class="mini-checks"><label class="mini-check"><input type="checkbox" checked/>Ver débitos</label><label class="mini-check"><input type="checkbox" checked/>Ver créditos</label><label class="mini-check"><input type="checkbox" checked/>Ver saldos</label></div></div>
+              <div class="perm-acct"><div class="perm-acct-top"><input type="checkbox" checked/><span class="bank-logo sm bl-bnc">BN</span><span class="nm">BNC · Operaciones</span><span class="meta">··5678</span></div><div class="mini-checks"><label class="mini-check"><input type="checkbox" checked/>Ver débitos</label><label class="mini-check"><input type="checkbox" checked/>Ver créditos</label><label class="mini-check"><input type="checkbox" checked/>Ver saldos</label></div></div>
+              <div class="perm-acct"><div class="perm-acct-top"><input type="checkbox" checked/><span class="bank-logo sm bl-mercantil">MC</span><span class="nm">Mercantil · Nómina</span><span class="meta">··1234</span></div><div class="mini-checks"><label class="mini-check"><input type="checkbox"/>Ver débitos</label><label class="mini-check"><input type="checkbox"/>Ver créditos</label><label class="mini-check"><input type="checkbox" checked/>Ver saldos</label></div></div>
+              <div class="perm-acct"><div class="perm-acct-top"><input type="checkbox" checked/><span class="bank-logo sm bl-banesco">BS</span><span class="nm">Banesco · Ahorro</span><span class="meta">··4421</span></div><div class="mini-checks"><label class="mini-check"><input type="checkbox" checked/>Ver débitos</label><label class="mini-check"><input type="checkbox" checked/>Ver créditos</label><label class="mini-check"><input type="checkbox" checked/>Ver saldos</label></div></div>
+              <div class="perm-acct"><div class="perm-acct-top"><input type="checkbox"/><span class="bank-logo sm bl-mercury">ME</span><span class="nm">Mercury · Treasury</span><span class="meta">··8830</span></div><div class="mini-checks" style="opacity:.45"><label class="mini-check"><input type="checkbox" disabled/>Ver débitos</label><label class="mini-check"><input type="checkbox" disabled/>Ver créditos</label><label class="mini-check"><input type="checkbox" disabled/>Ver saldos</label></div></div>
+              <div class="perm-acct"><div class="perm-acct-top"><input type="checkbox"/><span class="bank-logo sm bl-bancamiga">BM</span><span class="nm">Bancamiga · Corriente</span><span class="meta">··9012</span></div><div class="mini-checks" style="opacity:.45"><label class="mini-check"><input type="checkbox" disabled/>Ver débitos</label><label class="mini-check"><input type="checkbox" disabled/>Ver créditos</label><label class="mini-check"><input type="checkbox" disabled/>Ver saldos</label></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;margin-top:2px">
+          <button class="btn" data-go="permisos">Cancelar</button>
+          <button class="btn btn-danger" style="margin-left:auto"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M6 7l1 13h10l1-13"/></svg>Archivar grupo</button>
+          <button class="btn btn-primary" data-go="permisos">Guardar cambios</button>
+        </div>
+      </div>
+      <!-- /page-permisos-editor -->
+
+      <!-- ====================== CONFIGURACIÓN (hub) ====================== -->
+      <div class="page" id="page-configuracion">
+        <div class="page-head">
+          <div>
+            <h1 class="page-title">Configuración</h1>
+            <div class="page-meta"><span>Tesote Ventas</span><span class="page-meta-dot">·</span><span>2 compañías · 6 miembros</span></div>
+          </div>
+        </div>
+
+        <div class="hub-grid">
+          <div class="hub-col">
+            <div class="card">
+              <div class="card-head"><span class="card-title">Usuario</span></div>
+              <div class="hub-row"><div class="hub-main"><div class="hub-k">Nombre</div></div><div class="hub-right"><span class="hub-v">Mariel Rodríguez</span><svg class="ic hub-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></div></div>
+              <div class="hub-row"><div class="hub-main"><div class="hub-k">Correo electrónico</div></div><div class="hub-right"><span class="hub-v">mariel@tstservicios.com</span><svg class="ic hub-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></div></div>
+              <div class="hub-row"><div class="hub-main"><div class="hub-k">Mis grupos</div><div class="hub-s">Permisos heredados por grupo</div></div><div class="hub-right"><span class="hub-v">Administradores · Finanzas</span></div></div>
+              <div class="hub-row"><div class="hub-main"><div class="hub-k">Nombre del espacio</div></div><div class="hub-right"><span class="hub-v">Tesote Ventas</span><svg class="ic hub-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></div></div>
+            </div>
+
+            <div class="card">
+              <div class="card-head"><span class="card-title">Seguridad</span></div>
+              <div class="hub-row"><div class="hub-main"><div class="hub-k">Autenticación de dos factores</div><div class="hub-s">Tu cuenta</div></div><div class="hub-right"><span class="pill paid"><span class="pill-dot"></span>Habilitado</span><svg class="ic hub-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></div></div>
+              <div class="hub-row"><div class="hub-main"><div class="hub-k">Política 2FA del espacio</div><div class="hub-s">12 de 14 usuarios la han activado · 86%</div></div><div class="hub-right"><span class="pill new"><span class="pill-dot"></span>Requerido</span><svg class="ic hub-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></div></div>
+              <div class="hub-row"><div class="hub-main"><div class="hub-k">2FA para conexiones bancarias</div><div class="hub-s">Reenvío automático de SMS bancarios</div></div><div class="hub-right"><span class="hub-v">1 dispositivo</span><svg class="ic hub-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></div></div>
+            </div>
+
+            <div class="card">
+              <div class="card-head"><span class="card-title">Descarga de reportes</span></div>
+              <div class="hub-row"><div class="hub-main"><div class="hub-k">Formato de fecha</div></div><div class="hub-right"><span class="hub-v mono">DD/MM/AAAA</span><svg class="ic hub-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></div></div>
+              <div class="hub-row"><div class="hub-main"><div class="hub-k">Formato de montos</div></div><div class="hub-right"><span class="hub-v mono">1.234,56</span><svg class="ic hub-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></div></div>
+              <div class="hub-row"><div class="hub-main"><div class="hub-k">Tipo de archivo</div></div><div class="hub-right"><span class="hub-v mono">XLSX</span><svg class="ic hub-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></div></div>
+              <div class="hub-row"><div class="hub-main"><div class="hub-k">Separar crédito y débito</div><div class="hub-s">Columnas separadas en la exportación</div></div><div class="hub-right"><button class="switch on" onclick="this.classList.toggle('on')"></button></div></div>
+            </div>
+
+            <div class="card">
+              <div class="card-head"><span class="card-title">Espacio de trabajo</span></div>
+              <div class="hub-row"><div class="hub-main"><div class="hub-k">Configuración del espacio</div><div class="hub-s">Niveles de clasificación, separadores, API</div></div><div class="hub-right"><svg class="ic hub-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></div></div>
+              <div class="hub-row" data-go="tasas"><div class="hub-main"><div class="hub-k">Tasas de cambio</div><div class="hub-s">Tus tasas tienen prioridad sobre las del sistema</div></div><div class="hub-right"><span class="hub-v">2 pares activos</span><svg class="ic hub-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></div></div>
+              <div class="hub-row"><div class="hub-main"><div class="hub-k">Crear nuevo espacio</div><div class="hub-s">Un espacio separado con sus propias cuentas</div></div><div class="hub-right"><svg class="ic hub-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></div></div>
+            </div>
+          </div>
+
+          <div class="hub-col">
+            <div class="card">
+              <div class="card-head"><span class="card-title">Transacciones</span></div>
+              <div class="hub-row"><div class="hub-main"><div class="hub-k">Reglas de transacciones</div><div class="hub-s">Categorización y asignación automática</div></div><div class="hub-right"><span class="hub-v">12 activas</span><svg class="ic hub-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></div></div>
+              <div class="hub-row"><div class="hub-main"><div class="hub-k">Categorías</div></div><div class="hub-right"><span class="hub-v">24</span><svg class="ic hub-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></div></div>
+              <div class="hub-row" data-go="contrapartes"><div class="hub-main"><div class="hub-k">Contrapartes</div></div><div class="hub-right"><span class="hub-v">248</span><svg class="ic hub-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></div></div>
+              <div class="hub-row" data-go="unidades"><div class="hub-main"><div class="hub-k">Unidades de negocio</div><div class="hub-s">Agrupan compañías para reportes</div></div><div class="hub-right"><span class="hub-v">3</span><svg class="ic hub-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></div></div>
+              <div class="hub-row"><div class="hub-main"><div class="hub-k">Importar transacciones</div><div class="hub-s">Carga manual desde archivo</div></div><div class="hub-right"><svg class="ic hub-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></div></div>
+            </div>
+
+            <div class="card">
+              <div class="card-head"><span class="card-title">API e integraciones</span></div>
+              <div class="hub-row" data-go="claves"><div class="hub-main"><div class="hub-k">Claves API</div><div class="hub-s">Acceso programático a tus datos</div></div><div class="hub-right"><span class="hub-v">2 activas</span><svg class="ic hub-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></div></div>
+              <div class="hub-row"><div class="hub-main"><div class="hub-k">Webhooks</div><div class="hub-s">Notificaciones a tus sistemas</div></div><div class="hub-right"><span class="pill paid"><span class="pill-dot"></span>1 activa</span><svg class="ic hub-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></div></div>
+              <div class="hub-row"><div class="hub-main"><div class="hub-k">Exportación automática</div><div class="hub-s">Envío diario a tu endpoint</div></div><div class="hub-right"><span class="hub-v">07:00 GMT-4</span><svg class="ic hub-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></div></div>
+              <div class="hub-row"><div class="hub-main"><div class="hub-k">Estado de sincronizaciones</div><div class="hub-s">Historial de sesiones de sync</div></div><div class="hub-right"><svg class="ic hub-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></div></div>
+              <div class="hub-row"><div class="hub-main"><div class="hub-k">Verificación de datos</div><div class="hub-s">Salud de conciliación por cuenta</div></div><div class="hub-right"><span class="pill paid"><span class="pill-dot"></span>Al día</span><svg class="ic hub-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></div></div>
+            </div>
+
+            <div class="card">
+              <div class="card-head"><span class="card-title">Equipo y permisos</span></div>
+              <div class="hub-row" data-go="equipo"><div class="hub-main"><div class="hub-k">Mi equipo</div></div><div class="hub-right"><span class="hub-v">6 miembros</span><svg class="ic hub-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></div></div>
+              <div class="hub-row" data-go="permisos"><div class="hub-main"><div class="hub-k">Permisos</div></div><div class="hub-right"><span class="hub-v">4 grupos</span><svg class="ic hub-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- /page-configuracion -->
+
+      <!-- ====================== SUGERENCIAS DE CONTRAPARTES ====================== -->
+      <div class="page" id="page-sugerencias">
+        <div class="back-link" data-go="contrapartes"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Contrapartes</div>
+        <div class="page-head">
+          <div>
+            <h1 class="page-title">Sugerencias de contrapartes</h1>
+            <div class="page-meta"><span>Detectadas en tus movimientos por identificador fiscal</span><span class="page-meta-dot">·</span><span><b style="color:var(--text)">12</b> pendientes</span></div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="btn">Omitir todas</button>
+            <button class="btn btn-primary"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Aprobar todas</button>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <table class="tbl">
+            <colgroup><col style="width:26%"><col style="width:18%"><col style="width:12%"><col style="width:18%"><col style="width:12%"><col style="width:14%"></colgroup>
+            <thead><tr><th>Nombre sugerido</th><th>Identificador</th><th class="num">Movs.</th><th>Vista en</th><th>Última vez</th><th class="center">Acciones</th></tr></thead>
+            <tbody>
+              <tr><td><span style="font-weight:500">FERRETERIA EL MARTILLO C.A.</span></td><td><span class="acct-num">J-29845512-3</span><div style="font-size:10.5px;color:var(--text-4)">RIF</div></td><td class="num">14</td><td style="font-size:12px;color:var(--text-2)">BNC · Mercantil</td><td><span class="cell-date">08-06</span></td><td style="text-align:center;white-space:nowrap"><button class="btn btn-ghost" style="padding:4px 9px;font-size:12px">Omitir</button> <button class="btn" style="padding:4px 9px;font-size:12px">Aprobar</button></td></tr>
+              <tr><td><span style="font-weight:500">CANTV</span></td><td><span class="acct-num">G-20009997-3</span><div style="font-size:10.5px;color:var(--text-4)">RIF</div></td><td class="num">9</td><td style="font-size:12px;color:var(--text-2)">Banesco</td><td><span class="cell-date">07-06</span></td><td style="text-align:center;white-space:nowrap"><button class="btn btn-ghost" style="padding:4px 9px;font-size:12px">Omitir</button> <button class="btn" style="padding:4px 9px;font-size:12px">Aprobar</button></td></tr>
+              <tr><td><span style="font-weight:500">SEGUROS CARACAS C.A.</span></td><td><span class="acct-num">J-00038923-1</span><div style="font-size:10.5px;color:var(--text-4)">RIF</div></td><td class="num">6</td><td style="font-size:12px;color:var(--text-2)">Mercantil</td><td><span class="cell-date">05-06</span></td><td style="text-align:center;white-space:nowrap"><button class="btn btn-ghost" style="padding:4px 9px;font-size:12px">Omitir</button> <button class="btn" style="padding:4px 9px;font-size:12px">Aprobar</button></td></tr>
+              <tr><td><span style="font-weight:500">TRANSPORTE ANDINO 2020</span></td><td><span class="acct-num">J-41230087-9</span><div style="font-size:10.5px;color:var(--text-4)">RIF</div></td><td class="num">5</td><td style="font-size:12px;color:var(--text-2)">BNC</td><td><span class="cell-date">04-06</span></td><td style="text-align:center;white-space:nowrap"><button class="btn btn-ghost" style="padding:4px 9px;font-size:12px">Omitir</button> <button class="btn" style="padding:4px 9px;font-size:12px">Aprobar</button></td></tr>
+              <tr><td><span style="font-weight:500">PAPELERIA UNIVERSAL</span></td><td><span class="acct-num">V-14587120</span><div style="font-size:10.5px;color:var(--text-4)">Cédula</div></td><td class="num">3</td><td style="font-size:12px;color:var(--text-2)">Bancamiga</td><td><span class="cell-date">01-06</span></td><td style="text-align:center;white-space:nowrap"><button class="btn btn-ghost" style="padding:4px 9px;font-size:12px">Omitir</button> <button class="btn" style="padding:4px 9px;font-size:12px">Aprobar</button></td></tr>
+            </tbody>
+          </table>
+          <div class="table-footer">1–5 de 12 sugerencias · aprobar crea la contraparte y la asigna a sus movimientos</div>
+        </div>
+      </div>
+      <!-- /page-sugerencias -->
+
+      <!-- ====================== NUEVA CONTRAPARTE (form) ====================== -->
+      <div class="page" id="page-contrapartes-nueva">
+        <div class="back-link" data-go="contrapartes"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Contrapartes</div>
+        <div class="page-head">
+          <div>
+            <h1 class="page-title">Nueva contraparte</h1>
+            <div class="page-meta"><span>Clientes, proveedores o cualquier entidad con la que mueves dinero</span></div>
+          </div>
+        </div>
+        <div class="form-card">
+          <div class="field"><div class="field-label">Nombre de la contraparte</div><input class="input" type="text" placeholder="ej. Proveedor ABC, Cliente XYZ"/></div>
+          <div class="field"><div class="field-label">Correo electrónico <span style="color:var(--text-4);font-weight:400">· opcional</span></div><input class="input" type="email" placeholder="ej. contacto@empresa.com"/><div class="field-help">Se usará para comunicaciones de cobros y pagos.</div></div>
+          <div class="field"><div class="field-label">Identificador externo <span style="color:var(--text-4);font-weight:400">· opcional</span></div><input class="input" type="text" placeholder="ej. CP-001, RIF, NIT"/><div class="field-help">Identificador único usado en tus sistemas externos (ERP, facturación).</div></div>
+          <div class="form-actions"><button class="btn" data-go="contrapartes">Cancelar</button><button class="btn btn-primary" data-go="contrapartes">Crear contraparte</button></div>
+        </div>
+      </div>
+      <!-- /page-contrapartes-nueva -->
+
+      <!-- ====================== NUEVA COMPAÑÍA (form) ====================== -->
+      <div class="page" id="page-companias-nueva">
+        <div class="back-link" data-go="companias"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Compañías</div>
+        <div class="page-head">
+          <div>
+            <h1 class="page-title">Nueva compañía</h1>
+            <div class="page-meta"><span>La entidad legal dueña de las cuentas que conectes</span></div>
+          </div>
+        </div>
+        <div class="form-card">
+          <div class="field"><div class="field-label">Nombre legal</div><input class="input" type="text" placeholder="ej. TST Servicios y Consultoría, C.A."/></div>
+          <div class="field"><div class="field-label">RIF / Identificación fiscal <span style="color:var(--text-4);font-weight:400">· opcional</span></div><input class="input" type="text" placeholder="J-12345678-9"/><div class="field-help">Ej: J-31750733-9, V-12345678. Permite detectar contrapartes automáticamente.</div></div>
+          <div class="field"><div class="field-label">Unidad de negocio <span style="color:var(--text-4);font-weight:400">· opcional</span></div><select class="input"><option>Seleccionar unidad de negocio</option><option>Operaciones VE</option><option>Holding US</option></select></div>
+          <div class="form-actions"><button class="btn" data-go="companias">Cancelar</button><button class="btn btn-primary" data-go="companias">Crear compañía</button></div>
+        </div>
+      </div>
+      <!-- /page-companias-nueva -->
+
+      <!-- ====================== UNIDADES DE NEGOCIO ====================== -->
+      <div class="page" id="page-unidades">
+        <div class="back-link" data-go="companias"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Compañías</div>
+        <div class="page-head">
+          <div>
+            <h1 class="page-title">Unidades de negocio</h1>
+            <div class="page-meta"><span>Agrupan compañías para reportes consolidados</span></div>
+          </div>
+          <button class="btn btn-primary" onclick="document.getElementById('modal-unidad').classList.add('open')"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Nueva unidad</button>
+        </div>
+        <div class="table-card">
+          <table class="tbl">
+            <colgroup><col style="width:36%"><col style="width:40%"><col style="width:24%"></colgroup>
+            <thead><tr><th>Nombre</th><th>Compañías</th><th>Creado</th></tr></thead>
+            <tbody>
+              <tr><td><span style="font-weight:500">Operaciones VE</span></td><td style="font-size:12.5px;color:var(--text-2)">TST Servicios y Consultoría, C.A. · TST Inversiones, C.A.</td><td><span class="cell-date">12-01-2026</span></td></tr>
+              <tr><td><span style="font-weight:500">Holding US</span></td><td style="font-size:12.5px;color:var(--text-2)">Tesote Technologies Inc.</td><td><span class="cell-date">12-01-2026</span></td></tr>
+              <tr><td><span style="font-weight:500">Nuevos negocios</span></td><td style="font-size:12.5px;color:var(--text-4)">Sin compañías</td><td><span class="cell-date">02-05-2026</span></td></tr>
+            </tbody>
+          </table>
+          <div class="table-footer">3 unidades de negocio</div>
+        </div>
+      </div>
+      <!-- /page-unidades -->
+
+      <!-- ====================== TASAS DE CAMBIO ====================== -->
+      <div class="page" id="page-tasas">
+        <div class="back-link" data-go="configuracion"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Configuración</div>
+        <div class="page-head">
+          <div>
+            <h1 class="page-title">Tasas de cambio</h1>
+            <div class="page-meta"><span>Tus tasas tienen prioridad sobre las del sistema en reportes y consolidaciones</span></div>
+          </div>
+          <button class="btn btn-primary" onclick="document.getElementById('modal-tasa').classList.add('open')"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Agregar tasa</button>
+        </div>
+
+        <div style="margin-bottom:14px"><div class="tab-bar"><button class="tab-btn active" onclick="tasasTab(this,'tasas-actuales')">Tasas actuales</button><button class="tab-btn" onclick="tasasTab(this,'tasas-historial')">Historial</button></div></div>
+
+        <div class="table-card" id="tasas-actuales">
+          <table class="tbl">
+            <colgroup><col style="width:22%"><col style="width:20%"><col style="width:22%"><col style="width:16%"><col style="width:20%"></colgroup>
+            <thead><tr><th>Par</th><th class="num">Tu tasa</th><th class="num">Tasa del sistema (BCV)</th><th class="num">Diferencia</th><th class="center">Acciones</th></tr></thead>
+            <tbody>
+              <tr><td><span style="font-weight:500;font-family:var(--font-mono)">USD / VES</span></td><td class="num" style="font-weight:600">567,0000</td><td class="num" style="color:var(--text-2)">565,8421</td><td class="num" style="color:var(--text-2)">+0,20%</td><td style="text-align:center;white-space:nowrap"><button class="btn btn-ghost" style="padding:4px 9px;font-size:12px">Editar</button> <button class="btn btn-ghost" style="padding:4px 9px;font-size:12px;color:var(--red)">Eliminar</button></td></tr>
+              <tr><td><span style="font-weight:500;font-family:var(--font-mono)">EUR / VES</span></td><td class="num" style="font-weight:600">614,2500</td><td class="num" style="color:var(--text-2)">612,9034</td><td class="num" style="color:var(--text-2)">+0,22%</td><td style="text-align:center;white-space:nowrap"><button class="btn btn-ghost" style="padding:4px 9px;font-size:12px">Editar</button> <button class="btn btn-ghost" style="padding:4px 9px;font-size:12px;color:var(--red)">Eliminar</button></td></tr>
+            </tbody>
+          </table>
+          <div class="table-footer">2 pares activos · la tasa del sistema se actualiza a diario</div>
+        </div>
+
+        <div class="table-card" id="tasas-historial" style="display:none">
+          <table class="tbl dense">
+            <colgroup><col style="width:18%"><col style="width:18%"><col style="width:18%"><col style="width:46%"></colgroup>
+            <thead><tr><th>Vigente desde</th><th>Par</th><th class="num">Tasa</th><th>Nota</th></tr></thead>
+            <tbody>
+              <tr><td><span class="cell-date">01-06-2026</span></td><td><span class="acct-num">USD / VES</span></td><td class="num">567,0000</td><td style="font-size:12px;color:var(--text-2)">Tasa acordada con CAPCA para facturación junio</td></tr>
+              <tr><td><span class="cell-date">01-05-2026</span></td><td><span class="acct-num">USD / VES</span></td><td class="num">561,2000</td><td style="font-size:12px;color:var(--text-2)">Cierre mensual mayo</td></tr>
+              <tr><td><span class="cell-date">01-05-2026</span></td><td><span class="acct-num">EUR / VES</span></td><td class="num">608,1000</td><td style="font-size:12px;color:var(--text-2)">Cierre mensual mayo</td></tr>
+              <tr><td><span class="cell-date">01-04-2026</span></td><td><span class="acct-num">USD / VES</span></td><td class="num">554,7500</td><td style="font-size:12px;color:var(--text-4)">—</td></tr>
+            </tbody>
+          </table>
+          <div class="table-footer">4 tasas históricas</div>
+        </div>
+      </div>
+      <!-- /page-tasas -->
+
+      <!-- ====================== CLAVES API ====================== -->
+      <div class="page" id="page-claves">
+        <div class="back-link" data-go="configuracion"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Configuración</div>
+        <div class="page-head">
+          <div>
+            <h1 class="page-title">Claves API</h1>
+            <div class="page-meta"><span>Acceso programático a cuentas, saldos y movimientos</span><span class="page-meta-dot">·</span><span>Documentación en docs.tesote.com</span></div>
+          </div>
+          <button class="btn btn-primary" onclick="document.getElementById('modal-clave').classList.add('open')"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Nueva clave</button>
+        </div>
+        <div class="table-card">
+          <table class="tbl">
+            <colgroup><col style="width:24%"><col style="width:26%"><col style="width:22%"><col style="width:14%"><col style="width:14%"></colgroup>
+            <thead><tr><th>Nombre</th><th>Token</th><th>Alcance</th><th>Creada</th><th class="center">Acciones</th></tr></thead>
+            <tbody>
+              <tr><td><span style="font-weight:500">Integración Odoo</span></td><td><span class="acct-num">tsk_live_••••••••7f2a</span></td><td style="font-size:12px;color:var(--text-2)">Todas las cuentas · lectura</td><td><span class="cell-date">15-05-2026</span></td><td style="text-align:center"><button class="btn btn-ghost" style="padding:4px 9px;font-size:12px;color:var(--red)">Revocar</button></td></tr>
+              <tr><td><span style="font-weight:500">Dashboard interno</span></td><td><span class="acct-num">tsk_live_••••••••c918</span></td><td style="font-size:12px;color:var(--text-2)">3 cuentas · lectura</td><td><span class="cell-date">02-06-2026</span></td><td style="text-align:center"><button class="btn btn-ghost" style="padding:4px 9px;font-size:12px;color:var(--red)">Revocar</button></td></tr>
+            </tbody>
+          </table>
+          <div class="table-footer">2 claves activas · una clave revocada deja de funcionar de inmediato</div>
+        </div>
+      </div>
+      <!-- /page-claves -->
+
+    </div>
+  </main>
+</div>
+
+<!-- ============ SLIDE-OVER: CONEXIÓN ============ -->
+<div class="overlay" id="overlay" onclick="closePanels()"></div>
+<div class="panel" id="panel-conexion">
+  <div class="panel-head">
+    <span class="bank-logo bl-bbva" style="width:34px;height:34px;font-size:13px;margin-top:2px">BB</span>
+    <div>
+      <div class="panel-title">BBVA Provincial</div>
+      <div class="panel-meta"><span class="pill pending"><span class="pill-dot"></span>Requiere atención</span><span>2 cuentas · TST Servicios y Consultoría</span></div>
+    </div>
+    <button class="panel-x" onclick="closePanels()"><svg class="ic" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6l-12 12"/></svg></button>
+  </div>
+  <div class="panel-body">
+    <div class="panel-sec">
+      <div class="panel-sec-t">Conexión</div>
+      <div class="dl-row"><span class="dl-k">Apodo</span><span class="dl-v"><span class="cell-edit"><span class="lbl">Conexión vía José</span><svg class="caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></span></span></div>
+      <div class="dl-row"><span class="dl-k">Última sincronización</span><span class="dl-v mono">02-06-2026 06:40</span></div>
+      <div class="dl-row"><span class="dl-k">Creada</span><span class="dl-v mono">15-03-2026</span></div>
+      <div class="dl-row"><span class="dl-k">Método</span><span class="dl-v">Credenciales bancarias</span></div>
+    </div>
+    <div class="panel-sec">
+      <div class="panel-sec-t">Cuentas asociadas</div>
+      <div class="method-card"><span class="bank-logo sm bl-bbva">BB</span><div class="method-main"><div class="method-t">Corriente VES</div><div class="method-s">··0034 · Bs</div></div><button class="switch on" onclick="this.classList.toggle('on')"></button></div>
+      <div class="method-card"><span class="bank-logo sm bl-bbva">BB</span><div class="method-main"><div class="method-t">Corriente USD</div><div class="method-s">··0035 · $</div></div><button class="switch on" onclick="this.classList.toggle('on')"></button></div>
+      <div class="field-help" style="margin-top:8px">Las cuentas activas se sincronizan. Al desactivar una cuenta deja de verse en el tablero y no se sincroniza.</div>
+    </div>
+    <div class="panel-sec">
+      <div class="panel-sec-t">Sincronización programada</div>
+      <div class="dl-row"><span class="dl-k">Horario</span><span class="dl-v">Lun–Vie · 06:00–08:00</span></div>
+      <div class="dl-row"><span class="dl-k">Estado</span><span class="dl-v"><span class="pill overdue"><span class="pill-dot"></span>Fallida</span></span></div>
+      <div class="field-help" style="margin-top:6px;display:flex;align-items:center;gap:6px"><svg class="ic ic-sm" style="color:var(--yellow);flex:none" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>Reconecta la cuenta bancaria para reactivar la sincronización programada.</div>
+    </div>
+    <div class="panel-sec">
+      <div class="panel-sec-t">Avanzado</div>
+      <div class="danger"><div class="danger-main"><div class="danger-t">Archivar conexión</div><div class="danger-s">Deja de sincronizar todas las cuentas de esta conexión. Puedes restaurarla después.</div></div><button class="btn btn-danger">Archivar</button></div>
+    </div>
+  </div>
+  <div class="panel-foot"><button class="btn" onclick="closePanels()">Cerrar</button><button class="btn btn-primary"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Reconectar credenciales</button></div>
+</div>
+
+<!-- ============ SLIDE-OVER: COMPAÑÍA ============ -->
+<div class="panel" id="panel-compania">
+  <div class="panel-head">
+    <span class="ent-xs" style="width:34px;height:34px;font-size:12px;border-radius:6px;margin-top:2px">TI</span>
+    <div>
+      <div class="panel-title">TST Inversiones, C.A.</div>
+      <div class="panel-meta"><span class="mono">RIF J-50234411-0</span></div>
+    </div>
+    <button class="panel-x" onclick="closePanels()"><svg class="ic" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6l-12 12"/></svg></button>
+  </div>
+  <div class="panel-body">
+    <div class="panel-sec">
+      <div class="panel-sec-t">Detalles</div>
+      <div class="dl-row"><span class="dl-k">Nombre legal</span><span class="dl-v"><span class="cell-edit"><span class="lbl">TST Inversiones, C.A.</span><svg class="caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></span></span></div>
+      <div class="dl-row"><span class="dl-k">RIF / ID fiscal</span><span class="dl-v"><span class="cell-edit"><span class="lbl mono">J-50234411-0</span><svg class="caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></span></span></div>
+      <div class="dl-row"><span class="dl-k">Unidad de negocio</span><span class="dl-v"><span class="cell-edit empty"><span class="lbl">— asignar</span><svg class="caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></span></span></div>
+      <div class="dl-row"><span class="dl-k">Cuentas bancarias</span><span class="dl-v muted">Sin cuentas</span></div>
+      <div class="dl-row"><span class="dl-k">Creada</span><span class="dl-v mono">02-05-2026</span></div>
+    </div>
+    <div class="panel-sec">
+      <div class="panel-sec-t">Avanzado</div>
+      <div class="danger"><div class="danger-main"><div class="danger-t">Archivar compañía</div><div class="danger-s">Solo disponible si no tiene cuentas asociadas. Esta compañía no tiene cuentas.</div></div><button class="btn btn-danger">Archivar</button></div>
+    </div>
+  </div>
+  <div class="panel-foot"><button class="btn" onclick="closePanels()">Cerrar</button><button class="btn btn-primary">Guardar cambios</button></div>
+</div>
+
+<!-- ============ SLIDE-OVER: CONTRAPARTE ============ -->
+<div class="panel" id="panel-contraparte">
+  <div class="panel-head">
+    <span class="cp-avatar cp-1" style="width:34px;height:34px;font-size:12px;margin-top:2px">PO</span>
+    <div>
+      <div class="panel-title">POLAR · Cervecería</div>
+      <div class="panel-meta"><span class="mono">CP-001</span><span>·</span><span>84 transacciones</span></div>
+    </div>
+    <button class="panel-x" onclick="closePanels()"><svg class="ic" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6l-12 12"/></svg></button>
+  </div>
+  <div class="panel-body">
+    <div class="panel-sec">
+      <div class="panel-sec-t">Información</div>
+      <div class="dl-row"><span class="dl-k">Nombre</span><span class="dl-v"><span class="cell-edit"><span class="lbl">POLAR · Cervecería</span><svg class="caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></span></span></div>
+      <div class="dl-row"><span class="dl-k">Correo</span><span class="dl-v"><span class="cell-edit"><span class="lbl">cobros@polar.com.ve</span><svg class="caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></span></span></div>
+      <div class="dl-row"><span class="dl-k">ID externo</span><span class="dl-v mono">CP-001</span></div>
+      <div class="dl-row"><span class="dl-k">Origen</span><span class="dl-v"><span class="pill cat h-gray"><span class="pill-dot"></span>Manual</span></span></div>
+      <div class="dl-row"><span class="dl-k">Creada</span><span class="dl-v mono">14-01-2026</span></div>
+    </div>
+    <div class="panel-sec">
+      <div class="panel-sec-t">Métodos de pago</div>
+      <div class="method-card"><span class="bank-logo sm bl-banesco">BS</span><div class="method-main"><div class="method-t">Banesco · Corriente <span class="pill cat h-green"><span class="pill-dot"></span>Verificado</span></div><div class="method-s">··4421 · VES · débitos permitidos</div></div></div>
+      <button class="btn btn-ghost" style="margin-top:8px;font-size:12px;padding:5px 9px"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Agregar método</button>
+    </div>
+    <div class="panel-sec">
+      <div class="panel-sec-t">Contratos</div>
+      <div class="method-card"><div class="method-main"><div class="method-t">Distribución 2026 <span class="pill paid"><span class="pill-dot"></span>Activo</span></div><div class="method-s">REF-2026-014 · pagado $96.400</div></div></div>
+    </div>
+    <div class="panel-sec">
+      <div class="panel-sec-t">Avanzado</div>
+      <div class="danger"><div class="danger-main"><div class="danger-t">Limpiar de transacciones</div><div class="danger-s">Quita esta contraparte de todas las transacciones asignadas.</div></div><button class="btn btn-danger">Limpiar</button></div>
+      <div class="danger"><div class="danger-main"><div class="danger-t">Archivar contraparte</div><div class="danger-s">Deja de aparecer en listas y sugerencias. Reversible.</div></div><button class="btn btn-danger">Archivar</button></div>
+    </div>
+  </div>
+  <div class="panel-foot"><button class="btn" onclick="closePanels()">Cerrar</button><button class="btn btn-primary">Guardar cambios</button></div>
+</div>
+
+<!-- ============ MODAL: PAUSAR SINCRONIZACIÓN ============ -->
+<div class="modal-overlay" id="modal-pause" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal">
+    <div class="modal-t">Pausar sincronización</div>
+    <div class="modal-s">La sincronización dejará de ejecutarse hasta que la reanudes. Las cuentas siguen visibles con su último dato.</div>
+    <div class="field" style="margin-top:14px"><div class="field-label">Motivo de la pausa</div><textarea class="input" placeholder="Ej: mantenimiento del banco, cambio de credenciales…"></textarea></div>
+    <div class="form-actions" style="margin-top:14px;padding-top:0;border-top:none"><button class="btn" onclick="document.getElementById('modal-pause').classList.remove('open')">Cancelar</button><button class="btn btn-primary" onclick="document.getElementById('modal-pause').classList.remove('open')">Pausar</button></div>
+  </div>
+</div>
+
+<!-- ============ FLOW: NUEVA CONEXIÓN (archetype 3, 4 pasos) ============ -->
+<div class="flow" id="flow-conexion">
+  <div class="flow-top">
+    <div class="sb-logo">T</div><span class="flow-title">Conectar un banco</span>
+    <button class="flow-x" onclick="closeFlow()"><svg class="ic" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6l-12 12"/></svg></button>
+  </div>
+  <div class="flow-body">
+    <div class="steps" id="wiz-steps">
+      <div class="step cur"><div class="step-dot">1</div><div class="step-lbl">Banco</div></div>
+      <div class="step-line"></div>
+      <div class="step"><div class="step-dot">2</div><div class="step-lbl">Credenciales</div></div>
+      <div class="step-line"></div>
+      <div class="step"><div class="step-dot">3</div><div class="step-lbl">Cuentas</div></div>
+      <div class="step-line"></div>
+      <div class="step"><div class="step-dot">4</div><div class="step-lbl">Listo</div></div>
+    </div>
+
+    <div class="flow-col">
+      <!-- paso 1 -->
+      <div class="flow-step cur" id="wiz-1">
+        <div class="flow-h">¿Qué banco quieres conectar?</div>
+        <div class="flow-s">Tesote sincroniza saldos y movimientos automáticamente. Tus credenciales se almacenan cifradas y nunca se comparten.</div>
+        <div class="bank-pick">
+          <button class="bank-opt" onclick="pickBank(this)"><span class="bank-logo sm bl-mercantil">MC</span>Mercantil</button>
+          <button class="bank-opt" onclick="pickBank(this)"><span class="bank-logo sm bl-bnc">BN</span>BNC</button>
+          <button class="bank-opt" onclick="pickBank(this)"><span class="bank-logo sm bl-banesco">BS</span>Banesco</button>
+          <button class="bank-opt" onclick="pickBank(this)"><span class="bank-logo sm bl-bbva">BB</span>BBVA Provincial</button>
+          <button class="bank-opt sel" onclick="pickBank(this)"><span class="bank-logo sm bl-exterior">BE</span>Banco Exterior</button>
+          <button class="bank-opt" onclick="pickBank(this)"><span class="bank-logo sm bl-bdv">BV</span>Banco de Venezuela</button>
+          <button class="bank-opt" onclick="pickBank(this)"><span class="bank-logo sm bl-bancamiga">BM</span>Bancamiga</button>
+          <button class="bank-opt" onclick="pickBank(this)"><span class="bank-logo sm bl-activo">AC</span>Banco Activo</button>
+          <button class="bank-opt" onclick="pickBank(this)"><span class="bank-logo sm bl-bicentenario">BT</span>Bicentenario</button>
+          <button class="bank-opt" onclick="pickBank(this)"><span class="bank-logo sm bl-mibanco">MB</span>Mi Banco</button>
+          <button class="bank-opt" onclick="pickBank(this)"><span class="bank-logo sm bl-mercury">ME</span>Mercury</button>
+          <button class="bank-opt" onclick="pickBank(this)"><span class="bank-logo sm bl-manual">$</span>Cuenta manual</button>
+        </div>
+      </div>
+      <!-- paso 2 -->
+      <div class="flow-step" id="wiz-2">
+        <div class="flow-h">Credenciales de Banco Exterior</div>
+        <div class="flow-s">Usa las credenciales de la banca en línea empresarial. La conexión queda pendiente hasta que el banco la confirme.</div>
+        <div class="field"><div class="field-label">Compañía</div><select class="input"><option>TST Servicios y Consultoría, C.A.</option><option>Tesote Technologies Inc.</option><option>TST Inversiones, C.A.</option></select></div>
+        <div class="field"><div class="field-label">Usuario</div><input class="input" type="text" placeholder="Usuario de banca empresarial"/></div>
+        <div class="field"><div class="field-label">Clave</div><input class="input" type="password" placeholder="••••••••"/><div class="field-help" style="display:flex;align-items:center;gap:6px"><svg class="ic ic-sm" style="flex:none" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Cifrada en reposo. Tesote solo lee saldos y movimientos; nunca puede mover dinero.</div></div>
+        <div class="field"><div class="field-label">Apodo de la conexión <span style="color:var(--text-4);font-weight:400">· opcional</span></div><input class="input" type="text" placeholder="Ej: Conexión vía José"/></div>
+      </div>
+      <!-- paso 3 -->
+      <div class="flow-step" id="wiz-3">
+        <div class="flow-h">Cuentas detectadas</div>
+        <div class="flow-s">Encontramos 3 cuentas en Banco Exterior. Elige cuáles quieres sincronizar en Tesote.</div>
+        <div class="method-card"><input type="checkbox" checked style="accent-color:var(--text)"/><span class="bank-logo sm bl-exterior">BE</span><div class="method-main"><div class="method-t">Corriente VES</div><div class="method-s">··8841 · Bs</div></div></div>
+        <div class="method-card"><input type="checkbox" checked style="accent-color:var(--text)"/><span class="bank-logo sm bl-exterior">BE</span><div class="method-main"><div class="method-t">Corriente USD</div><div class="method-s">··8842 · $</div></div></div>
+        <div class="method-card"><input type="checkbox" style="accent-color:var(--text)"/><span class="bank-logo sm bl-exterior">BE</span><div class="method-main"><div class="method-t">Ahorro VES</div><div class="method-s">··0277 · Bs</div></div></div>
+        <div class="field-help" style="margin-top:10px">Puedes activar o desactivar cuentas después desde el detalle de la conexión.</div>
+      </div>
+      <!-- paso 4 -->
+      <div class="flow-step" id="wiz-4">
+        <div class="flow-success">
+          <div class="flow-success-ic"><svg class="ic ic-lg" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></div>
+          <div class="flow-h">Banco Exterior conectado</div>
+          <div class="flow-s" style="max-width:380px">La primera sincronización está en curso: 2 cuentas. Los movimientos históricos pueden tardar unos minutos en aparecer.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="flow-foot" id="wiz-foot">
+    <button class="btn" id="wiz-back" onclick="wizGo(-1)" style="display:none">Atrás</button>
+    <button class="btn btn-primary" id="wiz-next" onclick="wizGo(1)">Continuar<svg class="ic ic-sm" viewBox="0 0 24 24" style="margin-left:2px"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+  </div>
+</div>
+
+<!-- ============ MODAL: EXPORTAR / NUEVO REPORTE ============ -->
+<div class="modal-overlay" id="modal-export" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal">
+    <div class="modal-t">Exportar movimientos</div>
+    <div class="modal-s">Se exportarán los movimientos con los filtros aplicados actualmente.</div>
+    <div style="background:var(--bg-soft);border:1px solid var(--border-2);border-radius:8px;padding:11px 13px;margin-top:12px;font-size:12px;color:var(--text-2)">
+      <div style="display:flex;justify-content:space-between;padding:2px 0"><span>Fecha</span><span class="mono" style="color:var(--text)">Últimos 30 días</span></div>
+      <div style="display:flex;justify-content:space-between;padding:2px 0"><span>Cuentas</span><span class="mono" style="color:var(--text)">Todas</span></div>
+      <div style="display:flex;justify-content:space-between;padding:2px 0;border-top:1px solid var(--border-2);margin-top:4px;padding-top:6px"><span>Movimientos a exportar</span><span class="mono" style="color:var(--text);font-weight:600">234</span></div>
+    </div>
+    <div class="field" style="margin-top:14px"><div class="field-label">Nombre del reporte</div><input class="input" type="text" value="Movimientos · últimos 30 días"/></div>
+    <div class="field-help">Se generará en formato XLSX y quedará disponible en Historial de reportes.</div>
+    <div class="form-actions" style="margin-top:14px;padding-top:0;border-top:none"><button class="btn" onclick="document.getElementById('modal-export').classList.remove('open')">Cancelar</button><button class="btn btn-primary" data-go="reportes" onclick="document.getElementById('modal-export').classList.remove('open')">Exportar</button></div>
+  </div>
+</div>
+
+<!-- ============ MODAL: AGREGAR TASA ============ -->
+<div class="modal-overlay" id="modal-tasa" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal">
+    <div class="modal-t">Agregar tasa de cambio</div>
+    <div class="modal-s">Esta tasa tendrá prioridad sobre la del sistema en reportes y consolidaciones.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px">
+      <div class="field"><div class="field-label">Par</div><select class="input"><option>USD / VES</option><option>EUR / VES</option></select></div>
+      <div class="field"><div class="field-label">Vigente desde</div><input class="input" type="date" value="2026-06-11"/></div>
+    </div>
+    <div class="field"><div class="field-label">Tasa</div><input class="input mono" type="text" placeholder="567,0000"/><div class="field-help">Tasa del sistema (BCV) hoy: <span class="mono">565,8421</span></div></div>
+    <div class="field"><div class="field-label">Nota <span style="color:var(--text-4);font-weight:400">· opcional</span></div><input class="input" type="text" placeholder="Ej: tasa acordada con el cliente…"/></div>
+    <div class="form-actions" style="margin-top:14px;padding-top:0;border-top:none"><button class="btn" onclick="document.getElementById('modal-tasa').classList.remove('open')">Cancelar</button><button class="btn btn-primary" onclick="document.getElementById('modal-tasa').classList.remove('open')">Guardar tasa</button></div>
+  </div>
+</div>
+
+<!-- ============ MODAL: NUEVA CLAVE API ============ -->
+<div class="modal-overlay" id="modal-clave" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal">
+    <div class="modal-t">Nueva clave API</div>
+    <div class="modal-s">La clave se muestra una sola vez al crearla. Guárdala en un lugar seguro.</div>
+    <div class="field" style="margin-top:14px"><div class="field-label">Nombre</div><input class="input" type="text" placeholder="Ej: Integración Odoo"/></div>
+    <div class="field"><div class="field-label">Alcance</div>
+      <div class="check-grid cols-2">
+        <label class="check-row"><input type="radio" name="alcance" checked/><span><span class="ck-t">Solo lectura</span><div class="ck-s">Saldos, movimientos, cuentas</div></span></label>
+        <label class="check-row"><input type="radio" name="alcance"/><span><span class="ck-t">Lectura y escritura</span><div class="ck-s">Incluye categorizar y asignar</div></span></label>
+      </div>
+    </div>
+    <div class="field"><div class="field-label">Cuentas</div><select class="input"><option>Todas las cuentas</option><option>Seleccionar cuentas…</option></select></div>
+    <div class="form-actions" style="margin-top:14px;padding-top:0;border-top:none"><button class="btn" onclick="document.getElementById('modal-clave').classList.remove('open')">Cancelar</button><button class="btn btn-primary" onclick="document.getElementById('modal-clave').classList.remove('open')">Crear clave</button></div>
+  </div>
+</div>
+
+<!-- ============ PROTOTYPE-ONLY: comment layer UI ============ -->
+<div class="cmt-fab">
+  <button class="cmt-btn" id="cmt-list-btn" onclick="cmtTogglePanel()" title="Ver todos los comentarios"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Lista</button>
+  <button class="cmt-btn" id="cmt-mode-btn" onclick="cmtToggleMode()"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5H4l1.5-3A8.5 8.5 0 1 1 21 11.5z"/></svg>Comentar<span class="cmt-badge" id="cmt-count">0</span></button>
+</div>
+<div class="cmt-panel" id="cmt-panel">
+  <div class="cmt-panel-head"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5H4l1.5-3A8.5 8.5 0 1 1 21 11.5z"/></svg>Comentarios del prototipo<span style="margin-left:auto;font-weight:400;color:var(--text-3)" id="cmt-panel-count"></span></div>
+  <div class="cmt-panel-body" id="cmt-panel-body"></div>
+  <div class="cmt-panel-foot">
+    <button class="cmt-del" onclick="cmtClearAll()">Borrar todos</button>
+    <button class="cmt-save" id="cmt-export-btn" onclick="cmtExport(this)">Copiar como Markdown</button>
+  </div>
+</div>
+
+<!-- ============ MODAL: NUEVA UNIDAD DE NEGOCIO ============ -->
+<div class="modal-overlay" id="modal-unidad" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal">
+    <div class="modal-t">Nueva unidad de negocio</div>
+    <div class="modal-s">Agrupa compañías para verlas consolidadas en reportes.</div>
+    <div class="field" style="margin-top:14px"><div class="field-label">Nombre</div><input class="input" type="text" placeholder="Ej: Operaciones VE"/></div>
+    <div class="field"><div class="field-label">Compañías</div>
+      <div class="check-grid cols-2">
+        <label class="check-row"><input type="checkbox"/><span class="ck-t">TST Servicios y Consultoría, C.A.</span></label>
+        <label class="check-row"><input type="checkbox"/><span class="ck-t">Tesote Technologies Inc.</span></label>
+        <label class="check-row"><input type="checkbox"/><span class="ck-t">TST Inversiones, C.A.</span></label>
+      </div>
+    </div>
+    <div class="form-actions" style="margin-top:14px;padding-top:0;border-top:none"><button class="btn" onclick="document.getElementById('modal-unidad').classList.remove('open')">Cancelar</button><button class="btn btn-primary" onclick="document.getElementById('modal-unidad').classList.remove('open')">Crear unidad</button></div>
+  </div>
+</div>
+
+<script>
+/* ---------- page navigation ---------- */
+(function(){
+  const titleByPage = {inicio:'Inicio',saldos:'Saldos',movimientos:'Movimientos',conexiones:'Conexiones bancarias',companias:'Compañías',contrapartes:'Contrapartes',reportes:'Historial de reportes',sincronizaciones:'Sincronizaciones programadas','sync-nueva':'Nueva sincronización',equipo:'Mi equipo','equipo-invitar':'Invitar usuario',permisos:'Permisos','permisos-editor':'Editar grupo',configuracion:'Configuración',sugerencias:'Sugerencias de contrapartes','contrapartes-nueva':'Nueva contraparte','companias-nueva':'Nueva compañía',unidades:'Unidades de negocio',tasas:'Tasas de cambio',claves:'Claves API'};
+  /* sub-pages highlight their parent nav item */
+  const navAlias = {'sync-nueva':'sincronizaciones','equipo-invitar':'equipo','permisos-editor':'permisos',sugerencias:'contrapartes','contrapartes-nueva':'contrapartes','companias-nueva':'companias',unidades:'companias',tasas:'configuracion',claves:'configuracion'};
+  function go(page){
+    document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='page-'+page));
+    const nav = navAlias[page]||page;
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===nav));
+    document.querySelector('.content').scrollTop=0;
+    window.scrollTo({top:0});
+    document.title='Tesote — '+(titleByPage[page]||'')+' (unified v2)';
+  }
+  document.querySelectorAll('.nav-item').forEach(n=>n.addEventListener('click',()=>go(n.dataset.page)));
+  /* any element with data-go navigates (CTAs, back-links, hub rows, table rows) */
+  document.addEventListener('click',e=>{
+    const t=e.target.closest('[data-go]');
+    if(t){go(t.dataset.go);}
+  });
+  window.goPage=go; /* exposed for the prototype comment layer */
+  go('inicio');
+})();
+
+/* ---------- slide-over panels ---------- */
+function openPanel(id){
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById(id).classList.add('open');
+}
+function closePanels(){
+  document.getElementById('overlay').classList.remove('open');
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('open'));
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closePanels();closeFlow();document.querySelectorAll('.modal-overlay').forEach(m=>m.classList.remove('open'));}});
+
+/* ---------- collapsible archived sections ---------- */
+function toggleArch(btn,id){
+  btn.classList.toggle('open');
+  document.getElementById(id).classList.toggle('open');
+}
+
+/* ---------- flow overlay (nueva conexión wizard) ---------- */
+let wizStep=1;
+function openFlow(id){wizStep=1;wizRender();document.getElementById(id).classList.add('open');}
+function closeFlow(){document.querySelectorAll('.flow').forEach(f=>f.classList.remove('open'));}
+function wizGo(dir){
+  if(wizStep===4&&dir===1){closeFlow();return;}
+  wizStep=Math.min(4,Math.max(1,wizStep+dir));
+  wizRender();
+}
+function wizRender(){
+  for(let i=1;i<=4;i++)document.getElementById('wiz-'+i).classList.toggle('cur',i===wizStep);
+  const steps=document.querySelectorAll('#wiz-steps .step');
+  const lines=document.querySelectorAll('#wiz-steps .step-line');
+  steps.forEach((s,i)=>{s.classList.toggle('done',i+1<wizStep);s.classList.toggle('cur',i+1===wizStep);
+    s.querySelector('.step-dot').innerHTML=(i+1<wizStep)?'<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>':(i+1);});
+  lines.forEach((l,i)=>l.classList.toggle('done',i+1<wizStep));
+  document.getElementById('wiz-back').style.display=(wizStep>1&&wizStep<4)?'':'none';
+  const next=document.getElementById('wiz-next');
+  next.innerHTML=(wizStep===4)?'Ir a Conexiones':(wizStep===3?'Conectar 2 cuentas':'Continuar<svg class="ic ic-sm" viewBox="0 0 24 24" style="margin-left:2px"><path d="M5 12h14M13 6l6 6-6 6"/></svg>');
+}
+function pickBank(btn){document.querySelectorAll('.bank-opt').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');}
+
+/* ---------- tasas tabs ---------- */
+function tasasTab(btn,id){
+  btn.parentElement.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tasas-actuales').style.display=(id==='tasas-actuales')?'':'none';
+  document.getElementById('tasas-historial').style.display=(id==='tasas-historial')?'':'none';
+}
+
+/* ---------- prototype-only: empty-state toggle ---------- */
+function toggleEmpty(key){
+  const page=document.getElementById('page-'+key);
+  const es=document.getElementById('es-'+key);
+  const showingEmpty=es.style.display!=='none';
+  page.querySelectorAll('.table-card').forEach(c=>{if(c!==es)c.style.display=showingEmpty?'':'none';});
+  es.style.display=showingEmpty?'none':'';
+}
+
+/* ---------- copy invite link w/ feedback ---------- */
+function copyLink(btn){
+  const span=btn.querySelector('.cl'); if(!span) return;
+  const orig=span.textContent;
+  span.textContent='¡Copiado!';
+  btn.disabled=true;
+  setTimeout(()=>{span.textContent=orig;btn.disabled=false;},2000);
+}
+
+/* ---------- Contrapartes rows (static, representative) ---------- */
+(function(){
+  const el=document.getElementById('cp-body'); if(!el) return;
+  const caret=`<svg class="caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>`;
+  const rows=[
+    {n:'POLAR · Cervecería',e:'cobros@polar.com.ve',x:'CP-001',d:'14/01/2026',panel:1},
+    {n:'CAPCA, C.A.',e:'admin@capca.com.ve',x:'J-00123456-7',d:'20/01/2026'},
+    {n:'Amazon Web Services',e:null,x:'AWS-77120',d:'22/01/2026'},
+    {n:'Datadog, Inc.',e:'billing@datadoghq.com',x:null,d:'02/02/2026'},
+    {n:'Corpoelec',e:null,x:'G-20007726-4',d:'05/02/2026',auto:1},
+    {n:'Tesorería Nacional',e:null,x:'G-20000303-0',d:'05/02/2026',auto:1},
+    {n:'Gusto, Inc.',e:'support@gusto.com',x:null,d:'18/02/2026'},
+    {n:'Lunour LLC',e:'hola@lunour.com',x:'CP-118',d:'02/06/2026',auto:1},
+    {n:'Distribuidora Sur',e:null,x:null,d:'07/06/2026',auto:1},
+  ];
+  const cpAv=(name)=>{let h=0;for(let i=0;i<name.length;i++)h=(h*31+name.charCodeAt(i))|0;const c='cp-'+(Math.abs(h)%6+1);const parts=name.trim().split(/\s+/);const ini=(parts.length===1?parts[0].slice(0,2):parts[0][0]+parts[parts.length-1][0]).toUpperCase();return `<span class="cp-avatar ${c}">${ini}</span>`;};
+  el.innerHTML=rows.map(r=>`
+    <tr ${r.panel?`onclick="openPanel('panel-contraparte')"`:''}>
+      <td><span class="bank-cell">${cpAv(r.n)}<span style="font-weight:500">${r.n}</span>${r.auto?`<span class="pill cat h-blue"><span class="pill-dot"></span>Auto</span>`:''}</span></td>
+      <td>${r.e?`<span style="color:var(--text-2)">${r.e}</span>`:`<span class="cell-edit empty"><span class="lbl">— agregar</span>${caret}</span>`}</td>
+      <td>${r.x?`<span class="acct-num">${r.x}</span>`:`<span style="color:var(--text-4)">—</span>`}</td>
+      <td><span class="cell-date">${r.d}</span></td>
+    </tr>`).join('');
+})();
+
+/* ---------- Inicio position chart ---------- */
+(function(){
+  const el=document.getElementById('pos-chart'); if(!el) return;
+  const S=[490.55,492,491.2,494,493.1,496.2,495,498.6,497.4,501,500.1,503.6,502.4,506,505.1,508.6,507.4,511,510.1,513.6,512.4,516,515,518.4,517.2,520.4,519.2,522.2,520.9,521.84].map(v=>v*1000);
+  const W=680,H=150,padL=4,padR=8,padT=14,padB=6,plotW=W-padL-padR,plotH=H-padT-padB,baseY=padT+plotH,lo=486000,hi=526000,n=S.length;
+  const P=S.map((v,i)=>({x:padL+i*plotW/(n-1),y:padT+(1-(v-lo)/(hi-lo))*plotH}));
+  function smooth(P){let d=`M${P[0].x.toFixed(1)},${P[0].y.toFixed(1)}`;for(let i=0;i<P.length-1;i++){const p0=P[i-1]||P[i],p1=P[i],p2=P[i+1],p3=P[i+2]||p2;const c1x=p1.x+(p2.x-p0.x)/6,c1y=p1.y+(p2.y-p0.y)/6,c2x=p2.x-(p3.x-p1.x)/6,c2y=p2.y-(p3.y-p1.y)/6;d+=` C${c1x.toFixed(1)},${c1y.toFixed(1)} ${c2x.toFixed(1)},${c2y.toFixed(1)} ${p2.x.toFixed(1)},${p2.y.toFixed(1)}`;}return d;}
+  const path=smooth(P),a=P[0],b=P[P.length-1];
+  el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="height:${H}px"><defs><linearGradient id="posg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1661E2" stop-opacity=".22"/><stop offset="1" stop-color="#1661E2" stop-opacity="0"/></linearGradient></defs><path d="${path} L${b.x.toFixed(1)},${baseY} L${a.x.toFixed(1)},${baseY} Z" fill="url(#posg)"/><path d="${path}" fill="none" stroke="#1661E2" stroke-width="1.9"/><circle cx="${a.x.toFixed(1)}" cy="${a.y.toFixed(1)}" r="3" fill="white" stroke="#857D73" stroke-width="1.6"/><text x="${(a.x+7).toFixed(1)}" y="${(a.y-8).toFixed(1)}" font-family="Geist Mono,monospace" font-size="9.5" font-weight="600" fill="#635D55">$490.550</text><circle cx="${b.x.toFixed(1)}" cy="${b.y.toFixed(1)}" r="3.6" fill="#1661E2" stroke="white" stroke-width="1.5"/></svg>`;
+})();
+
+/* ---------- Movimientos rows (static, representative) ---------- */
+(function(){
+  const caret=`<svg class="caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>`;
+  const rows=[
+    {d:'08/06',bk:'BNC',bcls:'bl-bnc',ac:'Ops VES',l4:'5421',desc:'Pago Móvil ref 48213',cp:'Juan Pérez',amt:'−Bs 8.500',dec:',00',ccy:'VES',cat:'Servicios',pc:'paid'},
+    {d:'08/06',bk:'ME',bcls:'bl-mercury',ac:'Checking',l4:'4127',desc:'Wire incoming — POLAR',cp:'Polar',amt:'+$8.420',dec:',00',ccy:'USD',cat:'Cobros',pc:'new',cr:1},
+    {d:'07/06',bk:'ME',bcls:'bl-mercury',ac:'Checking',l4:'4127',desc:'Cargo por uso de plataforma SaaS',cp:'Datadog, Inc.',amt:'−$1.240',dec:',00',ccy:'USD',cat:'Software',pc:'overdue'},
+    {d:'07/06',bk:'BS',bcls:'bl-banesco',ac:'Ahorro',l4:'4421',desc:'Transferencia C2P ref 91032',cp:'Distribuidora Sur',amt:'−Bs 320.000',dec:',00',ccy:'VES',cat:null,pc:null},
+    {d:'06/06',bk:'BN',bcls:'bl-bnc',ac:'USD Ops',l4:'5430',desc:'Cobro recibido — Cliente 4471',cp:'CAPCA, C.A.',amt:'+$8.950',dec:',00',ccy:'USD',cat:'Cobros',pc:'new',cr:1},
+    {d:'06/06',bk:'MC',bcls:'bl-mercantil',ac:'Nómina',l4:'1234',desc:'Pago nómina quincena — lote 219',cp:'Empleados (lote 219)',amt:'−$5.871',dec:',00',ccy:'USD',cat:'Nómina',pc:'pending'},
+    {d:'05/06',bk:'ME',bcls:'bl-mercury',ac:'Checking',l4:'4127',desc:'Wire outgoing — AWS fees Q2',cp:'Amazon Web Services',amt:'−$3.200',dec:',00',ccy:'USD',cat:'Infraestructura',pc:'overdue'},
+    {d:'05/06',bk:'BE',bcls:'bl-exterior',ac:'EUR',l4:'0044',desc:'Transferencia entrante — sin identificar',cp:null,amt:'+€1.120',dec:',00',ccy:'EUR',cat:null,pc:null,cr:1},
+    {d:'04/06',bk:'BV',bcls:'bl-bdv',ac:'Operativa',l4:'7733',desc:'Débito automático — servicios públicos',cp:'Corpoelec',amt:'−Bs 45.200',dec:',00',ccy:'VES',cat:'Servicios',pc:'paid'},
+    {d:'04/06',bk:'BN',bcls:'bl-bnc',ac:'Ops VES',l4:'5421',desc:'Retención IVA — operación 22817',cp:'Tesorería Nacional',amt:'−Bs 480.000',dec:',00',ccy:'VES',cat:'Impuestos',pc:'pending'},
+    {d:'03/06',bk:'ME',bcls:'bl-mercury',ac:'Treasury',l4:'8830',desc:'ACH credit — refund proveedor SaaS',cp:'Stripe Inc.',amt:'+$640',dec:',00',ccy:'USD',cat:'Reembolsos',pc:'paid',cr:1},
+    {d:'03/06',bk:'MB',bcls:'bl-mibanco',ac:'Ahorros',l4:'0098',desc:'Pago Móvil recibido — Mi Banco',cp:'Inversiones Caracas',amt:'+Bs 1.250.000',dec:',00',ccy:'VES',cat:'Cobros',pc:'new',cr:1},
+    {d:'02/06',bk:'BT',bcls:'bl-bicentenario',ac:'Nómina',l4:'4419',desc:'Comisión mantenimiento mensual',cp:'Bicentenario',amt:'−Bs 12.300',dec:',00',ccy:'VES',cat:'Bancarios',pc:'draft'},
+    {d:'02/06',bk:'ME',bcls:'bl-mercury',ac:'Checking',l4:'4127',desc:'Pago a contratista — Lunour LLC',cp:'Lunour LLC',amt:'−$2.500',dec:',00',ccy:'USD',cat:null,pc:null},
+  ];
+  /* category → stable hue (category-tag palette; never status pastels) */
+  const CAT_HUE={'Cobros':'h-green','Reembolsos':'h-green','Software':'h-purple','Infraestructura':'h-orange','Nómina':'h-blue','Servicios':'h-yellow','Impuestos':'h-red','Bancarios':'h-gray'};
+  const catHue=(c)=>CAT_HUE[c]||'h-gray';
+  const cpAvatar=(name)=>{if(!name) return '';let h=0;for(let i=0;i<name.length;i++)h=(h*31+name.charCodeAt(i))|0;const c='cp-'+(Math.abs(h)%6+1);const parts=name.trim().split(/\s+/);const ini=(parts.length===1?parts[0].slice(0,2):parts[0][0]+parts[parts.length-1][0]).toUpperCase();return `<span class="cp-avatar ${c}">${ini}</span>`;};
+  document.getElementById('mov-body').innerHTML=rows.map(r=>`
+    <tr>
+      <td><span class="cell-date">${r.d}</span></td>
+      <td><span class="bank-cell"><span class="bank-logo sm ${r.bcls}">${r.bk}</span><span><span class="bank-name">${r.ac}</span> <span class="acct-num">··${r.l4}</span></span></span></td>
+      <td><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block">${r.desc}</span></td>
+      <td>${r.cp?`<span class="cell-edit"><span class="lbl">${r.cp}</span>${caret}</span>`:`<span class="cell-edit empty"><span class="lbl">— asignar</span>${caret}</span>`}</td>
+      <td><span class="cell-amount ${r.cr?'credit':''}"><span class="int">${r.amt}</span><span class="dec">${r.dec}</span><span class="ccy">${r.ccy}</span></span></td>
+      <td>${r.cat?`<span class="cell-edit"><span class="pill cat ${catHue(r.cat)}"><span class="pill-dot"></span>${r.cat}</span>${caret}</span>`:`<span class="cell-edit empty"><span class="lbl">— asignar</span>${caret}</span>`}</td>
+    </tr>`).join('');
+})();
+
+/* =================================================================
+   PROTOTYPE-ONLY: comment layer (Figma-style pins). Never ships.
+   Pins persist in localStorage; "Copiar como Markdown" exports the
+   punch list to hand back to Claude.
+================================================================= */
+(function(){
+  const KEY='tesote-v3-cmts';
+  let cmts=[]; try{cmts=JSON.parse(localStorage.getItem(KEY))||[];}catch(e){cmts=[];}
+  let mode=false, popEl=null;
+
+  function save(){localStorage.setItem(KEY,JSON.stringify(cmts));}
+  function container(el){
+    return el.closest('.modal')||el.closest('.panel')||el.closest('.flow')||document.querySelector('.page.active');
+  }
+  function containerLabel(id){
+    const c=document.getElementById(id); if(!c) return id;
+    const t=c.querySelector('.page-title,.panel-title,.modal-t,.flow-title,.greeting');
+    return t?t.textContent.trim():id;
+  }
+  function whereLabel(el){
+    const card=el.closest('.card,.table-card,.banner,.filter-panel,.form-card,.ai,.panel-sec,.flow-step');
+    if(!card) return '';
+    const t=card.querySelector('.card-title,.panel-sec-t,.flow-h,.banner-title,.filter-section-title');
+    return t?t.textContent.trim():(el.closest('.table-card')?'tabla':'');
+  }
+  function renderPins(){
+    document.querySelectorAll('.cmt-pin').forEach(p=>p.remove());
+    cmts.forEach((c,i)=>{
+      const cont=document.getElementById(c.cont); if(!cont) return;
+      const pin=document.createElement('div');
+      pin.className='cmt-pin'; pin.textContent=i+1;
+      pin.style.left=c.x+'%'; pin.style.top=c.y+'px';
+      pin.onclick=ev=>{ev.stopPropagation();openPop(c,pin);};
+      cont.appendChild(pin);
+    });
+    document.getElementById('cmt-count').textContent=cmts.length;
+    renderPanel();
+  }
+  function closePop(){if(popEl){popEl.remove();popEl=null;}}
+  function openPop(c,pin){
+    closePop();
+    popEl=document.createElement('div');
+    popEl.className='cmt-pop';
+    popEl.style.left=c.x+'%'; popEl.style.top=c.y+'px';
+    popEl.innerHTML=`<textarea placeholder="¿Qué cambiamos aquí?">${c.text||''}</textarea>
+      <div class="cmt-pop-actions"><button class="cmt-del">Eliminar</button><button class="cmt-save">Guardar</button></div>`;
+    popEl.onclick=ev=>ev.stopPropagation();
+    popEl.querySelector('.cmt-del').onclick=()=>{cmts=cmts.filter(x=>x.id!==c.id);save();closePop();renderPins();};
+    popEl.querySelector('.cmt-save').onclick=()=>{
+      const v=popEl.querySelector('textarea').value.trim();
+      if(!v){cmts=cmts.filter(x=>x.id!==c.id);}else{c.text=v;}
+      save();closePop();renderPins();
+    };
+    pin.parentElement.appendChild(popEl);
+    popEl.querySelector('textarea').focus();
+  }
+  function place(e){
+    const cont=container(e.target); if(!cont||!cont.id) return;
+    const r=cont.getBoundingClientRect();
+    const c={id:Date.now()+''+Math.floor(Math.random()*1e4),cont:cont.id,
+      x:+(((e.clientX-r.left)/r.width)*100).toFixed(2),
+      y:Math.round(e.clientY-r.top),
+      where:whereLabel(e.target),text:'',ts:new Date().toISOString().slice(0,10)};
+    cmts.push(c);save();renderPins();
+    const pins=cont.querySelectorAll('.cmt-pin');
+    openPop(c,pins[pins.length-1]);
+  }
+  function modeClick(e){
+    if(e.target.closest('.cmt-fab,.cmt-panel,.cmt-pop,.cmt-pin')) return;
+    e.preventDefault();e.stopPropagation();
+    place(e);
+  }
+  window.cmtToggleMode=function(){
+    mode=!mode;
+    document.body.classList.toggle('cmt-mode',mode);
+    document.getElementById('cmt-mode-btn').classList.toggle('on',mode);
+    if(mode){document.addEventListener('click',modeClick,true);}
+    else{document.removeEventListener('click',modeClick,true);closePop();}
+  };
+  window.cmtTogglePanel=function(){document.getElementById('cmt-panel').classList.toggle('open');renderPanel();};
+  window.cmtClearAll=function(){if(!cmts.length)return;cmts=[];save();closePop();renderPins();};
+  function renderPanel(){
+    const body=document.getElementById('cmt-panel-body');
+    document.getElementById('cmt-panel-count').textContent=cmts.length?cmts.length+' pin'+(cmts.length>1?'es':''):'';
+    if(!cmts.length){body.innerHTML='<div class="cmt-empty">Sin comentarios todavía.<br>Activa "Comentar" y haz clic donde quieras dejar un pin.</div>';return;}
+    body.innerHTML=cmts.map((c,i)=>`<div class="cmt-item" data-i="${i}"><span class="n">${i+1}</span><span><span class="where">${containerLabel(c.cont)}${c.where?' · '+c.where:''}</span>${c.text||'<i style="color:var(--text-4)">sin texto</i>'}</span></div>`).join('');
+    body.querySelectorAll('.cmt-item').forEach(item=>item.onclick=()=>{
+      const c=cmts[+item.dataset.i]; if(!c) return;
+      const id=c.cont;
+      if(id.startsWith('page-')){window.goPage(id.slice(5));}
+      else if(id.startsWith('panel-')){openPanel(id);}
+      else if(id.startsWith('flow-')){openFlow(id);}
+      else if(id.startsWith('modal-')){document.getElementById(id).classList.add('open');}
+      setTimeout(()=>{const cont=document.getElementById(id);const pins=cont?cont.querySelectorAll('.cmt-pin'):[];pins.forEach(p=>{if(p.textContent==(+item.dataset.i+1))p.scrollIntoView({block:'center',behavior:'smooth'});});},80);
+    });
+  }
+  window.cmtExport=function(btn){
+    if(!cmts.length) return;
+    const lines=['## Comentarios — unified-app-v3 · '+new Date().toISOString().slice(0,10),''];
+    cmts.forEach((c,i)=>lines.push(`${i+1}. **[${containerLabel(c.cont)}${c.where?' · '+c.where:''}]** ${c.text||'(sin texto)'} _(pin @ x:${c.x}% · y:${c.y}px)_`));
+    const md=lines.join('\n');
+    const done=()=>{const o=btn.textContent;btn.textContent='¡Copiado!';setTimeout(()=>btn.textContent=o,2000);};
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(md).then(done).catch(()=>{fallback(md);done();});}
+    else{fallback(md);done();}
+    function fallback(text){const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();}
+  };
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){closePop();if(mode)window.cmtToggleMode();}});
+  renderPins();
+})();
+</script>
+</body>
+</html>

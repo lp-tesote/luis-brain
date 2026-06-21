@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tesote · Posición v8 — selección final (10 iteraciones)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Geist+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #1661E2; --primary-hover: #184EB5; --primary-light: #EEF8FF; --primary-border: #C6DDFB;
+      --text: #12110F; --text-2: #635D55; --text-3: #857D73; --text-4: #C7C0B5;
+      --border: #E8E3DA; --border-2: #F2EEE6;
+      --bg-main: #FFFFFF; --bg-soft: #FCFBF7; --hover: #F2EEE6;
+      --green: #1A8C5B; --green-text: #0F6E45; --yellow: #CC9500; --red: #C41E1E; --orange: #A83E00;
+      --clay: #C98A5B; --ves-bar: #6FA8DC; --pill-new: #E4ECF7;
+      --radius: 8px; --radius-lg: 12px; --radius-sm: 4px;
+      --shadow: 0 1px 2px rgba(18,17,15,.04);
+      --font-display: 'Inter Tight','Inter',sans-serif;
+      --font-body: 'Aspekta','Inter',sans-serif;
+      --font-mono: 'Geist Mono','SF Mono','Menlo',monospace;
+    }
+    body { font-family: var(--font-body); font-size: 14px; background: var(--bg-soft); color: var(--text); -webkit-font-smoothing: antialiased; font-feature-settings: 'cv11','ss01'; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 40px 24px 80px; gap: 8px; }
+    .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+    h1,.fig,.cur-amt { font-family: var(--font-display); letter-spacing: -.01em; }
+    .ic { display: inline-block; vertical-align: middle; width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+    .ic-sm { width: 13px; height: 13px; }
+
+    .page-head { width: 720px; max-width: 100%; margin-bottom: 12px; }
+    .page-head h1 { font-size: 20px; font-weight: 700; }
+    .page-head p { font-size: 13px; color: var(--text-2); margin-top: 6px; line-height: 1.5; }
+    .variant { width: 720px; max-width: 100%; margin-top: 26px; }
+    .vlabel { font-size: 12px; color: var(--text-3); margin-bottom: 8px; display: flex; align-items: baseline; gap: 8px; }
+    .vlabel b { font-family: var(--font-mono); font-size: 12px; color: var(--primary); font-weight: 700; }
+    .vlabel .t { color: var(--text); font-weight: 600; font-size: 13px; }
+
+    .card { background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px 20px; display: flex; flex-direction: column; }
+
+    .hd { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    .lbl { font-size: 11px; font-weight: 600; color: var(--text-3); letter-spacing: .06em; text-transform: uppercase; }
+    .fig { font-size: 38px; font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; margin-top: 5px; white-space: nowrap; line-height: 1.02; }
+    .fig .cents { font-size: 20px; font-weight: 600; color: var(--text-3); }
+    .var-chip { display: inline-flex; align-items: center; gap: 4px; font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--green-text); background: #E7F2EA; border-radius: 6px; padding: 4px 9px; }
+    .rng { display: inline-flex; padding: 2px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: 7px; gap: 2px; }
+    .rng button { font-family: inherit; font-size: 11.5px; font-weight: 500; color: var(--text-2); padding: 4px 10px; border-radius: 5px; border: none; background: transparent; cursor: pointer; }
+    .rng button.on { background: white; color: var(--text); box-shadow: var(--shadow); font-weight: 600; }
+
+    .chart { margin-top: 14px; }
+    .chart svg { width: 100%; display: block; }
+    .chart text { font-family: var(--font-mono); fill: var(--text-3); }
+
+    /* decomposition band */
+    .dband { margin-top: 14px; padding-top: 13px; border-top: 1px solid var(--border-2); display: flex; gap: 22px; }
+    .dband .di { font-size: 11.5px; color: var(--text-3); flex: 1; }
+    .dband .di .v { font-family: var(--font-mono); font-weight: 600; font-size: 14px; display: block; margin-top: 3px; color: var(--text); font-variant-numeric: tabular-nums; }
+    .dband .di .v.in { color: var(--green-text); } .dband .di .v.out { color: var(--text); } .dband .di .v.net { color: var(--primary-hover); } .dband .di .v.dev { color: var(--orange); }
+    .dband .di .bar { height: 4px; border-radius: 2px; background: var(--bg-soft); overflow: hidden; margin-top: 7px; }
+    .dband .di .bar i { display: block; height: 100%; border-radius: 2px; }
+    .dband.divided .di + .di { border-left: 1px solid var(--border-2); padding-left: 16px; }
+    .dband .di .k { display: flex; align-items: center; gap: 5px; }
+    .dband .di .k .ic-sm { width: 11px; height: 11px; }
+    .di.net-emph .v { font-size: 16px; }
+
+    /* equation band */
+    .deq { margin-top: 14px; padding: 12px 14px; border: 1px solid var(--border-2); border-radius: var(--radius); background: var(--bg-soft); display: flex; align-items: baseline; flex-wrap: wrap; gap: 9px; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+    .deq .lab { font-family: var(--font-body); font-size: 11px; color: var(--text-3); }
+    .deq .n { font-size: 14px; font-weight: 600; }
+    .deq .n.in { color: var(--green-text); } .deq .n.out { color: var(--text); } .deq .n.net { color: var(--primary-hover); } .deq .n.dev { color: var(--orange); }
+    .deq .op { color: var(--text-4); font-weight: 600; font-size: 14px; padding: 0 1px; }
+
+    /* chip band */
+    .dchips { margin-top: 14px; display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+    .dchip { border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px; }
+    .dchip .k { font-size: 10px; font-weight: 600; color: var(--text-3); letter-spacing: .04em; text-transform: uppercase; }
+    .dchip .v { font-family: var(--font-mono); font-weight: 600; font-size: 15px; margin-top: 5px; font-variant-numeric: tabular-nums; }
+    .dchip .v.in { color: var(--green-text); } .dchip .v.net { color: var(--primary-hover); } .dchip .v.dev { color: var(--orange); }
+    .dchip.net { background: var(--primary-light); border-color: var(--primary-border); }
+
+    /* currency boxes */
+    .cur-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+    .cur-cell { border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 13px; }
+    .cur-top { display: flex; align-items: center; gap: 7px; }
+    .cur-nm { font-size: 12px; font-weight: 600; }
+    .cur-sh { margin-left: auto; font-size: 11px; font-family: var(--font-mono); color: var(--text-3); font-weight: 600; }
+    .cur-amt { font-family: var(--font-mono); font-size: 19px; font-weight: 700; font-variant-numeric: tabular-nums; margin-top: 9px; white-space: nowrap; }
+    .cur-sub { font-size: 11.5px; color: var(--text-3); font-family: var(--font-mono); margin-top: 2px; }
+    .cur-dl { display: flex; gap: 7px; margin-top: 10px; padding-top: 9px; border-top: 1px solid var(--border-2); font-size: 11.5px; color: var(--text-3); }
+    .cur-dl .da { font-family: var(--font-mono); font-weight: 600; color: var(--text-2); }
+    .cur-dl .dev { margin-left: auto; color: var(--orange); font-family: var(--font-mono); }
+    .badge { width: 20px; height: 20px; border-radius: var(--radius-sm); display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 8.5px; font-weight: 700; color: white; flex-shrink: 0; }
+    .b-usd { background: var(--green); } .b-ves { background: #2D6FB8; }
+
+    .chart-wrap { position: relative; }
+    .overlay { position: absolute; top: 6px; left: 2px; }
+    .overlay .lbl { color: var(--text-2); }
+  </style>
+</head>
+<body>
+  <div class="page-head">
+    <h1>Posición v8 — selección final</h1>
+    <p>Dirección fija (te gustó la v8): <b>gráfica del saldo total</b> + franja de descomposición + cajas USD/VES. Cambios pedidos aplicados: orden <b>Entró · Salió · Variación neta · Devaluación</b>, y el <b>saldo inicial ($490.550) marcado en la gráfica</b>. Estas 10 varían el detalle para escoger la final.</p>
+  </div>
+
+  <div id="root"></div>
+
+  <script>
+    // 30 daily closes; begins at 490.55 (so end − begin = +31.290 = neta +33.190 − devaluación 1.900)
+    const S = [490.55,492.0,491.2,494.0,493.1,496.2,495.0,498.6,497.4,501.0,
+               500.1,503.6,502.4,506.0,505.1,508.6,507.4,511.0,510.1,513.6,
+               512.4,516.0,515.0,518.4,517.2,520.4,519.2,522.2,520.9,521.84].map(v=>v*1000);
+    const BEG = S[0], END = S[S.length-1];
+    const NF = n => '$' + Math.round(n).toLocaleString('es-VE');
+    const NK = n => '$' + Math.round(n/1000) + 'K';
+
+    function geom(o){ const W=o.w,H=o.h,padL=o.yAxis?46:4,padR=8,padT=o.padT||12,padB=o.xAxis?22:8; return {W,H,padL,padR,padT,padB,plotW:W-padL-padR,plotH:H-padT-padB}; }
+    function project(s,g,lo,hi){ const n=s.length; return s.map((v,i)=>({x:g.padL+i*g.plotW/(n-1), y:g.padT+(1-(v-lo)/(hi-lo))*g.plotH})); }
+    function linePath(P){ return 'M'+P.map(p=>`${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' L'); }
+    function smoothPath(P){ if(P.length<3) return linePath(P); let d=`M${P[0].x.toFixed(1)},${P[0].y.toFixed(1)}`;
+      for(let i=0;i<P.length-1;i++){ const p0=P[i-1]||P[i],p1=P[i],p2=P[i+1],p3=P[i+2]||p2;
+        const c1x=p1.x+(p2.x-p0.x)/6,c1y=p1.y+(p2.y-p0.y)/6,c2x=p2.x-(p3.x-p1.x)/6,c2y=p2.y-(p3.y-p1.y)/6;
+        d+=` C${c1x.toFixed(1)},${c1y.toFixed(1)} ${c2x.toFixed(1)},${c2y.toFixed(1)} ${p2.x.toFixed(1)},${p2.y.toFixed(1)}`; } return d; }
+
+    function chart(o){
+      o = Object.assign({w:680,h:184,type:'area',curve:true}, o);
+      const g = geom(o), baseY = g.padT+g.plotH;
+      const lo = 486000, hi = 526000;
+      const P = project(S,g,lo,hi);
+      let s = '';
+      // gridlines
+      if(o.yAxis){ const ticks=o.fewTicks?3:4; for(let t=0;t<ticks;t++){ const v=lo+(hi-lo)*t/(ticks-1); const y=g.padT+(1-(v-lo)/(hi-lo))*g.plotH;
+        s+=`<line x1="${g.padL}" y1="${y.toFixed(1)}" x2="${g.W-g.padR}" y2="${y.toFixed(1)}" stroke="#F2EEE6" stroke-width="1"/>`;
+        s+=`<text x="${g.padL-8}" y="${(y+3).toFixed(1)}" text-anchor="end" font-size="9.5">${NK(v)}</text>`; } }
+      if(o.xAxis){ s+=`<text x="${g.padL}" y="${g.H-6}" text-anchor="start" font-size="9.5">hace 30 d</text>`;
+        s+=`<text x="${g.W-g.padR}" y="${g.H-6}" text-anchor="end" font-size="9.5">hoy</text>`; }
+      // baseline at beginning balance
+      if(o.baseline){ const by=P[0].y.toFixed(1);
+        s+=`<line x1="${g.padL}" y1="${by}" x2="${g.W-g.padR}" y2="${by}" stroke="#D8D2C7" stroke-width="1" stroke-dasharray="3 3"/>`;
+        if(o.baselineLabel) s+=`<text x="${g.W-g.padR}" y="${(P[0].y-6).toFixed(1)}" text-anchor="end" font-size="9.5">inicio ${NF(BEG)}</text>`; }
+      // area + line
+      const path = o.curve?smoothPath(P):linePath(P);
+      if(o.type==='area') s+=`<path d="${path} L${P[P.length-1].x.toFixed(1)},${baseY} L${P[0].x.toFixed(1)},${baseY} Z" fill="url(#gArea)"/>`;
+      s+=`<path d="${path}" fill="none" stroke="#1661E2" stroke-width="${o.thin?1.5:1.9}"/>`;
+      // beginning-balance marker (dot + label)
+      if(o.startMark){ const p=P[0];
+        s+=`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3" fill="white" stroke="#857D73" stroke-width="1.6"/>`;
+        s+=`<text x="${(p.x+7).toFixed(1)}" y="${(p.y+(o.startBelow?15:-8)).toFixed(1)}" text-anchor="start" font-size="9.5" fill="#857D73"><tspan font-weight="600" fill="#635D55">${NF(BEG)}</tspan> · hace 30 d</text>`; }
+      // bracket: both ends + delta
+      if(o.bracket){ const a=P[0], b=P[P.length-1];
+        s+=`<circle cx="${a.x.toFixed(1)}" cy="${a.y.toFixed(1)}" r="3" fill="white" stroke="#857D73" stroke-width="1.6"/>`;
+        s+=`<text x="${(a.x+7).toFixed(1)}" y="${(a.y+15).toFixed(1)}" text-anchor="start" font-size="9.5" fill="#857D73">${NF(BEG)}</text>`;
+        s+=`<text x="${(g.padL+g.plotW/2).toFixed(1)}" y="${(g.padT+10).toFixed(1)}" text-anchor="middle" font-size="10" font-weight="600" fill="#0F6E45">▲ +$31.290 en 30 d</text>`; }
+      // end dot
+      if(o.endDot!==false){ const p=P[P.length-1];
+        s+=`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3.6" fill="#1661E2" stroke="white" stroke-width="1.5"/>`;
+        if(o.endLabel) s+=`<text x="${(p.x-6).toFixed(1)}" y="${(p.y-8).toFixed(1)}" text-anchor="end" font-size="9.5" fill="#635D55" font-weight="600">${NF(END)}</text>`; }
+      return `<svg viewBox="0 0 ${o.w} ${o.h}" preserveAspectRatio="xMidYMid meet" style="height:${o.h}px">
+        <defs><linearGradient id="gArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1661E2" stop-opacity=".22"/><stop offset="1" stop-color="#1661E2" stop-opacity="0"/></linearGradient></defs>${s}</svg>`;
+    }
+
+    const HD = (right) => `<div class="hd"><div><div class="lbl">Posición total · USD consolidado</div><div class="fig mono">$521.840<span class="cents">,17</span></div></div>${right||''}</div>`;
+    const CHIP = `<span class="var-chip"><svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg>+$31.290 · 30 d</span>`;
+    const RNG = `<div class="rng">${['7 D','30 D','90 D','1 A'].map(r=>`<button class="${r==='30 D'?'on':''}">${r}</button>`).join('')}</div>`;
+    const CUR = `
+      <div class="cur-grid">
+        <div class="cur-cell"><div class="cur-top"><span class="badge b-usd">USD</span><span class="cur-nm">Dólares</span><span class="cur-sh">88%</span></div><div class="cur-amt">$457.109</div><div class="cur-sub">2 cuentas · Mercury</div><div class="cur-dl">Δ ayer <span class="da">−$1.200</span></div></div>
+        <div class="cur-cell"><div class="cur-top"><span class="badge b-ves">VES</span><span class="cur-nm">Bolívares</span><span class="cur-sh">12%</span></div><div class="cur-amt">Bs 36.161.741,48</div><div class="cur-sub">≈ $64.731</div><div class="cur-dl">Δ ayer <span class="da">−$2.211</span><span class="dev">−$431 dev.</span></div></div>
+      </div>`;
+
+    // decomposition band — order: Entró · Salió · Variación neta · Devaluación
+    const dPlain = (colored) => `
+      <div class="dband">
+        <div class="di"><span class="k">Entró · 30 d</span><span class="v ${colored?'in':''}">+$96.400</span></div>
+        <div class="di"><span class="k">Salió · 30 d</span><span class="v ${colored?'out':''}">−$63.210</span></div>
+        <div class="di net-emph"><span class="k">Variación neta</span><span class="v net">+$33.190</span></div>
+        <div class="di"><span class="k">Devaluación · 30 d</span><span class="v ${colored?'dev':''}">−$1.900</span></div>
+      </div>`;
+    const dBars = () => `
+      <div class="dband">
+        <div class="di"><span class="k">Entró · 30 d</span><span class="v in">+$96.400</span><span class="bar"><i style="width:100%;background:var(--green)"></i></span></div>
+        <div class="di"><span class="k">Salió · 30 d</span><span class="v out">−$63.210</span><span class="bar"><i style="width:66%;background:var(--clay)"></i></span></div>
+        <div class="di net-emph"><span class="k">Variación neta</span><span class="v net">+$33.190</span><span class="bar"><i style="width:34%;background:var(--primary)"></i></span></div>
+        <div class="di"><span class="k">Devaluación · 30 d</span><span class="v dev">−$1.900</span><span class="bar"><i style="width:4%;background:var(--orange)"></i></span></div>
+      </div>`;
+    const dEq = () => `
+      <div class="deq">
+        <span class="lab">Entró</span><span class="n in">+$96.400</span>
+        <span class="op">−</span><span class="lab">Salió</span><span class="n out">$63.210</span>
+        <span class="op">=</span><span class="lab">Neta</span><span class="n net">+$33.190</span>
+        <span class="op">·</span><span class="lab">Devaluación</span><span class="n dev">−$1.900</span>
+      </div>`;
+    const dChips = () => `
+      <div class="dchips">
+        <div class="dchip"><div class="k">Entró · 30 d</div><div class="v in">+$96.400</div></div>
+        <div class="dchip"><div class="k">Salió · 30 d</div><div class="v">−$63.210</div></div>
+        <div class="dchip net"><div class="k">Variación neta</div><div class="v net">+$33.190</div></div>
+        <div class="dchip"><div class="k">Devaluación</div><div class="v dev">−$1.900</div></div>
+      </div>`;
+    const dDivided = () => `
+      <div class="dband divided">
+        <div class="di"><span class="k"><svg class="ic ic-sm" viewBox="0 0 24 24" style="color:var(--green)"><path d="M6 15l6-6 6 6"/></svg>Entró · 30 d</span><span class="v in">+$96.400</span></div>
+        <div class="di"><span class="k"><svg class="ic ic-sm" viewBox="0 0 24 24" style="color:var(--clay)"><path d="M6 9l6 6 6-6"/></svg>Salió · 30 d</span><span class="v">−$63.210</span></div>
+        <div class="di net-emph"><span class="k"><svg class="ic ic-sm" viewBox="0 0 24 24" style="color:var(--primary)"><path d="M5 12h14"/></svg>Variación neta</span><span class="v net">+$33.190</span></div>
+        <div class="di"><span class="k"><svg class="ic ic-sm" viewBox="0 0 24 24" style="color:var(--orange)"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Devaluación</span><span class="v">−$1.900</span></div>
+      </div>`;
+    const dCompact = () => `
+      <div class="deq" style="background:transparent;border:none;border-top:1px solid var(--border-2);border-radius:0;padding:13px 0 0;">
+        <span class="lab">Entró</span><span class="n in">+$96.400</span><span class="op">·</span>
+        <span class="lab">Salió</span><span class="n out">−$63.210</span><span class="op">·</span>
+        <span class="lab">Neta</span><span class="n net">+$33.190</span><span class="op">·</span>
+        <span class="lab">Devaluación</span><span class="n dev">−$1.900</span>
+      </div>`;
+
+    const variants = [
+      { id:'v1', t:'Marca de inicio en la curva (dot + etiqueta) · franja simple', build:()=>`
+        <div class="card">${HD(CHIP)}<div class="chart">${chart({startMark:true,endDot:true})}</div>${dPlain(false)}${CUR}</div>` },
+      { id:'v2', t:'Inicio en curva · franja con mini-barras', build:()=>`
+        <div class="card">${HD(CHIP)}<div class="chart">${chart({startMark:true,endDot:true})}</div>${dBars()}${CUR}</div>` },
+      { id:'v3', t:'Inicio + fin etiquetados · franja como ecuación', build:()=>`
+        <div class="card">${HD('')}<div class="chart">${chart({startMark:true,startBelow:true,endDot:true,endLabel:true})}</div>${dEq()}${CUR}</div>` },
+      { id:'v4', t:'Línea base punteada en el saldo inicial · franja simple', build:()=>`
+        <div class="card">${HD(CHIP)}<div class="chart">${chart({baseline:true,baselineLabel:true,startMark:true,startBelow:true,endDot:true})}</div>${dPlain(true)}${CUR}</div>` },
+      { id:'v5', t:'Bracket inicio→hoy con Δ · franja simple', build:()=>`
+        <div class="card">${HD('')}<div class="chart">${chart({bracket:true,endDot:true,padT:22})}</div>${dPlain(false)}${CUR}</div>` },
+      { id:'v6', t:'Ejes en $ + inicio marcado · franja con barras', build:()=>`
+        <div class="card">${HD('')}<div class="chart">${chart({yAxis:true,xAxis:true,startMark:true,endDot:true,h:200})}</div>${dBars()}${CUR}</div>` },
+      { id:'v7', t:'Inicio en curva · franja en chips (neta resaltada)', build:()=>`
+        <div class="card">${HD(CHIP)}<div class="chart">${chart({startMark:true,endDot:true})}</div>${dChips()}${CUR}</div>` },
+      { id:'v8', t:'Inicio en curva · franja con divisores + iconos', build:()=>`
+        <div class="card">${HD('')}<div class="chart">${chart({startMark:true,endDot:true})}</div>${dDivided()}${CUR}</div>` },
+      { id:'v9', t:'Figura sobre gráfica + inicio marcado · franja simple', build:()=>`
+        <div class="card"><div class="chart-wrap"><div class="overlay"><div class="lbl">Posición total · USD consolidado</div><div class="fig mono">$521.840<span class="cents">,17</span></div></div><div class="chart" style="margin-top:0">${chart({startMark:true,endDot:true,h:220,padT:64})}</div></div>${dPlain(true)}${CUR}</div>` },
+      { id:'v10', t:'Selector de rango + base punteada · franja compacta', build:()=>`
+        <div class="card"><div class="hd"><div><div class="lbl">Posición total · USD consolidado</div><div class="fig mono">$521.840<span class="cents">,17</span></div></div>${RNG}</div><div class="chart">${chart({baseline:true,baselineLabel:true,thin:true,endDot:true})}</div>${dCompact()}${CUR}</div>` },
+    ];
+
+    document.getElementById('root').innerHTML = variants.map(v=>`
+      <div class="variant"><div class="vlabel"><b>${v.id}</b><span class="t">${v.t}</span></div>${v.build()}</div>`).join('');
+  </script>
+</body>
+</html>

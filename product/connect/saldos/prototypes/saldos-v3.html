@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tesote · Saldos (v3 — filtering + 2FA + per-row sync)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Aspekta is Lunour's mandated body font (paid); falling back to Inter until self-hosted. -->
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #1661E2;
+      --primary-hover: #184EB5;
+      --primary-light: #EEF8FF;
+      --primary-50: #F5FBFF;
+      --text: #12110F;
+      --text-2: #635D55;
+      --text-3: #857D73;
+      --text-4: #C7C0B5;
+      --border: #E8E3DA;
+      --border-2: #F2EEE6;
+      --bg-sidebar: #F7F5F0;
+      --bg-main: #FFFFFF;
+      --bg-soft: #FCFBF7;
+      --hover: #F2EEE6;
+      --active: #E8E3DA;
+      --green: #1A8C5B;
+      --green-bg: #C9F1E0;
+      --yellow: #CC9500;
+      --yellow-bg: #FFF6CC;
+      --red: #C41E1E;
+      --red-bg: #FFE6E6;
+      --radius: 8px;
+      --radius-lg: 12px;
+      --radius-sm: 4px;
+      --shadow: 0 1px 2px rgba(18, 17, 15, 0.04);
+      --font-display: 'Inter Tight', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Aspekta', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      font-family: var(--font-body);
+      font-size: 14px; background: var(--bg-main); color: var(--text);
+      -webkit-font-smoothing: antialiased; font-feature-settings: 'cv11', 'ss01';
+    }
+
+    h1, h2, h3, .page-title, .saldo-amount, .saldo-amount-cents,
+    .panel-title, .banner-title {
+      font-family: var(--font-display);
+      letter-spacing: -.01em;
+    }
+
+    .app { display: grid; grid-template-columns: 224px 1fr; min-height: 100vh; }
+
+    .sidebar {
+      background: var(--bg-sidebar); border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; min-height: 0; overflow-y: auto;
+    }
+    .sb-top { display: flex; align-items: center; padding: 14px 14px 10px; }
+    .sb-brand {
+      display: flex; align-items: center; gap: 9px; font-size: 14px;
+      font-weight: 600; color: var(--text);
+    }
+    .sb-logo {
+      width: 24px; height: 24px; border-radius: 6px; background: var(--text);
+      display: flex; align-items: center; justify-content: center; color: white;
+      font-family: var(--font-display); font-weight: 700; font-size: 13px;
+    }
+    .sb-pro {
+      font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 4px;
+      background: var(--text); color: white; letter-spacing: .03em; margin-left: 7px;
+    }
+    .sb-search {
+      margin: 0 10px 8px; display: flex; align-items: center; gap: 8px;
+      padding: 7px 10px; border-radius: 6px; background: var(--bg-main);
+      border: 1px solid var(--border); cursor: pointer; color: var(--text-3); font-size: 13px;
+    }
+    .sb-search .kbd {
+      margin-left: auto; font-size: 10px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      padding: 1px 5px; border-radius: 3px; background: var(--bg-soft);
+      border: 1px solid var(--border); color: var(--text-3);
+    }
+    .sb-section { padding: 4px 10px 2px; }
+    .sb-section-label {
+      padding: 10px 10px 6px; font-size: 11px; font-weight: 600;
+      letter-spacing: .08em; text-transform: uppercase; color: var(--text-3);
+    }
+    .sb-item {
+      display: flex; align-items: center; gap: 9px; padding: 6px 10px;
+      border-radius: 6px; font-size: 13px; color: var(--text-2);
+      cursor: pointer; transition: background .12s, color .12s;
+    }
+    .sb-item:hover { background: var(--hover); color: var(--text); }
+    .sb-item.active { background: var(--active); color: var(--text); font-weight: 500; }
+    .sb-item-count {
+      margin-left: auto; font-size: 11px; font-weight: 500; color: var(--text-3);
+      background: var(--bg-main); padding: 1px 6px; border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .sb-bottom { margin-top: auto; padding: 10px; border-top: 1px solid var(--border); }
+    .sb-user { display: flex; align-items: center; gap: 10px; padding: 7px 8px; border-radius: 6px; }
+    .sb-user-avatar {
+      width: 26px; height: 26px; border-radius: 50%; background: var(--primary);
+      color: white; font-size: 11px; font-weight: 600;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .sb-user-name { font-size: 13px; font-weight: 500; }
+    .sb-user-sub { font-size: 11px; color: var(--text-3); }
+
+    .main { display: flex; flex-direction: column; min-width: 0; }
+    .topbar {
+      height: 52px; padding: 0 22px; display: flex; align-items: center; gap: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .topbar-spacer { flex: 1; }
+    .topbar-btn-primary {
+      display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px;
+      border-radius: 8px; font-size: 13px; font-weight: 500; color: white;
+      background: var(--text); border: none; cursor: pointer; font-family: inherit;
+      transition: background .12s;
+    }
+    .topbar-btn-primary:hover { background: #302C25; }
+    .topbar-icon {
+      width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center;
+      justify-content: center; cursor: pointer; color: var(--text-2);
+    }
+    .topbar-icon:hover { background: var(--hover); }
+
+    .content {
+      flex: 1; overflow-y: auto; max-width: 1280px; width: 100%; margin: 0 auto;
+      padding: 28px 32px 60px;
+    }
+
+    .page-head { margin-bottom: 22px; }
+    .page-title { font-size: 26px; font-weight: 700; color: var(--text); }
+    .page-meta {
+      display: flex; align-items: center; gap: 8px; margin-top: 6px;
+      font-size: 13px; color: var(--text-2); flex-wrap: wrap;
+    }
+    .page-meta-dot { color: var(--text-4); }
+    .page-meta-warning { color: var(--yellow); font-weight: 500; }
+    .page-meta-refresh {
+      display: inline-flex; align-items: center; gap: 4px; cursor: pointer;
+      padding: 2px 6px; border-radius: 4px; color: var(--text-3);
+      transition: background .12s, color .12s;
+    }
+    .page-meta-refresh:hover { background: var(--hover); color: var(--text); }
+    .page-meta-refresh svg { width: 12px; height: 12px; }
+
+    .banner {
+      display: flex; align-items: center; gap: 14px; padding: 14px 18px;
+      border-radius: var(--radius); margin-bottom: 18px;
+      background: #F7EDD0; border: 1px solid #E8D9A8;
+    }
+    .banner-icon {
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--yellow); color: white; font-size: 14px; font-weight: 700;
+      flex-shrink: 0;
+    }
+    .banner-content { flex: 1; }
+    .banner-title { font-size: 14px; font-weight: 600; color: var(--text); }
+    .banner-sub { font-size: 12px; color: var(--text-2); margin-top: 2px; }
+    .banner-cta {
+      padding: 7px 14px; border-radius: 6px; background: var(--text); color: white;
+      border: none; cursor: pointer; font-family: inherit; font-size: 13px; font-weight: 500;
+      transition: background .12s;
+    }
+    .banner-cta:hover { background: #302C25; }
+
+    .saldos-strip {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      border: 1px solid var(--border); border-radius: var(--radius-lg);
+      background: white; overflow: hidden; margin-bottom: 22px;
+    }
+    .saldo-card { padding: 20px 22px; border-right: 1px solid var(--border); }
+    .saldo-card:last-child { border-right: none; }
+    .saldo-card-currency {
+      font-size: 11px; font-weight: 600; color: var(--text-3);
+      letter-spacing: .08em; text-transform: uppercase;
+    }
+    .saldo-card-amount {
+      font-size: 28px; font-weight: 700; color: var(--text);
+      margin-top: 6px; font-variant-numeric: tabular-nums;
+      display: flex; align-items: baseline; gap: 2px;
+    }
+    .saldo-card-cents { font-size: 18px; color: var(--text-2); font-weight: 600; }
+    .saldo-card-meta { font-size: 12px; color: var(--text-2); margin-top: 6px; }
+    .saldo-card-sub { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+    .saldo-card-bcv { color: var(--text-2); }
+    .saldo-card-bcv-arrow { color: var(--green); }
+    .saldo-card-filtered {
+      display: inline-block; font-size: 10px; font-weight: 600;
+      color: var(--primary); margin-left: 6px;
+      padding: 1px 6px; background: var(--primary-light); border-radius: 4px;
+      letter-spacing: .04em; text-transform: uppercase;
+    }
+
+    .toggle-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      margin-bottom: 16px;
+    }
+    .view-toggle {
+      display: inline-flex; align-items: center; gap: 4px; padding: 4px;
+      background: var(--bg-soft); border: 1px solid var(--border); border-radius: 8px;
+    }
+    .view-toggle-btn {
+      padding: 6px 14px; border-radius: 5px; background: transparent;
+      border: none; cursor: pointer; font-family: inherit;
+      font-size: 13px; font-weight: 500; color: var(--text-2);
+      transition: all .12s;
+    }
+    .view-toggle-btn.active {
+      background: white; color: var(--text);
+      box-shadow: 0 1px 2px rgba(18, 17, 15, 0.06);
+    }
+
+    .filter-row {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 18px;
+    }
+    .filter-btn {
+      display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px;
+      border-radius: 6px; background: white; border: 1px solid var(--border);
+      font-size: 13px; color: var(--text-2); cursor: pointer; font-family: inherit;
+      position: relative;
+    }
+    .filter-btn:hover { background: var(--bg-soft); }
+    .filter-btn.active {
+      background: var(--primary-light); border-color: #C6DDFB; color: var(--primary);
+    }
+    .filter-btn-caret { color: var(--text-3); }
+    .filter-btn.active .filter-btn-caret { color: var(--primary); }
+    .filter-dropdown {
+      position: absolute; top: calc(100% + 4px); left: 0;
+      background: white; border: 1px solid var(--border); border-radius: 8px;
+      padding: 6px; min-width: 220px; z-index: 10;
+      box-shadow: 0 8px 24px -6px rgba(18, 17, 15, 0.08);
+      display: none;
+    }
+    .filter-dropdown.open { display: block; }
+    .filter-dropdown-item {
+      display: flex; align-items: center; gap: 8px; padding: 7px 10px;
+      border-radius: 5px; font-size: 13px; color: var(--text); cursor: pointer;
+    }
+    .filter-dropdown-item:hover { background: var(--bg-soft); }
+    .filter-dropdown-check {
+      width: 14px; height: 14px; border-radius: 3px; border: 1.5px solid var(--text-4);
+      display: inline-flex; align-items: center; justify-content: center;
+      flex-shrink: 0; font-size: 10px; color: white;
+    }
+    .filter-dropdown-item.checked .filter-dropdown-check {
+      background: var(--primary); border-color: var(--primary);
+    }
+    .filter-dropdown-item.checked .filter-dropdown-check::after {
+      content: '✓';
+    }
+    .filter-clear {
+      font-size: 11px; color: var(--text-3); padding: 6px 10px;
+      border-top: 1px solid var(--border-2); margin-top: 4px;
+      display: flex; justify-content: flex-end; cursor: pointer;
+    }
+    .filter-clear:hover { color: var(--text); }
+
+    .filter-search {
+      margin-left: auto;
+      display: flex; align-items: center; gap: 6px; padding: 7px 10px;
+      border-radius: 6px; background: white; border: 1px solid var(--border);
+      min-width: 220px;
+    }
+    .filter-search-icon { color: var(--text-3); }
+    .filter-search input {
+      border: none; outline: none; flex: 1; font-family: inherit; font-size: 13px;
+      background: transparent; color: var(--text);
+    }
+    .filter-search input::placeholder { color: var(--text-3); }
+
+    .data-table-wrap {
+      background: white; border: 1px solid var(--border);
+      border-radius: var(--radius-lg); overflow: hidden;
+    }
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th {
+      text-align: left; padding: 11px 18px; font-size: 11px; font-weight: 600;
+      color: var(--text-3); background: var(--bg-soft);
+      border-bottom: 1px solid var(--border);
+      letter-spacing: .06em; text-transform: uppercase; white-space: nowrap;
+    }
+    .data-table th.numeric { text-align: right; }
+    .data-table th.sort-active::after {
+      content: ' ▼'; font-size: 9px; color: var(--text-3);
+    }
+    .data-table th:last-child { text-align: center; width: 90px; }
+    .data-table td {
+      padding: 11px 18px; border-bottom: 1px solid var(--border-2);
+      font-size: 13px; color: var(--text); vertical-align: middle;
+    }
+    .data-table tbody tr:hover {
+      background: var(--bg-soft); cursor: pointer;
+    }
+    .data-table tbody tr:last-child td { border-bottom: none; }
+    .data-table td.numeric {
+      text-align: right; font-variant-numeric: tabular-nums; font-weight: 500;
+    }
+    .data-table td:last-child { text-align: center; white-space: nowrap; }
+
+    .saldo-currency {
+      color: inherit; font-weight: inherit; margin-right: 2px;
+    }
+
+    .bank-cell { display: inline-flex; align-items: center; gap: 9px; }
+    .bank-logo {
+      width: 24px; height: 24px; border-radius: 5px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; flex-shrink: 0;
+    }
+    .bank-logo-mercantil { background: #FFE6E6; color: #C41E1E; }
+    .bank-logo-bbva { background: #EEF8FF; color: #184EB5; }
+    .bank-logo-bancamiga { background: #FFF6CC; color: #A37400; }
+    .bank-logo-activo { background: #C9F1E0; color: #156F49; }
+    .bank-logo-bnc { background: #F6ECFD; color: #641FA3; }
+    .bank-logo-cash { background: #ECE7DD; color: var(--text-2); }
+    .bank-name { font-weight: 500; color: var(--text); }
+
+    .cuenta-num {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      color: var(--text-2); font-size: 12.5px;
+    }
+    .compania-text { color: var(--text-2); font-size: 12.5px; }
+    .divisa-tag {
+      display: inline-block;
+      font-size: 11px; font-weight: 600; color: var(--text-3);
+      padding: 2px 7px; background: var(--bg-soft); border: 1px solid var(--border);
+      border-radius: 4px; letter-spacing: .04em;
+    }
+    .last-sync { font-size: 12px; color: var(--text-2); }
+    .row-sync-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; border-radius: 6px;
+      background: var(--bg-soft); border: 1px solid var(--border);
+      color: var(--text-2); cursor: pointer; font-family: inherit;
+      margin-right: 4px;
+    }
+    .row-sync-btn:hover { background: var(--primary-light); color: var(--primary); border-color: #C6DDFB; }
+    .row-sync-btn svg { width: 13px; height: 13px; }
+    .row-sync-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .pill {
+      display: inline-flex; align-items: center; justify-content: flex-start;
+      padding: 3px 10px; border-radius: var(--radius-sm);
+      font-size: 11px; font-weight: 500; color: var(--text);
+      background: var(--bg-soft); border: none; line-height: 1.5;
+    }
+    .pill-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      margin-right: 6px; flex-shrink: 0;
+    }
+    .pill-ok      { background: #D6E8D5; }
+    .pill-syncing { background: #E4ECF7; }
+    .pill-warn    { background: #F7EDD0; }
+    .pill-error   { background: #FFE6E6; }
+    .pill-review  { background: #ECE7DD; }
+    .pill-ok      .pill-dot { background: #1A8C5B; }
+    .pill-syncing .pill-dot { background: #1C77F4; }
+    .pill-warn    .pill-dot { background: #CC9500; }
+    .pill-error   .pill-dot { background: #C41E1E; }
+    .pill-review  .pill-dot { background: #857D73; }
+    .pill-manual {
+      color: var(--text-3); font-size: 13px; font-weight: 400;
+    }
+
+    .user-mask { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--text-2); font-size: 12.5px; }
+
+    .twofa-tag {
+      display: inline-block; font-size: 11px; font-weight: 500;
+      padding: 2px 8px; border-radius: 4px;
+      background: var(--bg-soft); border: 1px solid var(--border); color: var(--text-2);
+    }
+    .twofa-tag.auto {
+      background: var(--primary-light); border-color: #C6DDFB; color: var(--primary);
+    }
+    .twofa-tag.muted { color: var(--text-3); }
+
+    .view-pane { display: block; }
+    .view-pane.hidden { display: none; }
+
+    .icon { display: inline-block; vertical-align: middle; }
+  </style>
+</head>
+<body>
+  <div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sb-top">
+        <div class="sb-brand">
+          <div class="sb-logo">T</div>
+          <span>Tesote</span>
+          <span class="sb-pro">PRO</span>
+        </div>
+      </div>
+
+      <div class="sb-search">
+        <span class="icon">🔍</span>
+        <span>Buscar</span>
+        <span class="kbd">⌘K</span>
+      </div>
+
+      <div class="sb-section">
+        <div class="sb-section-label">Empresa</div>
+        <div class="sb-item"><span class="icon">🏠</span>Inicio</div>
+      </div>
+
+      <div class="sb-section">
+        <div class="sb-section-label">Tesote Connect</div>
+        <div class="sb-item active"><span class="icon">💰</span>Saldos</div>
+        <div class="sb-item"><span class="icon">📋</span>Transacciones</div>
+        <div class="sb-item"><span class="icon">🔗</span>Conexiones bancarias</div>
+      </div>
+
+      <div class="sb-section">
+        <div class="sb-section-label">Tesote Pagos · Cobros</div>
+        <div class="sb-item"><span class="icon">📤</span>Pagos<span class="sb-item-count">12</span></div>
+        <div class="sb-item"><span class="icon">📥</span>Cobros<span class="sb-item-count">8</span></div>
+        <div class="sb-item"><span class="icon">👥</span>Contrapartes</div>
+      </div>
+
+      <div class="sb-section">
+        <div class="sb-section-label">Tesote IA</div>
+        <div class="sb-item"><span class="icon">✨</span>Asistente</div>
+      </div>
+
+      <div class="sb-bottom">
+        <div class="sb-user">
+          <div class="sb-user-avatar">LP</div>
+          <div>
+            <div class="sb-user-name">Luis Pulgar</div>
+            <div class="sb-user-sub">TST Servicios y Consultoría</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+
+      <div class="topbar">
+        <div class="topbar-spacer"></div>
+        <button class="topbar-btn-primary"><span class="icon">↔</span>Mover dinero</button>
+        <div class="topbar-icon">💬</div>
+        <div class="topbar-icon">🔔</div>
+        <div class="topbar-icon">⚙</div>
+      </div>
+
+      <div class="content">
+
+        <div class="page-head">
+          <div class="page-title">Saldos</div>
+          <div class="page-meta">
+            <span>6 conexiones</span>
+            <span class="page-meta-dot">·</span>
+            <span>14 cuentas</span>
+            <span class="page-meta-dot">·</span>
+            <span>Última actualización: hace 8h</span>
+            <span class="page-meta-dot">·</span>
+            <span class="page-meta-warning">⚠ 2 necesitan atención</span>
+          </div>
+        </div>
+
+        <div class="banner">
+          <div class="banner-icon">!</div>
+          <div class="banner-content">
+            <div class="banner-title">2 conexiones necesitan atención</div>
+            <div class="banner-sub">BBVA: requiere re-autenticación (2 cuentas) · Banco Activo: sync falló hace 1 semana (2 cuentas)</div>
+          </div>
+          <button class="banner-cta">Ver conexiones →</button>
+        </div>
+
+        <!-- SALDOS POR MONEDA STRIP — values recalculate on filter -->
+        <div class="saldos-strip">
+          <div class="saldo-card" id="card-ves">
+            <div class="saldo-card-currency">VES <span class="saldo-card-filtered" id="ves-filtered-tag" style="display:none">filtrado</span></div>
+            <div class="saldo-card-amount"><span id="ves-amount">Bs. 23,662,290</span><span class="saldo-card-cents" id="ves-cents">.05</span></div>
+            <div class="saldo-card-meta"><span id="ves-count">7</span> cuentas · <span class="saldo-card-bcv">≈ <span id="ves-bcv">$46,322.27</span> al BCV <span class="saldo-card-bcv-arrow">↗</span></span></div>
+            <div class="saldo-card-sub">Tasa BCV: 1 USD = 510.79 VES · 14/05/2026</div>
+          </div>
+          <div class="saldo-card" id="card-usd">
+            <div class="saldo-card-currency">USD <span class="saldo-card-filtered" id="usd-filtered-tag" style="display:none">filtrado</span></div>
+            <div class="saldo-card-amount"><span id="usd-amount">$411,663</span><span class="saldo-card-cents" id="usd-cents">.47</span></div>
+            <div class="saldo-card-meta"><span id="usd-count">7</span> cuentas</div>
+            <div class="saldo-card-sub">&nbsp;</div>
+          </div>
+          <div class="saldo-card" id="card-eur">
+            <div class="saldo-card-currency">EUR</div>
+            <div class="saldo-card-amount">€0<span class="saldo-card-cents">.00</span></div>
+            <div class="saldo-card-meta">0 cuentas</div>
+            <div class="saldo-card-sub">&nbsp;</div>
+          </div>
+        </div>
+
+        <!-- VIEW TOGGLE — no sync-all on Conexiones (system-decision: individual syncs only) -->
+        <div class="toggle-row">
+          <div class="view-toggle">
+            <button class="view-toggle-btn active" data-view="cuentas">Cuentas</button>
+            <button class="view-toggle-btn" data-view="conexiones">Conexiones bancarias</button>
+          </div>
+        </div>
+
+        <!-- CUENTAS VIEW -->
+        <div class="view-pane" id="view-cuentas">
+
+          <div class="filter-row">
+            <div style="position:relative">
+              <button class="filter-btn" data-filter="compania">Compañía <span class="filter-btn-caret">▾</span></button>
+              <div class="filter-dropdown" data-dropdown="compania">
+                <div class="filter-dropdown-item" data-value="TST CYC"><span class="filter-dropdown-check"></span>TST CYC</div>
+                <div class="filter-dropdown-item" data-value="Tesote Tech"><span class="filter-dropdown-check"></span>Tesote Tech</div>
+                <div class="filter-clear">Limpiar</div>
+              </div>
+            </div>
+            <div style="position:relative">
+              <button class="filter-btn" data-filter="banco">Banco <span class="filter-btn-caret">▾</span></button>
+              <div class="filter-dropdown" data-dropdown="banco">
+                <div class="filter-dropdown-item" data-value="Mercantil"><span class="filter-dropdown-check"></span>Mercantil</div>
+                <div class="filter-dropdown-item" data-value="BBVA Provincial"><span class="filter-dropdown-check"></span>BBVA Provincial</div>
+                <div class="filter-dropdown-item" data-value="Bancamiga"><span class="filter-dropdown-check"></span>Bancamiga</div>
+                <div class="filter-dropdown-item" data-value="Banco Activo"><span class="filter-dropdown-check"></span>Banco Activo</div>
+                <div class="filter-dropdown-item" data-value="BNC"><span class="filter-dropdown-check"></span>BNC</div>
+                <div class="filter-dropdown-item" data-value="Caja Chica"><span class="filter-dropdown-check"></span>Caja Chica</div>
+                <div class="filter-clear">Limpiar</div>
+              </div>
+            </div>
+            <div style="position:relative">
+              <button class="filter-btn" data-filter="estado">Estado <span class="filter-btn-caret">▾</span></button>
+              <div class="filter-dropdown" data-dropdown="estado">
+                <div class="filter-dropdown-item" data-value="ok"><span class="filter-dropdown-check"></span>Sincronizada</div>
+                <div class="filter-dropdown-item" data-value="syncing"><span class="filter-dropdown-check"></span>Sincronizando</div>
+                <div class="filter-dropdown-item" data-value="warn"><span class="filter-dropdown-check"></span>Requiere atención</div>
+                <div class="filter-dropdown-item" data-value="manual"><span class="filter-dropdown-check"></span>Manual</div>
+                <div class="filter-clear">Limpiar</div>
+              </div>
+            </div>
+            <div style="position:relative">
+              <button class="filter-btn" data-filter="divisa">Divisa <span class="filter-btn-caret">▾</span></button>
+              <div class="filter-dropdown" data-dropdown="divisa">
+                <div class="filter-dropdown-item" data-value="VES"><span class="filter-dropdown-check"></span>VES</div>
+                <div class="filter-dropdown-item" data-value="USD"><span class="filter-dropdown-check"></span>USD</div>
+                <div class="filter-clear">Limpiar</div>
+              </div>
+            </div>
+            <div class="filter-search">
+              <span class="filter-search-icon">🔍</span>
+              <input type="text" placeholder="Buscar cuenta..." id="search-cuentas" />
+            </div>
+          </div>
+
+          <div class="data-table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Compañía</th>
+                  <th>Banco</th>
+                  <th>Cuenta</th>
+                  <th class="numeric sort-active">Saldo</th>
+                  <th>Divisa</th>
+                  <th>Estado</th>
+                  <th>Último sync</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr data-compania="TST CYC" data-banco="BNC" data-divisa="VES" data-amount="14840000.00" data-estado="ok">
+                  <td><span class="compania-text">TST CYC</span></td>
+                  <td><span class="bank-cell"><span class="bank-logo bank-logo-bnc">B</span><span class="bank-name">BNC</span></span></td>
+                  <td><span class="cuenta-num">••5097</span></td>
+                  <td class="numeric"><span class="saldo-currency">Bs.</span>14,840,000.00</td>
+                  <td><span class="divisa-tag">VES</span></td>
+                  <td><span class="pill pill-ok"><span class="pill-dot"></span>Sincronizada</span></td>
+                  <td><span class="last-sync">hace 2h</span></td>
+                </tr>
+                <tr data-compania="TST CYC" data-banco="Bancamiga" data-divisa="VES" data-amount="8251012.05" data-estado="ok">
+                  <td><span class="compania-text">TST CYC</span></td>
+                  <td><span class="bank-cell"><span class="bank-logo bank-logo-bancamiga">B</span><span class="bank-name">Bancamiga</span></span></td>
+                  <td><span class="cuenta-num">••2244</span></td>
+                  <td class="numeric"><span class="saldo-currency">Bs.</span>8,251,012.05</td>
+                  <td><span class="divisa-tag">VES</span></td>
+                  <td><span class="pill pill-ok"><span class="pill-dot"></span>Sincronizada</span></td>
+                  <td><span class="last-sync">hace 4h</span></td>
+                </tr>
+                <tr data-compania="TST CYC" data-banco="Mercantil" data-divisa="VES" data-amount="475056.87" data-estado="ok">
+                  <td><span class="compania-text">TST CYC</span></td>
+                  <td><span class="bank-cell"><span class="bank-logo bank-logo-mercantil">M</span><span class="bank-name">Mercantil</span></span></td>
+                  <td><span class="cuenta-num">••6733</span></td>
+                  <td class="numeric"><span class="saldo-currency">Bs.</span>475,056.87</td>
+                  <td><span class="divisa-tag">VES</span></td>
+                  <td><span class="pill pill-ok"><span class="pill-dot"></span>Sincronizada</span></td>
+                  <td><span class="last-sync">hace 8h</span></td>
+                </tr>
+                <tr data-compania="Tesote Tech" data-banco="BNC" data-divisa="USD" data-amount="280630.75" data-estado="ok">
+                  <td><span class="compania-text">Tesote Tech</span></td>
+                  <td><span class="bank-cell"><span class="bank-logo bank-logo-bnc">B</span><span class="bank-name">BNC</span></span></td>
+                  <td><span class="cuenta-num">••1729</span></td>
+                  <td class="numeric"><span class="saldo-currency">$</span>280,630.75</td>
+                  <td><span class="divisa-tag">USD</span></td>
+                  <td><span class="pill pill-ok"><span class="pill-dot"></span>Sincronizada</span></td>
+                  <td><span class="last-sync">hace 2h</span></td>
+                </tr>
+                <tr data-compania="Tesote Tech" data-banco="Bancamiga" data-divisa="USD" data-amount="128440.12" data-estado="ok">
+                  <td><span class="compania-text">Tesote Tech</span></td>
+                  <td><span class="bank-cell"><span class="bank-logo bank-logo-bancamiga">B</span><span class="bank-name">Bancamiga</span></span></td>
+                  <td><span class="cuenta-num">••2701</span></td>
+                  <td class="numeric"><span class="saldo-currency">$</span>128,440.12</td>
+                  <td><span class="divisa-tag">USD</span></td>
+                  <td><span class="pill pill-ok"><span class="pill-dot"></span>Sincronizada</span></td>
+                  <td><span class="last-sync">hace 4h</span></td>
+                </tr>
+                <tr data-compania="TST CYC" data-banco="Bancamiga" data-divisa="VES" data-amount="43500.00" data-estado="syncing">
+                  <td><span class="compania-text">TST CYC</span></td>
+                  <td><span class="bank-cell"><span class="bank-logo bank-logo-bancamiga">B</span><span class="bank-name">Bancamiga</span></span></td>
+                  <td><span class="cuenta-num">••2245</span></td>
+                  <td class="numeric"><span class="saldo-currency">Bs.</span>43,500.00</td>
+                  <td><span class="divisa-tag">VES</span></td>
+                  <td><span class="pill pill-syncing"><span class="pill-dot"></span>Sincronizando</span></td>
+                  <td><span class="last-sync">hace 4h</span></td>
+                </tr>
+                <tr data-compania="TST CYC" data-banco="Banco Activo" data-divisa="VES" data-amount="31030.83" data-estado="warn">
+                  <td><span class="compania-text">TST CYC</span></td>
+                  <td><span class="bank-cell"><span class="bank-logo bank-logo-activo">A</span><span class="bank-name">Banco Activo</span></span></td>
+                  <td><span class="cuenta-num">••6280</span></td>
+                  <td class="numeric"><span class="saldo-currency">Bs.</span>31,030.83</td>
+                  <td><span class="divisa-tag">VES</span></td>
+                  <td><span class="pill pill-warn"><span class="pill-dot"></span>Requiere atención</span></td>
+                  <td><span class="last-sync">hace 1 sem</span></td>
+                </tr>
+                <tr data-compania="TST CYC" data-banco="BBVA Provincial" data-divisa="VES" data-amount="18490.30" data-estado="warn">
+                  <td><span class="compania-text">TST CYC</span></td>
+                  <td><span class="bank-cell"><span class="bank-logo bank-logo-bbva">B</span><span class="bank-name">BBVA Provincial</span></span></td>
+                  <td><span class="cuenta-num">••7084</span></td>
+                  <td class="numeric"><span class="saldo-currency">Bs.</span>18,490.30</td>
+                  <td><span class="divisa-tag">VES</span></td>
+                  <td><span class="pill pill-warn"><span class="pill-dot"></span>Requiere atención</span></td>
+                  <td><span class="last-sync">hace 10h</span></td>
+                </tr>
+                <tr data-compania="Tesote Tech" data-banco="Caja Chica" data-divisa="VES" data-amount="3200.00" data-estado="manual">
+                  <td><span class="compania-text">Tesote Tech</span></td>
+                  <td><span class="bank-cell"><span class="bank-logo bank-logo-cash">$</span><span class="bank-name">Caja Chica</span></span></td>
+                  <td><span class="cuenta-num">caja-tst</span></td>
+                  <td class="numeric"><span class="saldo-currency">Bs.</span>3,200.00</td>
+                  <td><span class="divisa-tag">VES</span></td>
+                  <td><span class="pill-manual">—</span></td>
+                  <td><span class="last-sync">—</span></td>
+                </tr>
+                <tr data-compania="Tesote Tech" data-banco="Mercantil" data-divisa="USD" data-amount="1744.88" data-estado="ok">
+                  <td><span class="compania-text">Tesote Tech</span></td>
+                  <td><span class="bank-cell"><span class="bank-logo bank-logo-mercantil">M</span><span class="bank-name">Mercantil</span></span></td>
+                  <td><span class="cuenta-num">••0921</span></td>
+                  <td class="numeric"><span class="saldo-currency">$</span>1,744.88</td>
+                  <td><span class="divisa-tag">USD</span></td>
+                  <td><span class="pill pill-ok"><span class="pill-dot"></span>Sincronizada</span></td>
+                  <td><span class="last-sync">hace 8h</span></td>
+                </tr>
+                <tr data-compania="TST CYC" data-banco="Caja Chica" data-divisa="USD" data-amount="410.00" data-estado="manual">
+                  <td><span class="compania-text">TST CYC</span></td>
+                  <td><span class="bank-cell"><span class="bank-logo bank-logo-cash">$</span><span class="bank-name">Caja Chica</span></span></td>
+                  <td><span class="cuenta-num">caja-usd</span></td>
+                  <td class="numeric"><span class="saldo-currency">$</span>410.00</td>
+                  <td><span class="divisa-tag">USD</span></td>
+                  <td><span class="pill-manual">—</span></td>
+                  <td><span class="last-sync">—</span></td>
+                </tr>
+                <tr data-compania="TST CYC" data-banco="BBVA Provincial" data-divisa="USD" data-amount="342.10" data-estado="warn">
+                  <td><span class="compania-text">TST CYC</span></td>
+                  <td><span class="bank-cell"><span class="bank-logo bank-logo-bbva">B</span><span class="bank-name">BBVA Provincial</span></span></td>
+                  <td><span class="cuenta-num">••7094</span></td>
+                  <td class="numeric"><span class="saldo-currency">$</span>342.10</td>
+                  <td><span class="divisa-tag">USD</span></td>
+                  <td><span class="pill pill-warn"><span class="pill-dot"></span>Requiere atención</span></td>
+                  <td><span class="last-sync">hace 10h</span></td>
+                </tr>
+                <tr data-compania="TST CYC" data-banco="Mercantil" data-divisa="USD" data-amount="95.62" data-estado="ok">
+                  <td><span class="compania-text">TST CYC</span></td>
+                  <td><span class="bank-cell"><span class="bank-logo bank-logo-mercantil">M</span><span class="bank-name">Mercantil</span></span></td>
+                  <td><span class="cuenta-num">••3755</span></td>
+                  <td class="numeric"><span class="saldo-currency">$</span>95.62</td>
+                  <td><span class="divisa-tag">USD</span></td>
+                  <td><span class="pill pill-ok"><span class="pill-dot"></span>Sincronizada</span></td>
+                  <td><span class="last-sync">hace 8h</span></td>
+                </tr>
+                <tr data-compania="TST CYC" data-banco="Banco Activo" data-divisa="USD" data-amount="0.00" data-estado="warn">
+                  <td><span class="compania-text">TST CYC</span></td>
+                  <td><span class="bank-cell"><span class="bank-logo bank-logo-activo">A</span><span class="bank-name">Banco Activo</span></span></td>
+                  <td><span class="cuenta-num">••3543</span></td>
+                  <td class="numeric"><span class="saldo-currency">$</span>0.00</td>
+                  <td><span class="divisa-tag">USD</span></td>
+                  <td><span class="pill pill-warn"><span class="pill-dot"></span>Requiere atención</span></td>
+                  <td><span class="last-sync">hace 1 sem</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+
+        <!-- CONEXIONES VIEW — no sync-all, individual syncs, 2FA column, richer statuses -->
+        <div class="view-pane hidden" id="view-conexiones">
+
+          <div class="filter-row">
+            <button class="filter-btn">Compañía <span class="filter-btn-caret">▾</span></button>
+            <button class="filter-btn">Estado <span class="filter-btn-caret">▾</span></button>
+            <button class="filter-btn">2FA <span class="filter-btn-caret">▾</span></button>
+            <div class="filter-search">
+              <span class="filter-search-icon">🔍</span>
+              <input type="text" placeholder="Buscar conexión..." />
+            </div>
+          </div>
+
+          <div class="data-table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Conexión</th>
+                  <th>Usuario</th>
+                  <th>Entidades</th>
+                  <th>Cuentas</th>
+                  <th>Estado</th>
+                  <th>Último sync</th>
+                  <th>2FA</th>
+                  <th>Sync</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="bank-cell"><span class="bank-logo bank-logo-mercantil">M</span><span class="bank-name">Mercantil</span></span></td>
+                  <td><span class="user-mask">l...@25</span></td>
+                  <td><span class="compania-text">TST CYC · Tesote Tech</span></td>
+                  <td>3 cuentas</td>
+                  <td><span class="pill pill-ok"><span class="pill-dot"></span>Activa</span></td>
+                  <td><span class="last-sync">hace 8h</span></td>
+                  <td><span class="twofa-tag auto">Auto</span></td>
+                  <td>
+                    <button class="row-sync-btn" title="Sincronizar"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 8a6 6 0 1 1-2-4.47M14 3v3h-3"/></svg></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="bank-cell"><span class="bank-logo bank-logo-bbva">B</span><span class="bank-name">BBVA Provincial</span></span></td>
+                  <td><span class="user-mask">l...@7</span></td>
+                  <td><span class="compania-text">TST CYC</span></td>
+                  <td>2 cuentas</td>
+                  <td><span class="pill pill-warn"><span class="pill-dot"></span>Cambio credenciales</span></td>
+                  <td><span class="last-sync">hace 10h</span></td>
+                  <td><span class="twofa-tag">Sí</span></td>
+                  <td>
+                    <button class="row-sync-btn" disabled title="Re-autentica primero"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 8a6 6 0 1 1-2-4.47M14 3v3h-3"/></svg></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="bank-cell"><span class="bank-logo bank-logo-bancamiga">B</span><span class="bank-name">Bancamiga</span></span></td>
+                  <td><span class="user-mask">l...@25</span></td>
+                  <td><span class="compania-text">TST CYC · Tesote Tech</span></td>
+                  <td>3 cuentas</td>
+                  <td><span class="pill pill-syncing"><span class="pill-dot"></span>Sincronizando</span></td>
+                  <td><span class="last-sync">hace 4h</span></td>
+                  <td><span class="twofa-tag auto">Auto</span></td>
+                  <td>
+                    <button class="row-sync-btn" disabled title="Sync en curso"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 8a6 6 0 1 1-2-4.47M14 3v3h-3"/></svg></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="bank-cell"><span class="bank-logo bank-logo-activo">A</span><span class="bank-name">Banco Activo</span></span></td>
+                  <td><span class="user-mask">l...@92</span></td>
+                  <td><span class="compania-text">TST CYC</span></td>
+                  <td>2 cuentas</td>
+                  <td><span class="pill pill-error"><span class="pill-dot"></span>Banco caído</span></td>
+                  <td><span class="last-sync">hace 1 sem</span></td>
+                  <td><span class="twofa-tag">Sí</span></td>
+                  <td>
+                    <button class="row-sync-btn" title="Sincronizar"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 8a6 6 0 1 1-2-4.47M14 3v3h-3"/></svg></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="bank-cell"><span class="bank-logo bank-logo-bnc">B</span><span class="bank-name">BNC</span></span></td>
+                  <td><span class="user-mask">l...@44</span></td>
+                  <td><span class="compania-text">TST CYC · Tesote Tech</span></td>
+                  <td>2 cuentas</td>
+                  <td><span class="pill pill-review"><span class="pill-dot"></span>En revisión</span></td>
+                  <td><span class="last-sync">hace 2h</span></td>
+                  <td><span class="twofa-tag auto">Auto</span></td>
+                  <td>
+                    <button class="row-sync-btn" disabled title="Tesote está revisando"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 8a6 6 0 1 1-2-4.47M14 3v3h-3"/></svg></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="bank-cell"><span class="bank-logo bank-logo-cash">$</span><span class="bank-name">Caja Chica Tesote</span></span></td>
+                  <td><span class="user-mask">—</span></td>
+                  <td><span class="compania-text">Tesote Tech · TST CYC</span></td>
+                  <td>2 cuentas</td>
+                  <td><span class="pill-manual">—</span></td>
+                  <td><span class="last-sync">—</span></td>
+                  <td><span class="twofa-tag muted">—</span></td>
+                  <td>
+                    <button class="row-sync-btn" disabled title="Manual — no sync"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 8a6 6 0 1 1-2-4.47M14 3v3h-3"/></svg></button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+
+  <script>
+    // ─── View toggle ───
+    const toggleButtons = document.querySelectorAll('.view-toggle-btn');
+    const cuentasView = document.getElementById('view-cuentas');
+    const conexionesView = document.getElementById('view-conexiones');
+
+    toggleButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        toggleButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        if (btn.dataset.view === 'cuentas') {
+          cuentasView.classList.remove('hidden');
+          conexionesView.classList.add('hidden');
+        } else {
+          cuentasView.classList.add('hidden');
+          conexionesView.classList.remove('hidden');
+        }
+      });
+    });
+
+    // ─── Filters & search (Cuentas view) ───
+    const cuentasRows = Array.from(document.querySelectorAll('#view-cuentas tbody tr'));
+    const searchInput = document.getElementById('search-cuentas');
+    const filterButtons = document.querySelectorAll('#view-cuentas .filter-btn[data-filter]');
+    const filterDropdowns = document.querySelectorAll('#view-cuentas .filter-dropdown');
+    // active filters: { compania: Set, banco: Set, estado: Set, divisa: Set }
+    const activeFilters = { compania: new Set(), banco: new Set(), estado: new Set(), divisa: new Set() };
+
+    // Toggle dropdown open/close
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const filterKey = btn.dataset.filter;
+        const dropdown = document.querySelector(`#view-cuentas .filter-dropdown[data-dropdown="${filterKey}"]`);
+        // close other dropdowns
+        filterDropdowns.forEach(d => { if (d !== dropdown) d.classList.remove('open'); });
+        dropdown.classList.toggle('open');
+      });
+    });
+    document.addEventListener('click', () => {
+      filterDropdowns.forEach(d => d.classList.remove('open'));
+    });
+    filterDropdowns.forEach(d => d.addEventListener('click', e => e.stopPropagation()));
+
+    // Filter selection
+    document.querySelectorAll('#view-cuentas .filter-dropdown-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const dropdown = item.closest('.filter-dropdown');
+        const filterKey = dropdown.dataset.dropdown;
+        const value = item.dataset.value;
+        if (activeFilters[filterKey].has(value)) {
+          activeFilters[filterKey].delete(value);
+          item.classList.remove('checked');
+        } else {
+          activeFilters[filterKey].add(value);
+          item.classList.add('checked');
+        }
+        updateFilterBtnState(filterKey);
+        applyFilters();
+      });
+    });
+
+    // Clear-all per dropdown
+    document.querySelectorAll('#view-cuentas .filter-clear').forEach(clearBtn => {
+      clearBtn.addEventListener('click', () => {
+        const dropdown = clearBtn.closest('.filter-dropdown');
+        const filterKey = dropdown.dataset.dropdown;
+        activeFilters[filterKey].clear();
+        dropdown.querySelectorAll('.filter-dropdown-item').forEach(i => i.classList.remove('checked'));
+        updateFilterBtnState(filterKey);
+        applyFilters();
+      });
+    });
+
+    function updateFilterBtnState(filterKey) {
+      const btn = document.querySelector(`#view-cuentas .filter-btn[data-filter="${filterKey}"]`);
+      if (activeFilters[filterKey].size > 0) btn.classList.add('active');
+      else btn.classList.remove('active');
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener('input', applyFilters);
+    }
+
+    function applyFilters() {
+      const q = (searchInput?.value || '').toLowerCase();
+      cuentasRows.forEach(row => {
+        const matchSearch = !q || row.textContent.toLowerCase().includes(q);
+        const matchCompania = activeFilters.compania.size === 0 || activeFilters.compania.has(row.dataset.compania);
+        const matchBanco = activeFilters.banco.size === 0 || activeFilters.banco.has(row.dataset.banco);
+        const matchEstado = activeFilters.estado.size === 0 || activeFilters.estado.has(row.dataset.estado);
+        const matchDivisa = activeFilters.divisa.size === 0 || activeFilters.divisa.has(row.dataset.divisa);
+        row.style.display = (matchSearch && matchCompania && matchBanco && matchEstado && matchDivisa) ? '' : 'none';
+      });
+      recalculateTotals();
+    }
+
+    function recalculateTotals() {
+      let vesTotal = 0, vesCount = 0, usdTotal = 0, usdCount = 0;
+      cuentasRows.forEach(row => {
+        if (row.style.display === 'none') return;
+        const amount = parseFloat(row.dataset.amount || '0');
+        if (row.dataset.divisa === 'VES') { vesTotal += amount; vesCount++; }
+        else if (row.dataset.divisa === 'USD') { usdTotal += amount; usdCount++; }
+      });
+
+      const filtered = Object.values(activeFilters).some(s => s.size > 0) || (searchInput && searchInput.value.length > 0);
+      document.getElementById('ves-filtered-tag').style.display = filtered ? '' : 'none';
+      document.getElementById('usd-filtered-tag').style.display = filtered ? '' : 'none';
+
+      document.getElementById('ves-amount').textContent = 'Bs. ' + formatInt(vesTotal);
+      document.getElementById('ves-cents').textContent = '.' + formatCents(vesTotal);
+      document.getElementById('ves-count').textContent = vesCount;
+      const bcvRate = 510.79;
+      document.getElementById('ves-bcv').textContent = '$' + formatNumber(vesTotal / bcvRate);
+
+      document.getElementById('usd-amount').textContent = '$' + formatInt(usdTotal);
+      document.getElementById('usd-cents').textContent = '.' + formatCents(usdTotal);
+      document.getElementById('usd-count').textContent = usdCount;
+    }
+
+    function formatInt(n) {
+      return Math.floor(n).toLocaleString('en-US');
+    }
+    function formatCents(n) {
+      return Math.abs(n - Math.floor(n)).toFixed(2).slice(2);
+    }
+    function formatNumber(n) {
+      return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+  </script>
+</body>
+</html>

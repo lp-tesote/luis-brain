@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tesote · Movimientos (v7 — v1.1 retrofit against production)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Geist+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* Lunour brand */
+      --primary: #1661E2;
+      --primary-hover: #184EB5;
+      --primary-light: #EEF8FF;
+      --primary-border: #C6DDFB;
+      --text: #12110F;
+      --text-2: #635D55;
+      --text-3: #857D73;
+      --text-4: #C7C0B5;
+      --border: #E8E3DA;
+      --border-2: #F2EEE6;
+      --bg-sidebar: #F7F5F0;
+      --bg-main: #FFFFFF;
+      --bg-soft: #FCFBF7;
+      --hover: #F2EEE6;
+      --active: #E8E3DA;
+      --green: #1A8C5B;
+      --green-text: #0F6E45;
+      --yellow: #CC9500;
+      --red: #C41E1E;
+
+      /* Pill family (locked) */
+      --pill-paid: #D6E8D5;
+      --pill-new: #E4ECF7;
+      --pill-pending: #F7EDD0;
+      --pill-overdue: #F8D8C0;
+      --pill-draft: #ECE7DD;
+
+      --radius: 8px;
+      --radius-lg: 12px;
+      --radius-sm: 4px;
+      --shadow: 0 1px 2px rgba(18, 17, 15, 0.04);
+
+      --font-display: 'Inter Tight', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Aspekta', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'Geist Mono', 'SF Mono', 'Menlo', monospace;
+    }
+
+    body {
+      font-family: var(--font-body);
+      font-size: 14px;
+      background: var(--bg-main);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      font-feature-settings: 'cv11', 'ss01';
+    }
+
+    h1, h2, h3, .page-title, .totals-row-amount, .panel-hero-amount {
+      font-family: var(--font-display);
+      letter-spacing: -.01em;
+    }
+
+    .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+    .app { display: grid; grid-template-columns: 224px 1fr; min-height: 100vh; }
+
+    .ic { display: inline-block; vertical-align: middle; width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+    .ic-sm { width: 13px; height: 13px; }
+    .ic-lg { width: 18px; height: 18px; }
+    .ic-xl { width: 28px; height: 28px; }
+
+    /* ─── SIDEBAR ──────────────────────────────────────────────────────────── */
+    .sidebar { background: var(--bg-sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+    .sb-top { display: flex; align-items: center; padding: 14px 14px 10px; }
+    .sb-brand { display: flex; align-items: center; gap: 9px; font-size: 14px; font-weight: 600; }
+    .sb-logo { width: 24px; height: 24px; border-radius: 6px; background: var(--text); display: flex; align-items: center; justify-content: center; color: white; font-family: var(--font-display); font-weight: 700; font-size: 13px; }
+    .sb-pro { font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 4px; background: var(--text); color: white; letter-spacing: .03em; margin-left: 7px; }
+    .sb-search { margin: 0 10px 8px; display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 6px; background: var(--bg-main); border: 1px solid var(--border); cursor: pointer; color: var(--text-3); font-size: 13px; }
+    .sb-search .kbd { margin-left: auto; font-size: 10px; font-family: var(--font-mono); padding: 1px 5px; border-radius: 3px; background: var(--bg-soft); border: 1px solid var(--border); }
+    .sb-section { padding: 4px 10px 2px; }
+    .sb-section-label { padding: 10px 10px 6px; font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); }
+    .sb-item { display: flex; align-items: center; gap: 10px; padding: 6px 10px; border-radius: 6px; font-size: 13px; color: var(--text-2); cursor: pointer; }
+    .sb-item:hover { background: var(--hover); color: var(--text); }
+    .sb-item.active { background: var(--active); color: var(--text); font-weight: 500; }
+    .sb-item .ic { color: var(--text-3); }
+    .sb-item.active .ic, .sb-item:hover .ic { color: var(--text-2); }
+    .sb-item-count { margin-left: auto; font-size: 11px; font-weight: 500; color: var(--text-3); background: var(--bg-main); padding: 1px 6px; border-radius: 10px; border: 1px solid var(--border); }
+    .sb-bottom { margin-top: auto; padding: 10px; border-top: 1px solid var(--border); }
+    .sb-user { display: flex; align-items: center; gap: 10px; padding: 7px 8px; border-radius: 6px; }
+    .sb-user-avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--primary); color: white; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; }
+    .sb-user-name { font-size: 13px; font-weight: 500; }
+    .sb-user-sub { font-size: 11px; color: var(--text-3); }
+
+    .main { display: flex; flex-direction: column; min-width: 0; }
+    .topbar { height: 52px; padding: 0 22px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); }
+    .topbar-spacer { flex: 1; }
+    .topbar-icon { width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-2); }
+    .topbar-icon:hover { background: var(--hover); color: var(--text); }
+
+    .content { flex: 1; overflow-y: auto; max-width: 1440px; width: 100%; margin: 0 auto; padding: 28px 36px 60px; }
+
+    .page-head { margin-bottom: 22px; }
+    .page-title { font-size: 26px; font-weight: 700; }
+    .page-meta { display: flex; align-items: center; gap: 8px; margin-top: 6px; font-size: 13px; color: var(--text-2); flex-wrap: wrap; }
+    .page-meta-dot { color: var(--text-4); }
+
+    /* ─── TOTALS STRIP (compact stacked cards) ─────────────────────────────── */
+    .totals-strip { display: grid; grid-template-columns: repeat(2, 1fr); border: 1px solid var(--border); border-radius: var(--radius); background: white; overflow: hidden; margin-bottom: 18px; }
+    .totals-card { padding: 12px 16px; border-right: 1px solid var(--border); }
+    .totals-card:last-child { border-right: none; }
+    .totals-currency { font-size: 10.5px; font-weight: 600; color: var(--text-3); letter-spacing: .08em; text-transform: uppercase; display: flex; align-items: baseline; gap: 7px; margin-bottom: 8px; }
+    .totals-count { font-weight: 500; color: var(--text-3); letter-spacing: 0; text-transform: none; font-size: 11px; }
+    .totals-filtered-tag { display: inline-block; font-size: 9.5px; font-weight: 600; color: var(--primary); padding: 1px 5px; background: var(--primary-light); border-radius: 3px; letter-spacing: .04em; text-transform: uppercase; }
+    .totals-row { display: grid; grid-template-columns: 80px 1fr; align-items: baseline; padding: 3px 0; gap: 10px; }
+    .totals-row + .totals-row { border-top: 1px dashed var(--border-2); }
+    .totals-row.net { border-top: 1px solid var(--border); padding-top: 6px; margin-top: 2px; }
+    .totals-row-label { font-size: 10.5px; color: var(--text-3); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+    .totals-row.net .totals-row-label { color: var(--text-2); }
+    .totals-row-amount { font-family: var(--font-mono); font-size: 13px; font-weight: 500; color: var(--text); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+    .totals-row-amount.credit { color: var(--green-text); }
+    .totals-row.net .totals-row-amount { font-size: 14px; font-weight: 600; }
+
+    /* ─── FILTER TOOLBAR (production 4-section collapsible) ───────────────── */
+    .filter-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 6px; background: white; font-size: 13px; color: var(--text-2); cursor: pointer; font-family: inherit; border: 1px solid var(--border); }
+    .btn:hover { background: var(--hover); color: var(--text); }
+    .btn.active, .btn[aria-expanded="true"] { background: var(--primary-light); border-color: var(--primary-border); color: var(--primary); }
+    .btn-primary { background: var(--text); color: white; border: none; }
+    .btn-primary:hover { background: var(--primary); color: white; }
+    .btn-ghost { background: transparent; border: 1px solid transparent; color: var(--text-2); }
+    .btn-ghost:hover { background: var(--hover); }
+    .filter-count-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--primary); color: white; font-size: 11px; font-weight: 600; }
+    .filter-search { margin-left: auto; display: flex; align-items: center; gap: 8px; padding: 7px 12px; border-radius: 6px; background: white; border: 1px solid var(--border); width: 280px; }
+    .filter-search input { border: none; outline: none; font-size: 13px; font-family: inherit; color: var(--text); flex: 1; background: transparent; }
+    .filter-search .ic { color: var(--text-3); }
+
+    /* Collapsible filter panel */
+    .filter-panel { background: var(--bg-soft); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; margin-bottom: 14px; display: none; }
+    .filter-panel.open { display: block; }
+    .filter-section + .filter-section { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-2); }
+    .filter-section-title { font-size: 11px; font-weight: 600; color: var(--text-3); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 10px; }
+    .filter-grid { display: grid; gap: 10px 12px; }
+    .filter-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .filter-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+    .filter-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .filter-field { display: flex; flex-direction: column; gap: 5px; }
+    .filter-label { font-size: 11px; font-weight: 500; color: var(--text-2); }
+    .filter-input, .filter-select { padding: 7px 10px; border-radius: 6px; border: 1px solid var(--border); background: white; font-size: 13px; font-family: inherit; color: var(--text); outline: none; }
+    .filter-input:focus, .filter-select:focus { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-light); }
+    .multi-select { display: flex; flex-wrap: wrap; gap: 4px; padding: 4px 6px; border-radius: 6px; border: 1px solid var(--border); background: white; min-height: 32px; align-items: center; cursor: pointer; }
+    .multi-select-chip { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 4px; background: var(--primary-light); color: var(--primary); font-size: 12px; font-weight: 500; }
+    .multi-select-chip-x { cursor: pointer; opacity: .6; }
+    .multi-select-chip-x:hover { opacity: 1; }
+    .multi-select-placeholder { font-size: 12px; color: var(--text-3); padding: 2px 4px; }
+    .filter-radio-group { display: flex; gap: 6px; flex-wrap: wrap; }
+    .filter-radio { display: flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 6px; border: 1px solid var(--border); background: white; font-size: 12px; cursor: pointer; }
+    .filter-radio.selected { border-color: var(--primary); background: var(--primary-light); color: var(--primary); font-weight: 500; }
+    .filter-segmented { display: inline-flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+    .filter-segmented > * { padding: 5px 10px; font-size: 12px; background: white; cursor: pointer; border-right: 1px solid var(--border); }
+    .filter-segmented > *:last-child { border-right: none; }
+    .filter-segmented > .selected { background: var(--primary-light); color: var(--primary); font-weight: 500; }
+    .filter-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border-2); }
+
+    /* Filter chips row */
+    .chips-row { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+    .chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 4px 5px 10px; border-radius: 6px; background: var(--primary-light); border: 1px solid var(--primary-border); font-size: 12.5px; color: var(--primary); white-space: nowrap; }
+    .chip-dim { font-weight: 600; }
+    .chip-sep { opacity: .55; }
+    .chip-value { font-weight: 500; max-width: 220px; overflow: hidden; text-overflow: ellipsis; }
+    .chip-x { cursor: pointer; padding: 2px 5px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; }
+    .chip-x:hover { background: rgba(22, 97, 226, 0.14); }
+    .chip-x svg { width: 10px; height: 10px; }
+    .chips-clear { font-size: 12px; color: var(--text-3); cursor: pointer; padding: 4px 8px; border-radius: 4px; }
+    .chips-clear:hover { background: var(--hover); color: var(--text); }
+
+    /* ─── TABLE (7 cols, 36px rows, table-layout: fixed) ──────────────────── */
+    .table-wrap { border: 1px solid var(--border); border-radius: var(--radius-lg); background: white; overflow: hidden; }
+    table.mov { width: 100%; table-layout: fixed; border-collapse: collapse; }
+    table.mov thead th { font-size: 11px; font-weight: 600; color: var(--text-3); letter-spacing: .04em; text-transform: uppercase; text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--border); background: var(--bg-soft); }
+    table.mov thead th.right { text-align: right; }
+    table.mov thead th.center { text-align: center; }
+    table.mov tbody td { padding: 0 14px; height: 40px; border-bottom: 1px solid var(--border-2); font-size: 13px; vertical-align: middle; overflow: hidden; }
+    table.mov tbody tr:hover td { background: var(--bg-soft); }
+    table.mov tbody tr:last-child td { border-bottom: none; }
+
+    /* Column widths */
+    col.c-date { width: 80px; }
+    col.c-bank-account { width: 220px; }
+    col.c-description { width: auto; } /* flex */
+    col.c-counterparty { width: 220px; }
+    col.c-amount { width: 160px; }
+    col.c-category { width: 150px; }
+    col.c-share { width: 90px; }
+
+    /* Cell content */
+    .cell-date { font-family: var(--font-mono); font-size: 12px; color: var(--text-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .cell-bank-account { display: flex; align-items: center; gap: 8px; white-space: nowrap; overflow: hidden; }
+    .bank-logo { width: 18px; height: 18px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 9.5px; font-weight: 700; color: white; flex-shrink: 0; letter-spacing: .02em; }
+    .bank-logo.bnc   { background: #0C5AB6; }
+    .bank-logo.bane  { background: #E67E22; }
+    .bank-logo.bdv   { background: #16A085; }
+    .bank-logo.ext   { background: #6C5CE7; }
+    .bank-logo.bdt   { background: #C0392B; }
+    .bank-logo.r4    { background: #2C3E50; }
+    .bank-name { font-weight: 500; color: var(--text); }
+    .bank-sep { color: var(--text-4); }
+    .acct-name { color: var(--text-2); }
+    .acct-last4 { font-family: var(--font-mono); color: var(--text-3); font-size: 12px; margin-left: 2px; }
+    .cell-description { display: flex; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .desc-text { overflow: hidden; text-overflow: ellipsis; color: var(--text); }
+    .desc-note-icon { color: var(--text-3); flex-shrink: 0; cursor: help; }
+    .cell-editable { display: inline-flex; align-items: center; gap: 6px; color: var(--text); cursor: pointer; border-radius: 5px; padding: 3px 4px 3px 6px; margin: -3px -4px -3px -6px; overflow: hidden; max-width: 100%; min-height: 24px; }
+    .cell-editable:hover { background: var(--hover); }
+    .cell-editable.empty { color: var(--text-4); }
+    .cell-editable-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0; }
+    .cell-editable-caret { width: 12px; height: 12px; color: var(--text-4); flex-shrink: 0; opacity: .65; }
+    .cell-editable:hover .cell-editable-caret { color: var(--text-2); opacity: 1; }
+    .cp-avatar { width: 20px; height: 20px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 9.5px; font-weight: 700; color: white; flex-shrink: 0; letter-spacing: .02em; }
+    .cp-avatar.empty { background: var(--border); color: var(--text-3); border: 1px dashed var(--text-4); }
+    /* Avatar palette — deterministic from initials */
+    .cp-c-1 { background: #1A8C5B; }
+    .cp-c-2 { background: #1661E2; }
+    .cp-c-3 { background: #C41E1E; }
+    .cp-c-4 { background: #6C5CE7; }
+    .cp-c-5 { background: #CC9500; }
+    .cp-c-6 { background: #E67E22; }
+    .cp-c-7 { background: #16A085; }
+    .cp-c-8 { background: #2C3E50; }
+    .pill { display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 500; color: var(--text); white-space: nowrap; }
+    .pill-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .pill.paid    { background: var(--pill-paid); }
+    .pill.paid .pill-dot    { background: var(--green); }
+    .pill.new     { background: var(--pill-new); }
+    .pill.new .pill-dot     { background: var(--primary); }
+    .pill.pending { background: var(--pill-pending); }
+    .pill.pending .pill-dot { background: var(--yellow); }
+    .pill.overdue { background: var(--pill-overdue); }
+    .pill.overdue .pill-dot { background: var(--red); }
+    .pill.draft   { background: var(--pill-draft); }
+    .pill.draft .pill-dot   { background: var(--text-3); }
+    .cell-amount { font-family: var(--font-mono); text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; display: inline-flex; align-items: baseline; gap: 4px; justify-content: flex-end; width: 100%; }
+    .cell-amount-int { font-size: 13.5px; font-weight: 600; }
+    .cell-amount-dec { font-size: 11px; font-weight: 500; opacity: .60; }
+    .cell-amount.credit .cell-amount-int { color: var(--green-text); }
+    .cell-amount.credit .cell-amount-dec { color: var(--green-text); }
+    .cell-amount.debit .cell-amount-int { color: var(--text); }
+    .cell-amount.debit .cell-amount-dec { color: var(--text); }
+    .cell-amount-ccy { font-family: var(--font-body); font-size: 10px; font-weight: 600; color: var(--text-3); margin-left: 4px; padding: 1px 5px; background: var(--bg-soft); border-radius: 3px; letter-spacing: .04em; }
+    .cell-share { text-align: center; }
+    .share-btn { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 6px; border: none; background: transparent; color: var(--text-3); cursor: pointer; transition: all .12s ease; }
+    .share-btn:hover { background: var(--primary-light); color: var(--primary); }
+
+    /* Pagination */
+    .pagination { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-top: 1px solid var(--border); background: var(--bg-soft); font-size: 12px; color: var(--text-2); }
+    .pagination-perpage { display: flex; align-items: center; gap: 4px; }
+    .pagination-perpage a { padding: 3px 6px; border-radius: 4px; color: var(--text-3); text-decoration: none; cursor: pointer; }
+    .pagination-perpage a:hover { background: var(--hover); color: var(--text); }
+    .pagination-perpage a.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+    .pagination-nav { display: flex; align-items: center; gap: 4px; }
+    .pagination-nav a { padding: 4px 10px; border-radius: 4px; color: var(--text-2); border: 1px solid var(--border); background: white; text-decoration: none; cursor: pointer; }
+    .pagination-nav a:hover { background: var(--hover); color: var(--text); }
+    .pagination-nav a.disabled { color: var(--text-4); pointer-events: none; }
+    .pagination-nav .current { padding: 4px 10px; border-radius: 4px; background: var(--text); color: white; font-weight: 600; }
+
+    /* ─── COMPARTIR (PAPERPLANE) MODAL — STUB ─────────────────────────────── */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(18, 17, 15, 0.36); display: none; align-items: center; justify-content: center; z-index: 50; }
+    .modal-overlay.open { display: flex; }
+    .modal { width: 460px; max-width: 90vw; background: white; border-radius: var(--radius-lg); border: 1px solid var(--border); overflow: hidden; box-shadow: 0 12px 32px rgba(18, 17, 15, 0.12); }
+    .modal-head { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .modal-title { font-family: var(--font-display); font-size: 16px; font-weight: 600; }
+    .modal-close { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-3); }
+    .modal-close:hover { background: var(--hover); color: var(--text); }
+    .modal-body { padding: 18px 20px; }
+    .modal-body .summary { background: var(--bg-soft); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 16px; }
+    .modal-body .summary-row { display: flex; justify-content: space-between; align-items: baseline; padding: 4px 0; font-size: 12.5px; }
+    .modal-body .summary-row .lbl { color: var(--text-3); }
+    .modal-body .summary-row .val { color: var(--text); font-weight: 500; }
+    .modal-body .destinations { display: flex; flex-direction: column; gap: 6px; }
+    .modal-body .destination { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius); cursor: not-allowed; opacity: .55; }
+    .modal-body .destination .ic { color: var(--text-3); }
+    .modal-body .destination .lbl { font-size: 13px; color: var(--text-2); flex: 1; }
+    .modal-body .destination .soon { font-size: 10px; color: var(--text-3); padding: 2px 6px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: 4px; text-transform: uppercase; letter-spacing: .06em; font-weight: 600; }
+    .modal-foot { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; }
+
+    /* Toast */
+    .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--text); color: white; padding: 10px 16px; border-radius: 8px; font-size: 13px; z-index: 60; opacity: 0; pointer-events: none; transition: opacity .18s ease, transform .18s ease; }
+    .toast.show { opacity: 1; transform: translate(-50%, -6px); }
+
+    /* Small helpers */
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+  </style>
+</head>
+<body>
+  <div class="app">
+
+    <!-- ─── SIDEBAR ─────────────────────────────────────────────────────── -->
+    <aside class="sidebar">
+      <div class="sb-top">
+        <div class="sb-brand">
+          <div class="sb-logo">T</div>
+          <span>Tesote</span>
+          <span class="sb-pro">PRO</span>
+        </div>
+      </div>
+      <div class="sb-search">
+        <svg class="ic ic-sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        Buscar
+        <span class="kbd">⌘K</span>
+      </div>
+      <div class="sb-section">
+        <div class="sb-section-label">Connect</div>
+        <div class="sb-item">
+          <svg class="ic" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg>
+          Saldos
+        </div>
+        <div class="sb-item active">
+          <svg class="ic" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h12"/></svg>
+          Movimientos
+          <span class="sb-item-count">234</span>
+        </div>
+        <div class="sb-item">
+          <svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 12a3 3 0 0 0 3 3 3 3 0 0 0 3-3"/></svg>
+          Conexiones
+        </div>
+      </div>
+      <div class="sb-section">
+        <div class="sb-section-label">Business</div>
+        <div class="sb-item">
+          <svg class="ic" viewBox="0 0 24 24"><path d="M3 7h18l-2 12H5L3 7z"/></svg>
+          Pagos
+        </div>
+        <div class="sb-item">
+          <svg class="ic" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M4 10h16"/></svg>
+          Cobros
+        </div>
+        <div class="sb-item">
+          <svg class="ic" viewBox="0 0 24 24"><path d="M6 4h12v6H6z"/><path d="M4 14h16v6H4z"/></svg>
+          Contrapartes
+        </div>
+      </div>
+      <div class="sb-bottom">
+        <div class="sb-user">
+          <div class="sb-user-avatar">M</div>
+          <div>
+            <div class="sb-user-name">Mariel R.</div>
+            <div class="sb-user-sub">Tesote Finance</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ─── MAIN ─────────────────────────────────────────────────────────── -->
+    <main class="main">
+      <div class="topbar">
+        <div class="topbar-spacer"></div>
+        <div class="topbar-icon" title="Ayuda">
+          <svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.8.4-1 .9-1 1.7M12 17h.01"/></svg>
+        </div>
+        <div class="topbar-icon" title="Notificaciones">
+          <svg class="ic" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0v5l1.5 3h-15L6 13z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+        </div>
+      </div>
+
+      <div class="content">
+        <!-- Page head -->
+        <div class="page-head">
+          <h1 class="page-title">Movimientos</h1>
+          <div class="page-meta">
+            <span>Últimos 30 días</span>
+            <span class="page-meta-dot">·</span>
+            <span><strong style="color:var(--text); font-weight:600;" id="page-meta-count">—</strong> movimientos</span>
+            <span class="page-meta-dot">·</span>
+            <span>Última actualización: hace 8h</span>
+          </div>
+        </div>
+
+        <!-- ─── TOTALS STRIP (compact stacked cards) — populated by JS ───── -->
+        <section class="totals-strip" id="totals-strip" aria-label="Resumen del periodo"></section>
+
+        <!-- ─── FILTER TOOLBAR (toggle + presets + search) ──────────────── -->
+        <div class="filter-bar">
+          <button class="btn" id="filter-toggle" aria-expanded="false" onclick="toggleFilters()">
+            <svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M3 5h18l-7 9v6l-4-2v-4z"/></svg>
+            Filtros
+            <span class="filter-count-badge" id="active-filter-count">1</span>
+          </button>
+          <button class="btn" id="presets-btn" onclick="togglePresets()">
+            <svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M6 4h12v16l-6-4-6 4z"/></svg>
+            Filtros Guardados
+            <span class="filter-count-badge" style="background:var(--primary-light); color:var(--primary);">3</span>
+          </button>
+          <button class="btn btn-ghost">
+            <svg class="ic ic-sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+            Exportar
+          </button>
+          <div class="filter-search">
+            <svg class="ic ic-sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input type="text" placeholder="Buscar en todo…" />
+          </div>
+        </div>
+
+        <!-- ─── COLLAPSIBLE FILTER PANEL (production 4-section) ─────────── -->
+        <div class="filter-panel" id="filter-panel">
+          <div class="filter-section">
+            <div class="filter-section-title">Compañías, Cuentas y Bancos</div>
+            <div class="filter-grid cols-3">
+              <div class="filter-field">
+                <div class="filter-label">Cuentas</div>
+                <div class="multi-select"><span class="multi-select-placeholder">Todas las cuentas</span></div>
+              </div>
+              <div class="filter-field">
+                <div class="filter-label">Compañías</div>
+                <div class="multi-select"><span class="multi-select-placeholder">Todas las compañías</span></div>
+              </div>
+              <div class="filter-field">
+                <div class="filter-label">Bancos</div>
+                <div class="multi-select"><span class="multi-select-placeholder">Todos los bancos</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="filter-section">
+            <div class="filter-section-title">Contrapartes y Categorías</div>
+            <div class="filter-grid cols-3">
+              <div class="filter-field">
+                <div class="filter-label">Contrapartes</div>
+                <div class="multi-select"><span class="multi-select-placeholder">Todas las contrapartes</span></div>
+              </div>
+              <div class="filter-field">
+                <div class="filter-label">Con categorías</div>
+                <div class="multi-select"><span class="multi-select-placeholder">Cualquiera</span></div>
+              </div>
+              <div class="filter-field">
+                <div class="filter-label">Sin categorías</div>
+                <div class="multi-select"><span class="multi-select-placeholder">Ninguna excluida</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="filter-section">
+            <div class="filter-section-title">Monto y Financiero</div>
+            <div class="filter-grid cols-4">
+              <div class="filter-field">
+                <div class="filter-label">Divisa</div>
+                <select class="filter-select"><option>Todas</option><option>VES</option><option>USD</option><option>EUR</option></select>
+              </div>
+              <div class="filter-field">
+                <div class="filter-label">Tipo</div>
+                <select class="filter-select"><option>Cualquiera</option><option>Crédito</option><option>Débito</option></select>
+              </div>
+              <div class="filter-field">
+                <div class="filter-label">Cantidad</div>
+                <div class="filter-segmented">
+                  <div class="selected">Cualquier monto</div>
+                  <div>Exacto</div>
+                  <div>Rango</div>
+                </div>
+              </div>
+              <div class="filter-field">
+                <div class="filter-label">Monto exacto</div>
+                <input class="filter-input" type="text" placeholder="0,00" disabled style="opacity:.5;" />
+              </div>
+            </div>
+          </div>
+
+          <div class="filter-section">
+            <div class="filter-section-title">Detalles de Transacción</div>
+            <div class="filter-grid cols-2" style="margin-bottom:10px;">
+              <div class="filter-field">
+                <div class="filter-label">Periodo de tiempo</div>
+                <div class="filter-radio-group">
+                  <div class="filter-radio">Hoy</div>
+                  <div class="filter-radio">Últimos 7 días</div>
+                  <div class="filter-radio selected">Últimos 30 días</div>
+                  <div class="filter-radio">Mes anterior</div>
+                  <div class="filter-radio">Este mes</div>
+                  <div class="filter-radio">Personalizado</div>
+                </div>
+              </div>
+              <div class="filter-field">
+                <div class="filter-label">Referencia</div>
+                <div style="display:flex; gap:6px;">
+                  <select class="filter-select" style="width:120px;"><option>Contiene</option><option>Exacta</option></select>
+                  <input class="filter-input" type="text" placeholder="Referencia" style="flex:1;" />
+                </div>
+              </div>
+            </div>
+            <div class="filter-grid cols-2">
+              <div class="filter-field">
+                <div class="filter-label">Descripción</div>
+                <input class="filter-input" type="text" placeholder="Buscar descripción…" />
+              </div>
+              <div class="filter-field">
+                <div class="filter-label">Notas</div>
+                <input class="filter-input" type="text" placeholder="Buscar nota…" />
+              </div>
+            </div>
+          </div>
+
+          <div class="filter-actions">
+            <button class="btn" onclick="resetFilters()">Restablecer Filtros</button>
+            <button class="btn btn-primary" onclick="applyFilters()">
+              Aplicar Filtros
+              <svg class="ic ic-sm" viewBox="0 0 24 24" style="margin-left:2px;"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- ─── APPLIED FILTER CHIPS ────────────────────────────────────── -->
+        <div class="chips-row" id="chips-row">
+          <span class="chip" data-dim="fecha">
+            <span class="chip-dim">Fecha</span>
+            <span class="chip-sep">·</span>
+            <span class="chip-value">Últimos 30 días</span>
+            <span class="chip-x" onclick="removeChip(this)">
+              <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2.4"><path d="M6 6l12 12M18 6l-12 12"/></svg>
+            </span>
+          </span>
+        </div>
+
+        <!-- ─── TABLE (7 cols, 36px rows) ───────────────────────────────── -->
+        <div class="table-wrap">
+          <table class="mov">
+            <colgroup>
+              <col class="c-date" />
+              <col class="c-bank-account" />
+              <col class="c-description" />
+              <col class="c-counterparty" />
+              <col class="c-amount" />
+              <col class="c-category" />
+              <col class="c-share" />
+            </colgroup>
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Banco/Cuenta</th>
+                <th>Descripción</th>
+                <th>Contraparte</th>
+                <th class="right">Monto</th>
+                <th>Categoría</th>
+                <th class="center">Compartir</th>
+              </tr>
+            </thead>
+            <tbody id="mov-tbody">
+              <!-- Rows injected by JS for cleanliness -->
+            </tbody>
+          </table>
+          <div class="pagination">
+            <div class="pagination-perpage">
+              <span>Mostrar</span>
+              <a>50</a><span>·</span><a>100</a><span>·</span><a class="active">200</a><span>·</span><a>500</a>
+              <span>por página</span>
+            </div>
+            <div style="font-size:12px; color:var(--text-3);" id="pagination-info">— de — movimientos</div>
+            <div class="pagination-nav">
+              <a class="disabled">← Anterior</a>
+              <span class="current">1</span>
+              <a>2</a>
+              <a>3</a>
+              <a>Siguiente →</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ─── COMPARTIR MODAL (stub) ───────────────────────────────────────── -->
+  <div class="modal-overlay" id="share-modal" onclick="if(event.target===this) closeShareModal()">
+    <div class="modal">
+      <div class="modal-head">
+        <div class="modal-title">Compartir movimiento</div>
+        <div class="modal-close" onclick="closeShareModal()">
+          <svg class="ic" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.6"><path d="M6 6l12 12M18 6l-12 12"/></svg>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="summary">
+          <div class="summary-row"><span class="lbl">Fecha</span><span class="val" id="share-date">14/05</span></div>
+          <div class="summary-row"><span class="lbl">Cuenta</span><span class="val" id="share-account">BNC · Ops VES ··5421</span></div>
+          <div class="summary-row"><span class="lbl">Descripción</span><span class="val" id="share-desc">Pago Móvil ref 12345</span></div>
+          <div class="summary-row"><span class="lbl">Contraparte</span><span class="val" id="share-cp">Juan Pérez</span></div>
+          <div class="summary-row"><span class="lbl">Monto</span><span class="val mono" id="share-amount">−Bs. 8.500,00</span></div>
+        </div>
+        <div style="font-size:11px; color:var(--text-3); margin-bottom:8px; letter-spacing:.06em; text-transform:uppercase; font-weight:600;">Enviar a</div>
+        <div class="destinations">
+          <div class="destination">
+            <svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+            <div class="lbl">Contraparte en archivo</div>
+            <div class="soon">Próximamente</div>
+          </div>
+          <div class="destination">
+            <svg class="ic" viewBox="0 0 24 24"><path d="M3 5h18v14H3z"/><path d="m3 7 9 6 9-6"/></svg>
+            <div class="lbl">Email</div>
+            <div class="soon">Próximamente</div>
+          </div>
+          <div class="destination">
+            <svg class="ic" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-3.6-6.7L20 4l-1.3 3.6A8 8 0 0 1 20 12z"/></svg>
+            <div class="lbl">WhatsApp</div>
+            <div class="soon">Próximamente</div>
+          </div>
+          <div class="destination">
+            <svg class="ic" viewBox="0 0 24 24"><path d="M16 8a4 4 0 0 0-8 0M4 21a8 8 0 0 1 16 0"/></svg>
+            <div class="lbl">Teammate en Tesote</div>
+            <div class="soon">Próximamente</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn" onclick="closeShareModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="submitShare()">Compartir</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <!-- ─── DATA + INTERACTIONS ──────────────────────────────────────────── -->
+  <script>
+    /* PRD v1.1 scope only. Drill-in slide-over and Mercury-style filter builder
+       are intentionally NOT in this prototype — they're v1.2 and v2 work. */
+
+    /* ─── Procedural generator (200 rows, realistic variety) ──────────────── */
+    const ACCOUNT_POOL = [
+      { bank: 'BNC',  bankClass: 'bnc',  account: 'Ops VES',     last4: '5421', ccy: 'VES' },
+      { bank: 'BNC',  bankClass: 'bnc',  account: 'Nómina VES',  last4: '5422', ccy: 'VES' },
+      { bank: 'BANE', bankClass: 'bane', account: 'USD AR',      last4: '8810', ccy: 'USD' },
+      { bank: 'BANE', bankClass: 'bane', account: 'VES Ops',     last4: '1129', ccy: 'VES' },
+      { bank: 'BDV',  bankClass: 'bdv',  account: 'Operativa',   last4: '7733', ccy: 'VES' },
+      { bank: 'EXT',  bankClass: 'ext',  account: 'USD',         last4: '0033', ccy: 'USD' },
+      { bank: 'EXT',  bankClass: 'ext',  account: 'EUR',         last4: '0044', ccy: 'EUR' },
+      { bank: 'BDT',  bankClass: 'bdt',  account: 'Nómina',      last4: '4419', ccy: 'VES' },
+      { bank: 'R4',   bankClass: 'r4',   account: 'Ahorros',     last4: '0098', ccy: 'VES' },
+      { bank: 'BNC',  bankClass: 'bnc',  account: 'USD Ops',     last4: '5430', ccy: 'USD' },
+    ];
+
+    const DESCRIPTIONS_DEBIT = [
+      'Pago Móvil ref {ref}',
+      'Transferencia saliente — {cp}',
+      'Débito ACH — proveedor logística',
+      'Compra POS — Comercial 24',
+      'Recarga celular corporativo',
+      'Pago nómina quincena — lote {ref}',
+      'Comisión SWIFT — operación {ref}',
+      'Comisión mantenimiento mensual',
+      'Wire outgoing — fees Q1 2026',
+      'Débito automático — servicios públicos',
+      'Pago factura {ref} — {cp}',
+      'Transferencia C2P ref {ref}',
+      'Retención IVA — operación {ref}',
+      'Pago tarjeta corporativa — cierre mensual',
+      'Cargo por uso de plataforma SaaS',
+      'Domiciliación — alquiler oficina',
+      'Pago a contratista — {cp}',
+      'Reembolso a empleado — viáticos',
+    ];
+
+    const DESCRIPTIONS_CREDIT = [
+      'Transferencia entrante — {cp}',
+      'Pago Móvil recibido — {cp}',
+      'Wire incoming — {cp}',
+      'Cobro recibido — Cliente {ref}',
+      'Depósito en efectivo — oficina',
+      'ACH credit — refund proveedor SaaS',
+      'Intereses generados',
+      'Devolución — operación {ref}',
+      'Transferencia interna — capitalización',
+      'Pago de cliente — orden {ref}',
+      'Reintegro — comisión revertida',
+      'Anticipo cliente — proyecto {ref}',
+      'Liquidación payout — pasarela de pago',
+    ];
+
+    const COUNTERPARTIES = [
+      'Acme C.A.', 'Polar', 'Cliente XYZ', 'Distribuidora Sur', 'Stripe Inc.',
+      'Juan Pérez', 'María García', 'Movistar', 'Banesco', 'BNC',
+      'Mi Banco', 'Tesote Interno', 'Empleados (lote 219)', 'Inversiones Caracas',
+      'Servicios Andinos C.A.', 'Logística Aragua', 'Farmacia Saas', 'Cliente A.B.',
+      'Proveedor Norte', 'Comercial 24', 'Pedro Rodríguez', 'Ana Sánchez',
+      'Distribuidora El Sol', 'Empacadora Centro', 'Café Don José', 'AWS Inc.',
+      'Google LLC', 'Stripe Atlas', 'Cliente Demo S.A.', 'Inversora Caribe',
+      'Cobranzas LATAM', 'Servipago C.A.', null, null, null, null,
+    ];
+
+    const CATEGORIES = [
+      'Servicios', 'Compras', 'Cobros', 'Bancarios', 'Software', 'Nómina',
+      'Tesorería', 'Servicios', 'Compras', 'Cobros', 'Bancarios',
+      null, null, null,
+    ];
+
+    function rng(seed) {
+      let s = seed;
+      return () => {
+        s = (s * 1103515245 + 12345) & 0x7fffffff;
+        return s / 0x7fffffff;
+      };
+    }
+
+    function generateMovimientos(n, seed = 42) {
+      const rand = rng(seed);
+      const pick = (arr) => arr[Math.floor(rand() * arr.length)];
+
+      const out = [];
+      for (let i = 0; i < n; i++) {
+        const daysAgo = Math.floor(rand() * 30);
+        const baseDate = new Date(2026, 4, 19); // 19 May 2026
+        baseDate.setDate(baseDate.getDate() - daysAgo);
+        const dd = String(baseDate.getDate()).padStart(2, '0');
+        const mm = String(baseDate.getMonth() + 1).padStart(2, '0');
+
+        const acct = pick(ACCOUNT_POOL);
+        const isCredit = rand() < 0.32; // ~32% credits
+        const descTemplate = pick(isCredit ? DESCRIPTIONS_CREDIT : DESCRIPTIONS_DEBIT);
+        const cp = pick(COUNTERPARTIES);
+        const cat = pick(CATEGORIES);
+        const note = rand() < 0.12;
+
+        // Amount distribution by currency + sign
+        let amount;
+        if (acct.ccy === 'VES') {
+          // Power-law-ish: most small, some huge
+          const tier = rand();
+          if (tier < 0.55)      amount = (rand() * 90000 + 100);            // 100 – 90K Bs
+          else if (tier < 0.85) amount = (rand() * 9_000_000 + 90_000);     // 90K – 9M Bs
+          else if (tier < 0.97) amount = (rand() * 250_000_000 + 9_000_000);// 9M – 250M Bs
+          else                  amount = (rand() * 3_000_000_000 + 250_000_000); // up to 3.25B Bs
+        } else if (acct.ccy === 'EUR') {
+          const tier = rand();
+          if (tier < 0.7)  amount = rand() * 5000 + 50;
+          else             amount = rand() * 30000 + 5000;
+        } else { // USD
+          const tier = rand();
+          if (tier < 0.55) amount = rand() * 3000 + 20;
+          else if (tier < 0.9) amount = rand() * 12000 + 1000;
+          else amount = rand() * 50000 + 5000;
+        }
+        amount = Math.round(amount * 100) / 100;
+        if (!isCredit) amount = -amount;
+
+        const ref = String(Math.floor(rand() * 90000) + 10000);
+        const desc = descTemplate
+          .replace('{ref}', ref)
+          .replace('{cp}', cp || 'sin identificar');
+
+        out.push({
+          date: `${dd}/${mm}`,
+          dateSort: baseDate.getTime(),
+          bank: acct.bank,
+          bankClass: acct.bankClass,
+          account: acct.account,
+          last4: acct.last4,
+          desc,
+          cp,
+          amount,
+          ccy: acct.ccy,
+          cat,
+          note,
+        });
+      }
+      // Sort: most recent first
+      out.sort((a, b) => b.dateSort - a.dateSort);
+      return out;
+    }
+
+    const movimientos = generateMovimientos(200);
+
+    /* Pill chip color picker (Lunour pill family) — for Categoría rendering */
+    const catPillFamily = {
+      'Servicios':  'paid',
+      'Cobros':     'new',
+      'Compras':    'pending',
+      'Bancarios':  'draft',
+      'Software':   'overdue',
+      'Nómina':     'pending',
+      'Tesorería':  'new',
+    };
+
+    function fmtAmountParts(amount, ccy) {
+      const abs = Math.abs(amount);
+      const sign = amount >= 0 ? '+' : '−';
+      let prefix, intStr, decStr;
+      if (ccy === 'VES') {
+        const formatted = abs.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const [int, dec] = formatted.split(',');
+        prefix = 'Bs. ';
+        intStr = int;
+        decStr = ',' + dec;
+      } else if (ccy === 'EUR') {
+        const formatted = abs.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const [int, dec] = formatted.split('.');
+        prefix = '€';
+        intStr = int;
+        decStr = '.' + dec;
+      } else {
+        const formatted = abs.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const [int, dec] = formatted.split('.');
+        prefix = '$';
+        intStr = int;
+        decStr = '.' + dec;
+      }
+      return { sign, prefix, intStr, decStr };
+    }
+
+    function fmtAmountInline(amount, ccy) {
+      const p = fmtAmountParts(amount, ccy);
+      return p.sign + p.prefix + p.intStr + p.decStr;
+    }
+
+    function initials(name) {
+      const parts = name.trim().split(/\s+/).filter(Boolean);
+      if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+
+    function avatarColor(name) {
+      let hash = 0;
+      for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) | 0;
+      return 'cp-c-' + (Math.abs(hash) % 8 + 1);
+    }
+
+    function renderRows() {
+      const tbody = document.getElementById('mov-tbody');
+      const caretSvg = `<svg class="cell-editable-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>`;
+      tbody.innerHTML = movimientos.map((m, i) => {
+        const credit = m.amount >= 0;
+        const p = fmtAmountParts(m.amount, m.ccy);
+        const cpHtml = m.cp
+          ? `<div class="cell-editable" title="click para cambiar">
+               <span class="cell-editable-label">${m.cp}</span>
+               ${caretSvg}
+             </div>`
+          : `<div class="cell-editable empty" title="click para asignar">
+               <span class="cell-editable-label">—</span>
+               ${caretSvg}
+             </div>`;
+        const catHtml = m.cat
+          ? `<div class="cell-editable" title="click para cambiar">
+               <span class="pill ${catPillFamily[m.cat] || 'draft'}"><span class="pill-dot"></span>${m.cat}</span>
+               ${caretSvg}
+             </div>`
+          : `<div class="cell-editable empty" title="click para asignar">
+               <span class="cell-editable-label">—</span>
+               ${caretSvg}
+             </div>`;
+        const noteIcon = m.note
+          ? `<svg class="ic ic-sm desc-note-icon" viewBox="0 0 24 24"><title>Tiene nota interna</title><path d="M7 4h10v16H7z"/><path d="M9 9h6M9 13h6M9 17h4"/></svg>`
+          : '';
+        return `
+          <tr data-idx="${i}">
+            <td><div class="cell-date">${m.date}</div></td>
+            <td>
+              <div class="cell-bank-account" title="${m.bank} · ${m.account} ··${m.last4}">
+                <span class="bank-name">${m.bank}</span>
+                <span class="bank-sep">·</span>
+                <span class="acct-name">${m.account}</span>
+                <span class="acct-last4">··${m.last4}</span>
+              </div>
+            </td>
+            <td>
+              <div class="cell-description" title="${m.desc.replace(/"/g,'&quot;')}">
+                ${noteIcon}
+                <span class="desc-text">${m.desc}</span>
+              </div>
+            </td>
+            <td>${cpHtml}</td>
+            <td>
+              <div class="cell-amount ${credit ? 'credit' : 'debit'}">
+                <span class="cell-amount-int">${p.sign}${p.prefix}${p.intStr}</span><span class="cell-amount-dec">${p.decStr}</span><span class="cell-amount-ccy">${m.ccy}</span>
+              </div>
+            </td>
+            <td>${catHtml}</td>
+            <td class="cell-share">
+              <button class="share-btn" title="Compartir movimiento" onclick="openShareModal(${i})">
+                <svg class="ic" viewBox="0 0 24 24"><path d="M22 2 11 13"/><path d="m22 2-7 20-4-9-9-4 20-7z"/></svg>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    /* ─── Filter panel toggle ───────────────────────────────────────── */
+    function toggleFilters() {
+      const panel = document.getElementById('filter-panel');
+      const btn = document.getElementById('filter-toggle');
+      const open = panel.classList.toggle('open');
+      btn.setAttribute('aria-expanded', open);
+    }
+    function togglePresets() {
+      // stub — would show presets dropdown menu
+      showToast('Filtros Guardados (stub)');
+    }
+    function applyFilters() {
+      toggleFilters();
+      showToast('Filtros aplicados');
+    }
+    function resetFilters() {
+      // Just visual demo — reset radios, multi-select chips, etc.
+      showToast('Filtros restablecidos');
+    }
+
+    /* ─── Chip removal ──────────────────────────────────────────────── */
+    function removeChip(el) {
+      const chip = el.closest('.chip');
+      const dim = chip.dataset.dim;
+      chip.remove();
+      // Recompute counter
+      const count = document.querySelectorAll('#chips-row .chip').length;
+      document.getElementById('active-filter-count').textContent = count;
+      if (count === 0) document.getElementById('active-filter-count').style.display = 'none';
+      // toggle 'filtrado' tag on totals if filters beyond default Fecha are present
+      // (here, removing default Fecha doesn't trigger filtrado tag because no extra filter exists)
+    }
+
+    /* ─── Share modal (stub) ────────────────────────────────────────── */
+    function openShareModal(idx) {
+      const m = movimientos[idx];
+      document.getElementById('share-date').textContent = m.date;
+      document.getElementById('share-account').textContent = `${m.bank} · ${m.account} ··${m.last4}`;
+      document.getElementById('share-desc').textContent = m.desc;
+      document.getElementById('share-cp').textContent = m.cp || '—';
+      document.getElementById('share-amount').textContent = fmtAmountInline(m.amount, m.ccy) + ' ' + m.ccy;
+      document.getElementById('share-modal').classList.add('open');
+    }
+    function closeShareModal() {
+      document.getElementById('share-modal').classList.remove('open');
+    }
+    function submitShare() {
+      closeShareModal();
+      showToast('Compartido (simulado)');
+    }
+
+    /* ─── Toast ─────────────────────────────────────────────────────── */
+    let toastTimer;
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 1800);
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeShareModal();
+    });
+
+    /* ─── Totals + page meta render (computed from data) ─────────────── */
+    function renderTotals() {
+      const byCcy = {};
+      for (const m of movimientos) {
+        if (!byCcy[m.ccy]) byCcy[m.ccy] = { count: 0, inflow: 0, outflow: 0 };
+        byCcy[m.ccy].count++;
+        if (m.amount >= 0) byCcy[m.ccy].inflow += m.amount;
+        else               byCcy[m.ccy].outflow += m.amount;
+      }
+      const order = ['VES', 'USD', 'EUR'].filter(c => byCcy[c]);
+      const strip = document.getElementById('totals-strip');
+      strip.innerHTML = order.map(ccy => {
+        const t = byCcy[ccy];
+        const net = t.inflow + t.outflow;
+        const netCredit = net >= 0;
+        return `
+          <div class="totals-card">
+            <div class="totals-currency">
+              ${ccy}
+              <span class="totals-count">${t.count} movimiento${t.count === 1 ? '' : 's'}</span>
+            </div>
+            <div class="totals-row">
+              <div class="totals-row-label">Ingresos</div>
+              <div class="totals-row-amount credit">${fmtAmountInline(t.inflow, ccy)}</div>
+            </div>
+            <div class="totals-row">
+              <div class="totals-row-label">Egresos</div>
+              <div class="totals-row-amount">${fmtAmountInline(t.outflow, ccy)}</div>
+            </div>
+            <div class="totals-row net">
+              <div class="totals-row-label">Neto</div>
+              <div class="totals-row-amount ${netCredit ? 'credit' : ''}">${fmtAmountInline(net, ccy)}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      // page meta + pagination
+      const total = movimientos.length;
+      document.getElementById('page-meta-count').textContent = total.toLocaleString('es-VE');
+      document.getElementById('pagination-info').textContent = `1–${total} de ${total} movimientos`;
+      // active-filter count (just the default Fecha chip)
+      document.getElementById('active-filter-count').textContent = document.querySelectorAll('#chips-row .chip').length;
+    }
+
+    renderTotals();
+    renderRows();
+  </script>
+</body>
+</html>

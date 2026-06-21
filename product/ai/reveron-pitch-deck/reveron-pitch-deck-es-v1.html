@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reverón — la IA empresarial de Tesote</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fafbfd;
+    --surface: #ffffff;
+    --surface-2: #f1f4f9;
+    --line: rgba(13,17,23,0.10);
+    --text: #0d1117;
+    --text-dim: #4a5260;
+    --text-faint: #97a1ae;
+    --blue: #1661e2;
+    --blue-soft: #4d8dff;
+    --blue-dim: rgba(22,97,226,0.10);
+    --dark: #0d1117;
+    --dark-text: #f2f5f9;
+    --serif: 'Instrument Serif', Georgia, serif;
+    --sans: 'Inter', -apple-system, sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg); color: var(--text); font-family: var(--sans);
+    font-size: 17px; line-height: 1.65; -webkit-font-smoothing: antialiased; overflow-x: hidden;
+  }
+  ::selection { background: var(--blue); color: #fff; }
+
+  #progress { position: fixed; top: 0; left: 0; height: 2px; width: 0%; background: var(--blue); z-index: 100; transition: width 0.1s linear; }
+
+  section { position: relative; padding: 16vh 24px; }
+  .wrap { max-width: 680px; margin: 0 auto; }
+  .wrap-wide { max-width: 920px; margin: 0 auto; }
+
+  .kicker { font-family: var(--mono); font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--blue); margin-bottom: 28px; display: flex; align-items: center; gap: 14px; }
+  .kicker::after { content: ''; height: 1px; flex: 1; background: var(--line); }
+
+  h2 { font-family: var(--serif); font-weight: 400; font-size: clamp(34px, 5vw, 52px); line-height: 1.12; letter-spacing: -0.01em; margin-bottom: 28px; color: var(--text); }
+  h2 em { font-style: italic; color: var(--blue); }
+  p { color: var(--text-dim); margin-bottom: 22px; }
+  p strong { color: var(--text); font-weight: 500; }
+  .note { font-family: var(--mono); font-size: 12.5px; color: var(--text-faint); line-height: 1.7; }
+
+  .rv { opacity: 0; transform: translateY(28px); transition: opacity 0.9s cubic-bezier(.2,.7,.3,1), transform 0.9s cubic-bezier(.2,.7,.3,1); }
+  .rv.in { opacity: 1; transform: none; }
+  .rv.d1 { transition-delay: 0.12s; } .rv.d2 { transition-delay: 0.24s; }
+  .rv.d3 { transition-delay: 0.36s; } .rv.d4 { transition-delay: 0.48s; }
+
+  /* ---------- hero ---------- */
+  #hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 24px; position: relative; overflow: hidden; }
+  #hero-grid {
+    position: absolute; inset: 0; opacity: 0.6; pointer-events: none;
+    font-family: var(--mono); font-size: 11px; color: #b9c1cd;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0; align-content: space-between; padding: 4vh 3vw;
+    mask-image: radial-gradient(ellipse 75% 65% at 50% 50%, transparent 30%, black 78%);
+    -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 50%, transparent 30%, black 78%);
+  }
+  #hero-grid span { padding: 1.4vh 0; opacity: 0.5; transition: opacity 2.2s ease, color 2.2s ease; }
+  #hero-grid span.lit { opacity: 0.95; color: var(--blue); }
+  .hero-eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 30px; }
+  h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(72px, 16vw, 168px); line-height: 0.96; letter-spacing: -0.02em; color: var(--text); }
+  .hero-sub { margin-top: 30px; max-width: 520px; color: var(--text-dim); font-size: 18px; line-height: 1.6; }
+  .hero-sub em { color: var(--text); font-style: normal; border-bottom: 1px solid var(--blue); }
+  .scroll-hint { position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%); color: var(--text-faint); animation: bob 2.6s ease-in-out infinite; }
+  @keyframes bob { 0%,100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, 8px); } }
+
+  /* ---------- request chips ---------- */
+  .chips-box { margin: 48px 0 8px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); padding: 26px 24px; box-shadow: 0 1px 3px rgba(13,17,23,0.05); }
+  .chips-box .cb-t { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 16px; }
+  .obj-chip { display: inline-block; font-family: var(--mono); font-size: 11.5px; color: var(--text-dim); border: 1px solid var(--line); border-radius: 5px; padding: 6px 11px; margin: 0 6px 9px 0; background: var(--surface-2); }
+  .twist { font-family: var(--serif); font-size: clamp(24px, 3.4vw, 34px); font-style: italic; color: var(--text); line-height: 1.3; margin-top: 46px; padding-left: 22px; border-left: 2px solid var(--blue); }
+
+  /* ---------- 2D / 3D tokens ---------- */
+  .tokens { display: flex; gap: 28px; margin: 56px 0 24px; flex-wrap: wrap; }
+  .token { flex: 1; min-width: 250px; border-radius: 10px; padding: 34px 28px; position: relative; background: var(--surface); }
+  .token.flat { border: 1px dashed rgba(13,17,23,0.25); background: transparent; }
+  .token.flat .tv { color: var(--text-dim); }
+  .token.alive { border: 1px solid rgba(22,97,226,0.5); background: radial-gradient(110% 110% at 50% 0%, rgba(22,97,226,0.08), var(--surface) 70%); box-shadow: 0 1px 3px rgba(13,17,23,0.05); }
+  .token .tt { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 10px; }
+  .token .tv { font-family: var(--serif); font-size: 26px; line-height: 1.2; color: var(--text); margin-bottom: 12px; }
+  .token.alive .tv { color: var(--blue); }
+  .token .td { font-size: 13.5px; color: var(--text-dim); line-height: 1.6; }
+
+  /* ---------- three-mode cards ---------- */
+  .cards { display: flex; gap: 22px; margin-top: 52px; flex-wrap: wrap; }
+  .card { flex: 1; min-width: 250px; border: 1px solid var(--line); border-radius: 10px; padding: 30px 26px; background: var(--surface); display: flex; flex-direction: column; box-shadow: 0 1px 3px rgba(13,17,23,0.05); }
+  .card .cn { font-family: var(--mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--blue); margin-bottom: 14px; }
+  .card .cq { font-family: var(--serif); font-size: 23px; line-height: 1.3; color: var(--text); margin-bottom: 12px; }
+  .card .cd { font-size: 13.5px; color: var(--text-dim); line-height: 1.6; margin-bottom: 16px; }
+  .card .cex { margin-top: auto; padding: 12px 14px; border-radius: 7px; background: var(--surface-2); font-family: var(--mono); font-size: 11.5px; color: var(--text-dim); line-height: 1.5; }
+  .card .cex b { color: var(--blue); font-weight: 500; }
+
+  /* ---------- answer / traceability mock ---------- */
+  .ans-card { margin: 52px 0 18px; border: 1px solid rgba(22,97,226,0.4); border-radius: 10px; background: radial-gradient(130% 130% at 50% 0%, rgba(22,97,226,0.05), var(--surface) 60%); overflow: hidden; box-shadow: 0 1px 3px rgba(13,17,23,0.05); }
+  .ans-q { padding: 16px 22px; border-bottom: 1px solid var(--line); font-family: var(--mono); font-size: 12.5px; color: var(--text); background: var(--surface-2); }
+  .ans-q b { color: var(--blue); }
+  .ans-line { display: grid; grid-template-columns: 150px 1fr; gap: 14px; padding: 13px 22px; border-bottom: 1px solid var(--line); font-family: var(--mono); font-size: 12.5px; }
+  .ans-line:last-child { border-bottom: none; }
+  .ans-line .k { color: var(--text-faint); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; padding-top: 2px; }
+  .ans-line .v { color: var(--text); line-height: 1.55; }
+  .ans-line .v i { font-style: normal; color: var(--blue); }
+  .ans-line .v small { display: block; color: var(--text-faint); font-size: 11px; margin-top: 3px; }
+
+  /* ---------- mass-action chain ---------- */
+  .chain { margin: 48px 0 8px; position: relative; padding-left: 34px; }
+  .chain::before { content: ''; position: absolute; left: 9px; top: 14px; bottom: 14px; width: 1px; background: linear-gradient(var(--text-faint), var(--blue)); }
+  .chain-step { position: relative; padding: 17px 0; }
+  .chain-step::before { content: ''; position: absolute; left: -29px; top: 26px; width: 9px; height: 9px; border-radius: 50%; background: var(--bg); border: 1.5px solid var(--text-faint); }
+  .chain-step:last-child::before { border-color: var(--blue); background: var(--blue); }
+  .chain-step .t { font-family: var(--serif); font-size: 25px; line-height: 1.25; color: var(--text); }
+  .chain-step:last-child .t { color: var(--blue); }
+  .chain-step .s { font-size: 14px; color: var(--text-faint); margin-top: 6px; }
+
+  /* ---------- control gate ---------- */
+  .gate { display: flex; gap: 12px; align-items: stretch; margin: 44px 0 8px; flex-wrap: wrap; }
+  .gate-step { flex: 1; min-width: 150px; border: 1px solid var(--line); border-radius: 10px; padding: 20px 18px; background: var(--surface); text-align: center; }
+  .gate-step.key { border-color: rgba(22,97,226,0.5); background: var(--blue-dim); }
+  .gate-step .gn { font-family: var(--serif); font-size: 21px; color: var(--text); }
+  .gate-step.key .gn { color: var(--blue); }
+  .gate-step .gd { font-size: 12.5px; color: var(--text-dim); margin-top: 6px; line-height: 1.5; }
+  .gate-arrow { display: flex; align-items: center; color: var(--blue); }
+
+  /* ---------- memory chips ---------- */
+  .mem { margin: 52px 0 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); padding: 26px 24px; box-shadow: 0 1px 3px rgba(13,17,23,0.05); }
+  .mem-head { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+  .mem-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--blue); box-shadow: 0 0 8px rgba(22,97,226,0.5); animation: pulse 2.2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+  .mem-chips { display: flex; flex-wrap: wrap; gap: 10px; }
+  .mem-chip { font-family: var(--mono); font-size: 12.5px; padding: 9px 13px; border-radius: 7px; border: 1px solid var(--line); background: var(--surface-2); color: var(--text-faint); transition: border-color 0.7s ease, background 0.7s ease, color 0.7s ease; }
+  .mem-chip.learned { border-color: rgba(22,97,226,0.45); background: var(--blue-dim); color: var(--blue); }
+
+  /* ---------- ownership stack ---------- */
+  .stack { margin: 52px 0 16px; display: flex; flex-direction: column; gap: 12px; }
+  .stack-layer { border-radius: 10px; padding: 24px 22px; border: 1px solid var(--line); background: var(--surface); }
+  .stack-layer.top { border-color: rgba(22,97,226,0.5); background: radial-gradient(120% 120% at 50% 0%, rgba(22,97,226,0.08), var(--surface) 70%); box-shadow: 0 8px 30px rgba(22,97,226,0.10); }
+  .stack-layer .sl-t { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 10px; }
+  .stack-layer.top .sl-t { color: var(--blue); }
+  .stack-layer .sl-n { font-family: var(--serif); font-size: 24px; color: var(--text); line-height: 1.25; }
+  .stack-layer.top .sl-n { color: var(--blue); }
+  .stack-layer .sl-d { font-size: 13.5px; color: var(--text-dim); margin-top: 8px; line-height: 1.55; }
+  .stack-models { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .stack-models .mchip { font-family: var(--mono); font-size: 11.5px; padding: 6px 11px; border: 1px dashed rgba(13,17,23,0.25); border-radius: 5px; color: var(--text-faint); }
+  .stack-divider { text-align: center; font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-faint); padding: 2px 0; }
+
+  /* ---------- the law ---------- */
+  #law { background: var(--surface-2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); text-align: center; padding: 22vh 24px; }
+  #law .big { font-family: var(--serif); font-weight: 400; font-size: clamp(34px, 5.6vw, 60px); line-height: 1.18; max-width: 860px; margin: 0 auto; }
+  #law .big .fade1 { color: var(--text); }
+  #law .big .fade2 { color: var(--blue); font-style: italic; }
+  #law .seq { display: block; margin-top: 0.4em; }
+  #law .coda { margin-top: 44px; font-family: var(--mono); font-size: 13px; color: var(--text-faint); letter-spacing: 0.08em; }
+
+  /* ---------- roadmap timeline ---------- */
+  .timeline { margin: 56px auto 10px; max-width: 760px; position: relative; padding: 28px 0 8px; }
+  .tl-track { position: relative; height: 2px; background: #e2e7f0; border-radius: 2px; }
+  .tl-fill { position: absolute; left: 0; top: 0; height: 100%; width: 0; background: var(--blue); transition: width 2.6s cubic-bezier(.25,.6,.3,1) 0.4s; }
+  .timeline.in .tl-fill { width: 100%; }
+  .tl-stops { display: flex; justify-content: space-between; margin-top: 22px; gap: 10px; }
+  .tl-stop { flex: 1; }
+  .tl-stop .tt { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--blue); margin-bottom: 8px; }
+  .tl-stop .tn { font-family: var(--serif); font-size: 21px; color: var(--text); line-height: 1.25; margin-bottom: 6px; }
+  .tl-stop .td { font-size: 13px; color: var(--text-dim); line-height: 1.55; }
+  .tl-stop:nth-child(2) { text-align: center; }
+  .tl-stop:last-child { text-align: right; }
+  .tl-dot { position: absolute; top: -4px; width: 10px; height: 10px; border-radius: 50%; background: var(--bg); border: 1.5px solid var(--text-faint); }
+  .tl-dot.b { background: var(--blue); border-color: var(--blue); box-shadow: 0 0 10px rgba(22,97,226,0.5); }
+
+  /* ---------- ROI ---------- */
+  .roi-list { margin: 50px 0 8px; border-top: 1px solid var(--line); }
+  .roi-item { display: flex; gap: 18px; align-items: baseline; padding: 20px 0; border-bottom: 1px solid var(--line); }
+  .roi-item .ri-n { font-family: var(--mono); font-size: 12px; color: var(--blue); flex: 0 0 auto; }
+  .roi-item .ri-t { font-family: var(--serif); font-size: clamp(22px, 3vw, 28px); color: var(--text); line-height: 1.2; }
+  .roi-item .ri-t span { color: var(--text-faint); font-style: italic; }
+
+  /* ---------- finale (dark) ---------- */
+  #finale { background: var(--dark); color: var(--dark-text); padding: 20vh 24px; }
+  #finale .kicker { color: var(--blue-soft); }
+  #finale .kicker::after { background: rgba(255,255,255,0.14); }
+  #finale h2 { color: var(--dark-text); }
+  #finale h2 em { color: var(--blue-soft); }
+  #finale p { color: #97a1ae; }
+  #finale .imperatives { margin: 56px 0; }
+  #finale .imp { font-family: var(--serif); font-size: clamp(28px, 4.4vw, 44px); line-height: 1.25; padding: 26px 0; border-top: 1px solid rgba(255,255,255,0.14); color: var(--dark-text); }
+  #finale .imp:last-child { border-bottom: 1px solid rgba(255,255,255,0.14); }
+  #finale .imp .n { font-family: var(--mono); font-size: 13px; color: var(--blue-soft); vertical-align: super; margin-right: 14px; }
+  #finale .imp em { font-style: italic; color: var(--blue-soft); }
+  #finale .closer { margin-top: 64px; font-family: var(--serif); font-style: italic; font-size: clamp(22px, 3vw, 30px); line-height: 1.45; color: var(--dark-text); max-width: 660px; }
+  footer { background: var(--dark); color: #5a6472; padding: 0 24px 60px; font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.06em; line-height: 1.8; }
+  footer .wrap { border-top: 1px solid rgba(255,255,255,0.12); padding-top: 24px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .rv, .tl-fill { transition: none !important; }
+    .rv { opacity: 1; transform: none; }
+    .timeline .tl-fill { width: 100%; }
+    .scroll-hint, .mem-dot { animation: none; }
+  }
+  @media (max-width: 640px) {
+    .gate-arrow { width: 100%; transform: rotate(90deg); min-height: 30px; }
+    .tl-stops { flex-direction: column; gap: 24px; }
+    .tl-stop:nth-child(2), .tl-stop:last-child { text-align: left; }
+    .ans-line { grid-template-columns: 1fr; gap: 4px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<!-- ============ HERO ============ -->
+<section id="hero">
+  <div id="hero-grid" aria-hidden="true"></div>
+  <div class="hero-eyebrow rv">la IA empresarial de Tesote · creada en Tesote AI</div>
+  <h1 class="rv d1">Reverón</h1>
+  <p class="hero-sub rv d2">Tu información bancaria deja de ser <em>plana y estática</em> y se vuelve viva: consultable, accionable, automatizable.</p>
+  <div class="scroll-hint" aria-hidden="true">
+    <svg width="18" height="26" viewBox="0 0 18 26" fill="none"><path d="M9 2v18M3 14l6 7 6-7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+</section>
+
+<!-- ============ 01 EL ORIGEN ============ -->
+<section id="s01">
+  <div class="wrap">
+    <div class="kicker rv">01 · Dónde nace</div>
+    <h2 class="rv">Dos años <em>escuchándolos.</em></h2>
+    <p class="rv d1">Desde que lanzamos Tesote, ustedes nos han pedido de todo alrededor de la información bancaria que manejan cada día:</p>
+    <div class="chips-box rv d2">
+      <div class="cb-t">solicitudes de nuestros clientes · 2024 — 2026</div>
+      <span class="obj-chip">reportes personalizados</span>
+      <span class="obj-chip">funcionalidades masivas</span>
+      <span class="obj-chip">automatizaciones específicas</span>
+      <span class="obj-chip">formatos únicos</span>
+      <span class="obj-chip">análisis complejos</span>
+      <span class="obj-chip">alertas a medida</span>
+      <span class="obj-chip">conciliaciones</span>
+      <span class="obj-chip">cierres más rápidos</span>
+    </div>
+    <p class="twist rv d3">Pero si seguíamos resolviendo cada solicitud como una funcionalidad aislada, nunca íbamos a avanzar a la velocidad que ustedes necesitan.</p>
+  </div>
+</section>
+
+<!-- ============ 02 LA NUEVA CAPA · 2D → 3D ============ -->
+<section id="s02">
+  <div class="wrap">
+    <div class="kicker rv">02 · La decisión</div>
+    <h2 class="rv">No una función más.<br>Una nueva <em>capa de inteligencia.</em></h2>
+    <p class="rv d1">En los últimos meses construimos algo con una capacidad de impacto mucho más grande: una capa de inteligencia sobre toda la información que Tesote ya centraliza por ustedes, automáticamente. Su primera misión es <strong>traerle luz</strong> a esa información.</p>
+    <div class="tokens rv d2">
+      <div class="token flat">
+        <div class="tt">Antes · información 2D</div>
+        <div class="tv">Plana y estática</div>
+        <div class="td">Saldos y movimientos correctos, pero difíciles de explotar. Para responder una pregunta nueva, alguien exporta, arma un Excel y espera.</div>
+      </div>
+      <div class="token alive">
+        <div class="tt">Con Reverón · información 3D</div>
+        <div class="tv">Viva y accionable</div>
+        <div class="td">La misma información, ahora consultable en una conversación, accionable en un clic y automatizable para que se repita sola.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 03 TRES FORMAS ============ -->
+<section id="s03">
+  <div class="wrap-wide">
+    <div class="wrap">
+      <div class="kicker rv">03 · Cómo trabaja</div>
+      <h2 class="rv">Reverón trabaja de <em>tres formas.</em></h2>
+      <p class="rv d1">Cubren desde lo predecible del día a día hasta el análisis que hoy requiere horas de Excel o apoyo técnico.</p>
+    </div>
+    <div class="cards rv d2">
+      <div class="card">
+        <div class="cn">01 · Recurrente</div>
+        <div class="cq">Reportes y automatizaciones</div>
+        <div class="cd">Lo predecible y repetitivo: lo que no requiere análisis profundo, pero sí consistencia, puntualidad y precisión.</div>
+        <div class="cex">Cada viernes, automático: <b>saldos, movimientos, variaciones, cuentas más activas y alertas</b> de la semana.</div>
+      </div>
+      <div class="card">
+        <div class="cn">02 · Complejo</div>
+        <div class="cq">Requerimientos a la medida</div>
+        <div class="cd">Análisis que normalmente tomarían mucho tiempo en Excel o requerirían apoyo técnico. Consulta, calcula y explica.</div>
+        <div class="cex">"¿Cuánto perdí por <b>devaluación contra la tasa BCV</b> este mes?" — con metodología y resultado.</div>
+      </div>
+      <div class="card">
+        <div class="cn">03 · Masivo</div>
+        <div class="cq">Acciones, no solo análisis</div>
+        <div class="cd">Reverón también ejecuta: identifica patrones, propone reglas y ayuda al equipo a aplicarlas en lote.</div>
+        <div class="cex">Encuentra movimientos <b>sin categoría o sin contraparte</b> y los resuelve en masa.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 04 NO ES UN CHATBOT · TRAZABILIDAD ============ -->
+<section id="s04">
+  <div class="wrap">
+    <div class="kicker rv">04 · La diferencia de fondo</div>
+    <h2 class="rv">No es un chatbot. Opera sobre <em>tu información real.</em></h2>
+    <p class="rv d1">Reverón no inventa: consulta de forma estructurada la base de datos de tu espacio en Tesote, hace cálculos verificables y <strong>siempre puede mostrar qué hizo, qué información usó y cómo llegó a cada resultado.</strong></p>
+    <div class="ans-card rv d2">
+      <div class="ans-q">Tú: <b>¿Cuál fue mi saldo promedio en bolívares este mes y cuánto perdí por devaluación contra la tasa BCV?</b></div>
+      <div class="ans-line"><span class="k">saldo promedio</span><span class="v">Bs 34.020.000 <i>· equivalente 60.000 USD</i></span></div>
+      <div class="ans-line"><span class="k">pérdida por devaluación</span><span class="v">≈ 1.450 USD <small>en lo que va del mes</small></span></div>
+      <div class="ans-line"><span class="k">metodología</span><span class="v">saldo diario promedio × variación de la tasa BCV entre el primer y el último día del mes</span></div>
+      <div class="ans-line"><span class="k">trazabilidad</span><span class="v"><i>182 movimientos · 30 cierres diarios · tasa BCV oficial por día</i><small>cada número es reproducible — puedes auditar cómo se calculó</small></span></div>
+    </div>
+    <p class="note rv d3">y tu información se queda contigo: nunca se usa para entrenar modelos, nunca se mezcla con la de otra empresa, nunca sale de tu espacio</p>
+  </div>
+</section>
+
+<!-- ============ 05 ACCIONES MASIVAS + CONTROL ============ -->
+<section id="s05">
+  <div class="wrap">
+    <div class="kicker rv">05 · Ejecutar, con control</div>
+    <h2 class="rv">Propone en lote. <em>Tú apruebas.</em></h2>
+    <p class="rv d1">Las acciones masivas son donde Reverón pasa de analizar a hacer — sin que pierdas el control en ningún momento:</p>
+    <div class="chain rv d2">
+      <div class="chain-step"><div class="t">Busca lo que falta.</div><div class="s">movimientos sin categoría o sin contraparte asignada</div></div>
+      <div class="chain-step"><div class="t">Identifica patrones y propone reglas.</div><div class="s">"todo lo de Comercial Andina → Operaciones &gt; Logística"</div></div>
+      <div class="chain-step"><div class="t">El equipo aplica la regla en lote.</div><div class="s">cientos de movimientos resueltos en un clic, y automatizados hacia adelante</div></div>
+    </div>
+    <div class="gate rv d3">
+      <div class="gate-step"><div class="gn">Reverón propone</div><div class="gd">la acción y su alcance</div></div>
+      <div class="gate-arrow" aria-hidden="true"><svg width="34" height="20" viewBox="0 0 34 20" fill="none"><path d="M2 10h26M22 3l7 7-7 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="gate-step key"><div class="gn">Tú apruebas</div><div class="gd">lo sensible pasa por tu equipo</div></div>
+      <div class="gate-arrow" aria-hidden="true"><svg width="34" height="20" viewBox="0 0 34 20" fill="none"><path d="M2 10h26M22 3l7 7-7 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="gate-step"><div class="gn">Se ejecuta</div><div class="gd">nunca actúa a ciegas</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 06 APRENDE ============ -->
+<section id="s06">
+  <div class="wrap">
+    <div class="kicker rv">06 · Lo que lo hace distinto</div>
+    <h2 class="rv">Le enseñas una vez. <em>Lo recuerda para siempre.</em></h2>
+    <p class="rv d1">Cada vez que tu equipo le enseña una regla, una contraparte o una preferencia, Reverón lo recuerda — y se corrige solo cuando algo cambia. Ese conocimiento deja de vivir en la cabeza de una sola persona, o en un manual que nadie actualiza, y pasa a vivir en Reverón.</p>
+    <div class="mem rv d2">
+      <div class="mem-head"><span class="mem-dot"></span><span>lo que Reverón ya sabe de tu empresa · crece cada semana</span></div>
+      <div class="mem-chips">
+        <span class="mem-chip">"la tasa" = tasa BCV del día</span>
+        <span class="mem-chip">Banco Exterior — nombre completo, nunca abreviado</span>
+        <span class="mem-chip">Comercial Andina → Operaciones &gt; Logística</span>
+        <span class="mem-chip">cierre de nómina = quincenal</span>
+        <span class="mem-chip">reporte semanal → viernes 8:00am</span>
+        <span class="mem-chip">USD es la moneda de análisis</span>
+        <span class="mem-chip">aprobaciones &gt; 5.000 USD las revisa el CFO</span>
+      </div>
+    </div>
+    <p class="rv d3"><strong>Mientras más lo usa tu equipo, más conoce tu operación — y más valioso se vuelve.</strong> No es una función: es un activo que se aprecia.</p>
+  </div>
+</section>
+
+<!-- ============ 07 ES TUYO ============ -->
+<section id="s07">
+  <div class="wrap">
+    <div class="kicker rv">07 · De quién es</div>
+    <h2 class="rv">Y todo eso <em>es tuyo.</em></h2>
+    <p class="rv d1">Reverón está diseñado para ser independiente del modelo de IA que use por debajo. El modelo es intercambiable — hoy uno, mañana el mejor que exista. Lo que tu empresa construye encima permanece.</p>
+    <div class="stack rv d2">
+      <div class="stack-layer top">
+        <div class="sl-t">tu capa · permanente, tuya</div>
+        <div class="sl-n">El conocimiento de tu empresa</div>
+        <div class="sl-d">Tus reglas, tus contrapartes, tus categorías, tu forma de trabajar, tu historial. No se pierde nada al cambiar de modelo.</div>
+      </div>
+      <div class="stack-divider">↑ se queda contigo · ↓ se reemplaza sin que lo notes</div>
+      <div class="stack-layer">
+        <div class="sl-t">capa de modelo · intercambiable</div>
+        <div class="sl-n">El motor de IA</div>
+        <div class="stack-models">
+          <span class="mchip">modelo de hoy</span>
+          <span class="mchip">el mejor de mañana</span>
+          <span class="mchip">el que convenga</span>
+        </div>
+      </div>
+    </div>
+    <p class="rv d3">No estás apostando a una sola tecnología. Estás construyendo <strong>un activo de tu empresa</strong>.</p>
+  </div>
+</section>
+
+<!-- ============ LA LEY · EQUIPO ============ -->
+<section id="law">
+  <div class="big">
+    <span class="seq rv fade1">La inteligencia artificial no se adopta sola.</span>
+    <span class="seq rv d2 fade1">Se adopta con procesos, criterio y acompañamiento.</span>
+    <span class="seq rv d4 fade2">Por eso Reverón viene con el equipo de Tesote.</span>
+  </div>
+  <div class="coda rv d4">tecnología + change management</div>
+</section>
+
+<!-- ============ 08 ROADMAP ============ -->
+<section id="s08">
+  <div class="wrap-wide">
+    <div class="wrap">
+      <div class="kicker rv">08 · Hacia dónde va</div>
+      <h2 class="rv">Esto es solo <em>el comienzo.</em></h2>
+      <p class="rv d1">Hoy Reverón entiende tu información bancaria. En el roadmap inmediato la conecta con el resto de tu operación financiera — para que entienda no solo lo que entra y sale, sino el porqué detrás de cada movimiento.</p>
+    </div>
+    <div class="timeline rv d2" id="tl">
+      <div class="tl-track">
+        <div class="tl-fill"></div>
+        <div class="tl-dot b" style="left: 0;"></div>
+        <div class="tl-dot" style="left: calc(50% - 5px);"></div>
+        <div class="tl-dot" style="right: 0;"></div>
+      </div>
+      <div class="tl-stops">
+        <div class="tl-stop">
+          <div class="tt">Hoy</div>
+          <div class="tn">Información bancaria</div>
+          <div class="td">Reportes, requerimientos complejos y acciones masivas sobre tu data de Tesote.</div>
+        </div>
+        <div class="tl-stop">
+          <div class="tt">Próximo</div>
+          <div class="tn">ERPs</div>
+          <div class="td">Conciliar y conectar contra lo que ya está contabilizado.</div>
+        </div>
+        <div class="tl-stop">
+          <div class="tt">Después</div>
+          <div class="tn">Gmail · Outlook · más</div>
+          <div class="td">Facturas y correos parte de la conversación; toda la operación, conectada.</div>
+        </div>
+      </div>
+    </div>
+    <div class="wrap">
+      <p class="note rv d3">cada sistema que conectas hace mejores las respuestas de todos los demás · lo sumamos de a uno, sin fricción</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 09 ROI ============ -->
+<section id="s09">
+  <div class="wrap">
+    <div class="kicker rv">09 · El retorno</div>
+    <h2 class="rv">Para nosotros, el ROI siempre tiene que ser <em>tangible.</em></h2>
+    <p class="rv d1">Con Reverón, ese retorno puede ser enorme:</p>
+    <div class="roi-list rv d2">
+      <div class="roi-item"><span class="ri-n">01</span><div class="ri-t">Menos horas <span>— en trabajo manual</span></div></div>
+      <div class="roi-item"><span class="ri-n">02</span><div class="ri-t">Menos errores <span>— operativos</span></div></div>
+      <div class="roi-item"><span class="ri-n">03</span><div class="ri-t">Más velocidad <span>— de análisis</span></div></div>
+      <div class="roi-item"><span class="ri-n">04</span><div class="ri-t">Mejores decisiones <span>— con mejor información</span></div></div>
+      <div class="roi-item"><span class="ri-n">05</span><div class="ri-t">Una capacidad nueva <span>— operar las finanzas con IA</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FINALE ============ -->
+<section id="finale">
+  <div class="wrap">
+    <div class="kicker rv">10 · El primer gran paso</div>
+    <h2 class="rv">La información ya no solo se centraliza.<br>Ahora se <em>entiende, se analiza y se ejecuta.</em></h2>
+    <div class="imperatives rv d1">
+      <div class="imp"><span class="n">i</span>Tu información bancaria, <em>viva</em> — consultable, accionable, automatizable.</div>
+      <div class="imp"><span class="n">ii</span>Reverón <em>aprende</em> cómo trabaja tu equipo, y ese conocimiento es tuyo.</div>
+      <div class="imp"><span class="n">iii</span>Y esto es solo el comienzo — con el equipo de Tesote al lado.</div>
+    </div>
+    <p class="closer rv d2">"Reverón es el primer gran paso de Tesote hacia una nueva era para los equipos financieros de Venezuela."</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Reverón · la IA empresarial de Tesote, creada en Tesote AI · pitch · datos de muestra ilustrativos · 2026-06-21
+  </div>
+</footer>
+
+<script>
+(function () {
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* progress bar */
+  var bar = document.getElementById('progress');
+  window.addEventListener('scroll', function () {
+    var h = document.documentElement;
+    bar.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + '%';
+  }, { passive: true });
+
+  /* hero grid: flat banking data that lights up blue (info coming alive) */
+  var grid = document.getElementById('hero-grid');
+  var kinds = ['SALDO', 'MOV', 'TRF', 'PAGO MÓVIL', 'NÓMINA', 'COMISIÓN', 'CONCILIA', 'CIERRE'];
+  var cells = [];
+  for (var i = 0; i < 48; i++) {
+    var s = document.createElement('span');
+    var k = kinds[i % kinds.length];
+    var amt = (50 + ((i * 137) % 9000)) + '.' + (10 + ((i * 13) % 89));
+    s.textContent = k + ' · ' + amt + ' USD';
+    grid.appendChild(s);
+    cells.push(s);
+  }
+  if (!reduced) {
+    var k1 = 0;
+    setInterval(function () { cells[(k1 * 17) % cells.length].classList.add('lit'); k1++; }, 600);
+  }
+
+  /* reveals */
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.18 });
+  document.querySelectorAll('.rv, #tl').forEach(function (el) { io.observe(el); });
+
+  /* memory chips light up progressively when the panel enters view */
+  var memSeen = false;
+  var mio = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting && !memSeen) {
+        memSeen = true;
+        var chips = e.target.querySelectorAll('.mem-chip');
+        if (reduced) { chips.forEach(function (c) { c.classList.add('learned'); }); return; }
+        chips.forEach(function (c, idx) { setTimeout(function () { c.classList.add('learned'); }, 350 + idx * 320); });
+      }
+    });
+  }, { threshold: 0.4 });
+  var mem = document.querySelector('.mem');
+  if (mem) mio.observe(mem);
+})();
+</script>
+</body>
+</html>

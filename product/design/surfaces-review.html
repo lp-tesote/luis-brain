@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tesote Web App — Surfaces Review (Inicio · Saldos · Movimientos)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Geist+Mono:wght@500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #1661E2;
+      --primary-hover: #184EB5;
+      --primary-light: #EEF8FF;
+      --primary-border: #C6DDFB;
+      --text: #12110F;
+      --text-2: #635D55;
+      --text-3: #857D73;
+      --border: #E8E3DA;
+      --border-2: #F2EEE6;
+      --bg: #F7F5F0;
+      --bg-soft: #FCFBF7;
+      --white: #FFFFFF;
+      --yellow: #CC9500;
+      --radius: 8px;
+      --radius-lg: 12px;
+      --font-display: 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'Geist Mono', 'SF Mono', Menlo, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-body); color: var(--text); background: var(--bg); -webkit-font-smoothing: antialiased; }
+
+    /* ── Top control bar ── */
+    .topbar {
+      position: sticky; top: 0; z-index: 30;
+      background: rgba(247,245,240,.86); backdrop-filter: saturate(1.1) blur(8px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 16px;
+      padding: 12px 24px;
+    }
+    .brand { font-family: var(--font-display); font-weight: 700; font-size: 16px; letter-spacing: -.02em; }
+    .brand span { color: var(--text-3); font-weight: 500; }
+    .nav { display: flex; align-items: center; gap: 4px; margin-left: 8px; }
+    .nav a, .tabbtn {
+      font-size: 13px; color: var(--text-2); text-decoration: none; cursor: pointer;
+      padding: 6px 12px; border-radius: 6px; border: 1px solid transparent; background: transparent;
+      font-family: inherit;
+    }
+    .nav a:hover, .tabbtn:hover { background: var(--white); color: var(--text); }
+    .tabbtn.active { background: var(--white); border-color: var(--border); color: var(--text); font-weight: 600; }
+    .spacer { flex: 1; }
+    .toggle { display: inline-flex; background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 3px; gap: 2px; }
+    .toggle button { font-size: 12.5px; font-family: inherit; color: var(--text-2); background: transparent; border: none; cursor: pointer; padding: 5px 12px; border-radius: 6px; }
+    .toggle button.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+
+    /* ── Intro / divergence note ── */
+    .intro { max-width: 1200px; margin: 22px auto 6px; padding: 0 24px; }
+    .intro h1 { font-family: var(--font-display); font-size: 22px; font-weight: 700; letter-spacing: -.02em; }
+    .intro p { font-size: 13.5px; color: var(--text-2); margin-top: 6px; line-height: 1.5; max-width: 820px; }
+    details.diverge {
+      max-width: 1200px; margin: 14px auto 0; padding: 0 24px;
+    }
+    details.diverge > summary {
+      cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 8px;
+      font-size: 12px; font-weight: 600; color: var(--primary); background: var(--primary-light);
+      border: 1px solid var(--primary-border); border-radius: 8px; padding: 7px 12px;
+      letter-spacing: .02em;
+    }
+    details.diverge > summary::-webkit-details-marker { display: none; }
+    details.diverge[open] > summary { margin-bottom: 12px; }
+    .dv-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 6px 4px; }
+    table.dv { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    table.dv th, table.dv td { text-align: left; padding: 9px 14px; border-bottom: 1px solid var(--border-2); vertical-align: top; }
+    table.dv th { font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--text-3); font-weight: 600; }
+    table.dv tr:last-child td { border-bottom: none; }
+    table.dv td.surf { white-space: nowrap; color: var(--text-3); font-family: var(--font-mono); font-size: 11.5px; }
+    table.dv td b { color: var(--text); }
+    .pill { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; padding: 1px 6px; border-radius: 4px; }
+    .pill.locked { background: #D6E8D5; color: #0F6E45; }
+    .pill.drift { background: #F8D8C0; color: #A83E00; }
+
+    /* ── Surface sections ── */
+    .surfaces { max-width: 1320px; margin: 8px auto 60px; padding: 0 24px; }
+    .surface { margin-top: 30px; scroll-margin-top: 72px; }
+    .s-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; }
+    .s-num { font-family: var(--font-mono); font-size: 12px; color: var(--text-4, #C7C0B5); }
+    .s-title { font-family: var(--font-display); font-size: 17px; font-weight: 700; letter-spacing: -.01em; }
+    .s-file { font-family: var(--font-mono); font-size: 11.5px; color: var(--text-3); }
+    .s-desc { font-size: 12.5px; color: var(--text-2); margin-left: auto; }
+    .frame-wrap {
+      border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; background: var(--white); box-shadow: 0 1px 2px rgba(18,17,15,.04);
+    }
+    iframe { width: 100%; height: 900px; border: none; display: block; background: var(--white); }
+
+    /* focus mode hides non-active surfaces */
+    body.focus .surface { display: none; }
+    body.focus .surface.active { display: block; }
+    body.focus iframe { height: calc(100vh - 150px); min-height: 720px; }
+    body.focus .s-desc { display: none; }
+    /* in stacked mode the tab buttons are inert visual markers */
+    body.stacked .tabbtn.active { background: transparent; border-color: transparent; color: var(--text-2); font-weight: 400; }
+  </style>
+</head>
+<body class="stacked">
+
+  <div class="topbar">
+    <div class="brand">tesote <span>· surfaces review</span></div>
+    <div class="nav" id="nav">
+      <button class="tabbtn active" data-target="inicio">Inicio</button>
+      <button class="tabbtn" data-target="saldos">Saldos</button>
+      <button class="tabbtn" data-target="movimientos">Movimientos</button>
+    </div>
+    <div class="spacer"></div>
+    <div class="toggle">
+      <button id="btn-stacked" class="active" onclick="setMode('stacked')">Apilado</button>
+      <button id="btn-focus" onclick="setMode('focus')">Enfoque</button>
+    </div>
+  </div>
+
+  <div class="intro">
+    <h1>Web app surfaces — side by side</h1>
+    <p>The three frozen surfaces in one place, to drive <b>app-wide</b> design decisions — palette, type roles, box/card primitives, density, chrome. Each renders live from its own file (full app shell included), so the differences between them are real, not approximations. Global rules live in <span style="font-family:var(--font-mono);font-size:12px">web-app-design-system.md</span>; decide the open ones here.</p>
+
+    <details class="diverge">
+      <summary>Known divergences to decide (from design-system §15 drift)</summary>
+      <div class="dv-card">
+        <table class="dv">
+          <thead><tr><th style="width:150px">Dimension</th><th style="width:230px">Where it differs</th><th>The call</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="surf">Sidebar surface</td>
+              <td><b>Saldos</b> = white sidebar / cream content<br><b>Movimientos · Inicio</b> = cream sidebar / white content</td>
+              <td>Canonical (newer two): <b>cream sidebar, white content</b>. <span class="pill drift">Saldos to migrate</span></td>
+            </tr>
+            <tr>
+              <td class="surf">Number font</td>
+              <td><b>Saldos</b> KPI amounts = Inter Tight<br><b>Movimientos · Inicio</b> = Geist Mono</td>
+              <td>Canonical: <b>Geist Mono</b> for all tabular figures. <span class="pill drift">Saldos to migrate</span></td>
+            </tr>
+            <tr>
+              <td class="surf">Status pill radius</td>
+              <td><b>Movimientos</b> = 999px (fully round)<br><b>Saldos · Inicio</b> = 4px</td>
+              <td>Canonical: <b>4px</b> status pills. <span class="pill drift">Movimientos to migrate</span></td>
+            </tr>
+            <tr>
+              <td class="surf">Filter pattern</td>
+              <td><b>Saldos</b> = legacy 5-fixed-pill bar<br><b>Movimientos</b> = filter-builder (toggle + panel + chips)</td>
+              <td>Canonical: <b>Movimientos filter-builder</b> primitive. <span class="pill drift">Saldos to migrate</span></td>
+            </tr>
+            <tr>
+              <td class="surf">Row density</td>
+              <td><b>Movimientos</b> = 40px · <b>Saldos</b> = 44px (Manage)</td>
+              <td>Snap to buckets 36 / 44 / 52 (task-driven). <span class="pill locked">spec'd in archetypes</span></td>
+            </tr>
+            <tr>
+              <td class="surf">Locked &amp; shared</td>
+              <td>Lunour palette · 4/8/12 radii · pill family · Inter Tight display · Instrument Serif = AI voice · no emojis · borders-not-shadows · VE <i>tú</i></td>
+              <td><span class="pill locked">locked — don't relitigate</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+  </div>
+
+  <div class="surfaces">
+    <section class="surface active" id="inicio">
+      <div class="s-head">
+        <span class="s-num">01</span>
+        <span class="s-title">Inicio</span>
+        <span class="s-file">dashboard/prototypes/dashboard-v5.html</span>
+        <span class="s-desc">Workspace home — position hero + Tesote AI + KPIs + cash-flow + saldos list</span>
+      </div>
+      <div class="frame-wrap"><iframe src="../dashboard/prototypes/dashboard-v5.html" title="Inicio" loading="lazy"></iframe></div>
+    </section>
+
+    <section class="surface" id="saldos">
+      <div class="s-head">
+        <span class="s-num">02</span>
+        <span class="s-title">Saldos</span>
+        <span class="s-file">connect/saldos/prototypes/saldos-v4-retrofit.html</span>
+        <span class="s-desc">Balances — currency summary cards + accounts/connections table</span>
+      </div>
+      <div class="frame-wrap"><iframe src="../connect/saldos/prototypes/saldos-v4-retrofit.html" title="Saldos" loading="lazy"></iframe></div>
+    </section>
+
+    <section class="surface" id="movimientos">
+      <div class="s-head">
+        <span class="s-num">03</span>
+        <span class="s-title">Movimientos</span>
+        <span class="s-file">connect/movimientos/prototypes/movimientos-v7-retrofit.html</span>
+        <span class="s-desc">Transactions — totals strip + filter-builder + dense ledger</span>
+      </div>
+      <div class="frame-wrap"><iframe src="../connect/movimientos/prototypes/movimientos-v7-retrofit.html" title="Movimientos" loading="lazy"></iframe></div>
+    </section>
+  </div>
+
+  <script>
+    const tabs = [...document.querySelectorAll('.tabbtn')];
+    const sections = [...document.querySelectorAll('.surface')];
+
+    function activate(target) {
+      tabs.forEach(t => t.classList.toggle('active', t.dataset.target === target));
+      sections.forEach(s => s.classList.toggle('active', s.id === target));
+      if (document.body.classList.contains('stacked')) {
+        document.getElementById(target).scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+    tabs.forEach(t => t.addEventListener('click', () => activate(t.dataset.target)));
+
+    function setMode(mode) {
+      document.body.classList.toggle('focus', mode === 'focus');
+      document.body.classList.toggle('stacked', mode === 'stacked');
+      document.getElementById('btn-focus').classList.toggle('active', mode === 'focus');
+      document.getElementById('btn-stacked').classList.toggle('active', mode === 'stacked');
+      if (mode === 'focus') {
+        const current = tabs.find(t => t.classList.contains('active'))?.dataset.target || 'inicio';
+        activate(current);
+        window.scrollTo({ top: 0 });
+      }
+    }
+  </script>
+</body>
+</html>

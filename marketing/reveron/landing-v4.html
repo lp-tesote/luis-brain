@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Reverón · por Tesote AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ink:    #0C0D0F;        /* black letters */
+    --muted:  #44484E;        /* dark grey */
+    --endorse:#16181B;
+    --emboss: rgba(255,255,255,0.45);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body { height: 100%; }
+
+  body {
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow: hidden;                      /* one screen, no scroll */
+    /* brushed platinum field */
+    background:
+      radial-gradient(ellipse 100vw 75vh at 50% 32%, rgba(255,255,255,0.55), transparent 62%),
+      linear-gradient(180deg, #D6D9DE 0%, #C3C7CD 52%, #ADB1B9 100%);
+  }
+  /* faint edge vignette for depth on the metal */
+  body::after {
+    content: ""; position: fixed; inset: 0; pointer-events: none;
+    box-shadow: inset 0 0 28vh rgba(60,64,70,0.22);
+  }
+
+  .stage {
+    position: relative; z-index: 1;
+    height: 100%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 6vh 7vw;
+  }
+
+  .wordmark {
+    font-family: 'Instrument Serif', serif; font-weight: 400;
+    font-size: clamp(4.5rem, 15vw, 12rem);
+    line-height: 0.9; letter-spacing: -0.012em;
+    color: var(--ink);
+    text-shadow: 0 1px 0 var(--emboss);   /* letterpress on platinum */
+  }
+
+  .endorsement {
+    margin-top: 1.7rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(0.85rem, 1.45vw, 1.02rem);   /* larger than before */
+    font-weight: 500;
+    letter-spacing: 0.34em; text-transform: uppercase;
+    color: var(--endorse); padding-left: 0.34em;
+  }
+
+  .tagline {
+    font-family: 'Instrument Serif', serif; font-style: italic;
+    font-size: clamp(1.7rem, 3.7vw, 2.9rem);
+    line-height: 1.18; color: var(--ink);
+    margin-top: clamp(2.8rem, 6vh, 4.4rem);
+    max-width: 18ch;
+  }
+
+  .sub {
+    margin-top: 1.5rem;
+    font-size: clamp(1rem, 1.55vw, 1.15rem);
+    font-weight: 400; line-height: 1.6; color: var(--muted);
+    max-width: 44ch;
+  }
+  .sub .impact { color: var(--ink); }
+
+  .cta {
+    margin-top: clamp(2.4rem, 5vh, 3.4rem);
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    font-size: 0.98rem; font-weight: 400; letter-spacing: 0.02em;
+    color: var(--ink); text-decoration: none;
+    padding-bottom: 0.35rem; border-bottom: 1.5px solid var(--ink);
+    transition: gap .35s ease, opacity .35s ease;
+  }
+  .cta:hover { gap: 0.95rem; opacity: 0.7; }
+  .cta svg { width: 14px; height: 14px; }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <h1 class="wordmark">Reverón</h1>
+    <div class="endorsement">por Tesote&nbsp;AI</div>
+
+    <p class="tagline">Inteligencia artificial, dentro de tus finanzas.</p>
+    <p class="sub">Pregunta, construye reportes, automatiza. <span class="impact">Lo que tomaba días, ahora toma una frase.</span></p>
+
+    <a class="cta" href="#acceso">
+      Solicitar acceso
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </a>
+  </div>
+</body>
+</html>

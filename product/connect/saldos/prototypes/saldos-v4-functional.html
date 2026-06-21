@@ -1,0 +1,1743 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Saldos · Tesote · v4 functional (retrofit on production sync_dashboard)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ============================================================
+       Lunour design tokens (LOCKED 2026-05-03)
+    ============================================================ */
+    :root {
+      --white: #FFFFFF;
+      --gray-1000: #12110F;
+      --gray-50: #F7F5F0;
+      --gray-100: #F0EBE0;
+      --gray-200: #E8E3DA;
+      --gray-300: #D5CFC2;
+      --gray-500: #A39A8C;
+      --gray-600: #857D73;
+      --gray-700: #635C53;
+
+      --blue-700: #1661E2;
+      --blue-50: #EEF8FF;
+      --blue-100: #DDEEFE;
+      --blue-200: #C6DDFB;
+      --blue-600: #2371E6;
+
+      --green-600: #1A8C5B;
+      --yellow-600: #CC9500;
+      --red-600: #C41E1E;
+      --red-50: #FEF2F2;
+      --orange-700: #A83E00;
+
+      --pill-paid-bg: #D6E8D5; --pill-paid-dot: #1A8C5B;
+      --pill-new-bg: #E4ECF7;  --pill-new-dot: #1C77F4;
+      --pill-pending-bg: #F7EDD0; --pill-pending-dot: #CC9500;
+      --pill-overdue-bg: #F8D8C0; --pill-overdue-dot: #A83E00;
+      --pill-draft-bg: #ECE7DD; --pill-draft-dot: #857D73;
+
+      --radius-sm: 4px;
+      --radius: 8px;
+      --radius-lg: 12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: 'Aspekta', 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 13px; color: var(--gray-1000);
+      background: var(--gray-50); line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+    }
+    .display { font-family: 'Inter Tight', sans-serif; letter-spacing: -0.01em; }
+    button { font-family: inherit; }
+
+    /* App shell */
+    .app { display: grid; grid-template-columns: 224px 1fr; min-height: 100vh; }
+    .sidebar {
+      background: var(--white);
+      border-right: 1px solid var(--gray-200);
+      padding: 20px 0; font-size: 13px;
+    }
+    .sb-brand {
+      padding: 0 18px 20px;
+      font-family: 'Inter Tight', sans-serif;
+      font-weight: 700; font-size: 18px; letter-spacing: -0.02em;
+    }
+    .sb-section {
+      padding: 16px 12px 4px;
+      font-size: 11px; font-weight: 600; color: var(--gray-600);
+      letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    .sb-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 7px 12px; margin: 0 6px;
+      border-radius: var(--radius-sm);
+      color: var(--gray-700); cursor: pointer;
+    }
+    .sb-item:hover { background: var(--gray-50); color: var(--gray-1000); }
+    .sb-item.active {
+      background: var(--blue-50); color: var(--blue-700); font-weight: 500;
+    }
+    .sb-icon { width: 16px; height: 16px; flex-shrink: 0; }
+    .main { padding: 32px 36px 80px; max-width: 1400px; }
+
+    /* Page header */
+    .page-header {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      margin-bottom: 22px;
+    }
+    .page-title {
+      font-family: 'Inter Tight', sans-serif; font-weight: 600;
+      font-size: 26px; letter-spacing: -0.02em; color: var(--gray-1000);
+    }
+    .page-subtitle {
+      font-size: 13px; color: var(--gray-600); margin-top: 4px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .subtitle-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--gray-500); }
+    .subtitle-warn { color: var(--yellow-600); font-weight: 500; }
+
+    /* Banner */
+    .banner {
+      display: flex; align-items: center; gap: 14px;
+      background: var(--pill-pending-bg); border: 1px solid #E8D9A8;
+      border-radius: var(--radius); padding: 14px 18px;
+      margin-bottom: 22px;
+    }
+    .banner-icon {
+      width: 28px; height: 28px; flex-shrink: 0;
+      border-radius: 50%; background: var(--yellow-600); color: white;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .banner-content { flex: 1; }
+    .banner-title { font-size: 14px; font-weight: 600; color: var(--gray-1000); }
+    .banner-sub { font-size: 12px; color: var(--gray-700); margin-top: 2px; }
+    .banner-cta {
+      padding: 7px 14px; border-radius: var(--radius);
+      background: var(--gray-1000); color: white; border: none;
+      font-size: 13px; font-weight: 500; cursor: pointer;
+    }
+    .banner-cta:hover { background: #302C25; }
+
+    /* Currency strip */
+    .currency-section { margin-bottom: 22px; }
+    .currency-section-label {
+      font-size: 11px; font-weight: 600;
+      color: var(--gray-600); letter-spacing: 0.05em; text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .currency-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 10px;
+      align-items: start;
+    }
+    .currency-card {
+      background: var(--white); border: 1px solid var(--gray-200);
+      border-radius: 10px;
+      padding: 12px 14px;
+      min-width: 0;
+      height: 92px;
+      transition: border-color 0.15s;
+    }
+    .currency-card:hover { border-color: var(--gray-300); }
+    .currency-card-head {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 4px;
+    }
+    .currency-code-cluster {
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .currency-code {
+      font-family: 'Inter Tight', sans-serif;
+      font-weight: 600; font-size: 11px; color: var(--gray-600);
+      letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    .currency-count {
+      font-size: 11px; color: var(--gray-500); font-weight: 500;
+      letter-spacing: -0.005em;
+    }
+    .currency-amount {
+      font-family: 'Geist Mono', 'SF Mono', Menlo, monospace;
+      font-weight: 700;
+      font-size: 23px; line-height: 1.2; color: var(--gray-1000);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      letter-spacing: -0.04em;
+    }
+    .currency-cents {
+      font-size: inherit; font-weight: inherit;
+      color: inherit; letter-spacing: inherit;
+    }
+    .currency-amount.empty {
+      color: var(--gray-500); font-weight: 500;
+    }
+    .currency-sub {
+      margin-top: 2px;
+      font-size: 12px; color: var(--gray-500);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      letter-spacing: -0.005em;
+    }
+    .currency-sub-equiv {
+      font-family: 'Geist Mono', 'SF Mono', Menlo, monospace;
+      color: var(--gray-1000); font-weight: 600;
+      letter-spacing: -0.03em;
+    }
+    .currency-sub-rate { color: var(--gray-500); margin-left: 2px; }
+    .currency-filtered-tag {
+      display: inline-flex; align-items: center;
+      font-size: 9px; font-weight: 700;
+      color: var(--blue-700); background: var(--blue-50);
+      padding: 2px 6px; border-radius: var(--radius-sm);
+      letter-spacing: 0.08em; text-transform: uppercase;
+    }
+
+    /* Tab toggle */
+    .tab-section { margin-bottom: 16px; }
+    .tab-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .tab-label { font-size: 13px; color: var(--gray-600); }
+    .tab-bar {
+      display: inline-flex; align-items: center; gap: 2px;
+      background: var(--gray-50); border: 1px solid var(--gray-200);
+      border-radius: var(--radius); padding: 3px;
+    }
+    .tab-btn {
+      padding: 6px 14px; border-radius: 5px;
+      background: transparent; border: 1px solid transparent;
+      cursor: pointer; font-size: 13px; font-weight: 500; color: var(--gray-600);
+    }
+    .tab-btn:hover { color: var(--gray-1000); }
+    .tab-btn.active {
+      background: var(--white); color: var(--gray-1000);
+      border-color: var(--gray-200);
+    }
+    .tab-hint {
+      font-size: 12px; color: var(--gray-600); margin-top: 8px;
+      max-width: 580px;
+    }
+
+    /* Filter bar */
+    .filter-shell {
+      background: var(--white); border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg); margin-bottom: 18px;
+      position: relative;
+    }
+    .filter-shell.active { border-color: var(--blue-200); }
+    .filter-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 16px; min-height: 52px;
+    }
+    .filter-label-cluster {
+      display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+    }
+    .filter-funnel-icon { width: 14px; height: 14px; color: var(--gray-500); }
+    .filter-shell.active .filter-funnel-icon { color: var(--blue-700); }
+    .filter-label {
+      font-size: 11px; font-weight: 600;
+      color: var(--gray-600); letter-spacing: 0.05em; text-transform: uppercase;
+      user-select: none;
+    }
+    .filter-count-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 18px; height: 18px; padding: 0 5px;
+      font-size: 10px; font-weight: 700; line-height: 1;
+      color: white; background: var(--blue-700); border-radius: 9999px;
+    }
+    .filter-separator {
+      width: 1px; height: 18px; background: var(--gray-200); flex-shrink: 0;
+    }
+    .filter-pills {
+      display: flex; align-items: center; gap: 6px;
+      flex: 1; flex-wrap: wrap; min-width: 0;
+    }
+    .filter-pill {
+      position: relative;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 10px;
+      border: 1px solid var(--gray-200); border-radius: var(--radius);
+      background: var(--white); font-size: 13px; color: var(--gray-700);
+      cursor: pointer;
+      transition: background 0.12s, border-color 0.12s;
+    }
+    .filter-pill:hover {
+      background: var(--gray-50); border-color: var(--gray-300);
+    }
+    .filter-pill.active {
+      background: var(--blue-50); border-color: var(--blue-200); color: var(--blue-700);
+    }
+    .filter-pill-icon { width: 13px; height: 13px; color: var(--gray-500); flex-shrink: 0; }
+    .filter-pill.active .filter-pill-icon { color: var(--blue-700); }
+    .filter-pill-caret { width: 11px; height: 11px; color: var(--gray-500); }
+    .filter-pill.active .filter-pill-caret { color: var(--blue-700); }
+    .filter-pill-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 16px; height: 16px; padding: 0 4px;
+      font-size: 10px; font-weight: 700; color: white;
+      background: var(--blue-700); border-radius: 9999px;
+    }
+    .filter-actions {
+      display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+    }
+    .btn-link-danger {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 4px 6px; background: none; border: none; cursor: pointer;
+      font-size: 12px; color: var(--gray-600);
+    }
+    .btn-link-danger:hover { color: var(--red-600); }
+    .btn-icon { width: 13px; height: 13px; }
+
+    /* Filter dropdown */
+    .filter-dropdown {
+      position: absolute; top: calc(100% + 4px); left: 0;
+      min-width: 240px; max-width: 320px;
+      background: var(--white); border: 1px solid var(--gray-200);
+      border-radius: var(--radius); padding: 6px;
+      z-index: 50; display: none;
+      max-height: 320px; overflow-y: auto;
+    }
+    .filter-pill.open .filter-dropdown { display: block; }
+    .filter-dropdown-search {
+      width: 100%; padding: 7px 10px;
+      border: 1px solid var(--gray-200); border-radius: var(--radius-sm);
+      font-family: inherit; font-size: 12px; margin-bottom: 6px;
+      outline: none; color: var(--gray-1000);
+    }
+    .filter-dropdown-search:focus { border-color: var(--blue-700); }
+    .filter-dropdown-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 7px 10px; cursor: pointer;
+      border-radius: var(--radius-sm);
+      font-size: 13px; color: var(--gray-1000);
+    }
+    .filter-dropdown-item:hover { background: var(--gray-50); }
+    .filter-dropdown-item-checkbox {
+      width: 14px; height: 14px; border-radius: 3px;
+      border: 1.5px solid var(--gray-300); background: var(--white);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .filter-dropdown-item.checked .filter-dropdown-item-checkbox {
+      background: var(--blue-700); border-color: var(--blue-700);
+    }
+    .filter-dropdown-item-checkbox-mark {
+      width: 9px; height: 9px; color: white; display: none;
+    }
+    .filter-dropdown-item.checked .filter-dropdown-item-checkbox-mark { display: block; }
+    .filter-dropdown-item-label { flex: 1; }
+    .filter-dropdown-item-sub {
+      font-size: 11px; color: var(--gray-600); margin-left: auto;
+    }
+    .filter-dropdown-empty {
+      padding: 12px; text-align: center; font-size: 12px; color: var(--gray-500);
+    }
+    .filter-dropdown-actions {
+      display: flex; justify-content: flex-end; gap: 6px;
+      border-top: 1px solid var(--gray-200);
+      margin-top: 6px; padding-top: 6px;
+    }
+    .filter-dropdown-action-btn {
+      padding: 4px 8px; border-radius: var(--radius-sm);
+      background: none; border: none; cursor: pointer;
+      font-size: 11px; color: var(--gray-600);
+    }
+    .filter-dropdown-action-btn:hover { color: var(--gray-1000); background: var(--gray-50); }
+
+    /* Filter chips row */
+    .filter-chips-row {
+      border-top: 1px solid var(--blue-100);
+      padding: 8px 16px;
+      background: rgba(238, 248, 255, 0.4);
+      border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+      display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+    }
+    .filter-chips-label {
+      font-size: 10px; font-weight: 600;
+      color: var(--gray-600); letter-spacing: 0.05em; text-transform: uppercase;
+      margin-right: 4px;
+    }
+    .filter-chip {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 6px 3px 8px;
+      background: var(--white); color: var(--blue-700);
+      border: 1px solid var(--blue-200); border-radius: 9999px;
+      font-size: 11px; font-weight: 500; cursor: pointer;
+    }
+    .filter-chip:hover {
+      background: var(--red-50); color: var(--red-600); border-color: #FECACA;
+    }
+    .filter-chip-x { width: 11px; height: 11px; opacity: 0.5; }
+    .filter-chip:hover .filter-chip-x { opacity: 0.9; }
+
+    /* Search input */
+    .search-input {
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 10px;
+      border: 1px solid var(--gray-200); border-radius: var(--radius);
+      background: var(--white);
+      min-width: 220px;
+    }
+    .search-input:focus-within { border-color: var(--blue-700); }
+    .search-input svg { width: 13px; height: 13px; color: var(--gray-500); }
+    .search-input input {
+      border: none; outline: none; flex: 1; background: transparent;
+      font-family: inherit; font-size: 13px; color: var(--gray-1000);
+    }
+
+    /* Group-by control */
+    .groupby-row {
+      margin-bottom: 14px;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+    }
+    .groupby-control {
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .groupby-label { font-size: 12px; color: var(--gray-600); }
+    .groupby-select {
+      position: relative;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 10px;
+      border: 1px solid var(--gray-200); border-radius: var(--radius);
+      background: var(--white); color: var(--gray-1000);
+      font-size: 13px; font-weight: 500; cursor: pointer;
+    }
+    .groupby-select:hover { background: var(--gray-50); }
+    .groupby-dropdown {
+      position: absolute; top: calc(100% + 4px); left: 0;
+      min-width: 160px;
+      background: var(--white); border: 1px solid var(--gray-200);
+      border-radius: var(--radius); padding: 6px;
+      z-index: 50; display: none;
+    }
+    .groupby-select.open .groupby-dropdown { display: block; }
+    .groupby-dropdown-item {
+      padding: 7px 10px; cursor: pointer;
+      border-radius: var(--radius-sm); font-size: 13px; color: var(--gray-1000);
+    }
+    .groupby-dropdown-item:hover { background: var(--gray-50); }
+    .groupby-dropdown-item.active { background: var(--blue-50); color: var(--blue-700); font-weight: 500; }
+
+    /* Data table */
+    .table-card {
+      background: var(--white); border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg); overflow: hidden;
+    }
+    .data-table {
+      width: 100%; border-collapse: collapse; table-layout: fixed;
+    }
+    .data-table th {
+      text-align: left; padding: 12px 16px;
+      font-size: 11px; font-weight: 600; color: var(--gray-600);
+      background: var(--gray-50); border-bottom: 1px solid var(--gray-200);
+      letter-spacing: 0.05em; text-transform: uppercase; white-space: nowrap;
+    }
+    .data-table th.numeric { text-align: right; }
+    .data-table th.center { text-align: center; }
+    .data-table th .sort-link {
+      color: inherit; cursor: pointer; border-bottom: 1px dotted var(--gray-500);
+      user-select: none;
+    }
+    .data-table th .sort-link:hover { border-bottom-color: transparent; }
+    .data-table th .sort-link.active { color: var(--gray-1000); border-bottom-color: var(--gray-1000); }
+    .data-table th .sort-arrow { display: inline-block; margin-left: 3px; font-size: 9px; }
+    .data-table td {
+      padding: 11px 16px; border-bottom: 1px solid var(--gray-200);
+      color: var(--gray-1000); vertical-align: middle;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .data-table td.numeric {
+      text-align: right;
+      font-family: 'Geist Mono', 'SF Mono', Menlo, monospace;
+      font-weight: 500;
+      font-size: 12px;
+      letter-spacing: -0.03em;
+      white-space: nowrap;
+      color: var(--gray-1000);
+    }
+    .data-table tbody tr { cursor: pointer; }
+    .data-table tbody tr:hover { background: var(--gray-50); }
+    .data-table tbody tr:last-child td { border-bottom: none; }
+
+    /* Group header row */
+    .group-header { cursor: default; }
+    .group-header td {
+      background: var(--gray-50); font-size: 12px; font-weight: 600;
+      color: var(--gray-700); padding: 9px 16px;
+      border-top: 1px solid var(--gray-200); border-bottom: 1px solid var(--gray-200);
+    }
+    .group-header:hover td { background: var(--gray-50); }
+    .group-header .group-name { letter-spacing: 0.02em; }
+    .group-header .group-meta { color: var(--gray-600); font-weight: 400; margin-left: 8px; }
+    .group-header .group-subtotals {
+      float: right; font-variant-numeric: tabular-nums; color: var(--gray-700); font-weight: 500;
+    }
+
+    /* Bank cell */
+    .bank-cell { display: inline-flex; align-items: center; gap: 8px; overflow: hidden; }
+    .bank-logo {
+      width: 24px; height: 24px; border-radius: var(--radius-sm);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-family: 'Inter Tight', sans-serif;
+      font-size: 11px; font-weight: 700; color: white;
+      flex-shrink: 0;
+    }
+    .bank-logo-mercantil { background: #006B3F; }
+    .bank-logo-bbva      { background: #004481; }
+    .bank-logo-bnc       { background: #C8102E; }
+    .bank-logo-banesco   { background: #0067A6; }
+    .bank-logo-bancamiga { background: #00A0DF; }
+    .bank-logo-activo    { background: #2D2A26; }
+    .bank-logo-manual    { background: var(--gray-500); }
+    .bank-name { color: var(--gray-1000); overflow: hidden; text-overflow: ellipsis; }
+
+    /* Estado pill */
+    .pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 2px 8px; border-radius: var(--radius-sm);
+      font-size: 11px; font-weight: 500; color: var(--gray-1000);
+      white-space: nowrap;
+    }
+    .pill-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .pill-ok      { background: var(--pill-paid-bg); }
+    .pill-ok .pill-dot      { background: var(--pill-paid-dot); }
+    .pill-syncing { background: var(--pill-new-bg); }
+    .pill-syncing .pill-dot { background: var(--pill-new-dot); }
+    .pill-warn    { background: var(--pill-pending-bg); }
+    .pill-warn .pill-dot    { background: var(--pill-pending-dot); }
+    .pill-draft   { background: var(--pill-draft-bg); }
+    .pill-draft .pill-dot   { background: var(--pill-draft-dot); }
+    .pill-error   { background: #F8D8C0; }
+    .pill-error .pill-dot   { background: var(--orange-700); }
+
+    .acct-num {
+      font-family: 'Geist Mono', 'SF Mono', Menlo, monospace;
+      font-size: 12px; color: var(--gray-700);
+      font-weight: 500; letter-spacing: -0.02em;
+    }
+
+    .row-sync-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px;
+      border: 1px solid var(--gray-200); border-radius: var(--radius-sm);
+      background: var(--white); cursor: pointer; color: var(--gray-600);
+    }
+    .row-sync-btn:hover:not(:disabled) { background: var(--gray-50); color: var(--gray-1000); }
+    .row-sync-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .row-sync-btn.syncing svg { animation: spin 1s linear infinite; }
+    @keyframes spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+
+    .twofa-tag {
+      font-size: 11px; padding: 1px 7px; border-radius: var(--radius-sm);
+      background: var(--gray-50); color: var(--gray-700);
+      border: 1px solid var(--gray-200);
+    }
+    .twofa-tag-auto {
+      background: var(--blue-50); color: var(--blue-700); border-color: var(--blue-100);
+    }
+    .sync-mode {
+      font-size: 11px; color: var(--gray-700);
+      padding: 1px 7px; background: var(--gray-50);
+      border: 1px solid var(--gray-200); border-radius: var(--radius-sm);
+    }
+
+    /* Empty state */
+    .empty { text-align: center; padding: 56px 24px; }
+    .empty-icon {
+      width: 48px; height: 48px; margin: 0 auto 12px;
+      background: var(--gray-50); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gray-500);
+    }
+    .empty-title { font-size: 14px; font-weight: 500; color: var(--gray-700); }
+    .empty-sub { font-size: 12px; color: var(--gray-500); margin-top: 4px; }
+    .empty-cta {
+      margin-top: 14px;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 14px; border-radius: var(--radius);
+      background: var(--blue-700); color: white; border: none;
+      font-size: 13px; font-weight: 500; cursor: pointer;
+    }
+    .empty-cta:hover { background: var(--blue-600); }
+
+    .table-footer {
+      padding: 10px 16px;
+      border-top: 1px solid var(--gray-200);
+      background: var(--gray-50);
+      font-size: 12px; color: var(--gray-600);
+    }
+
+    /* Slide-over drill-in */
+    .drawer-backdrop {
+      position: fixed; inset: 0; background: rgba(18, 17, 15, 0.36);
+      z-index: 100; opacity: 0; pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .drawer-backdrop.open { opacity: 1; pointer-events: auto; }
+    .drawer {
+      position: fixed; top: 0; right: 0; bottom: 0;
+      width: 480px; max-width: 95vw;
+      background: var(--white);
+      border-left: 1px solid var(--gray-200);
+      z-index: 101;
+      transform: translateX(100%); transition: transform 0.24s ease;
+      display: flex; flex-direction: column;
+    }
+    .drawer.open { transform: translateX(0); }
+    .drawer-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      padding: 22px 24px 14px; border-bottom: 1px solid var(--gray-200);
+    }
+    .drawer-title-cluster { display: flex; gap: 12px; align-items: center; }
+    .drawer-logo {
+      width: 40px; height: 40px; border-radius: var(--radius);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Inter Tight', sans-serif;
+      font-weight: 700; color: white; font-size: 16px;
+    }
+    .drawer-title {
+      font-family: 'Inter Tight', sans-serif; font-weight: 600;
+      font-size: 18px; letter-spacing: -0.01em;
+    }
+    .drawer-subtitle {
+      font-size: 12px; color: var(--gray-600); margin-top: 2px;
+    }
+    .drawer-close {
+      width: 30px; height: 30px; border-radius: var(--radius-sm);
+      background: var(--white); border: 1px solid var(--gray-200); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gray-700);
+    }
+    .drawer-close:hover { background: var(--gray-50); color: var(--gray-1000); }
+    .drawer-body {
+      padding: 18px 24px 24px; overflow-y: auto; flex: 1;
+    }
+    .drawer-section { margin-bottom: 24px; }
+    .drawer-section-label {
+      font-size: 11px; font-weight: 600;
+      color: var(--gray-600); letter-spacing: 0.05em; text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .drawer-amount {
+      font-family: 'Geist Mono', 'SF Mono', Menlo, monospace;
+      font-weight: 700; font-size: 28px;
+      letter-spacing: -0.04em; color: var(--gray-1000);
+    }
+    .drawer-amount-sub {
+      font-size: 13px; color: var(--gray-600); margin-top: 4px;
+    }
+    .drawer-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 9px 0; border-bottom: 1px solid var(--gray-200);
+      font-size: 13px;
+    }
+    .drawer-row:last-child { border-bottom: none; }
+    .drawer-row-label { color: var(--gray-600); }
+    .drawer-row-value { color: var(--gray-1000); font-weight: 500; }
+    .drawer-history {
+      max-height: 200px; overflow-y: auto;
+      font-size: 12px;
+    }
+    .drawer-history-item {
+      display: flex; justify-content: space-between; padding: 7px 0;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .drawer-history-item:last-child { border-bottom: none; }
+    .drawer-history-item-ok { color: var(--green-600); }
+    .drawer-history-item-err { color: var(--yellow-600); }
+    .drawer-link {
+      display: inline-flex; align-items: center; gap: 4px;
+      color: var(--blue-700); cursor: pointer; font-size: 13px;
+    }
+    .drawer-link:hover { text-decoration: underline; }
+    .drawer-notes {
+      width: 100%; padding: 9px 12px;
+      border: 1px solid var(--gray-200); border-radius: var(--radius-sm);
+      font-family: inherit; font-size: 13px; resize: vertical;
+      min-height: 60px; outline: none; color: var(--gray-1000);
+    }
+    .drawer-notes:focus { border-color: var(--blue-700); }
+    .drawer-mini-account {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 9px 4px; border-bottom: 1px solid var(--gray-200);
+      cursor: pointer; border-radius: var(--radius-sm);
+      transition: background 0.12s;
+    }
+    .drawer-mini-account:hover { background: var(--gray-50); }
+    .drawer-mini-account:last-child { border-bottom: none; }
+    .drawer-footer {
+      padding: 16px 24px; border-top: 1px solid var(--gray-200);
+      display: flex; gap: 8px; justify-content: flex-end;
+      background: var(--white);
+    }
+    .drawer-btn-secondary {
+      padding: 8px 14px; border-radius: var(--radius);
+      background: var(--white); border: 1px solid var(--gray-200);
+      color: var(--gray-1000); font-size: 13px; font-weight: 500; cursor: pointer;
+    }
+    .drawer-btn-secondary:hover { background: var(--gray-50); }
+    .drawer-btn-primary {
+      padding: 8px 14px; border-radius: var(--radius);
+      background: var(--gray-1000); color: white; border: none;
+      font-size: 13px; font-weight: 500; cursor: pointer;
+    }
+    .drawer-btn-primary:hover { background: #302C25; }
+    .drawer-btn-danger {
+      padding: 8px 14px; border-radius: var(--radius);
+      background: var(--white); border: 1px solid #FECACA;
+      color: var(--red-600); font-size: 13px; font-weight: 500; cursor: pointer;
+    }
+    .drawer-btn-danger:hover { background: var(--red-50); }
+
+    /* Toast */
+    .toast-stack {
+      position: fixed; bottom: 24px; right: 24px;
+      z-index: 200; display: flex; flex-direction: column; gap: 8px;
+      pointer-events: none;
+    }
+    .toast {
+      background: var(--gray-1000); color: white;
+      padding: 11px 16px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      box-shadow: 0 4px 12px rgba(18,17,15,0.16);
+      display: flex; align-items: center; gap: 10px;
+      pointer-events: auto;
+      animation: toast-in 0.2s ease;
+    }
+    .toast-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--green-600); flex-shrink: 0;
+    }
+    @keyframes toast-in {
+      from { transform: translateY(12px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Utility */
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Sidebar (out of scope; context only) -->
+  <aside class="sidebar">
+    <div class="sb-brand display">tesote</div>
+    <div class="sb-section">Connect</div>
+    <div class="sb-item active">
+      <svg class="sb-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="2" y="4" width="12" height="9" rx="1.5"/><path d="M2 7h12"/>
+      </svg>
+      Saldos
+    </div>
+    <div class="sb-item">
+      <svg class="sb-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M2 12l3-3 2.5 2.5L14 4"/><circle cx="14" cy="4" r="1" fill="currentColor"/>
+      </svg>
+      Movimientos
+    </div>
+    <div class="sb-section">Negocios</div>
+    <div class="sb-item">Pagos</div>
+    <div class="sb-item">Cobros</div>
+    <div class="sb-item">Contrapartes</div>
+  </aside>
+
+  <main class="main">
+
+    <header class="page-header">
+      <div>
+        <h1 class="page-title display">Saldos</h1>
+        <div class="page-subtitle" id="page-subtitle">
+          <!-- filled by JS -->
+        </div>
+      </div>
+    </header>
+
+    <!-- Sync accountability banner -->
+    <div class="banner" id="attention-banner">
+      <div class="banner-icon">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M8 5v4M8 11v.5"/><circle cx="8" cy="8" r="6.5"/>
+        </svg>
+      </div>
+      <div class="banner-content">
+        <div class="banner-title" id="banner-title"></div>
+        <div class="banner-sub" id="banner-sub"></div>
+      </div>
+      <button class="banner-cta" onclick="setActiveTab('connections')">Ver conexiones →</button>
+    </div>
+
+    <!-- Currency strip -->
+    <div class="currency-section">
+      <div class="currency-section-label">Saldos por moneda</div>
+      <div class="currency-grid" id="currency-grid"></div>
+    </div>
+
+    <!-- Tab toggle + group-by + search -->
+    <div class="tab-section">
+      <div class="tab-row">
+        <span class="tab-label">Ver por:</span>
+        <div class="tab-bar">
+          <button class="tab-btn active" data-tab="accounts" onclick="setActiveTab('accounts')">Cuentas</button>
+          <button class="tab-btn" data-tab="connections" onclick="setActiveTab('connections')">Conexiones Bancarias</button>
+        </div>
+      </div>
+      <div class="tab-hint" id="tab-hint" hidden>
+        Los syncs se realizan por conexión bancaria; al sincronizar una conexión se actualizan todas sus cuentas.
+      </div>
+    </div>
+
+    <!-- Filter bar -->
+    <div class="filter-shell" id="filter-shell">
+      <div class="filter-row">
+        <div class="filter-label-cluster">
+          <svg class="filter-funnel-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M1.5 2.5h13l-5 6v5l-3-1.5v-3.5l-5-6z"/>
+          </svg>
+          <span class="filter-label">Filtros</span>
+          <span class="filter-count-badge" id="filter-count-badge" hidden></span>
+        </div>
+        <div class="filter-separator"></div>
+        <div class="filter-pills" id="filter-pills"></div>
+        <div class="filter-actions">
+          <div class="search-input">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/>
+            </svg>
+            <input type="text" id="search-input" placeholder="Buscar..." />
+          </div>
+          <button class="btn-link-danger" id="reset-btn" hidden onclick="resetFilters()">
+            <svg class="btn-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="8" cy="8" r="6.5"/><path d="M5.5 5.5l5 5M10.5 5.5l-5 5"/>
+            </svg>
+            Limpiar
+          </button>
+        </div>
+      </div>
+      <div class="filter-chips-row" id="filter-chips-row" hidden>
+        <span class="filter-chips-label">Activos:</span>
+        <div id="filter-chips"></div>
+      </div>
+    </div>
+
+    <!-- Group-by control -->
+    <div class="groupby-row" id="groupby-row">
+      <div class="groupby-control">
+        <span class="groupby-label">Agrupar por:</span>
+        <div class="groupby-select" id="groupby-select" onclick="toggleGroupByDropdown(event)">
+          <span id="groupby-label-value">Sin agrupar</span>
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5l3 3 3-3"/></svg>
+          <div class="groupby-dropdown" id="groupby-dropdown">
+            <div class="groupby-dropdown-item active" data-group="none" onclick="setGroupBy('none', event)">Sin agrupar</div>
+            <div class="groupby-dropdown-item" data-group="entity" onclick="setGroupBy('entity', event)">Entidad</div>
+            <div class="groupby-dropdown-item" data-group="bank" onclick="setGroupBy('bank', event)">Banco</div>
+            <div class="groupby-dropdown-item" data-group="currency" onclick="setGroupBy('currency', event)">Divisa</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Accounts tab -->
+    <div id="tab-accounts">
+      <div class="table-card">
+        <table class="data-table">
+          <colgroup>
+            <col style="width: 15%"><col style="width: 20%"><col style="width: 12%">
+            <col style="width: 18%"><col style="width: 8%"><col style="width: 14%">
+            <col style="width: 13%">
+          </colgroup>
+          <thead>
+            <tr>
+              <th><span class="sort-link" data-sort="entity">Compañía<span class="sort-arrow"></span></span></th>
+              <th><span class="sort-link" data-sort="bank">Banco<span class="sort-arrow"></span></span></th>
+              <th>Cuenta</th>
+              <th class="numeric"><span class="sort-link active" data-sort="balance">Saldo<span class="sort-arrow">↓</span></span></th>
+              <th><span class="sort-link" data-sort="currency">Divisa<span class="sort-arrow"></span></span></th>
+              <th>Estado</th>
+              <th><span class="sort-link" data-sort="lastSync">Último sync<span class="sort-arrow"></span></span></th>
+            </tr>
+          </thead>
+          <tbody id="accounts-tbody"></tbody>
+        </table>
+        <div id="accounts-empty" hidden>
+          <div class="empty">
+            <div class="empty-icon">
+              <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="2.5" y="4" width="11" height="8" rx="1.5"/><path d="M2.5 7h11"/>
+              </svg>
+            </div>
+            <div class="empty-title" id="accounts-empty-title">No hay cuentas disponibles.</div>
+            <div class="empty-sub" id="accounts-empty-sub">Conecta una cuenta bancaria para comenzar a sincronizar.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Connections tab -->
+    <div id="tab-connections" hidden>
+      <div class="table-card">
+        <table class="data-table">
+          <colgroup>
+            <col style="width: 21%"><col style="width: 11%"><col style="width: 14%"><col style="width: 8%">
+            <col style="width: 18%"><col style="width: 12%"><col style="width: 8%"><col style="width: 8%">
+          </colgroup>
+          <thead>
+            <tr>
+              <th>Conexión</th>
+              <th>Usuario</th>
+              <th>Entidades</th>
+              <th class="numeric">Cuentas</th>
+              <th>Estado</th>
+              <th>Último sync</th>
+              <th>2FA</th>
+              <th class="center">Sync</th>
+            </tr>
+          </thead>
+          <tbody id="connections-tbody"></tbody>
+        </table>
+        <div id="connections-empty" hidden>
+          <div class="empty">
+            <div class="empty-icon">
+              <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M6 6L3 9a3 3 0 004.24 4.24L9 11.5M10 10l3-3a3 3 0 00-4.24-4.24L7 4.5"/>
+              </svg>
+            </div>
+            <div class="empty-title" id="connections-empty-title">No hay conexiones bancarias configuradas.</div>
+            <div class="empty-sub" id="connections-empty-sub">Conecta una cuenta bancaria para comenzar a sincronizar.</div>
+          </div>
+        </div>
+        <div class="table-footer" id="connections-footer"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Drill-in slide-over drawer -->
+<div class="drawer-backdrop" id="drawer-backdrop" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer" role="dialog" aria-modal="true">
+  <!-- content injected by JS -->
+</div>
+
+<!-- Toast stack -->
+<div class="toast-stack" id="toast-stack"></div>
+
+<script>
+/* ============================================================
+   DATA — production-realistic Tesote sample data
+============================================================ */
+
+const ENTITIES = [
+  { id: 'tst-cyc', label: 'TST SERVICIOS Y CONSULTORIA, C.A.', short: 'TST CYC' },
+  { id: 'tesote-tech', label: 'TESOTE TECHNOLOGIES INC.', short: 'Tesote Tech' },
+];
+
+const BANKS = ['Mercantil','BBVA Provincial','BNC','Banesco','Bancamiga','Banco Activo','Mercury (manual)'];
+
+const ACCOUNT_TYPES = [
+  { value: 'asset', label: 'Activos' },
+  { value: 'liability', label: 'Pasivos' },
+];
+
+const CURRENCIES = ['VES','USD','EUR'];
+
+const BCV_RATE = 510.79;
+const BCV_DATE = '30/04/2026';
+
+const ACCOUNTS = [
+  { id: 'a01', entity: 'tst-cyc', bank: 'Mercantil',     bankKey: 'mercantil', last4: '6733', balance: 47505687,        currency: 'VES', type: 'asset',     estado: 'ok',       lastSync: 'hace 8h',     validation: 'verified', connectionId: 'c-merc-1' },
+  { id: 'a02', entity: 'tst-cyc', bank: 'Mercantil',     bankKey: 'mercantil', last4: '3755', balance: 9562,            currency: 'USD', type: 'asset',     estado: 'ok',       lastSync: 'hace 8h',     validation: 'verified', connectionId: 'c-merc-1' },
+  { id: 'a03', entity: 'tst-cyc', bank: 'Mercantil',     bankKey: 'mercantil', last4: '9912', balance: 18004400,        currency: 'VES', type: 'liability', estado: 'ok',       lastSync: 'hace 8h',     validation: 'verified', connectionId: 'c-merc-1' },
+  { id: 'a04', entity: 'tst-cyc', bank: 'BBVA Provincial', bankKey: 'bbva',    last4: '0034', balance: 3103000,         currency: 'VES', type: 'asset',     estado: 'warn',     lastSync: 'hace 1 sem',  validation: 'pending',  connectionId: 'c-bbva' },
+  { id: 'a05', entity: 'tst-cyc', bank: 'BBVA Provincial', bankKey: 'bbva',    last4: '0035', balance: 412000,          currency: 'USD', type: 'asset',     estado: 'warn',     lastSync: 'hace 1 sem',  validation: 'pending',  connectionId: 'c-bbva' },
+  { id: 'a06', entity: 'tst-cyc', bank: 'BNC',           bankKey: 'bnc',       last4: '5421', balance: 88742519350,     currency: 'VES', type: 'asset',     estado: 'syncing',  lastSync: 'hace 2 min',  validation: 'verified', connectionId: 'c-bnc' },
+  { id: 'a07', entity: 'tst-cyc', bank: 'BNC',           bankKey: 'bnc',       last4: '5422', balance: 41015807,        currency: 'USD', type: 'asset',     estado: 'syncing',  lastSync: 'hace 2 min',  validation: 'verified', connectionId: 'c-bnc' },
+  { id: 'a08', entity: 'tst-cyc', bank: 'Banesco',       bankKey: 'banesco',   last4: '7700', balance: 8500000,         currency: 'VES', type: 'asset',     estado: 'ok',       lastSync: 'hace 4h',     validation: 'verified', connectionId: 'c-banesco' },
+  { id: 'a09', entity: 'tst-cyc', bank: 'Bancamiga',     bankKey: 'bancamiga', last4: '0211', balance: 1200000,         currency: 'VES', type: 'asset',     estado: 'ok',       lastSync: 'hace 6h',     validation: 'verified', connectionId: 'c-bancamiga' },
+  { id: 'a10', entity: 'tst-cyc', bank: 'Bancamiga',     bankKey: 'bancamiga', last4: '0212', balance: 0,               currency: 'USD', type: 'asset',     estado: 'ok',       lastSync: 'hace 6h',     validation: 'verified', connectionId: 'c-bancamiga' },
+  { id: 'a11', entity: 'tesote-tech', bank: 'Mercury (manual)', bankKey: 'manual', last4: '2294', balance: 85000,       currency: 'USD', type: 'asset',     estado: 'manual',   lastSync: '—',           validation: 'none',     connectionId: 'c-mercury' },
+  { id: 'a12', entity: 'tesote-tech', bank: 'Banesco',   bankKey: 'banesco',   last4: '7745', balance: 0,               currency: 'EUR', type: 'asset',     estado: 'ok',       lastSync: 'hace 1h',     validation: 'verified', connectionId: 'c-banesco-tt' },
+  { id: 'a13', entity: 'tesote-tech', bank: 'Banco Activo', bankKey: 'activo', last4: '3543', balance: 15000,           currency: 'USD', type: 'asset',     estado: 'warn',     lastSync: 'hace 1 sem',  validation: 'pending',  connectionId: 'c-activo' },
+  { id: 'a14', entity: 'tesote-tech', bank: 'Banco Activo', bankKey: 'activo', last4: '3544', balance: 950000,          currency: 'VES', type: 'asset',     estado: 'warn',     lastSync: 'hace 1 sem',  validation: 'pending',  connectionId: 'c-activo' },
+  { id: 'a15', entity: 'tesote-tech', bank: 'Banco Activo', bankKey: 'activo', last4: '3545', balance: 320000,          currency: 'USD', type: 'asset',     estado: 'warn',     lastSync: 'hace 1 sem',  validation: 'pending',  connectionId: 'c-activo' },
+  { id: 'a16', entity: 'tesote-tech', bank: 'Banco Activo', bankKey: 'activo', last4: '3546', balance: 50000,           currency: 'USD', type: 'asset',     estado: 'warn',     lastSync: 'hace 1 sem',  validation: 'pending',  connectionId: 'c-activo' },
+];
+
+const CONNECTIONS = [
+  { id: 'c-merc-1',   bank: 'Mercantil',       bankKey: 'mercantil', user: 'l...@25',  entities: 'TST CYC',     accountsCount: 3, estado: 'ok',       lastSync: 'hace 8h',    schedule: 'Diario 06:00', mode: 'API',    twoFa: 'auto',   reason: null },
+  { id: 'c-bbva',     bank: 'BBVA Provincial', bankKey: 'bbva',      user: 'l...@e7',  entities: 'TST CYC',     accountsCount: 2, estado: 'cred',     lastSync: 'hace 10h',   schedule: 'Diario 06:00', mode: 'API',    twoFa: 'manual', reason: 'Cambio de credenciales' },
+  { id: 'c-bnc',      bank: 'BNC',             bankKey: 'bnc',       user: 'a...@25',  entities: 'TST CYC',     accountsCount: 2, estado: 'syncing',  lastSync: 'hace 2 min', schedule: 'Cada 4h',      mode: 'API',    twoFa: 'auto',   reason: null },
+  { id: 'c-banesco',  bank: 'Banesco',         bankKey: 'banesco',   user: 'm...@25',  entities: 'TST CYC',     accountsCount: 1, estado: 'ok',       lastSync: 'hace 4h',    schedule: 'Cada 6h',      mode: 'API',    twoFa: 'manual', reason: null },
+  { id: 'c-bancamiga',bank: 'Bancamiga',       bankKey: 'bancamiga', user: 'a...@25',  entities: 'TST CYC',     accountsCount: 2, estado: 'ok',       lastSync: 'hace 6h',    schedule: 'Diario 09:00', mode: 'Scraper',twoFa: 'auto',   reason: null },
+  { id: 'c-activo',   bank: 'Banco Activo',    bankKey: 'activo',    user: 'a...@25',  entities: 'Tesote Tech', accountsCount: 4, estado: 'failed',   lastSync: 'hace 1 sem', schedule: 'Diario 06:00', mode: 'API',    twoFa: 'manual', reason: 'Sync falló — banco no responde' },
+  { id: 'c-banesco-tt', bank: 'Banesco',       bankKey: 'banesco',   user: 'm...@25',  entities: 'Tesote Tech', accountsCount: 1, estado: 'ok',       lastSync: 'hace 1h',    schedule: 'Cada 6h',      mode: 'API',    twoFa: 'manual', reason: null },
+  { id: 'c-mercury',  bank: 'Mercury (manual)',bankKey: 'manual',    user: null,        entities: 'Tesote Tech', accountsCount: 1, estado: 'manual',   lastSync: '—',          schedule: '—',            mode: 'Manual', twoFa: null,    reason: null },
+];
+
+// Mock sync history for drawer
+const SYNC_HISTORY = {
+  'c-merc-1':   [ { when: 'hoy 08:14', ok: true }, { when: 'ayer 21:30', ok: true }, { when: 'ayer 14:02', ok: true } ],
+  'c-bbva':     [ { when: 'hace 10h', ok: false, reason: 'auth expired' }, { when: 'ayer 06:00', ok: true } ],
+  'c-bnc':      [ { when: 'ahora', ok: null, reason: 'en curso' }, { when: 'hace 4h', ok: true } ],
+  'c-banesco':  [ { when: 'hace 4h', ok: true }, { when: 'hace 10h', ok: true } ],
+  'c-bancamiga':[ { when: 'hace 6h', ok: true } ],
+  'c-activo':   [ { when: 'hace 1 sem', ok: false, reason: 'timeout' }, { when: 'hace 2 sem', ok: true } ],
+  'c-banesco-tt': [ { when: 'hace 1h', ok: true } ],
+  'c-mercury':  [],
+};
+
+/* ============================================================
+   STATE
+============================================================ */
+
+const state = {
+  activeTab: 'accounts',
+  groupBy: 'none',          // none | entity | bank | currency
+  sort: { field: 'balance', dir: 'desc' },
+  search: '',
+  filters: {
+    accounts: [],
+    entities: [],
+    banks: [],
+    accountTypes: [],
+    currencies: [],
+  },
+};
+
+const FILTER_DEFS = [
+  { key: 'accounts',     label: 'Cuentas',         icon: 'card',       searchable: true },
+  { key: 'entities',     label: 'Compañías',       icon: 'building',   searchable: true },
+  { key: 'banks',        label: 'Bancos',          icon: 'bank',       searchable: true },
+  { key: 'accountTypes', label: 'Tipo de Cuenta',  icon: 'tag',        searchable: false },
+  { key: 'currencies',   label: 'Divisa',          icon: 'currency',   searchable: false },
+];
+
+const PILL_ICONS = {
+  card:     '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="12" height="9" rx="1.5"/><path d="M2 7h12"/></svg>',
+  building: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="2" width="10" height="12" rx="1"/><path d="M6 5h1M6 7h1M6 9h1M9 5h1M9 7h1M9 9h1"/></svg>',
+  bank:     '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 6l6-3 6 3v1H2V6z"/><path d="M3 8v4M6 8v4M10 8v4M13 8v4"/><path d="M1.5 12.5h13"/></svg>',
+  tag:      '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 6l5-3 7 4-5 3-7-4z"/></svg>',
+  currency: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M6.5 6.5c0-1 .8-1.5 1.5-1.5s1.5.5 1.5 1.5S6.5 7.5 6.5 9 7.3 10.5 8 10.5s1.5-.5 1.5-1.5M8 4v1M8 11v1"/></svg>',
+};
+
+const CARET = '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5l3 3 3-3"/></svg>';
+
+/* ============================================================
+   UTILITIES
+============================================================ */
+
+function formatMoney(cents, currency) {
+  const amount = (cents / 100);
+  const isVES = currency === 'VES';
+  const isEUR = currency === 'EUR';
+  const symbol = isVES ? 'Bs. ' : isEUR ? '€' : '$';
+  const fmt = new Intl.NumberFormat(isVES || isEUR ? 'es-VE' : 'en-US', {
+    minimumFractionDigits: 2, maximumFractionDigits: 2
+  });
+  return symbol + fmt.format(amount);
+}
+
+function splitAmount(cents, currency) {
+  const formatted = formatMoney(cents, currency);
+  // Split into integer + cents portion
+  const lastSep = formatted.lastIndexOf(currency === 'USD' ? '.' : ',');
+  if (lastSep === -1) return { integer: formatted, cents: '' };
+  return { integer: formatted.slice(0, lastSep), cents: formatted.slice(lastSep) };
+}
+
+function entityShort(id) { return ENTITIES.find(e => e.id === id)?.short || '—'; }
+function entityLabel(id) { return ENTITIES.find(e => e.id === id)?.label || '—'; }
+
+function bankLogoClass(key) { return 'bank-logo-' + (key || 'manual'); }
+function bankLetter(name) { return name === 'BNC' ? 'N' : name === 'Banesco' ? 'E' : (name || '?').charAt(0).toUpperCase(); }
+
+// Dollarize for cross-currency sort: VES → USD via BCV; EUR → USD via approx rate; USD as-is.
+function balanceInUsdCents(a) {
+  if (a.currency === 'VES') return a.balance / BCV_RATE;
+  if (a.currency === 'EUR') return a.balance * 1.08;
+  return a.balance;
+}
+
+function estadoPill(estado, reason) {
+  const labels = {
+    ok:      { cls: 'pill-ok',      txt: 'Sincronizada' },
+    syncing: { cls: 'pill-syncing', txt: 'Sincronizando' },
+    warn:    { cls: 'pill-warn',    txt: 'Requiere atención' },
+    manual:  { cls: 'pill-draft',   txt: 'Manual' },
+    cred:    { cls: 'pill-warn',    txt: 'Cambio credenciales' },
+    failed:  { cls: 'pill-error',   txt: 'Sync falló' },
+  };
+  const conf = labels[estado] || labels.manual;
+  return `<span class="pill ${conf.cls}"><span class="pill-dot"></span>${reason || conf.txt}</span>`;
+}
+
+function twoFaTag(t) {
+  if (t === 'auto')   return '<span class="twofa-tag twofa-tag-auto">Auto</span>';
+  if (t === 'manual') return '<span class="twofa-tag">Manual</span>';
+  return '<span style="color: var(--gray-500);">—</span>';
+}
+
+/* ============================================================
+   FILTERING
+============================================================ */
+
+function filteredAccounts() {
+  let list = ACCOUNTS.slice();
+
+  if (state.filters.accounts.length)     list = list.filter(a => state.filters.accounts.includes(a.id));
+  if (state.filters.entities.length)     list = list.filter(a => state.filters.entities.includes(a.entity));
+  if (state.filters.banks.length)        list = list.filter(a => state.filters.banks.includes(a.bank));
+  if (state.filters.accountTypes.length) list = list.filter(a => state.filters.accountTypes.includes(a.type));
+  if (state.filters.currencies.length)   list = list.filter(a => state.filters.currencies.includes(a.currency));
+
+  if (state.search) {
+    const q = state.search.toLowerCase();
+    list = list.filter(a =>
+      entityShort(a.entity).toLowerCase().includes(q) ||
+      a.bank.toLowerCase().includes(q) ||
+      a.last4.includes(q) ||
+      a.currency.toLowerCase().includes(q)
+    );
+  }
+
+  // sort
+  const { field, dir } = state.sort;
+  const mult = dir === 'asc' ? 1 : -1;
+  list.sort((a, b) => {
+    let av, bv;
+    switch (field) {
+      case 'entity':   av = entityShort(a.entity); bv = entityShort(b.entity); break;
+      case 'bank':     av = a.bank; bv = b.bank; break;
+      case 'balance':  av = balanceInUsdCents(a); bv = balanceInUsdCents(b); break;
+      case 'currency': av = a.currency; bv = b.currency; break;
+      case 'lastSync': av = a.lastSync; bv = b.lastSync; break;
+      default:         av = a.balance; bv = b.balance;
+    }
+    if (av < bv) return -1 * mult;
+    if (av > bv) return  1 * mult;
+    return 0;
+  });
+
+  return list;
+}
+
+function filteredConnections() {
+  const accts = filteredAccounts();
+  const connectionIdSet = new Set(accts.map(a => a.connectionId));
+  return CONNECTIONS.filter(c => connectionIdSet.has(c.id));
+}
+
+function hasActiveFilters() {
+  return Object.values(state.filters).some(v => v.length > 0) || state.search.length > 0;
+}
+
+function activeFilterCount() {
+  return Object.values(state.filters).reduce((sum, v) => sum + v.length, 0) + (state.search ? 1 : 0);
+}
+
+/* ============================================================
+   RENDERERS
+============================================================ */
+
+function renderSubtitle() {
+  const conns = CONNECTIONS.length;
+  const cuentas = ACCOUNTS.length;
+  const problems = CONNECTIONS.filter(c => ['cred','failed'].includes(c.estado)).length;
+  const subtitleEl = document.getElementById('page-subtitle');
+  let html = `<span>${conns} conexiones</span>
+              <span class="subtitle-dot"></span>
+              <span>${cuentas} cuentas</span>`;
+  if (problems > 0) {
+    html += `<span class="subtitle-dot"></span>
+             <span class="subtitle-warn">${problems} ${problems === 1 ? 'requiere' : 'requieren'} atención</span>`;
+  }
+  subtitleEl.innerHTML = html;
+}
+
+function renderBanner() {
+  const problems = CONNECTIONS.filter(c => ['cred','failed'].includes(c.estado));
+  const el = document.getElementById('attention-banner');
+  if (problems.length === 0) { el.hidden = true; return; }
+  el.hidden = false;
+  document.getElementById('banner-title').textContent =
+    `${problems.length} conexion${problems.length===1?'':'es'} necesita${problems.length===1?'':'n'} atención`;
+  document.getElementById('banner-sub').innerHTML =
+    problems.map(p => `${p.bank} — ${p.reason} · afecta ${p.accountsCount} cuenta${p.accountsCount===1?'':'s'}`).join(' &nbsp;·&nbsp; ');
+}
+
+function renderCurrencyStrip() {
+  const accts = filteredAccounts();
+  const grouped = {};
+  for (const a of accts) {
+    if (!grouped[a.currency]) grouped[a.currency] = { totalCents: 0, count: 0 };
+    grouped[a.currency].totalCents += a.balance;
+    grouped[a.currency].count += 1;
+  }
+
+  const order = ['VES','USD','EUR'].filter(c => grouped[c]);
+  const filtered = hasActiveFilters();
+  const grid = document.getElementById('currency-grid');
+
+  if (order.length === 0) {
+    grid.innerHTML = `
+      <div class="currency-card">
+        <div class="currency-card-head">
+          <span class="currency-code display">Sin resultados</span>
+        </div>
+        <div class="currency-amount empty">—</div>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = order.map(c => {
+    const { integer, cents } = splitAmount(grouped[c].totalCents, c);
+    const isVES = c === 'VES';
+    const equivUsd = isVES ? grouped[c].totalCents / 100 / BCV_RATE : null;
+    const equivFmt = equivUsd ? new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(equivUsd) : null;
+    const bcvDisplay = Math.floor(BCV_RATE);
+
+    return `
+      <div class="currency-card">
+        <div class="currency-card-head">
+          <div class="currency-code-cluster">
+            <span class="currency-code display">${c}</span>
+            ${filtered ? '<span class="currency-filtered-tag">filtrado</span>' : ''}
+          </div>
+          <span class="currency-count">${grouped[c].count} cuenta${grouped[c].count===1?'':'s'}</span>
+        </div>
+        <div class="currency-amount ${grouped[c].totalCents === 0 ? 'empty' : ''}">
+          ${grouped[c].totalCents === 0 ? '—' : `${integer}<span class="currency-cents">${cents}</span>`}
+        </div>
+        ${isVES && grouped[c].totalCents !== 0 ? `
+          <div class="currency-sub">
+            <span class="currency-sub-equiv">$${equivFmt}</span>
+            <span class="currency-sub-rate">(Tasa BCV ${bcvDisplay} Bs/$)</span>
+          </div>` : ''}
+      </div>`;
+  }).join('');
+}
+
+function renderFilterPills() {
+  const pills = document.getElementById('filter-pills');
+  pills.innerHTML = FILTER_DEFS.map(def => {
+    const sel = state.filters[def.key];
+    const active = sel.length > 0;
+    return `
+      <button class="filter-pill ${active ? 'active' : ''}" data-filter="${def.key}" onclick="toggleFilterDropdown(event, '${def.key}')">
+        <span class="filter-pill-icon">${PILL_ICONS[def.icon]}</span>
+        <span>${def.label}</span>
+        ${active ? `<span class="filter-pill-badge">${sel.length}</span>` : ''}
+        <span class="filter-pill-caret">${CARET}</span>
+        <div class="filter-dropdown" data-dropdown="${def.key}"></div>
+      </button>`;
+  }).join('');
+}
+
+function renderFilterDropdown(filterKey) {
+  const dropdown = document.querySelector(`[data-dropdown="${filterKey}"]`);
+  if (!dropdown) return;
+
+  const def = FILTER_DEFS.find(d => d.key === filterKey);
+  let options = optionsFor(filterKey);
+  const sel = state.filters[filterKey];
+
+  const searchVal = dropdown.dataset.search || '';
+  if (def.searchable && searchVal) {
+    const q = searchVal.toLowerCase();
+    options = options.filter(o => o.label.toLowerCase().includes(q) || (o.subtitle || '').toLowerCase().includes(q));
+  }
+
+  dropdown.innerHTML = `
+    ${def.searchable ? `<input type="text" class="filter-dropdown-search" placeholder="Buscar ${def.label.toLowerCase()}..." value="${searchVal}" oninput="searchInDropdown(event, '${filterKey}')" onclick="event.stopPropagation()" />` : ''}
+    ${options.length === 0 ? '<div class="filter-dropdown-empty">Sin opciones</div>' :
+      options.map(o => `
+        <div class="filter-dropdown-item ${sel.includes(o.value) ? 'checked' : ''}" onclick="toggleFilterOption(event, '${filterKey}', '${o.value}')">
+          <span class="filter-dropdown-item-checkbox">
+            <svg class="filter-dropdown-item-checkbox-mark" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 6l2 2 4-4"/></svg>
+          </span>
+          <span class="filter-dropdown-item-label">${o.label}</span>
+          ${o.subtitle ? `<span class="filter-dropdown-item-sub">${o.subtitle}</span>` : ''}
+        </div>`).join('')}
+    ${sel.length > 0 ? `
+      <div class="filter-dropdown-actions">
+        <button class="filter-dropdown-action-btn" onclick="clearFilter(event, '${filterKey}')">Limpiar</button>
+      </div>` : ''}
+  `;
+}
+
+function optionsFor(filterKey) {
+  switch (filterKey) {
+    case 'accounts':     return ACCOUNTS.map(a => ({ value: a.id, label: `··${a.last4}`, subtitle: a.bank }));
+    case 'entities':     return ENTITIES.map(e => ({ value: e.id, label: e.short, subtitle: e.label }));
+    case 'banks':        return BANKS.map(b => ({ value: b, label: b }));
+    case 'accountTypes': return ACCOUNT_TYPES.map(t => ({ value: t.value, label: t.label }));
+    case 'currencies':   return CURRENCIES.map(c => ({ value: c, label: c }));
+  }
+  return [];
+}
+
+function renderChips() {
+  const row = document.getElementById('filter-chips-row');
+  const container = document.getElementById('filter-chips');
+  const chipParts = [];
+
+  for (const def of FILTER_DEFS) {
+    const sel = state.filters[def.key];
+    if (sel.length === 0) continue;
+    const labels = sel.map(v => {
+      const opt = optionsFor(def.key).find(o => o.value === v);
+      return opt?.label || v;
+    });
+    chipParts.push(`
+      <button class="filter-chip" onclick="clearFilter(null, '${def.key}')">
+        <span>${def.label}: ${labels.join(', ')}</span>
+        <svg class="filter-chip-x" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3l6 6M9 3l-6 6"/></svg>
+      </button>`);
+  }
+  if (state.search) {
+    chipParts.push(`
+      <button class="filter-chip" onclick="clearSearch()">
+        <span>Búsqueda: ${state.search}</span>
+        <svg class="filter-chip-x" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3l6 6M9 3l-6 6"/></svg>
+      </button>`);
+  }
+
+  if (chipParts.length === 0) { row.hidden = true; return; }
+  row.hidden = false;
+  container.innerHTML = chipParts.join('');
+}
+
+function renderFilterShell() {
+  const shell = document.getElementById('filter-shell');
+  const active = hasActiveFilters();
+  shell.classList.toggle('active', active);
+
+  const badge = document.getElementById('filter-count-badge');
+  const count = activeFilterCount();
+  if (count > 0) { badge.textContent = count; badge.hidden = false; } else { badge.hidden = true; }
+
+  document.getElementById('reset-btn').hidden = !active;
+}
+
+function renderAccountsTable() {
+  const tbody = document.getElementById('accounts-tbody');
+  const emptyEl = document.getElementById('accounts-empty');
+  const list = filteredAccounts();
+
+  if (list.length === 0) {
+    tbody.innerHTML = '';
+    emptyEl.hidden = false;
+    document.getElementById('accounts-empty-title').textContent = hasActiveFilters()
+      ? 'Ningún resultado coincide con los filtros.'
+      : 'No hay cuentas disponibles.';
+    document.getElementById('accounts-empty-sub').textContent = hasActiveFilters()
+      ? 'Intenta modificar los filtros para encontrar resultados.'
+      : 'Conecta una cuenta bancaria para comenzar a sincronizar.';
+    return;
+  }
+  emptyEl.hidden = true;
+
+  if (state.groupBy === 'none') {
+    tbody.innerHTML = list.map(rowHtml).join('');
+  } else {
+    // Group
+    const groups = {};
+    for (const a of list) {
+      const key = groupKey(a, state.groupBy);
+      if (!groups[key]) groups[key] = { label: groupLabel(a, state.groupBy), accounts: [] };
+      groups[key].accounts.push(a);
+    }
+    const ordered = Object.keys(groups);
+    tbody.innerHTML = ordered.map(k => {
+      const g = groups[k];
+      const subtotals = {};
+      for (const a of g.accounts) {
+        if (!subtotals[a.currency]) subtotals[a.currency] = 0;
+        subtotals[a.currency] += a.balance;
+      }
+      const subtotalStr = Object.entries(subtotals).map(([c, v]) => formatMoney(v, c)).join(' · ');
+      return `
+        <tr class="group-header">
+          <td colspan="7">
+            <span class="group-name">${g.label}</span>
+            <span class="group-meta">· ${g.accounts.length} cuenta${g.accounts.length===1?'':'s'}</span>
+            <span class="group-subtotals">${subtotalStr}</span>
+          </td>
+        </tr>
+        ${g.accounts.map(rowHtml).join('')}`;
+    }).join('');
+  }
+}
+
+function rowHtml(a) {
+  return `
+    <tr onclick="navigateToMovimientos('${a.id}')" title="Ver movimientos de esta cuenta">
+      <td>${entityShort(a.entity)}</td>
+      <td><span class="bank-cell"><span class="bank-logo ${bankLogoClass(a.bankKey)}">${bankLetter(a.bank)}</span><span class="bank-name">${a.bank}</span></span></td>
+      <td><span class="acct-num">··${a.last4}</span></td>
+      <td class="numeric">${a.balance === 0 ? '—' : formatMoney(a.balance, a.currency)}</td>
+      <td>${a.currency}</td>
+      <td>${estadoPill(a.estado)}</td>
+      <td>${a.lastSync}</td>
+    </tr>`;
+}
+
+function groupKey(a, mode) {
+  if (mode === 'entity')   return a.entity;
+  if (mode === 'bank')     return a.bank;
+  if (mode === 'currency') return a.currency;
+  return 'all';
+}
+
+function groupLabel(a, mode) {
+  if (mode === 'entity')   return entityLabel(a.entity);
+  if (mode === 'bank')     return a.bank;
+  if (mode === 'currency') return a.currency;
+  return 'Todas las cuentas';
+}
+
+function renderConnectionsTable() {
+  const tbody = document.getElementById('connections-tbody');
+  const emptyEl = document.getElementById('connections-empty');
+  const footer = document.getElementById('connections-footer');
+  const list = filteredConnections();
+
+  if (list.length === 0) {
+    tbody.innerHTML = '';
+    emptyEl.hidden = false;
+    document.getElementById('connections-empty-title').textContent = hasActiveFilters()
+      ? 'Ningún resultado coincide con los filtros.'
+      : 'No hay conexiones bancarias configuradas.';
+    footer.textContent = '';
+    return;
+  }
+  emptyEl.hidden = true;
+  footer.textContent = `${list.length} conexion${list.length===1?'':'es'} bancaria${list.length===1?'':'s'}`;
+
+  tbody.innerHTML = list.map(c => `
+    <tr onclick="openConnectionDrawer('${c.id}', event)">
+      <td><span class="bank-cell"><span class="bank-logo ${bankLogoClass(c.bankKey)}">${bankLetter(c.bank)}</span><span class="bank-name">${c.bank}</span></span></td>
+      <td>${c.user ? `<span class="acct-num">${c.user}</span>` : '—'}</td>
+      <td>${c.entities}</td>
+      <td class="numeric">${c.accountsCount}</td>
+      <td>${estadoPill(c.estado, c.estado === 'cred' ? 'Cambio credenciales' : null)}</td>
+      <td>${c.lastSync}</td>
+      <td>${twoFaTag(c.twoFa)}</td>
+      <td class="center">
+        ${c.estado === 'manual' ? '—' :
+          `<button class="row-sync-btn ${c.estado === 'syncing' ? 'syncing' : ''}"
+                   ${['syncing','cred'].includes(c.estado) ? 'disabled' : ''}
+                   onclick="triggerSync('${c.id}', event)"
+                   title="${c.estado === 'cred' ? 'Re-autentica primero' : 'Sincronizar conexión'}">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 4v3h-3M2 12V9h3"/><path d="M3 9a5.5 5.5 0 0010 1M13 7A5.5 5.5 0 003 6"/></svg>
+          </button>`
+        }
+      </td>
+    </tr>`).join('');
+}
+
+function renderAll() {
+  renderSubtitle();
+  renderBanner();
+  renderCurrencyStrip();
+  renderFilterShell();
+  renderFilterPills();
+  renderChips();
+  renderAccountsTable();
+  renderConnectionsTable();
+  document.getElementById('groupby-row').hidden = state.activeTab !== 'accounts';
+}
+
+/* ============================================================
+   INTERACTIONS
+============================================================ */
+
+function setActiveTab(tab) {
+  state.activeTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.getElementById('tab-accounts').hidden = tab !== 'accounts';
+  document.getElementById('tab-connections').hidden = tab !== 'connections';
+  document.getElementById('tab-hint').hidden = tab !== 'connections';
+  document.getElementById('groupby-row').hidden = tab !== 'accounts';
+}
+
+function toggleFilterDropdown(e, key) {
+  e.stopPropagation();
+  // close others
+  document.querySelectorAll('.filter-pill').forEach(p => {
+    if (p.dataset.filter !== key) p.classList.remove('open');
+  });
+  const pill = e.currentTarget;
+  const isOpen = pill.classList.contains('open');
+  if (!isOpen) {
+    renderFilterDropdown(key);
+    pill.classList.add('open');
+  } else {
+    pill.classList.remove('open');
+  }
+}
+
+function toggleFilterOption(e, filterKey, value) {
+  e.stopPropagation();
+  const arr = state.filters[filterKey];
+  const idx = arr.indexOf(value);
+  if (idx === -1) arr.push(value); else arr.splice(idx, 1);
+  renderFilterDropdown(filterKey);
+  renderAll();
+}
+
+function clearFilter(e, filterKey) {
+  if (e) e.stopPropagation();
+  state.filters[filterKey] = [];
+  renderAll();
+}
+
+function clearSearch() {
+  state.search = '';
+  document.getElementById('search-input').value = '';
+  renderAll();
+}
+
+function searchInDropdown(e, filterKey) {
+  const dropdown = document.querySelector(`[data-dropdown="${filterKey}"]`);
+  dropdown.dataset.search = e.target.value;
+  renderFilterDropdown(filterKey);
+  // restore focus
+  const input = dropdown.querySelector('.filter-dropdown-search');
+  if (input) { input.focus(); input.setSelectionRange(input.value.length, input.value.length); }
+}
+
+function resetFilters() {
+  state.filters = { accounts: [], entities: [], banks: [], accountTypes: [], currencies: [] };
+  state.search = '';
+  document.getElementById('search-input').value = '';
+  renderAll();
+}
+
+function toggleGroupByDropdown(e) {
+  e.stopPropagation();
+  document.getElementById('groupby-select').classList.toggle('open');
+}
+
+function setGroupBy(value, e) {
+  e.stopPropagation();
+  state.groupBy = value;
+  const labels = { entity: 'Entidad', bank: 'Banco', currency: 'Divisa', none: 'Sin agrupar' };
+  document.getElementById('groupby-label-value').textContent = labels[value];
+  document.querySelectorAll('.groupby-dropdown-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.group === value);
+  });
+  document.getElementById('groupby-select').classList.remove('open');
+  renderAccountsTable();
+}
+
+function setSort(field) {
+  if (state.sort.field === field) {
+    state.sort.dir = state.sort.dir === 'asc' ? 'desc' : 'asc';
+  } else {
+    state.sort.field = field;
+    state.sort.dir = 'desc';
+  }
+  document.querySelectorAll('.sort-link').forEach(el => {
+    const isActive = el.dataset.sort === state.sort.field;
+    el.classList.toggle('active', isActive);
+    el.querySelector('.sort-arrow').textContent = isActive ? (state.sort.dir === 'asc' ? '↑' : '↓') : '';
+  });
+  renderAccountsTable();
+}
+
+/* ============================================================
+   DRAWER (slide-over drill-in)
+============================================================ */
+
+function openDrawer(contentHtml) {
+  document.getElementById('drawer').innerHTML = contentHtml;
+  document.getElementById('drawer-backdrop').classList.add('open');
+  document.getElementById('drawer').classList.add('open');
+}
+
+function closeDrawer() {
+  document.getElementById('drawer-backdrop').classList.remove('open');
+  document.getElementById('drawer').classList.remove('open');
+}
+
+function navigateToMovimientos(accountId) {
+  const a = ACCOUNTS.find(x => x.id === accountId);
+  if (!a) return;
+  // In production: navigate to Movimientos page with a pre-applied filter:
+  //   /connect/movimientos?query[tesote_account_id_in][]=<a.id>
+  // For this prototype, simulate with a toast.
+  showToast(`→ Navegando a Movimientos · filtrado por ${a.bank} ··${a.last4}`);
+}
+
+function openConnectionDrawer(connId, e) {
+  if (e) e.stopPropagation();
+  const c = CONNECTIONS.find(x => x.id === connId);
+  if (!c) return;
+  const history = SYNC_HISTORY[connId] || [];
+  const linkedAccounts = ACCOUNTS.filter(a => a.connectionId === connId);
+
+  openDrawer(`
+    <div class="drawer-header">
+      <div class="drawer-title-cluster">
+        <div class="drawer-logo ${bankLogoClass(c.bankKey)}">${bankLetter(c.bank)}</div>
+        <div>
+          <div class="drawer-title">${c.bank}</div>
+          <div class="drawer-subtitle">${c.entities} · ${c.user || 'Manual'}</div>
+        </div>
+      </div>
+      <button class="drawer-close" onclick="closeDrawer()">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+      </button>
+    </div>
+    <div class="drawer-body">
+      <div class="drawer-section">
+        <div class="drawer-section-label">Estado</div>
+        <div class="drawer-row">
+          <span class="drawer-row-label">Conexión</span>
+          <span>${estadoPill(c.estado, c.estado === 'cred' ? 'Cambio credenciales' : null)}</span>
+        </div>
+        <div class="drawer-row">
+          <span class="drawer-row-label">Último sync</span>
+          <span class="drawer-row-value">${c.lastSync}</span>
+        </div>
+        ${c.reason ? `
+          <div class="drawer-row">
+            <span class="drawer-row-label">Motivo</span>
+            <span class="drawer-row-value" style="color: var(--yellow-600)">${c.reason}</span>
+          </div>` : ''}
+      </div>
+
+      <div class="drawer-section">
+        <div class="drawer-section-label">Configuración</div>
+        <div class="drawer-row">
+          <span class="drawer-row-label">Modo de sync</span>
+          <span class="drawer-row-value">${c.mode}</span>
+        </div>
+        <div class="drawer-row">
+          <span class="drawer-row-label">Programación</span>
+          <span class="drawer-row-value">${c.schedule}</span>
+        </div>
+        <div class="drawer-row">
+          <span class="drawer-row-label">2FA</span>
+          <span>${twoFaTag(c.twoFa)}</span>
+        </div>
+        <div class="drawer-row">
+          <span class="drawer-row-label">Usuario</span>
+          <span class="drawer-row-value">${c.user ? `<span class="acct-num">${c.user}</span>` : '—'}</span>
+        </div>
+      </div>
+
+      <div class="drawer-section">
+        <div class="drawer-section-label">Cuentas vinculadas (${linkedAccounts.length})</div>
+        ${linkedAccounts.map(a => `
+          <div class="drawer-mini-account" onclick="navigateToMovimientos('${a.id}')" title="Ver movimientos de esta cuenta">
+            <div>
+              <div style="font-size: 13px;">${entityShort(a.entity)} · <span class="acct-num">··${a.last4}</span></div>
+              <div style="font-size: 11px; color: var(--gray-600);">${a.bank} · ${a.currency}</div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-variant-numeric: tabular-nums; font-weight: 500;">${a.balance === 0 ? '—' : formatMoney(a.balance, a.currency)}</div>
+              <div style="font-size: 11px; color: var(--gray-600); margin-top: 2px;">${a.lastSync}</div>
+            </div>
+          </div>`).join('')}
+      </div>
+
+      ${history.length > 0 ? `
+        <div class="drawer-section">
+          <div class="drawer-section-label">Historial de sync</div>
+          <div class="drawer-history">
+            ${history.map(h => `
+              <div class="drawer-history-item">
+                <span>${h.when}</span>
+                <span class="${h.ok ? 'drawer-history-item-ok' : h.ok === false ? 'drawer-history-item-err' : 'drawer-row-label'}">
+                  ${h.ok === true ? '✓ ok' : h.ok === false ? '✗ ' + (h.reason || 'falló') : '↻ ' + (h.reason || 'en curso')}
+                </span>
+              </div>`).join('')}
+          </div>
+        </div>` : ''}
+    </div>
+    <div class="drawer-footer">
+      ${c.estado !== 'manual' ? `
+        ${['cred','failed'].includes(c.estado) ? `
+          <button class="drawer-btn-secondary" onclick="alert('Abrir flujo de re-autenticación')">Re-autenticar</button>` : ''}
+        <button class="drawer-btn-primary" ${c.estado === 'syncing' ? 'disabled' : ''} onclick="triggerSync('${c.id}', new Event('x')); closeDrawer();">
+          Sincronizar (${c.accountsCount})
+        </button>
+        <button class="drawer-btn-danger" onclick="confirm('Desconectar ' + '${c.bank}' + '?')">Desconectar</button>
+      ` : `
+        <button class="drawer-btn-secondary" onclick="alert('Editar cuenta manual')">Editar cuenta manual</button>
+        <button class="drawer-btn-danger" onclick="confirm('Eliminar cuenta manual?')">Eliminar</button>
+      `}
+    </div>
+  `);
+}
+
+/* ============================================================
+   SYNC SIMULATION
+============================================================ */
+
+function triggerSync(connId, e) {
+  if (e) e.stopPropagation();
+  const conn = CONNECTIONS.find(c => c.id === connId);
+  if (!conn || ['syncing','cred','manual'].includes(conn.estado)) return;
+
+  conn.estado = 'syncing';
+  ACCOUNTS.filter(a => a.connectionId === connId).forEach(a => { a.estado = 'syncing'; a.lastSync = 'ahora'; });
+  renderAll();
+  showToast(`Sincronizando ${conn.bank}…`, 'info');
+
+  setTimeout(() => {
+    conn.estado = 'ok';
+    conn.lastSync = 'ahora';
+    ACCOUNTS.filter(a => a.connectionId === connId).forEach(a => { a.estado = 'ok'; a.lastSync = 'ahora'; });
+    renderAll();
+    showToast(`${conn.bank} sincronizada — ${conn.accountsCount} cuenta${conn.accountsCount===1?'':'s'} actualizada${conn.accountsCount===1?'':'s'}`, 'success');
+  }, 2400);
+}
+
+function showToast(msg) {
+  const stack = document.getElementById('toast-stack');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.innerHTML = `<span class="toast-dot"></span><span>${msg}</span>`;
+  stack.appendChild(el);
+  setTimeout(() => el.remove(), 4000);
+}
+
+/* ============================================================
+   WIRE UP + INIT
+============================================================ */
+
+document.getElementById('search-input').addEventListener('input', (e) => {
+  state.search = e.target.value.trim();
+  renderAll();
+});
+
+document.querySelectorAll('.sort-link').forEach(el => {
+  el.addEventListener('click', () => setSort(el.dataset.sort));
+});
+
+document.addEventListener('click', (e) => {
+  // close filter dropdowns if click outside
+  if (!e.target.closest('.filter-pill')) {
+    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('open'));
+  }
+  if (!e.target.closest('.groupby-select')) {
+    document.getElementById('groupby-select').classList.remove('open');
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeDrawer();
+    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('open'));
+  }
+});
+
+renderAll();
+</script>
+</body>
+</html>

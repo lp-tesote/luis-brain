@@ -1,0 +1,1796 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tesote AI · Automatizaciones — Construir una regla (v0.1)</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    /* Lunour neutral palette — matches use-case-taxonomy-v0.1 */
+    --white: #ffffff;
+    --gray-50: #f7f5f0;
+    --gray-100: #f0ebe0;
+    --gray-200: #e8e3da;
+    --gray-300: #d8d0c2;
+    --gray-400: #b8b0a4;
+    --gray-600: #857d73;
+    --gray-800: #3d3a35;
+    --gray-1000: #12110f;
+    --brand: #1661e2;
+    --brand-soft: #eef8ff;
+
+    --auto: #c9d8c5;
+    --auto-tint: #eef3eb;
+    --draft: #f1ddb8;
+    --draft-tint: #f9efd9;
+    --sched: #c8d6e7;
+    --sched-tint: #e6edf6;
+    --chat: #e0dbd0;
+    --chat-tint: #efece4;
+    --live: #5b8a4f;
+    --danger: #b3573d;
+    --danger-tint: #f6e6df;
+
+    --bg: var(--gray-100);
+    --surface: var(--white);
+    --surface-2: var(--gray-50);
+    --border: var(--gray-200);
+    --border-strong: var(--gray-300);
+    --text-primary: var(--gray-1000);
+    --text-secondary: var(--gray-600);
+    --text-muted: var(--gray-400);
+
+    --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --font-serif: 'Instrument Serif', ui-serif, Georgia, serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+    --radius: 6px;
+    --radius-lg: 10px;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.6;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ────────── icons ────────── */
+  .icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px; height: 16px;
+    color: inherit;
+    flex-shrink: 0;
+  }
+  .icon svg { width: 100%; height: 100%; stroke-width: 1.5; }
+  .icon-sm { width: 14px; height: 14px; }
+  .icon-lg { width: 20px; height: 20px; }
+
+  /* ────────── topbar (doc-level) ────────── */
+  .doc-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 32px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .doc-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--text-primary);
+  }
+  .doc-brand-mark {
+    width: 22px; height: 22px;
+    background: var(--gray-1000);
+    color: var(--gray-50);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    font-family: var(--font-serif);
+    font-size: 14px;
+    line-height: 1;
+  }
+  .doc-meta {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+  }
+
+  /* ────────── container ────────── */
+  .container {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 48px 32px 96px;
+  }
+
+  /* ────────── hero ────────── */
+  .hero { margin-bottom: 28px; }
+  .hero .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 10px;
+    background: var(--draft-tint);
+    border: 1px solid var(--draft);
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--gray-800);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .hero .eyebrow .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--draft);
+    border: 1px solid var(--gray-800);
+  }
+  .hero h1 {
+    font-family: var(--font-serif);
+    font-size: 44px;
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    margin: 0 0 12px;
+    color: var(--text-primary);
+  }
+  .hero h1 em { font-style: italic; color: var(--text-secondary); }
+  .hero .lede {
+    font-size: 17px;
+    line-height: 1.5;
+    color: var(--text-secondary);
+    margin: 0;
+    max-width: 720px;
+  }
+
+  /* ────────── frame containers ────────── */
+  .frames {
+    display: grid;
+    gap: 48px;
+    margin-top: 40px;
+  }
+  .frame { }
+  .frame-head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .frame-num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .frame-title {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin: 0;
+  }
+  .frame-subtitle {
+    margin-left: auto;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+  .frame-screen {
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: 0 1px 0 rgba(18,17,15,0.02), 0 8px 24px -12px rgba(18,17,15,0.08);
+  }
+  .frame-notes {
+    margin-top: 12px;
+    padding: 12px 16px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--gray-800);
+    border-radius: var(--radius);
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--text-secondary);
+  }
+  .frame-notes strong { color: var(--text-primary); font-weight: 500; }
+  .frame-notes code {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-primary);
+    background: var(--surface);
+    padding: 1px 5px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+  }
+
+  /* ────────── in-product topbar (inside frame) ────────── */
+  .p-topbar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 20px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+  .p-topbar .brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+  .p-topbar .brand-mark {
+    width: 20px; height: 20px;
+    background: var(--gray-1000);
+    color: var(--gray-50);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    font-family: var(--font-serif);
+    font-size: 13px;
+    line-height: 1;
+  }
+  .p-topbar .crumb { color: var(--text-muted); }
+  .p-topbar .crumb-current { color: var(--text-primary); }
+  .p-topbar .right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  /* ────────── tab bar inside the product ────────── */
+  .p-tabs {
+    display: flex;
+    gap: 4px;
+    padding: 0 20px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .p-tab {
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    cursor: pointer;
+  }
+  .p-tab .count {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-left: 4px;
+  }
+  .p-tab[aria-selected="true"] {
+    color: var(--text-primary);
+    border-bottom-color: var(--gray-1000);
+  }
+
+  /* ────────── inner content padding ────────── */
+  .p-body { padding: 28px 32px 32px; }
+
+  /* ────────── builder hero ────────── */
+  .builder-hero {
+    text-align: left;
+    margin-bottom: 20px;
+  }
+  .builder-hero h2 {
+    font-family: var(--font-serif);
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    margin: 0 0 6px;
+    color: var(--text-primary);
+  }
+  .builder-hero p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+
+  /* ────────── composer ────────── */
+  .composer {
+    margin-top: 14px;
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-lg);
+    padding: 14px 16px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    align-items: center;
+    transition: border-color 0.15s ease;
+  }
+  .composer.focused {
+    border-color: var(--gray-1000);
+    box-shadow: 0 0 0 3px rgba(18,17,15,0.05);
+  }
+  .composer input {
+    border: 0;
+    background: transparent;
+    outline: 0;
+    font: inherit;
+    font-size: 15px;
+    color: var(--text-primary);
+    width: 100%;
+  }
+  .composer input::placeholder { color: var(--text-muted); }
+  .composer .send {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: var(--gray-1000);
+    color: var(--gray-50);
+    border: 0;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .composer .send[disabled] {
+    background: var(--gray-200);
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+
+  .suggested {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+  }
+  .suggested-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-right: 4px;
+  }
+  .sug-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 28px;
+    padding: 0 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .sug-chip:hover { background: var(--surface-2); color: var(--text-primary); }
+
+  /* ────────── section heading inside body ────────── */
+  .p-section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin: 32px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .p-section-head h3 {
+    font-size: 14px;
+    font-weight: 500;
+    margin: 0;
+    color: var(--text-primary);
+  }
+  .p-section-head .meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .p-section-head .spacer { flex: 1; }
+  .p-section-head .link {
+    font-size: 12px;
+    color: var(--text-secondary);
+    cursor: pointer;
+  }
+
+  /* ────────── empty state ────────── */
+  .empty-state {
+    padding: 32px 20px;
+    text-align: center;
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius);
+    color: var(--text-secondary);
+    font-size: 13px;
+    background: var(--surface-2);
+  }
+  .empty-state strong { color: var(--text-primary); font-weight: 500; display: block; margin-bottom: 4px; }
+
+  /* ────────── chat turn ────────── */
+  .turn-user {
+    display: flex;
+    justify-content: flex-end;
+    margin: 14px 0;
+  }
+  .turn-user .bubble {
+    background: var(--gray-1000);
+    color: var(--gray-50);
+    padding: 8px 14px;
+    border-radius: 16px 16px 4px 16px;
+    font-size: 14px;
+    max-width: 60%;
+  }
+  .turn-ai {
+    margin: 18px 0 8px;
+  }
+  .turn-ai .speaker {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    font-family: var(--font-mono);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .turn-ai .speaker .icon { color: var(--gray-800); }
+  .turn-ai .prose {
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--text-primary);
+    margin: 0 0 14px;
+  }
+  .turn-ai .prose strong { font-weight: 500; }
+
+  /* ────────── proposed rule card (the magic moment) ────────── */
+  .rule-card {
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .rule-card-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, var(--surface-2), var(--surface));
+  }
+  .rule-card-head .name {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+  .rule-card-head .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 22px;
+    padding: 0 8px;
+    border-radius: 4px;
+    background: var(--draft-tint);
+    border: 1px solid var(--draft);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--gray-800);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .rule-card-head .status-pill.live {
+    background: var(--auto-tint);
+    border-color: var(--auto);
+    color: var(--gray-800);
+  }
+  .rule-card-head .right {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .rule-card-body { padding: 16px; }
+
+  .rule-clause {
+    display: grid;
+    grid-template-columns: 88px 1fr;
+    gap: 16px;
+    margin-bottom: 14px;
+  }
+  .rule-clause:last-child { margin-bottom: 0; }
+  .rule-clause-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding-top: 6px;
+  }
+  .rule-clause-value {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  /* tokens — the inline pill-style condition/action atoms */
+  .tok {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 26px;
+    padding: 0 10px;
+    border-radius: 5px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text-primary);
+    line-height: 1;
+  }
+  .tok.muted {
+    background: transparent;
+    border: 0;
+    color: var(--text-muted);
+    padding: 0 4px;
+    font-size: 12px;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .tok.value {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-primary);
+    background: var(--white);
+  }
+  .tok.field {
+    background: var(--brand-soft);
+    border-color: #c9dffa;
+    color: #0a3d8f;
+  }
+  .tok.action {
+    background: var(--auto-tint);
+    border-color: var(--auto);
+    color: var(--gray-800);
+  }
+  .tok.icon-tok .icon { color: var(--text-secondary); }
+
+  /* ────────── mode chooser ────────── */
+  .mode-chooser {
+    margin-top: 16px;
+    padding: 12px 14px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 14px;
+    align-items: center;
+  }
+  .mode-chooser-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .mode-toggle {
+    display: inline-flex;
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    overflow: hidden;
+    align-self: start;
+  }
+  .mode-opt {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-right: 1px solid var(--border);
+  }
+  .mode-opt:last-child { border-right: 0; }
+  .mode-opt[aria-pressed="true"] {
+    background: var(--gray-1000);
+    color: var(--gray-50);
+  }
+  .mode-opt[aria-pressed="true"] .icon { color: var(--gray-50); }
+  .mode-helper {
+    grid-column: 2;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+  }
+
+  /* ────────── rule card footer / actions ────────── */
+  .rule-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+    background: var(--surface-2);
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 14px;
+    border-radius: 6px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--text-primary);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .btn:hover { background: var(--surface-2); }
+  .btn.primary {
+    background: var(--gray-1000);
+    color: var(--gray-50);
+    border-color: var(--gray-1000);
+  }
+  .btn.primary:hover { background: #000; }
+  .btn.subtle {
+    background: transparent;
+    border-color: transparent;
+    color: var(--text-secondary);
+  }
+  .btn.subtle:hover { color: var(--text-primary); background: var(--surface); }
+  .btn.danger {
+    color: var(--danger);
+    border-color: var(--danger-tint);
+    background: var(--surface);
+  }
+  .btn.spacer-left { margin-left: auto; }
+
+  /* ────────── match preview table ────────── */
+  .match-summary {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 16px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 14px;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+  .match-summary .num {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+  .match-summary .sep { color: var(--text-muted); }
+
+  .match-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .match-table thead th {
+    text-align: left;
+    padding: 8px 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .match-table tbody td {
+    padding: 10px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .match-table tbody tr:hover { background: var(--surface-2); }
+  .match-table tbody tr.excluded { opacity: 0.5; }
+  .match-table tbody tr.excluded td .desc { text-decoration: line-through; }
+  .match-table .date { font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); white-space: nowrap; }
+  .match-table .desc { color: var(--text-primary); font-family: var(--font-mono); font-size: 12px; }
+  .match-table .bank { color: var(--text-secondary); font-size: 12px; }
+  .match-table .amount { font-family: var(--font-mono); font-size: 12px; color: var(--text-primary); text-align: right; white-space: nowrap; }
+  .match-table .row-action {
+    text-align: right;
+  }
+  .row-link {
+    font-size: 12px;
+    color: var(--text-secondary);
+    background: transparent;
+    border: 1px solid var(--border);
+    padding: 3px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .row-link:hover { color: var(--text-primary); background: var(--surface); }
+  .row-link.excluded {
+    color: var(--danger);
+    border-color: var(--danger-tint);
+    background: var(--danger-tint);
+  }
+
+  /* ────────── form (refine view) ────────── */
+  .form-field {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    gap: 14px;
+    align-items: start;
+    margin-bottom: 14px;
+  }
+  .form-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    padding-top: 7px;
+  }
+  .form-control {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+  .input {
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 6px 10px;
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--text-primary);
+    line-height: 1.4;
+    min-height: 32px;
+  }
+  .input.mono { font-family: var(--font-mono); font-size: 12px; }
+  .input:focus { outline: 2px solid rgba(22,97,226,0.2); border-color: var(--brand); }
+  select.input { padding: 6px 28px 6px 10px; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23857d73' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='m6 9 6 6 6-6'/%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 8px center; }
+
+  .cond-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    padding: 8px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    width: 100%;
+  }
+  .cond-row + .cond-row { margin-top: 6px; }
+  .cond-row .cond-remove {
+    margin-left: auto;
+    color: var(--text-muted);
+    background: transparent;
+    border: 0;
+    padding: 4px;
+    cursor: pointer;
+  }
+  .cond-row .cond-remove:hover { color: var(--danger); }
+  .add-cond {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    background: transparent;
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius);
+    cursor: pointer;
+    margin-top: 6px;
+  }
+  .add-cond:hover { color: var(--text-primary); border-color: var(--gray-400); }
+
+  .form-block {
+    padding: 16px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    margin-bottom: 14px;
+  }
+  .form-block-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .form-block-head .icon { color: var(--text-secondary); }
+  .form-block-head h4 {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+  .form-block .form-field { background: var(--surface); padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 6px; grid-template-columns: 100px 1fr; }
+  .form-block .form-field:last-child { margin-bottom: 0; }
+  .form-block .form-label { padding-top: 6px; font-size: 12px; }
+
+  /* ────────── activation success ────────── */
+  .success-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--auto-tint);
+    border: 1px solid var(--auto);
+    border-radius: var(--radius-lg);
+    margin-bottom: 20px;
+  }
+  .success-banner .check {
+    width: 28px; height: 28px;
+    background: var(--live);
+    color: var(--white);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .success-banner .check .icon { color: white; width: 16px; height: 16px; }
+  .success-banner .text { font-size: 14px; color: var(--gray-800); }
+  .success-banner .text strong { color: var(--text-primary); font-weight: 500; }
+  .success-banner .text .sub { display: block; color: var(--text-secondary); font-size: 12px; margin-top: 2px; }
+  .success-banner .right {
+    margin-left: auto;
+    display: flex;
+    gap: 8px;
+  }
+
+  /* ────────── active rules list ────────── */
+  .rule-list { display: grid; gap: 8px; }
+  .rule-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto auto auto auto;
+    gap: 16px;
+    align-items: center;
+    padding: 12px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+  .rule-row:hover { background: var(--surface-2); }
+  .rule-row .name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+  .rule-row .name .definition {
+    display: block;
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 400;
+    margin-top: 2px;
+  }
+  .rule-row .definition .tok-inline {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    background: var(--surface-2);
+    padding: 1px 6px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+  }
+  .rule-row .count-cell {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-align: right;
+  }
+  .rule-row .count-cell .num { color: var(--text-primary); font-weight: 500; }
+  .rule-row .when {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+  .rule-row .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 22px;
+    padding: 0 8px;
+    border-radius: 4px;
+    background: var(--auto-tint);
+    border: 1px solid var(--auto);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--gray-800);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .rule-row .pill .icon { color: var(--gray-800); width: 12px; height: 12px; }
+
+  /* on-off switch (lucide-style) */
+  .switch {
+    width: 32px; height: 18px;
+    background: var(--live);
+    border-radius: 999px;
+    position: relative;
+    cursor: pointer;
+  }
+  .switch::after {
+    content: '';
+    position: absolute;
+    top: 2px; left: 16px;
+    width: 14px; height: 14px;
+    background: var(--white);
+    border-radius: 50%;
+    transition: left 0.15s ease;
+  }
+  .switch.off { background: var(--gray-300); }
+  .switch.off::after { left: 2px; }
+
+  .row-actions {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    color: var(--text-muted);
+  }
+  .row-actions .iconbtn {
+    width: 28px; height: 28px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    color: var(--text-muted);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .row-actions .iconbtn:hover {
+    background: var(--surface-2);
+    border-color: var(--border);
+    color: var(--text-primary);
+  }
+
+  /* live activity strip (frame 5) */
+  .activity {
+    margin-top: 14px;
+    padding: 10px 14px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .activity .live-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--live);
+    box-shadow: 0 0 0 3px rgba(91,138,79,0.18);
+    flex-shrink: 0;
+  }
+  .activity .ts { color: var(--text-muted); }
+  .activity .body { color: var(--text-primary); }
+
+  /* ────────── frame caption block ────────── */
+  .frame-caption {
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  /* ────────── footer ────────── */
+  .doc-footer {
+    margin-top: 64px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    display: flex;
+    gap: 16px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 720px) {
+    .container { padding: 24px 16px 64px; }
+    .hero h1 { font-size: 32px; }
+    .frame-screen { border-radius: var(--radius); }
+    .rule-clause { grid-template-columns: 1fr; gap: 6px; }
+    .mode-chooser { grid-template-columns: 1fr; }
+    .form-field { grid-template-columns: 1fr; }
+    .rule-row { grid-template-columns: 1fr; gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─────────────────────────────────────────────────────────────────
+     SVG icon symbols (Lucide). Reused via <use href="#…">.
+     ─────────────────────────────────────────────────────────────── -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-sparkles" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
+      <path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/>
+    </symbol>
+    <symbol id="i-zap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>
+    </symbol>
+    <symbol id="i-pen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
+      <path d="m15 5 4 4"/>
+    </symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+    </symbol>
+    <symbol id="i-msg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4c0-1.1.9-2 2-2h8a2 2 0 0 1 2 2z"/>
+      <path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/>
+    </symbol>
+    <symbol id="i-arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+    </symbol>
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="20 6 9 17 4 12"/>
+    </symbol>
+    <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+    </symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 12h14"/><path d="M12 5v14"/>
+    </symbol>
+    <symbol id="i-filter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+    </symbol>
+    <symbol id="i-tag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/>
+      <circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/>
+      <circle cx="12" cy="12" r="3"/>
+    </symbol>
+    <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+    </symbol>
+    <symbol id="i-dots" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>
+    </symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>
+    </symbol>
+    <symbol id="i-bank" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 21h18"/><path d="M3 10h18"/><path d="M5 6l7-3 7 3"/><path d="M4 10v11"/><path d="M20 10v11"/><path d="M8 14v3"/><path d="M12 14v3"/><path d="M16 14v3"/>
+    </symbol>
+    <symbol id="i-chevron-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m6 9 6 6 6-6"/>
+    </symbol>
+    <symbol id="i-arrow-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>
+    </symbol>
+  </defs>
+</svg>
+
+<header class="doc-topbar">
+  <div class="doc-brand">
+    <span class="doc-brand-mark">T</span>
+    Tesote AI · Automatizaciones
+    <span style="color: var(--text-muted); margin-left: 4px;">/ construir una regla</span>
+  </div>
+  <div class="doc-meta">v0.1 · 2026-05-24 · 5 estados</div>
+</header>
+
+<main class="container">
+
+  <section class="hero">
+    <div class="eyebrow">
+      <span class="dot"></span>
+      Mockup interno · superficie nueva (no construida todavía)
+    </div>
+    <h1>Construir una regla<br><em>conciliar comisiones bancarias</em></h1>
+    <p class="lede">El flujo de "armar una automatización" — desde la pantalla vacía hasta la regla activa. Caso simple para validar la mecánica antes de capas más complejas (drafts queue, scheduled jobs, etc.).</p>
+  </section>
+
+  <div class="frames">
+
+    <!-- ══════════════════════════════════════════════════════
+         FRAME 1 — Empty Automations surface
+         ══════════════════════════════════════════════════════ -->
+    <section class="frame">
+      <header class="frame-head">
+        <span class="frame-num">Estado 01</span>
+        <h3 class="frame-title">Pantalla vacía — entrada al taller</h3>
+        <span class="frame-subtitle">/automatizaciones · sin reglas activas</span>
+      </header>
+
+      <div class="frame-screen">
+        <div class="p-topbar">
+          <span class="brand"><span class="brand-mark">T</span> Tesote</span>
+          <span class="crumb">/</span>
+          <span class="crumb">automatizaciones</span>
+          <span class="crumb">/</span>
+          <span class="crumb-current">reglas</span>
+          <div class="right">
+            <span>VDT · BNC · Banesco · Provincial</span>
+          </div>
+        </div>
+
+        <div class="p-tabs">
+          <div class="p-tab" aria-selected="true">Reglas <span class="count">0</span></div>
+          <div class="p-tab">Borradores <span class="count">0</span></div>
+          <div class="p-tab">Agendado <span class="count">0</span></div>
+          <div class="p-tab">Actividad <span class="count">0</span></div>
+        </div>
+
+        <div class="p-body">
+          <div class="builder-hero">
+            <h2>¿Qué quieres automatizar?</h2>
+            <p>Describe el trabajo en una frase. Tesote AI escanea tu historial y propone una regla.</p>
+          </div>
+
+          <div class="composer">
+            <input type="text" placeholder="Ej. categoriza las comisiones bancarias…" aria-label="Describe la automatización" />
+            <button class="send" disabled>
+              <span class="icon icon-sm"><svg><use href="#i-sparkles"/></svg></span>
+              Proponer regla
+            </button>
+          </div>
+
+          <div class="suggested">
+            <span class="suggested-label">Sugerencias</span>
+            <button class="sug-chip">Comisiones bancarias</button>
+            <button class="sug-chip">Pagos de CANTV</button>
+            <button class="sug-chip">Alquileres mensuales</button>
+            <button class="sug-chip">Nómina quincenal</button>
+            <button class="sug-chip">Transferencias entre cuentas propias</button>
+          </div>
+
+          <div class="p-section-head">
+            <h3>Reglas activas</h3>
+            <span class="meta">0 reglas</span>
+            <span class="spacer"></span>
+          </div>
+          <div class="empty-state">
+            <strong>Todavía no hay automatizaciones.</strong>
+            Crea la primera arriba — Tesote AI puede proponer una con base en tu historial.
+          </div>
+        </div>
+      </div>
+
+      <div class="frame-notes">
+        <strong>Decisión clave.</strong> Una sola entrada: el composer. No hay botón "Nueva regla" que abra modal vacío. La hipótesis: la mayoría de las automatizaciones útiles ya se pueden derivar de patrones en el historial — entonces el sistema <em>propone</em>, el usuario <em>refina</em>. El composer es el equivalente del prompt en chat, pero el resultado no es texto: es una <code>rule</code> estructurada.
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════
+         FRAME 2 — Chat turn: user prompt + AI proposes a rule
+         ══════════════════════════════════════════════════════ -->
+    <section class="frame">
+      <header class="frame-head">
+        <span class="frame-num">Estado 02</span>
+        <h3 class="frame-title">Tesote AI propone la regla</h3>
+        <span class="frame-subtitle">~2s después de enviar — el "wow"</span>
+      </header>
+
+      <div class="frame-screen">
+        <div class="p-topbar">
+          <span class="brand"><span class="brand-mark">T</span> Tesote</span>
+          <span class="crumb">/</span>
+          <span class="crumb">automatizaciones</span>
+          <span class="crumb">/</span>
+          <span class="crumb-current">nueva regla</span>
+          <div class="right">
+            <span>VDT · BNC · Banesco · Provincial</span>
+          </div>
+        </div>
+
+        <div class="p-body">
+          <div class="composer focused">
+            <input type="text" value="Categoriza las comisiones bancarias" aria-label="Describe la automatización" />
+            <button class="send">
+              <span class="icon icon-sm"><svg><use href="#i-sparkles"/></svg></span>
+              Proponer regla
+            </button>
+          </div>
+
+          <div class="turn-user">
+            <div class="bubble">Categoriza las comisiones bancarias</div>
+          </div>
+
+          <div class="turn-ai">
+            <div class="speaker">
+              <span class="icon icon-sm"><svg><use href="#i-sparkles"/></svg></span>
+              Tesote AI
+            </div>
+            <p class="prose">
+              Encontré <strong>47 transacciones</strong> que parecen comisiones bancarias en los últimos 90 días, repartidas entre tus 4 bancos. Te propongo esta regla:
+            </p>
+
+            <div class="rule-card">
+              <div class="rule-card-head">
+                <span class="name">Comisiones bancarias</span>
+                <span class="status-pill">Borrador</span>
+                <span class="right">propuesta · hace 2s</span>
+              </div>
+
+              <div class="rule-card-body">
+                <div class="rule-clause">
+                  <div class="rule-clause-label">Cuando</div>
+                  <div class="rule-clause-value">
+                    <span class="tok field">descripción</span>
+                    <span class="tok muted">contiene</span>
+                    <span class="tok value">COMIS</span>
+                    <span class="tok value">MANT CTA</span>
+                    <span class="tok value">COM TRANSF</span>
+                    <span class="tok value">IGTF</span>
+                    <span class="tok value">DEBITO COMISION</span>
+                  </div>
+                </div>
+
+                <div class="rule-clause">
+                  <div class="rule-clause-label">y</div>
+                  <div class="rule-clause-value">
+                    <span class="tok field">monto</span>
+                    <span class="tok muted">menor a</span>
+                    <span class="tok value">$ 20.00</span>
+                    <span class="tok muted">en</span>
+                    <span class="tok value">USD equivalente</span>
+                  </div>
+                </div>
+
+                <div class="rule-clause">
+                  <div class="rule-clause-label">y</div>
+                  <div class="rule-clause-value">
+                    <span class="tok field">tipo</span>
+                    <span class="tok muted">es</span>
+                    <span class="tok value">débito</span>
+                  </div>
+                </div>
+
+                <div class="rule-clause">
+                  <div class="rule-clause-label">Entonces</div>
+                  <div class="rule-clause-value">
+                    <span class="tok action"><span class="icon icon-sm"><svg><use href="#i-tag"/></svg></span> categorizar como Comisiones bancarias</span>
+                    <span class="tok action"><span class="icon icon-sm"><svg><use href="#i-arrow-right"/></svg></span> postear a Odoo <span style="font-family:var(--font-mono);font-size:11px;margin-left:4px;">6.2.01.01 Gastos financieros</span></span>
+                  </div>
+                </div>
+
+                <div class="mode-chooser">
+                  <div class="mode-chooser-label">Modo</div>
+                  <div class="mode-toggle">
+                    <button class="mode-opt" aria-pressed="true">
+                      <span class="icon icon-sm"><svg><use href="#i-zap"/></svg></span>
+                      Autopilot
+                    </button>
+                    <button class="mode-opt">
+                      <span class="icon icon-sm"><svg><use href="#i-pen"/></svg></span>
+                      Borrador para aprobar
+                    </button>
+                  </div>
+                  <div class="mode-helper">
+                    Autopilot: categoriza y postea sin intervención. Reversible desde Actividad.
+                  </div>
+                </div>
+              </div>
+
+              <div class="rule-card-actions">
+                <button class="btn">
+                  <span class="icon icon-sm"><svg><use href="#i-eye"/></svg></span>
+                  Ver 47 matches
+                </button>
+                <button class="btn">
+                  <span class="icon icon-sm"><svg><use href="#i-pen"/></svg></span>
+                  Editar regla
+                </button>
+                <button class="btn subtle">Descartar</button>
+                <button class="btn primary spacer-left">
+                  <span class="icon icon-sm"><svg><use href="#i-check"/></svg></span>
+                  Activar regla
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="frame-notes">
+        <strong>El "wow" vive aquí.</strong> El usuario escribió una frase en español; en 2 segundos vuelve una regla <em>estructurada, citada y verificable</em>. Tres patrones de Harvey/Legora en la misma tarjeta: (1) <em>workflow, no chat</em> — el output es una regla, no prose; (2) <em>source-grounded</em> — "47 matches" enlaza al historial real; (3) <em>habla como el usuario</em> — palabras en español plano, no <code>WHERE description LIKE</code>. Las acciones siempre visibles ("Ver matches" + "Editar" + "Activar") respetan la regla de affordances visibles en reposo.
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════
+         FRAME 3 — Inspect matches (the "trust" moment)
+         ══════════════════════════════════════════════════════ -->
+    <section class="frame">
+      <header class="frame-head">
+        <span class="frame-num">Estado 03</span>
+        <h3 class="frame-title">Inspeccionar matches — el momento de confianza</h3>
+        <span class="frame-subtitle">click "Ver 47 matches"</span>
+      </header>
+
+      <div class="frame-screen">
+        <div class="p-topbar">
+          <span class="brand"><span class="brand-mark">T</span> Tesote</span>
+          <span class="crumb">/</span>
+          <span class="crumb">automatizaciones</span>
+          <span class="crumb">/</span>
+          <span class="crumb">nueva regla</span>
+          <span class="crumb">/</span>
+          <span class="crumb-current">matches</span>
+          <div class="right">
+            <span>VDT · BNC · Banesco · Provincial</span>
+          </div>
+        </div>
+
+        <div class="p-body">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:18px;">
+            <button class="btn subtle" style="padding:6px 10px;">
+              <span class="icon icon-sm"><svg><use href="#i-arrow-left"/></svg></span>
+              Volver a la propuesta
+            </button>
+            <div style="margin-left:auto; font-family:var(--font-mono); font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em;">
+              Vista previa · regla "Comisiones bancarias"
+            </div>
+          </div>
+
+          <div class="match-summary">
+            <span><span class="num">47</span> matches detectados</span>
+            <span class="sep">·</span>
+            <span><span class="num">44</span> confirmadas</span>
+            <span class="sep">·</span>
+            <span><span class="num">3</span> excluidas por ti</span>
+            <span class="sep">·</span>
+            <span>último: <span class="num">2026-05-23</span></span>
+            <span style="margin-left:auto;">
+              <button class="btn subtle" style="padding:4px 10px; font-size:12px;">
+                <span class="icon icon-sm"><svg><use href="#i-filter"/></svg></span>
+                Filtrar
+              </button>
+            </span>
+          </div>
+
+          <table class="match-table">
+            <thead>
+              <tr>
+                <th style="width:100px;">Fecha</th>
+                <th>Descripción</th>
+                <th style="width:120px;">Banco</th>
+                <th style="width:100px; text-align:right;">Monto</th>
+                <th style="width:140px;"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="date">2026-05-23</td>
+                <td><span class="desc">COMIS MANTENIMIENTO CUENTA CORP</span></td>
+                <td class="bank">Banesco</td>
+                <td class="amount">−$ 4.50</td>
+                <td class="row-action"><button class="row-link">Excluir</button></td>
+              </tr>
+              <tr>
+                <td class="date">2026-05-22</td>
+                <td><span class="desc">IGTF DEBITO TRANSFER OTROS BCOS</span></td>
+                <td class="bank">BNC</td>
+                <td class="amount">−$ 0.87</td>
+                <td class="row-action"><button class="row-link">Excluir</button></td>
+              </tr>
+              <tr>
+                <td class="date">2026-05-22</td>
+                <td><span class="desc">COM TRANSF C2P AFILIADO</span></td>
+                <td class="bank">Banesco</td>
+                <td class="amount">−$ 0.15</td>
+                <td class="row-action"><button class="row-link">Excluir</button></td>
+              </tr>
+              <tr class="excluded">
+                <td class="date">2026-05-19</td>
+                <td><span class="desc">DEBITO COMISION REVERSO</span></td>
+                <td class="bank">Provincial</td>
+                <td class="amount">−$ 12.30</td>
+                <td class="row-action"><button class="row-link excluded">Excluida — restaurar</button></td>
+              </tr>
+              <tr>
+                <td class="date">2026-05-18</td>
+                <td><span class="desc">MANT CTA AHORROS USD</span></td>
+                <td class="bank">VDT (BNC)</td>
+                <td class="amount">−$ 2.00</td>
+                <td class="row-action"><button class="row-link">Excluir</button></td>
+              </tr>
+              <tr>
+                <td class="date">2026-05-17</td>
+                <td><span class="desc">COMIS CHEQUE EMITIDO</span></td>
+                <td class="bank">Provincial</td>
+                <td class="amount">−$ 1.20</td>
+                <td class="row-action"><button class="row-link">Excluir</button></td>
+              </tr>
+              <tr>
+                <td class="date">2026-05-15</td>
+                <td><span class="desc">COMIS TRANSFER OTROS BANCOS</span></td>
+                <td class="bank">Banesco</td>
+                <td class="amount">−$ 0.30</td>
+                <td class="row-action"><button class="row-link">Excluir</button></td>
+              </tr>
+              <tr>
+                <td class="date">2026-05-14</td>
+                <td><span class="desc">IGTF PAGO PROVEEDOR</span></td>
+                <td class="bank">BNC</td>
+                <td class="amount">−$ 14.20</td>
+                <td class="row-action"><button class="row-link">Excluir</button></td>
+              </tr>
+              <tr>
+                <td class="date">2026-05-12</td>
+                <td style="color:var(--text-muted); font-style:italic;">… 38 más</td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="rule-card-actions" style="border-radius:var(--radius); border:1px solid var(--border); margin-top:18px;">
+            <span style="font-size:13px; color:var(--text-secondary);">
+              <strong style="color:var(--text-primary); font-weight:500;">44</strong> transacciones se categorizarán al activar.
+              <strong style="color:var(--text-primary); font-weight:500;">3</strong> quedan excluidas (no se tocan, no entran a la regla).
+            </span>
+            <button class="btn spacer-left">
+              <span class="icon icon-sm"><svg><use href="#i-pen"/></svg></span>
+              Ajustar regla
+            </button>
+            <button class="btn primary">
+              <span class="icon icon-sm"><svg><use href="#i-check"/></svg></span>
+              Activar — categorizar 44
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="frame-notes">
+        <strong>"Dry run" antes del commit.</strong> Ninguna regla se activa sin que el usuario vea los datos reales que va a tocar. La exclusión por fila es el escape hatch: la transacción "DEBITO COMISION REVERSO" es un reverso, no una comisión — un click la saca sin tener que volver a editar la regla. Este patrón es el que falta en la mayoría de los rule-builders de la competencia (Mercury, Brex) y es lo que un controller VE necesita para confiar.
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════
+         FRAME 4 — Refine via structured form
+         ══════════════════════════════════════════════════════ -->
+    <section class="frame">
+      <header class="frame-head">
+        <span class="frame-num">Estado 04</span>
+        <h3 class="frame-title">Refinar — la forma estructurada</h3>
+        <span class="frame-subtitle">click "Editar regla" / "Ajustar regla"</span>
+      </header>
+
+      <div class="frame-screen">
+        <div class="p-topbar">
+          <span class="brand"><span class="brand-mark">T</span> Tesote</span>
+          <span class="crumb">/</span>
+          <span class="crumb">automatizaciones</span>
+          <span class="crumb">/</span>
+          <span class="crumb">nueva regla</span>
+          <span class="crumb">/</span>
+          <span class="crumb-current">editar</span>
+          <div class="right">
+            <span>VDT · BNC · Banesco · Provincial</span>
+          </div>
+        </div>
+
+        <div class="p-body">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:18px;">
+            <button class="btn subtle" style="padding:6px 10px;">
+              <span class="icon icon-sm"><svg><use href="#i-arrow-left"/></svg></span>
+              Volver
+            </button>
+            <div style="margin-left:auto; font-family:var(--font-mono); font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em;">
+              Editando · regla propuesta por Tesote AI
+            </div>
+          </div>
+
+          <div class="form-field">
+            <div class="form-label">Nombre</div>
+            <div class="form-control">
+              <input class="input" style="flex:1; min-width:280px;" value="Comisiones bancarias" />
+            </div>
+          </div>
+
+          <div class="form-field">
+            <div class="form-label">Aplica a</div>
+            <div class="form-control">
+              <select class="input">
+                <option>Todos los bancos</option>
+                <option>Solo Banesco</option>
+                <option>Solo BNC</option>
+                <option>Solo Provincial</option>
+              </select>
+              <select class="input">
+                <option>Todas las cuentas</option>
+                <option>Solo cuentas corporativas</option>
+                <option>Solo USD</option>
+                <option>Solo VES</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-block">
+            <div class="form-block-head">
+              <span class="icon"><svg><use href="#i-filter"/></svg></span>
+              <h4>Cuando — condiciones</h4>
+            </div>
+
+            <div class="cond-row">
+              <select class="input"><option>descripción</option><option>monto</option><option>tipo</option><option>contraparte</option></select>
+              <select class="input"><option>contiene</option><option>es</option><option>empieza con</option><option>regex</option></select>
+              <input class="input mono" style="flex:1; min-width:200px;" value="COMIS, MANT CTA, COM TRANSF, IGTF, DEBITO COMISION" />
+              <button class="cond-remove" aria-label="Eliminar condición">
+                <span class="icon icon-sm"><svg><use href="#i-x"/></svg></span>
+              </button>
+            </div>
+
+            <div class="cond-row">
+              <select class="input"><option>monto</option></select>
+              <select class="input"><option>menor a</option><option>mayor a</option><option>entre</option><option>igual a</option></select>
+              <input class="input mono" style="width:120px;" value="20.00" />
+              <select class="input"><option>USD equivalente</option><option>USD</option><option>VES</option></select>
+              <button class="cond-remove" aria-label="Eliminar condición">
+                <span class="icon icon-sm"><svg><use href="#i-x"/></svg></span>
+              </button>
+            </div>
+
+            <div class="cond-row">
+              <select class="input"><option>tipo</option></select>
+              <select class="input"><option>es</option></select>
+              <select class="input"><option>débito</option><option>crédito</option></select>
+              <button class="cond-remove" aria-label="Eliminar condición">
+                <span class="icon icon-sm"><svg><use href="#i-x"/></svg></span>
+              </button>
+            </div>
+
+            <button class="add-cond">
+              <span class="icon icon-sm"><svg><use href="#i-plus"/></svg></span>
+              Agregar condición
+            </button>
+          </div>
+
+          <div class="form-block">
+            <div class="form-block-head">
+              <span class="icon"><svg><use href="#i-zap"/></svg></span>
+              <h4>Entonces — acciones</h4>
+            </div>
+
+            <div class="form-field">
+              <div class="form-label">Categoría</div>
+              <div class="form-control">
+                <select class="input" style="min-width:240px;">
+                  <option>Comisiones bancarias</option>
+                  <option>Gastos financieros</option>
+                  <option>Impuestos — IGTF</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-field">
+              <div class="form-label">Cuenta Odoo</div>
+              <div class="form-control">
+                <select class="input mono" style="min-width:280px;">
+                  <option>6.2.01.01 — Gastos financieros / Comisiones bancarias</option>
+                  <option>6.2.01.02 — Gastos financieros / Intereses</option>
+                  <option>6.2.05.00 — IGTF</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-field">
+              <div class="form-label">Tag adicional</div>
+              <div class="form-control">
+                <input class="input" placeholder="opcional · ej. analítico, centro de costo…" />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-block">
+            <div class="form-block-head">
+              <span class="icon"><svg><use href="#i-clock"/></svg></span>
+              <h4>Cuándo se ejecuta</h4>
+            </div>
+            <div class="form-field">
+              <div class="form-label">Disparador</div>
+              <div class="form-control">
+                <select class="input">
+                  <option>En cada transacción nueva (tiempo real)</option>
+                  <option>Lote diario — 7am</option>
+                  <option>Manual — al pedirlo</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-field">
+              <div class="form-label">Modo</div>
+              <div class="form-control">
+                <div class="mode-toggle">
+                  <button class="mode-opt" aria-pressed="true">
+                    <span class="icon icon-sm"><svg><use href="#i-zap"/></svg></span>
+                    Autopilot
+                  </button>
+                  <button class="mode-opt">
+                    <span class="icon icon-sm"><svg><use href="#i-pen"/></svg></span>
+                    Borrador
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rule-card-actions" style="border-radius:var(--radius); border:1px solid var(--border); margin-top:18px;">
+            <button class="btn subtle">Cancelar</button>
+            <button class="btn spacer-left">
+              <span class="icon icon-sm"><svg><use href="#i-eye"/></svg></span>
+              Probar — ver matches
+            </button>
+            <button class="btn primary">
+              <span class="icon icon-sm"><svg><use href="#i-check"/></svg></span>
+              Guardar y activar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="frame-notes">
+        <strong>La forma estructurada vive debajo, no encima.</strong> 80% de los usuarios nunca abren este formulario — la propuesta del Estado 02 es suficiente. Pero cuando la regla necesita un knob específico (cambiar la cuenta Odoo, escoper a un solo banco, agregar una condición de contraparte), todo es directamente editable sin tener que volver al chat. Los tokens del Estado 02 son una <em>vista renderizada</em> de este mismo árbol — uno y el otro son la misma data.
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════
+         FRAME 5 — Activated state + rule in list + first fire
+         ══════════════════════════════════════════════════════ -->
+    <section class="frame">
+      <header class="frame-head">
+        <span class="frame-num">Estado 05</span>
+        <h3 class="frame-title">Activada — la regla vive</h3>
+        <span class="frame-subtitle">después de "Activar"</span>
+      </header>
+
+      <div class="frame-screen">
+        <div class="p-topbar">
+          <span class="brand"><span class="brand-mark">T</span> Tesote</span>
+          <span class="crumb">/</span>
+          <span class="crumb">automatizaciones</span>
+          <span class="crumb">/</span>
+          <span class="crumb-current">reglas</span>
+          <div class="right">
+            <span>VDT · BNC · Banesco · Provincial</span>
+          </div>
+        </div>
+
+        <div class="p-tabs">
+          <div class="p-tab" aria-selected="true">Reglas <span class="count">1</span></div>
+          <div class="p-tab">Borradores <span class="count">0</span></div>
+          <div class="p-tab">Agendado <span class="count">0</span></div>
+          <div class="p-tab">Actividad <span class="count">44</span></div>
+        </div>
+
+        <div class="p-body">
+          <div class="success-banner">
+            <span class="check"><span class="icon"><svg><use href="#i-check"/></svg></span></span>
+            <div class="text">
+              <strong>Regla "Comisiones bancarias" activada.</strong>
+              <span class="sub">44 transacciones históricas categorizadas. Te aviso cuando una transacción nueva no coincida del todo.</span>
+            </div>
+            <div class="right">
+              <button class="btn subtle">Ver actividad</button>
+              <button class="btn">Deshacer</button>
+            </div>
+          </div>
+
+          <div class="builder-hero" style="margin-top:8px;">
+            <h2>¿Qué más automatizamos?</h2>
+            <p>El composer vive arriba de la lista — siempre listo para la próxima regla.</p>
+          </div>
+
+          <div class="composer">
+            <input type="text" placeholder="Ej. categoriza pagos a CANTV como Telefonía…" aria-label="Describe la siguiente automatización" />
+            <button class="send" disabled>
+              <span class="icon icon-sm"><svg><use href="#i-sparkles"/></svg></span>
+              Proponer regla
+            </button>
+          </div>
+
+          <div class="suggested">
+            <span class="suggested-label">Siguientes</span>
+            <button class="sug-chip">Pagos de CANTV → Telefonía</button>
+            <button class="sug-chip">Alquileres mensuales → Inmueble</button>
+            <button class="sug-chip">Transferencias entre cuentas propias</button>
+          </div>
+
+          <div class="p-section-head">
+            <h3>Reglas activas</h3>
+            <span class="meta">1 regla · 44 transacciones procesadas</span>
+            <span class="spacer"></span>
+            <span class="link">Ordenar por: actividad</span>
+          </div>
+
+          <div class="rule-list">
+            <div class="rule-row">
+              <div class="name">
+                Comisiones bancarias
+                <span class="definition">
+                  <span class="tok-inline">desc ~ COMIS, MANT CTA, IGTF…</span> · <span class="tok-inline">&lt; $20</span> · <span class="tok-inline">débito</span>
+                  &nbsp;→&nbsp; categorizar como <span class="tok-inline">Comisiones bancarias</span> · postear a <span class="tok-inline">6.2.01.01</span>
+                </span>
+              </div>
+              <span class="pill"><span class="icon"><svg><use href="#i-zap"/></svg></span> Autopilot</span>
+              <span class="count-cell"><span class="num">44</span> procesadas</span>
+              <span class="when">hace 3s</span>
+              <span class="switch" aria-pressed="true" title="Activa"></span>
+              <div class="row-actions">
+                <button class="iconbtn" aria-label="Ver"><span class="icon icon-sm"><svg><use href="#i-eye"/></svg></span></button>
+                <button class="iconbtn" aria-label="Editar"><span class="icon icon-sm"><svg><use href="#i-pen"/></svg></span></button>
+                <button class="iconbtn" aria-label="Pausar"><span class="icon icon-sm"><svg><use href="#i-pause"/></svg></span></button>
+                <button class="iconbtn" aria-label="Más"><span class="icon icon-sm"><svg><use href="#i-dots"/></svg></span></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="activity">
+            <span class="live-dot"></span>
+            <span class="ts">hace 3s</span>
+            <span class="body">
+              Categorizada <strong style="font-weight:500;">COMIS MANTENIMIENTO CUENTA CORP</strong> · −$4.50 · Banesco · Comisiones bancarias · posteada a Odoo
+            </span>
+            <span style="margin-left:auto; font-size:11px; color:var(--text-muted);">+ 43 más en los últimos 90 días</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="frame-notes">
+        <strong>El loop cierra acá — y se reabre.</strong> Tres detalles: (1) el composer vuelve a estar arriba — "¿Qué más automatizamos?" es la pregunta natural después de cerrar la primera regla; (2) las acciones por fila (ver, editar, pausar, más) están <em>siempre visibles</em>, no solo en hover; (3) la fila de actividad live abajo crea continuidad — la regla no es un artefacto que se guardó, es algo que está <em>vivo</em> y se ve correr. Esa última señal es lo que separa una automatización de un setting en preferencias.
+      </div>
+    </section>
+
+  </div>
+
+  <footer class="doc-footer">
+    <div>
+      <code>recon-bank-fees-builder-v0.1.html</code> · luis-brain/product/automations · 2026-05-24
+    </div>
+    <div>
+      siguiente paso: validar con Mariel · luego <code>/tesote-plan</code> en treasury
+    </div>
+  </footer>
+
+</main>
+
+</body>
+</html>

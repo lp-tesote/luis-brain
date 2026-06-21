@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Reverón · por Tesote AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#0C0D0F; --muted:#44484E; --endorse:#16181B; --emboss:rgba(255,255,255,.45);
+    /* carbon stage */
+    --carbon:#0C0D0F; --carbon2:#101216;
+    --plat:#E7E9EC; --plat-mute:#9097A0; --plat-faint:#646A72;
+    --line:rgba(255,255,255,.08);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    color:var(--ink); font-family:'Inter',sans-serif; font-weight:300;
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+    background:var(--carbon);
+  }
+
+  /* ───────────────────────── SCREEN 1 — platinum hero ───────────────────────── */
+  .hero{
+    position:relative; height:100svh; min-height:600px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding:6vh 7vw;
+    background:
+      radial-gradient(ellipse 100vw 75vh at 50% 32%, rgba(255,255,255,.55), transparent 62%),
+      linear-gradient(180deg,#D6D9DE 0%,#C3C7CD 52%,#ADB1B9 100%);
+  }
+  .hero::after{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 28vh rgba(60,64,70,.22)}
+  .hero > *{position:relative;z-index:1}
+
+  .wordmark{
+    font-family:'Instrument Serif',serif; font-weight:400;
+    font-size:clamp(4.5rem,15vw,12rem); line-height:.9; letter-spacing:-.012em;
+    color:var(--ink); text-shadow:0 1px 0 var(--emboss);
+  }
+  .endorsement{
+    margin-top:1.7rem; font-family:'JetBrains Mono',monospace;
+    font-size:clamp(.85rem,1.45vw,1.02rem); font-weight:500;
+    letter-spacing:.34em; text-transform:uppercase; color:var(--endorse); padding-left:.34em;
+  }
+  .tagline{
+    font-family:'Instrument Serif',serif; font-style:italic;
+    font-size:clamp(1.3rem,3.2vw,2.6rem); line-height:1.12; color:var(--ink);
+    margin-top:clamp(2.6rem,6vh,4.2rem); max-width:none; white-space:nowrap;
+  }
+  .sub{
+    margin-top:1.5rem; font-size:clamp(1rem,1.55vw,1.15rem);
+    font-weight:400; line-height:1.6; color:var(--muted); max-width:46ch;
+  }
+  .sub .impact{color:var(--ink)}
+  .cta{
+    margin-top:clamp(2.2rem,5vh,3.2rem); display:inline-flex; align-items:center; gap:.6rem;
+    font-size:.98rem; font-weight:400; letter-spacing:.02em; color:var(--ink);
+    text-decoration:none; padding-bottom:.35rem; border-bottom:1.5px solid var(--ink);
+    transition:gap .35s ease, opacity .35s ease;
+  }
+  .cta:hover{gap:.95rem;opacity:.7}
+  .cta svg{width:14px;height:14px}
+
+  .scrollcue{
+    position:absolute; bottom:clamp(1.6rem,4vh,2.6rem); left:50%; transform:translateX(-50%);
+    display:flex; flex-direction:column; align-items:center; gap:.7rem; z-index:1;
+    font-family:'JetBrains Mono',monospace; font-size:.66rem; font-weight:500;
+    letter-spacing:.28em; text-transform:uppercase; color:var(--endorse); opacity:.62;
+    text-decoration:none;
+  }
+  .scrollcue svg{width:15px;height:15px;animation:bob 2.1s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
+
+  /* ───────────────────────── SCREEN 2 — carbon app stage ───────────────────────── */
+  .stage{
+    position:relative; min-height:100svh; padding:clamp(3.5rem,8vh,6rem) 0 clamp(3rem,7vh,5rem);
+    background:var(--carbon);
+    display:flex; flex-direction:column;
+  }
+  /* soft seam from platinum into carbon */
+  .stage::before{content:"";position:absolute;top:0;left:0;right:0;height:160px;pointer-events:none;
+    background:linear-gradient(180deg,rgba(173,177,185,.28),transparent)}
+
+  .stagehead{text-align:center;padding:0 7vw;position:relative;z-index:2}
+  .kicker{font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:500;
+    letter-spacing:.3em;text-transform:uppercase;color:var(--plat-faint)}
+  .stagehead h2{font-family:'Instrument Serif',serif;font-weight:400;
+    font-size:clamp(1.9rem,3.6vw,2.8rem);color:var(--plat);margin-top:1rem;line-height:1.1}
+  .stagehead h2 em{font-style:italic}
+
+  /* mode pills */
+  .pills{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:2.2rem}
+  .pill{font-family:'Inter',sans-serif;font-size:.86rem;font-weight:400;color:var(--plat-mute);
+    background:transparent;border:1px solid var(--line);border-radius:999px;padding:.5rem 1.05rem;
+    cursor:pointer;transition:all .25s ease;white-space:nowrap}
+  .pill:hover{color:var(--plat);border-color:rgba(255,255,255,.22)}
+  .pill.on{color:var(--carbon);background:var(--plat);border-color:var(--plat);font-weight:500}
+
+  /* carousel */
+  .track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;
+    margin-top:2.4rem;padding:0 max(4vw,calc(50vw - 660px));gap:0;
+    scrollbar-width:none;-ms-overflow-style:none}
+  .track::-webkit-scrollbar{display:none}
+  .slide{flex:0 0 100%;scroll-snap-align:center;display:flex;justify-content:center;align-items:center;
+    padding:0 max(4vw,calc(50vw - 660px))}
+  .slide:first-child{padding-left:0}.slide:last-child{padding-right:0}
+
+  .arrows{display:flex;gap:.6rem;justify-content:center;align-items:center;margin-top:2.4rem;position:relative;z-index:2}
+  .arr{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:transparent;
+    color:var(--plat-mute);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .25s}
+  .arr:hover{color:var(--plat);border-color:rgba(255,255,255,.28)}
+  .arr svg{width:16px;height:16px}
+  .dots{display:flex;gap:.5rem;margin:0 .6rem}
+  .dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.18);transition:all .25s;cursor:pointer}
+  .dot.on{background:var(--plat);width:22px;border-radius:999px}
+
+  /* ── the re-skinned app (carbon/platinum) ── */
+  .app{
+    --bd:var(--line); --bg:#15171B; --bg2:#101216; --side:#0B0C0E;
+    --tx:#E7E9EC; --tx2:#9097A0; --tx3:#646A72;
+    --userb:#E7E9EC; --userink:#0C0D0F; --botb:#22262B;
+    --ok:#8FC9A9; --okbg:rgba(143,201,169,.12); --w:#D6B45E; --wbg:rgba(214,180,94,.12);
+    --btn:#E7E9EC; --btnink:#0C0D0F; --accent:#9FB6D6;
+    display:grid; grid-template-columns:224px 1fr 384px;
+    width:100%; max-width:1320px; height:min(700px,80vh); min-height:540px;
+    border-radius:16px; overflow:hidden; border:1px solid var(--bd); background:var(--bg);
+    color:var(--tx); font-size:14px;
+    box-shadow:0 60px 120px -40px rgba(0,0,0,.75), 0 24px 48px -28px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.04);
+  }
+  /* sidenav */
+  .nav{background:var(--side);padding:16px 12px;display:flex;flex-direction:column;gap:2px;border-right:1px solid var(--bd)}
+  .logo{font-family:'Instrument Serif',serif;font-size:20px;color:var(--tx);padding:2px 8px 2px}
+  .logosub{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.24em;text-transform:uppercase;color:var(--tx3);padding:0 8px 14px}
+  .newc{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;font-size:12.5px;color:var(--tx);border:1px solid var(--bd);background:#14161A;margin-bottom:14px}
+  .newc svg{width:13px;height:13px}
+  .navlbl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--tx3);padding:6px 10px}
+  .conv{padding:7px 10px;border-radius:7px;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12.5px}
+  .conv.on{background:#1C1F24;color:var(--tx)}
+  .navfoot{margin-top:auto;display:flex;align-items:center;gap:8px;padding:8px 10px;font-size:12px;color:var(--tx2)}
+  .udot{width:21px;height:21px;border-radius:50%;background:linear-gradient(135deg,#5b6470,#23262b);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:10px}
+  /* chat */
+  .chat{display:flex;flex-direction:column;background:var(--bg2)}
+  .chhd{padding:14px 18px;border-bottom:1px solid var(--bd);font-weight:500;font-size:13px;display:flex;justify-content:space-between;align-items:center;color:var(--tx)}
+  .chhd span{font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:400;color:var(--tx3);letter-spacing:.1em;text-transform:uppercase}
+  .msgs{flex:1;padding:18px;display:flex;flex-direction:column;gap:14px;overflow:hidden}
+  .m{max-width:88%;line-height:1.55;font-size:12.5px}
+  .m.u{align-self:flex-end;background:var(--userb);color:var(--userink);padding:9px 13px;border-radius:13px 13px 4px 13px;font-weight:400}
+  .m.b{align-self:flex-start;display:flex;gap:9px}
+  .m.b .ba{flex:none;width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#2b2e33,#0c0d0f);color:var(--tx);font-family:'Instrument Serif',serif;display:flex;align-items:center;justify-content:center;font-size:13px;border:1px solid var(--bd)}
+  .m.b .bt{background:var(--botb);padding:9px 13px;border-radius:13px 13px 13px 4px;color:var(--tx)}
+  .m.b .bt code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);background:rgba(159,182,214,.1);padding:1px 5px;border-radius:4px}
+  .composer{margin:14px;display:flex;align-items:center;gap:8px;border:1px solid var(--bd);border-radius:11px;padding:9px 12px;background:var(--bg)}
+  .composer input{flex:1;border:0;outline:0;background:transparent;font:inherit;font-size:12.5px;color:var(--tx)}
+  .composer input::placeholder{color:var(--tx3)}
+  .send{width:27px;height:27px;border-radius:7px;background:var(--btn);color:var(--btnink);border:0;display:flex;align-items:center;justify-content:center;flex:none}
+  .send svg{width:13px;height:13px}
+  /* workspace */
+  .res{display:flex;flex-direction:column;background:var(--bg);border-left:1px solid var(--bd)}
+  .reshd{padding:13px 16px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .ftree{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--tx3);letter-spacing:.04em}
+  .ftree b{color:var(--accent);font-weight:400}
+  .schip{display:inline-flex;align-items:center;gap:5px;font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--tx2);border:1px solid var(--bd);border-radius:999px;padding:3px 8px}
+  .schip svg{width:10px;height:10px}
+  .resbody{flex:1;padding:16px;overflow:hidden;display:flex;flex-direction:column;gap:14px}
+  .ftitle{font-weight:500;font-size:13px;color:var(--tx)}
+  /* metric card */
+  .metric{border:1px solid var(--bd);border-radius:12px;padding:14px 16px;background:#13151A}
+  .metric .lbl{font-size:11px;color:var(--tx2);text-transform:none}
+  .metric .big{font-family:'Instrument Serif',serif;font-size:34px;line-height:1.05;margin-top:4px;color:var(--tx)}
+  .metric .big.neg{color:#E2A6A6}
+  .metric .cmp{font-size:11px;color:var(--tx2);margin-top:5px}
+  /* chart */
+  .chart{border:1px solid var(--bd);border-radius:12px;padding:14px 14px 10px;background:#13151A}
+  .chart .clbl{font-size:11px;color:var(--tx2);margin-bottom:8px;display:flex;justify-content:space-between}
+  .chart svg{width:100%;height:auto;display:block}
+  /* table rows */
+  .banner{display:flex;align-items:center;gap:8px;border:1px solid var(--bd);border-radius:10px;padding:10px 12px;background:var(--okbg);font-size:11.5px;color:var(--tx)}
+  .banner svg{width:13px;height:13px;color:var(--ok);flex:none}
+  .trow{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:10px;padding:11px 2px;border-bottom:1px solid var(--bd)}
+  .trow:last-of-type{border-bottom:0}
+  .trow .d{font-weight:400;color:var(--tx);font-size:12.5px}
+  .trow .s{font-size:11px;color:var(--tx2);margin-top:2px}
+  .chip{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;font-size:10.5px;font-weight:500;white-space:nowrap}
+  .chip.ok{background:var(--okbg);color:var(--ok)}.chip.w{background:var(--wbg);color:var(--w)}
+  .ap{padding:6px 13px;border-radius:8px;background:var(--btn);color:var(--btnink);font-size:11.5px;font-weight:500;border:0;white-space:nowrap;cursor:pointer}
+  .ap.g{background:transparent;color:var(--tx);border:1px solid var(--bd)}
+  .resfoot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;padding:13px 16px;background:var(--bg2);border-top:1px solid var(--bd)}
+  .resfoot .lab{font-size:11.5px;color:var(--tx2)}
+  .allbtn{padding:8px 15px;border-radius:9px;background:var(--btn);color:var(--btnink);font-size:12px;font-weight:500;border:0;cursor:pointer}
+  /* report metric grid */
+  .mgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .mgrid .metric{padding:11px 13px}
+  .mgrid .metric .big{font-size:22px}
+  .subhd{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--tx3);margin-bottom:6px}
+  .trow.t3{grid-template-columns:1fr auto auto;padding:8px 2px}
+  .trow .num{font-size:12.5px;font-weight:500;color:var(--tx);text-align:right}
+  .trow .num.neg{color:#E2A6A6}
+  .method{font-size:10.5px;color:var(--tx3);line-height:1.5;font-style:italic}
+
+  .footwhisper{text-align:center;padding:3.5rem 7vw 0;font-family:'Instrument Serif',serif;
+    font-style:italic;font-size:1rem;color:var(--plat-faint);position:relative;z-index:2}
+
+  @media (max-width:920px){
+    .app{grid-template-columns:1fr 320px;height:min(560px,76vh)}
+    .app .nav{display:none}
+  }
+  @media (max-width:640px){
+    .app{grid-template-columns:1fr;height:auto;min-height:0}
+    .app .res{border-left:0;border-top:1px solid var(--bd)}
+    .app .chat .msgs{max-height:240px;overflow-y:auto}
+  }
+</style>
+</head>
+<body>
+
+  <!-- ════════ SCREEN 1 ════════ -->
+  <section class="hero">
+    <h1 class="wordmark">Reverón</h1>
+    <div class="endorsement">por Tesote&nbsp;AI</div>
+
+    <p class="tagline">La IA financiera que entiende cómo opera tu empresa.</p>
+    <p class="sub">Trabaja sobre la información bancaria que Tesote ya centraliza por ti para consultar, analizar, automatizar y ejecutar tareas financieras con trazabilidad y control.</p>
+
+    <a class="cta" href="#acceso">
+      Solicitar acceso
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </a>
+
+    <a class="scrollcue" href="#stage">
+      Reverón en acción
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </a>
+  </section>
+
+  <!-- ════════ SCREEN 2 ════════ -->
+  <section class="stage" id="stage">
+    <div class="stagehead">
+      <div class="kicker">Tres formas de trabajar con Reverón</div>
+      <h2>No es un chatbot. Es inteligencia <em>aplicada a tu operación financiera.</em></h2>
+      <div class="pills">
+        <button class="pill on" data-i="0">Requerimientos complejos</button>
+        <button class="pill" data-i="1">Acciones masivas</button>
+        <button class="pill" data-i="2">Reportes recurrentes</button>
+      </div>
+    </div>
+
+    <div class="track" id="track">
+
+      <!-- ── Slide 1 · Requerimientos complejos ── -->
+      <div class="slide">
+        <div class="app">
+          <div class="nav">
+            <div class="logo">Reverón</div>
+            <div class="logosub">por Tesote AI</div>
+            <div class="newc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nueva conversación</div>
+            <div class="navlbl">Conversaciones</div>
+            <div class="conv on">Pérdida por devaluación</div>
+            <div class="conv">Flujo de caja · junio</div>
+            <div class="conv">Saldos por banco</div>
+            <div class="conv">Facturas por cobrar</div>
+            <div class="conv">Gastos por categoría</div>
+            <div class="navfoot"><span class="udot">L</span> Luis · Tesote</div>
+          </div>
+          <div class="chat">
+            <div class="chhd">Pérdida por devaluación <span>por Tesote AI</span></div>
+            <div class="msgs">
+              <div class="m u">¿Cuánto perdí por devaluación este mes contra la tasa BCV?</div>
+              <div class="m b"><span class="ba">R</span><div class="bt">Tomé el saldo diario en bolívares de tus 4 cuentas y lo valoré a la tasa BCV de cada día, comparándolo contra haberlo mantenido en dólares. La tasa pasó de 38,2 a 41,6 en el mes (+8,9%), y eso erosionó tu poder de compra.<br><br>La pérdida total es de <b>−US$ 4.820</b>. Lo dejé en <code>pérdida-devaluación.json</code> con el detalle día a día, el desglose por cuenta y la metodología para que puedas auditarlo.</div></div>
+            </div>
+            <div class="composer"><input placeholder="Pregúntale a Reverón…" /><button class="send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg></button></div>
+          </div>
+          <div class="res">
+            <div class="reshd"><span class="ftree">working/ · <b>pérdida-devaluación.json</b></span></div>
+            <div class="resbody">
+              <div class="metric"><div class="lbl">Pérdida por devaluación · 1–21 jun</div><div class="big neg">−US$ 4.820</div><div class="cmp">Saldo prom. Bs 1.240.000 · tasa BCV 38,2 → 41,6 (+8,9%)</div></div>
+              <div class="chart">
+                <div class="clbl"><span>Valor del saldo en US$ · día a día</span><span>jun</span></div>
+                <svg viewBox="0 0 320 100" preserveAspectRatio="none">
+                  <defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9FB6D6" stop-opacity=".35"/><stop offset="1" stop-color="#9FB6D6" stop-opacity="0"/></linearGradient></defs>
+                  <path d="M0,20 L53,27 L107,35 L160,50 L213,64 L266,78 L320,88 L320,100 L0,100 Z" fill="url(#g1)"/>
+                  <path d="M0,20 L53,27 L107,35 L160,50 L213,64 L266,78 L320,88" fill="none" stroke="#9FB6D6" stroke-width="2"/>
+                </svg>
+              </div>
+              <div>
+                <div class="subhd">Desglose por cuenta</div>
+                <div class="trow t3"><div class="d">Cuenta corriente Bs</div><div class="s">Bs 720k prom.</div><div class="num neg">−US$ 2.810</div></div>
+                <div class="trow t3"><div class="d">Cuenta de ahorro Bs</div><div class="s">Bs 410k prom.</div><div class="num neg">−US$ 1.600</div></div>
+                <div class="trow t3"><div class="d">Cuenta operativa Bs</div><div class="s">Bs 110k prom.</div><div class="num neg">−US$ 410</div></div>
+              </div>
+              <div class="method">Método: saldo diario en Bs × tasa BCV del día, valuado contra USD. Fuente: 4 cuentas sincronizadas.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Slide 2 · Acciones masivas ── -->
+      <div class="slide">
+        <div class="app">
+          <div class="nav">
+            <div class="logo">Reverón</div>
+            <div class="logosub">por Tesote AI</div>
+            <div class="newc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nueva conversación</div>
+            <div class="navlbl">Conversaciones</div>
+            <div class="conv on">Categorización masiva</div>
+            <div class="conv">Conciliación de junio</div>
+            <div class="conv">Reglas de contraparte</div>
+            <div class="conv">Pagos a proveedores</div>
+            <div class="conv">Saldos por banco</div>
+            <div class="navfoot"><span class="udot">L</span> Luis · Tesote</div>
+          </div>
+          <div class="chat">
+            <div class="chhd">Categorización masiva <span>por Tesote AI</span></div>
+            <div class="msgs">
+              <div class="m u">Busca los movimientos sin categoría y propón cómo clasificarlos.</div>
+              <div class="m b"><span class="ba">R</span><div class="bt">Revisé los 142 movimientos sin categoría de los últimos 60 días. Los agrupé por contraparte, monto y descripción, y encontré 4 patrones consistentes.<br><br>Armé una regla para cada uno: se aplican a estos movimientos y a los futuros que coincidan, así no vuelves a categorizar lo mismo. 3 quedaron con confianza alta y 1 te la dejo para revisar. <b>Nada se aplica hasta que apruebes.</b></div></div>
+            </div>
+            <div class="composer"><input placeholder="Pregúntale a Reverón…" /><button class="send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg></button></div>
+          </div>
+          <div class="res">
+            <div class="reshd"><span class="ftree">working/ · <b>reglas-propuestas.json</b></span></div>
+            <div class="resbody">
+              <div class="banner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg> Propone · tú apruebas. Nada se mueve sin ti.</div>
+              <div>
+                <div class="trow"><div><div class="d">Nómina quincenal → Sueldos y salarios</div><div class="s">Contraparte “NÓMINA C.A.” · 86 mov · 99%</div></div><span class="chip ok">Listo</span><button class="ap">Aprobar</button></div>
+                <div class="trow"><div><div class="d">Distribuidora Andina → Inventario</div><div class="s">Contraparte “DIST. ANDINA” · 29 mov · 97%</div></div><span class="chip ok">Listo</span><button class="ap">Aprobar</button></div>
+                <div class="trow"><div><div class="d">Servicios públicos → Servicios</div><div class="s">Corpoelec, Hidrocapital · 12 mov · 95%</div></div><span class="chip ok">Listo</span><button class="ap">Aprobar</button></div>
+                <div class="trow"><div><div class="d">Comisiones bancarias → Gastos financieros</div><div class="s">Descripción contiene “COMISIÓN” · 15 mov · revisar 2</div></div><span class="chip w">Revisar</span><button class="ap g">Ver</button></div>
+              </div>
+            </div>
+            <div class="resfoot"><span class="lab">142 movimientos · 3 reglas listas, 1 a revisar</span><button class="allbtn">Aprobar 3 reglas →</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Slide 3 · Reportes recurrentes ── -->
+      <div class="slide">
+        <div class="app">
+          <div class="nav">
+            <div class="logo">Reverón</div>
+            <div class="logosub">por Tesote AI</div>
+            <div class="newc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nueva conversación</div>
+            <div class="navlbl">Conversaciones</div>
+            <div class="conv on">Reporte semanal</div>
+            <div class="conv">Alertas de saldo bajo</div>
+            <div class="conv">Resumen para directorio</div>
+            <div class="conv">Flujo de caja · junio</div>
+            <div class="conv">Conciliación de junio</div>
+            <div class="navfoot"><span class="udot">L</span> Luis · Tesote</div>
+          </div>
+          <div class="chat">
+            <div class="chhd">Reporte semanal <span>por Tesote AI</span></div>
+            <div class="msgs">
+              <div class="m u">Mándame cada viernes un resumen: saldos, movimientos y alertas de la semana.</div>
+              <div class="m b"><span class="ba">R</span><div class="bt">Listo. Programé el reporte para todos los viernes a las 8:00 am. Incluye saldos por banco, variación semanal, ingresos y egresos, movimientos destacados y alertas de saldo bajo o facturas vencidas.<br><br>Te llega por correo y queda guardado acá para consultarlo cuando quieras. Esta es la vista previa de esta semana → <code>reporte-semanal.json</code>.</div></div>
+            </div>
+            <div class="composer"><input placeholder="Pregúntale a Reverón…" /><button class="send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg></button></div>
+          </div>
+          <div class="res">
+            <div class="reshd"><span class="ftree">working/ · <b>reporte-semanal.json</b></span><span class="schip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg> Viernes 8:00</span></div>
+            <div class="resbody">
+              <div class="ftitle">Resumen · semana del 15 al 21 jun</div>
+              <div class="mgrid">
+                <div class="metric"><div class="lbl">Saldo total</div><div class="big">US$ 318k</div><div class="cmp">+2,4% vs semana anterior</div></div>
+                <div class="metric"><div class="lbl">Movimientos</div><div class="big">214</div><div class="cmp">en 6 cuentas</div></div>
+                <div class="metric"><div class="lbl">Ingresos</div><div class="big">US$ 96k</div><div class="cmp">42 cobros</div></div>
+                <div class="metric"><div class="lbl">Egresos</div><div class="big">US$ 88k</div><div class="cmp">172 pagos</div></div>
+              </div>
+              <div class="chart">
+                <div class="clbl"><span>Saldo por banco · US$</span><span>6 cuentas</span></div>
+                <svg viewBox="0 0 320 80" preserveAspectRatio="none">
+                  <g fill="#9FB6D6">
+                    <rect x="6"   y="14" width="42" height="62" rx="3"/>
+                    <rect x="60"  y="32" width="42" height="44" rx="3"/>
+                    <rect x="114" y="10" width="42" height="66" rx="3"/>
+                    <rect x="168" y="46" width="42" height="30" rx="3" fill="#D6B45E"/>
+                    <rect x="222" y="38" width="42" height="38" rx="3"/>
+                    <rect x="276" y="56" width="42" height="20" rx="3" fill="#D6B45E"/>
+                  </g>
+                </svg>
+              </div>
+              <div>
+                <div class="subhd">Alertas</div>
+                <div class="trow"><div><div class="d">Banco Operativo · saldo bajo</div><div class="s">US$ 2.100 · bajo el mínimo de US$ 5.000</div></div><span class="chip w">Revisar</span></div>
+                <div class="trow"><div><div class="d">2 facturas vencidas por cobrar</div><div class="s">US$ 14.300 · +8 días</div></div><span class="chip w">Revisar</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="arrows">
+      <button class="arr" id="prev" aria-label="Anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <div class="dots"><span class="dot on" data-i="0"></span><span class="dot" data-i="1"></span><span class="dot" data-i="2"></span></div>
+      <button class="arr" id="next" aria-label="Siguiente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    </div>
+
+    <div class="footwhisper">Reverón, por Tesote AI</div>
+  </section>
+
+<script>
+  const track = document.getElementById('track');
+  const slides = [...track.children];
+  const pills = [...document.querySelectorAll('.pill')];
+  const dots  = [...document.querySelectorAll('.dot')];
+  let current = 0;
+
+  function go(i){
+    i = Math.max(0, Math.min(slides.length-1, i));
+    slides[i].scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
+  }
+  function setActive(i){
+    current = i;
+    pills.forEach((p,k)=>p.classList.toggle('on', k===i));
+    dots.forEach((d,k)=>d.classList.toggle('on', k===i));
+  }
+  pills.forEach(p=>p.addEventListener('click',()=>go(+p.dataset.i)));
+  dots.forEach(d=>d.addEventListener('click',()=>go(+d.dataset.i)));
+  document.getElementById('prev').addEventListener('click',()=>go(current-1));
+  document.getElementById('next').addEventListener('click',()=>go(current+1));
+
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting) setActive(slides.indexOf(e.target)); });
+  },{root:track, threshold:0.6});
+  slides.forEach(s=>io.observe(s));
+</script>
+</body>
+</html>

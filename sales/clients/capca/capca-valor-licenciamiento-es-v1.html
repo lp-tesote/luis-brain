@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tesote para CAPCA — La inversión completa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fafbfd;
+    --surface: #ffffff;
+    --surface-2: #f1f4f9;
+    --line: rgba(13,17,23,0.10);
+    --text: #0d1117;
+    --text-dim: #4a5260;
+    --text-faint: #97a1ae;
+    --blue: #1661e2;
+    --blue-soft: #4d8dff;
+    --blue-dim: rgba(22,97,226,0.10);
+    --dark: #0d1117;
+    --dark-text: #f2f5f9;
+    --serif: 'Instrument Serif', Georgia, serif;
+    --sans: 'Inter', -apple-system, sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  ::selection { background: var(--blue); color: #fff; }
+
+  #progress {
+    position: fixed; top: 0; left: 0; height: 2px; width: 0%;
+    background: var(--blue); z-index: 100;
+    transition: width 0.1s linear;
+  }
+
+  section { position: relative; padding: 16vh 24px; }
+  .wrap { max-width: 680px; margin: 0 auto; }
+  .wrap-wide { max-width: 920px; margin: 0 auto; }
+
+  .kicker {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--blue); margin-bottom: 28px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .kicker::after { content: ''; height: 1px; flex: 1; background: var(--line); }
+
+  h2 {
+    font-family: var(--serif); font-weight: 400; font-size: clamp(34px, 5vw, 52px);
+    line-height: 1.12; letter-spacing: -0.01em; margin-bottom: 28px; color: var(--text);
+  }
+  h2 em { font-style: italic; color: var(--blue); }
+  p { color: var(--text-dim); margin-bottom: 22px; }
+  p strong { color: var(--text); font-weight: 500; }
+  .note { font-family: var(--mono); font-size: 12.5px; color: var(--text-faint); line-height: 1.7; }
+
+  .rv { opacity: 0; transform: translateY(28px); transition: opacity 0.9s cubic-bezier(.2,.7,.3,1), transform 0.9s cubic-bezier(.2,.7,.3,1); }
+  .rv.in { opacity: 1; transform: none; }
+  .rv.d1 { transition-delay: 0.12s; } .rv.d2 { transition-delay: 0.24s; }
+  .rv.d3 { transition-delay: 0.36s; } .rv.d4 { transition-delay: 0.48s; }
+
+  /* ---------- hero ---------- */
+  #hero {
+    min-height: 100vh; display: flex; flex-direction: column;
+    justify-content: center; align-items: center; text-align: center;
+    padding: 24px; position: relative; overflow: hidden;
+  }
+  #hero-grid {
+    position: absolute; inset: 0; opacity: 0.6; pointer-events: none;
+    font-family: var(--mono); font-size: 11px; color: #b9c1cd;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0; align-content: space-between; padding: 4vh 3vw;
+    mask-image: radial-gradient(ellipse 75% 65% at 50% 50%, transparent 32%, black 78%);
+    -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 50%, transparent 32%, black 78%);
+  }
+  #hero-grid span { padding: 1.4vh 0; opacity: 0.55; transition: opacity 2.4s ease, color 2.4s ease; }
+  #hero-grid span.posted { opacity: 0.95; color: var(--blue); }
+  .hero-eyebrow {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--text-faint); margin-bottom: 30px;
+  }
+  h1 {
+    font-family: var(--serif); font-weight: 400;
+    font-size: clamp(50px, 9vw, 104px); line-height: 0.98; letter-spacing: -0.015em;
+  }
+  h1 .it { font-style: italic; color: var(--blue); }
+  .hero-sub {
+    margin-top: 34px; max-width: 560px; color: var(--text-dim);
+    font-size: 18px; line-height: 1.6;
+  }
+  .hero-sub em { color: var(--text); font-style: normal; border-bottom: 1px solid var(--blue); }
+  .scroll-hint {
+    position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%);
+    color: var(--text-faint); animation: bob 2.6s ease-in-out infinite;
+  }
+  @keyframes bob { 0%,100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, 8px); } }
+
+  /* ---------- before/after tokens ---------- */
+  .tokens { display: flex; gap: 28px; margin: 56px 0 24px; flex-wrap: wrap; align-items: stretch; }
+  .token { flex: 1; min-width: 250px; border-radius: 10px; padding: 34px 28px; position: relative; background: var(--surface); }
+  .token.generic { border: 1px dashed rgba(13,17,23,0.25); background: transparent; }
+  .token.generic .tv { color: var(--text-dim); }
+  .token.yours { border: 1px solid rgba(22,97,226,0.5); background: radial-gradient(110% 110% at 50% 0%, rgba(22,97,226,0.07), var(--surface) 70%); box-shadow: 0 1px 3px rgba(13,17,23,0.05); }
+  .token .tt { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 14px; }
+  .token .tn { font-family: var(--serif); font-size: 24px; line-height: 1.25; color: var(--text); margin-bottom: 10px; }
+  .token.yours .tn { color: var(--blue); }
+  .token .td { font-size: 13.5px; color: var(--text-dim); line-height: 1.6; }
+  .tokens-arrow {
+    flex: 0 0 auto; display: flex; align-items: center; justify-content: center;
+    color: var(--blue); min-width: 40px;
+  }
+
+  /* ---------- manual-cost ledger ---------- */
+  .ledger { margin: 52px 0 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); overflow: hidden; box-shadow: 0 1px 3px rgba(13,17,23,0.05); }
+  .ledger-head {
+    display: flex; align-items: center; gap: 10px; padding: 14px 20px;
+    border-bottom: 1px solid var(--line); background: var(--surface-2);
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-faint);
+  }
+  .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--blue); box-shadow: 0 0 8px rgba(22,97,226,0.5); animation: pulse 2.2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+  .ledger-row {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 14px;
+    padding: 15px 20px; border-bottom: 1px solid var(--line);
+    font-size: 14px;
+  }
+  .ledger-row:last-child { border-bottom: none; }
+  .ledger-row .desc { color: var(--text); }
+  .ledger-row .desc small { display: block; color: var(--text-faint); font-size: 12px; margin-top: 2px; }
+  .ledger-row .tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); white-space: nowrap; }
+
+  /* ---------- stat callout ---------- */
+  .statline { display: flex; align-items: baseline; gap: 24px; margin: 48px 0 8px; flex-wrap: wrap; }
+  .statline .sn { font-family: var(--serif); font-size: clamp(40px, 6vw, 64px); color: var(--blue); line-height: 1.1; max-width: 360px; }
+  .statline .sd { flex: 1; min-width: 220px; font-size: 15px; color: var(--text-dim); line-height: 1.6; }
+  .statline .sd b { color: var(--text); font-weight: 500; }
+
+  /* ---------- solve mapping (problem -> tesote) ---------- */
+  .mapping { margin: 56px 0 18px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); overflow: hidden; box-shadow: 0 1px 3px rgba(13,17,23,0.05); }
+  .map-row {
+    display: grid; grid-template-columns: 1fr 44px 1fr; align-items: center;
+    padding: 18px 22px; border-bottom: 1px solid var(--line); gap: 8px;
+  }
+  .map-row:last-of-type { border-bottom: none; }
+  .map-row .from { font-size: 13.5px; color: var(--text-dim); }
+  .map-row .from small { display: block; color: var(--text-faint); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 4px; }
+  .map-row .to { font-size: 13.5px; color: var(--text); text-align: right; font-weight: 500; }
+  .map-row .to small { display: block; color: var(--blue); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 4px; font-weight: 400; }
+  .map-arrow { color: var(--blue); text-align: center; font-family: var(--mono); font-size: 14px; }
+
+  /* ---------- feature list (value-adds) ---------- */
+  .features { margin: 52px 0 12px; }
+  .feature { padding: 24px 0; border-top: 1px solid var(--line); }
+  .feature:last-child { border-bottom: 1px solid var(--line); }
+  .feature .fn { font-family: var(--serif); font-size: 24px; line-height: 1.25; color: var(--text); margin-bottom: 6px; }
+  .feature .fn em { font-style: italic; color: var(--blue); }
+  .feature .fd { font-size: 14.5px; color: var(--text-dim); line-height: 1.6; }
+
+  /* ---------- finale (dark inversion) ---------- */
+  #finale { background: var(--dark); color: var(--dark-text); padding: 20vh 24px; }
+  #finale .kicker { color: var(--blue-soft); }
+  #finale .kicker::after { background: rgba(255,255,255,0.14); }
+  #finale h2 { color: var(--dark-text); }
+  #finale h2 em { color: var(--blue-soft); }
+  #finale p { color: #97a1ae; }
+  #finale .imperatives { margin: 56px 0; }
+  #finale .imp {
+    font-family: var(--serif); font-size: clamp(26px, 4vw, 40px); line-height: 1.28;
+    padding: 26px 0; border-top: 1px solid rgba(255,255,255,0.14); color: var(--dark-text);
+  }
+  #finale .imp:last-child { border-bottom: 1px solid rgba(255,255,255,0.14); }
+  #finale .imp .n { font-family: var(--mono); font-size: 13px; color: var(--blue-soft); vertical-align: super; margin-right: 14px; }
+  #finale .imp em { font-style: italic; color: var(--blue-soft); }
+  #finale .closer {
+    margin-top: 64px; font-family: var(--serif); font-style: italic;
+    font-size: clamp(22px, 3vw, 30px); line-height: 1.45; color: var(--dark-text);
+    max-width: 680px;
+  }
+  footer {
+    background: var(--dark); color: #5a6472; padding: 0 24px 60px;
+    font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.06em; line-height: 1.8;
+  }
+  footer .wrap { border-top: 1px solid rgba(255,255,255,0.12); padding-top: 24px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .rv { transition: none !important; opacity: 1; transform: none; }
+    .scroll-hint, .live-dot { animation: none; }
+  }
+  @media (max-width: 640px) {
+    .tokens-arrow { width: 100%; transform: rotate(90deg); min-height: 40px; }
+    .map-row { grid-template-columns: 1fr; gap: 8px; }
+    .map-row .to { text-align: left; }
+    .map-arrow { text-align: left; }
+    .statline .sn { max-width: none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<!-- ============ HERO ============ -->
+<section id="hero">
+  <div id="hero-grid" aria-hidden="true"></div>
+  <div class="hero-eyebrow rv">tesote &times; capca</div>
+  <h1 class="rv d1">Ya hiciste lo difícil.<br><span class="it">Ahora, que rinda.</span></h1>
+  <p class="hero-sub rv d2">Migrar a SAP S/4HANA fue un paso enorme. Tesote toma ese sistema y lo conecta con tus bancos: lo que hoy se hace a mano —cargar movimientos, la tasa del BCV, conciliar— pasa a hacerse solo. La misma inversión, <em>rindiendo de verdad.</em></p>
+  <div class="scroll-hint" aria-hidden="true">
+    <svg width="18" height="26" viewBox="0 0 18 26" fill="none"><path d="M9 2v18M3 14l6 7 6-7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+</section>
+
+<!-- ============ 01 LA INVERSIÓN ============ -->
+<section id="s01">
+  <div class="wrap">
+    <div class="kicker rv">01 &middot; Tu inversión en SAP</div>
+    <h2 class="rv">Lo que ya construiste, <em>al máximo.</em></h2>
+    <p class="rv d1">SAP S/4HANA Cloud es una de las inversiones tecnológicas más importantes que ha hecho CAPCA. Centraliza tu contabilidad, tu operación, tu registro fiscal. Es la columna vertebral correcta. <strong>El único tramo que quedó fuera del Go Live fue la conexión con los bancos y la tasa del BCV</strong> — y es justo ahí donde Tesote suma.</p>
+    <p class="rv d2">Tesote no reemplaza esa inversión: <strong>la completa.</strong> Toma los datos del banco y los lleva a SAP automáticamente, todos los días. Misma columna vertebral, ahora alimentada sola.</p>
+    <div class="tokens rv d3">
+      <div class="token generic">
+        <div class="tt">SAP, hoy</div>
+        <div class="tn">El registro, esperando los datos</div>
+        <div class="td">El extracto se descarga, se sube y se digita por tu equipo, banco por banco, cada día.</div>
+      </div>
+      <div class="tokens-arrow" aria-hidden="true">
+        <svg width="40" height="24" viewBox="0 0 44 24" fill="none"><path d="M2 12h36M30 4l8 8-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="token yours">
+        <div class="tt">SAP + Tesote</div>
+        <div class="tn">El registro, alimentado solo</div>
+        <div class="td">Movimientos, tasa del BCV y conciliaciones llegan a SAP automáticamente. La inversión que hiciste, rindiendo de verdad.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 02 EL COSTO DE NO CERRARLO ============ -->
+<section id="s02">
+  <div class="wrap">
+    <div class="kicker rv">02 &middot; El día a día</div>
+    <h2 class="rv">Lo que hoy toma horas, <em>en automático.</em></h2>
+    <p class="rv d1">Hay bastante trabajo que hoy se hace a mano, todos los días — no por falta de sistema, sino porque ese puente al banco nunca existió. Esto es lo que Tesote absorbe:</p>
+    <div class="ledger rv d2">
+      <div class="ledger-head"><span class="live-dot"></span><span>lo que Tesote te quita de encima &middot; 16 bancos &middot; 41 cuentas</span></div>
+      <div class="ledger-row"><span class="desc">Descargar 16 portales bancarios<small>uno por uno, cada día</small></span><span class="tag">&rarr; automático</span></div>
+      <div class="ledger-row"><span class="desc">Subir los extractos a SAP<small>sin trazabilidad automática</small></span><span class="tag">&rarr; automático</span></div>
+      <div class="ledger-row"><span class="desc">Digitar la tasa del BCV<small>bajo presión, cada tarde después de las 3:00</small></span><span class="tag">&rarr; automático</span></div>
+      <div class="ledger-row"><span class="desc">Filtrar confidencialidad Caracas / Acarigua<small>en Excel, sin control del sistema</small></span><span class="tag">&rarr; automático</span></div>
+      <div class="ledger-row"><span class="desc">Casar los pagos de clientes a sus facturas<small>el cuello de botella de cobranzas</small></span><span class="tag">&rarr; automático</span></div>
+      <div class="ledger-row"><span class="desc">Rastrear pagos de terceros<small>exposición regulatoria sin alerta automática</small></span><span class="tag">&rarr; automático</span></div>
+    </div>
+    <div class="statline rv d3">
+      <div class="sn">Y tu equipo deja de depender de que alguien esté presente.</div>
+      <div class="sd"><b>Más que tiempo, lo que ganas es independencia.</b> Hoy todo este trabajo vive en quien lo hace; con Tesote vive en el sistema — disponible siempre, sin importar quién esté de vacaciones o qué día sea. La operación bancaria deja de ser una persona y pasa a ser infraestructura.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 03 CADA OBJETIVO, RESUELTO ============ -->
+<section id="s03">
+  <div class="wrap">
+    <div class="kicker rv">03 &middot; Punto por punto</div>
+    <h2 class="rv">Cada objetivo que plantearon, <em>resuelto.</em></h2>
+    <p class="rv d1">No es una lista de funciones. Es la lista de cosas que CAPCA y OCAT pusieron sobre la mesa — y cómo las resuelve Tesote, una por una.</p>
+    <div class="mapping rv d2">
+      <div class="map-row">
+        <div class="from">Descargar 16 portales a diario<small>hoy</small></div>
+        <div class="map-arrow">&rarr;</div>
+        <div class="to">Conexión automática a todos tus bancos<small>con Tesote</small></div>
+      </div>
+      <div class="map-row">
+        <div class="from">Subir extractos a SAP a mano<small>hoy</small></div>
+        <div class="map-arrow">&rarr;</div>
+        <div class="to">Carga automática a SAP en formato MT940, cada día<small>con Tesote</small></div>
+      </div>
+      <div class="map-row">
+        <div class="from">Digitar la tasa del BCV<small>hoy</small></div>
+        <div class="map-arrow">&rarr;</div>
+        <div class="to">Inyección automática de la tasa en SAP<small>con Tesote</small></div>
+      </div>
+      <div class="map-row">
+        <div class="from">Filtrar confidencialidad en Excel<small>hoy</small></div>
+        <div class="map-arrow">&rarr;</div>
+        <div class="to">Permisología por usuario: cada quien ve solo lo suyo<small>con Tesote</small></div>
+      </div>
+      <div class="map-row">
+        <div class="from">Casar pagos a facturas a mano<small>hoy</small></div>
+        <div class="map-arrow">&rarr;</div>
+        <div class="to">Identificación por RIF + cruce con cuentas por cobrar<small>con Tesote</small></div>
+      </div>
+      <div class="map-row">
+        <div class="from">Pagos de terceros sin rastro<small>hoy</small></div>
+        <div class="map-arrow">&rarr;</div>
+        <div class="to">Alerta de RIF no coincidente para revisión de cumplimiento<small>con Tesote</small></div>
+      </div>
+    </div>
+    <p class="note rv d3">cada fila fue un requerimiento de CAPCA u OCAT — no una propuesta nuestra</p>
+  </div>
+</section>
+
+<!-- ============ 04 LO QUE NO ESTABA EN LA LISTA ============ -->
+<section id="s04">
+  <div class="wrap">
+    <div class="kicker rv">04 &middot; Más de lo que pediste</div>
+    <h2 class="rv">Y suma valor <em>donde no lo pediste.</em></h2>
+    <p class="rv d1">Lo que se diseñó para automatizar el banco, de paso ordena la operación entera entre el holding y la empresa.</p>
+    <div class="features rv d2">
+      <div class="feature">
+        <div class="fn">Visibilidad 360 de tesorería</div>
+        <div class="fd">Todas las cuentas —nacionales e internacionales— en tiempo real, en una sola pantalla. El flujo de caja deja de ser un reporte que cuesta días y pasa a estar siempre disponible.</div>
+      </div>
+      <div class="feature">
+        <div class="fn">Permisología <em>OCAT &harr; CAPCA</em></div>
+        <div class="fd">El holding ve la salud financiera completa; cada analista de cobranzas ve solo su cuenta y sus transacciones. La confidencialidad deja de depender de un Excel y pasa a ser una regla del sistema.</div>
+      </div>
+      <div class="feature">
+        <div class="fn">Colaboración entre equipos</div>
+        <div class="fd">Etiquetar un pago, asignarlo, dejar una nota. La coordinación que hoy vive en WhatsApp entre OCAT y CAPCA queda centralizada y trazable, antes de llegar a SAP.</div>
+      </div>
+      <div class="feature">
+        <div class="fn">Comprobantes automáticos al proveedor</div>
+        <div class="fd">Al ejecutar una corrida de pagos, el comprobante sale al proveedor directo desde Tesote — sin imprimir pantallas del banco, sin reenviar a mano.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 05 LO QUE VIENE INCLUIDO ============ -->
+<section id="s05">
+  <div class="wrap">
+    <div class="kicker rv">05 &middot; Hacia adelante</div>
+    <h2 class="rv">Y lo mejor <em>apenas empieza.</em></h2>
+    <p class="rv d1">Parte del valor de Tesote no está en el papel de hoy — está en lo que seguimos construyendo y que CAPCA recibe sin volver a desarrollar nada.</p>
+    <div class="tokens rv d2">
+      <div class="token yours">
+        <div class="tt">Ya en camino</div>
+        <div class="tn">Portal de pagos</div>
+        <div class="td">Tus clientes pagan sus facturas en línea —selección de varias facturas, un solo débito, conciliación automática hacia SAP con sus retenciones SENIAT. La visión que trajo Rosa, como producto.</div>
+      </div>
+      <div class="token yours">
+        <div class="tt">Recién lanzado</div>
+        <div class="tn">Tesote AI</div>
+        <div class="td">Preguntas en lenguaje natural: "dame las facturas pendientes por pagar". Genera asientos contables hacia SAP y arma reportes de flujo de caja al instante. Incluido, sin costo de desarrollo.</div>
+      </div>
+    </div>
+    <p class="note rv d3">no son promesas en una hoja de ruta: son productos que ya existen y que entran al alcance a medida que maduran</p>
+  </div>
+</section>
+
+<!-- ============ 06 LICENCIA, NO SUSCRIPCIÓN ============ -->
+<section id="s06">
+  <div class="wrap">
+    <div class="kicker rv">06 &middot; Cómo lo recibes</div>
+    <h2 class="rv">No te casas con nadie. <em>Licencias una capacidad.</em></h2>
+    <p class="rv d1">Entendemos la inquietud de fondo: no querer depender de un proveedor, no querer estar atada a un compromiso indefinido. Es una preocupación legítima — y por eso lo planteamos distinto.</p>
+    <p class="rv d2">Esto es un <strong>licenciamiento de uso de software</strong>, no una suscripción que te amarra. SAP sigue siendo tu sistema de registro, tuyo. <strong>Tus datos son tuyos.</strong> Tesote es la capa que lo alimenta y lo potencia — no un dueño de tu información.</p>
+    <p class="rv d3">El valor no está en atarte. Está en que <strong>no tienes que construir esto, ni contratar un equipo para mantenerlo, ni desarrollarlo desde cero.</strong> Es la pieza del engranaje que te da una operación más tranquila, sin el peso de tener que hacerla tú. Licencias la capacidad; conservas tu autonomía. El día que algo mejor la reemplace, no hay nada que te ate.</p>
+  </div>
+</section>
+
+<!-- ============ FINALE ============ -->
+<section id="finale">
+  <div class="wrap">
+    <div class="kicker rv">07 &middot; Donde estamos</div>
+    <h2 class="rv">Lo dejamos todo listo <em>de nuestro lado.</em></h2>
+    <p class="rv d1">A lo largo de estos meses hicimos exactamente lo que hacía falta para que esto sea real:</p>
+    <div class="imperatives rv d1">
+      <div class="imp"><span class="n">i</span>Construimos la integración con SAP que quedó <em>pendiente</em> del Go Live.</div>
+      <div class="imp"><span class="n">ii</span>Adaptamos la plataforma a cada necesidad que CAPCA y OCAT <em>plantearon.</em></div>
+      <div class="imp"><span class="n">iii</span>Probamos que funciona — en producción, con <em>clientes reales.</em></div>
+    </div>
+    <p class="closer rv d2">"La decisión es tuya, y la respetamos por completo. Si después de todo esto todavía queda alguna duda, está perfectamente bien — nos hacemos a un lado, sin presión. La puerta queda abierta: el día que lo necesites, aquí estamos."</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    tesote &times; capca &middot; documento de valor &middot; confidencial
+  </div>
+</footer>
+
+<script>
+(function () {
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var bar = document.getElementById('progress');
+  function onScroll() {
+    var h = document.documentElement;
+    var p = h.scrollTop / (h.scrollHeight - h.clientHeight);
+    bar.style.width = (p * 100) + '%';
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  /* hero grid: movimientos bancarios que se van cargando (se vuelven azules) */
+  var grid = document.getElementById('hero-grid');
+  var kinds = ['TRF', 'PAGO MÓVIL', 'NÓMINA', 'COMISIÓN', 'DEP', 'BCV'];
+  var cells = [];
+  for (var i = 0; i < 48; i++) {
+    var s = document.createElement('span');
+    var k = kinds[i % kinds.length];
+    var ref = String(10000 + ((i * 731) % 89999));
+    s.textContent = k + ' ' + ref + ' · SAP';
+    grid.appendChild(s);
+    cells.push(s);
+  }
+  if (!reduced) {
+    var k2 = 0;
+    setInterval(function () {
+      cells[(k2 * 17) % cells.length].classList.add('posted');
+      k2++;
+    }, 700);
+  }
+
+  /* reveals */
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.18 });
+  document.querySelectorAll('.rv').forEach(function (el) { io.observe(el); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1066 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tesote × CAPCA · Portal Digital B2B — 30 de abril de 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /*
+    TESOTE DESIGN SYSTEM
+    Aligned with tesote.lunour.design guidelines (matches Tesote proposal templates).
+  */
+  :root {
+    /* COLOR */
+    --color-surface-primary: #ffffff;
+    --color-surface-secondary: #f9fafb;
+    --color-surface-tertiary: #f3f4f6;
+
+    --color-text-primary: #000000;
+    --color-text-secondary: #4b5563;
+    --color-text-tertiary: #9ca3af;
+
+    --color-border: #e5e7eb;
+    --color-border-strong: #d1d5db;
+
+    --color-brand: #1661E2;
+    --color-brand-light: #eef4ff;
+    --color-brand-dark: #104ab5;
+
+    --color-success: #1661E2;
+    --color-success-bg: #eef4ff;
+
+    /* SPACING (4pt grid) */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-10: 40px;
+    --space-12: 48px;
+    --space-16: 64px;
+
+    /* TYPOGRAPHY */
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+    /* EFFECTS */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    --shadow-float: 0 20px 25px -5px rgba(0, 0, 0, 0.06), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-lg: 24px;
+    --radius-full: 9999px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    font-family: var(--font-sans);
+    color: var(--color-text-primary);
+    background: #0a0a0c;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* Stage — keeps slides at 16:9 and centers them */
+  .stage {
+    position: fixed; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .deck {
+    position: relative;
+    width: min(96vw, calc(96vh * 16 / 9));
+    aspect-ratio: 16 / 9;
+    background: var(--color-surface-primary);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,.5);
+  }
+
+  /* Slide */
+  .slide {
+    position: absolute; inset: 0;
+    padding: 56px 72px 64px;
+    display: none;
+    flex-direction: column;
+    background: var(--color-surface-primary);
+    color: var(--color-text-primary);
+  }
+  .slide.active { display: flex; }
+
+  /* Logo lockup (SVG embedded below) */
+  .brand-logo {
+    height: 26px;
+    width: auto;
+    display: block;
+  }
+  .brand-logo path { fill: var(--color-text-primary); }
+
+  /* Header — appears on content slides */
+  .slide-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: var(--space-8);
+  }
+  .slide-section-tag {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    color: var(--color-text-tertiary);
+  }
+  .slide-section-tag strong { color: var(--color-text-primary); margin-right: 6px; }
+
+  /* Pill */
+  .pill {
+    display: inline-flex; align-items: center; gap: var(--space-2);
+    padding: 6px 12px;
+    border-radius: var(--radius-full);
+    background: var(--color-surface-tertiary);
+    color: var(--color-text-secondary);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .pill.primary {
+    background: var(--color-text-primary);
+    color: var(--color-surface-primary);
+  }
+
+  /* Typography */
+  h1 {
+    font-size: clamp(40px, 4.5vw, 60px);
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+    font-weight: 800;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-5);
+  }
+  h1 .highlight { color: var(--color-brand); }
+
+  h2 {
+    font-size: clamp(28px, 2.6vw, 38px);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+    margin-bottom: var(--space-4);
+    color: var(--color-text-primary);
+  }
+  h2 .highlight { color: var(--color-brand); }
+
+  h3 {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-4);
+  }
+
+  h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-2);
+  }
+
+  p.subtitle {
+    font-size: 17px;
+    color: var(--color-text-secondary);
+    line-height: 1.55;
+    max-width: 880px;
+    font-weight: 400;
+    margin-bottom: var(--space-6);
+  }
+  p.subtitle strong { color: var(--color-text-primary); font-weight: 600; }
+
+  .body { flex: 1; min-height: 0; }
+
+  /* ======== COVER (slide 1) ======== */
+  .cover-grid {
+    display: grid;
+    grid-template-columns: 1.35fr 1fr;
+    gap: var(--space-12);
+    height: 100%;
+    align-items: stretch;
+  }
+  .cover-left {
+    display: flex; flex-direction: column;
+    justify-content: space-between;
+  }
+  .cover-pill { margin-bottom: var(--space-6); }
+  .cover-h1 {
+    font-size: clamp(44px, 5.2vw, 68px);
+    line-height: 1.02;
+    letter-spacing: -0.045em;
+    font-weight: 800;
+  }
+  .cover-sub {
+    margin-top: var(--space-5);
+    font-size: 19px;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+    max-width: 520px;
+  }
+  .cover-meta {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4) var(--space-6);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+  }
+  .cover-meta-item div:first-child {
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--color-text-tertiary);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    margin-bottom: 4px;
+  }
+  .cover-meta-item div:last-child {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+  }
+
+  .cover-right {
+    background: var(--color-surface-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-8);
+    display: flex; flex-direction: column;
+  }
+  .cover-right h3 { margin-bottom: var(--space-2); }
+  .cover-right .agenda-intro {
+    font-size: 13.5px;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-6);
+    line-height: 1.5;
+  }
+  .agenda-list {
+    list-style: none;
+    display: flex; flex-direction: column;
+    gap: 0;
+    flex: 1;
+  }
+  .agenda-list li {
+    display: grid;
+    grid-template-columns: 36px 1fr;
+    gap: var(--space-3);
+    align-items: baseline;
+    padding: var(--space-3) 0;
+    border-bottom: 1px solid var(--color-border);
+    font-size: 14.5px;
+  }
+  .agenda-list li:last-child { border-bottom: none; }
+  .agenda-list .num {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--color-text-tertiary);
+    font-feature-settings: "tnum";
+    letter-spacing: 0.04em;
+  }
+  .agenda-list .label {
+    color: var(--color-text-primary);
+    font-weight: 500;
+  }
+  .agenda-list .label .meta {
+    display: block;
+    color: var(--color-text-tertiary);
+    font-size: 12.5px;
+    font-weight: 400;
+    margin-top: 2px;
+    line-height: 1.4;
+  }
+
+  /* ======== INSIGHT QUOTE (slide 2) ======== */
+  .insight-quote {
+    background: var(--color-brand-light);
+    border-radius: var(--radius-md);
+    padding: var(--space-6) var(--space-8);
+    margin-bottom: var(--space-6);
+    position: relative;
+  }
+  .insight-quote::before {
+    content: '';
+    position: absolute;
+    left: 0; top: var(--space-6); bottom: var(--space-6);
+    width: 4px;
+    background: var(--color-brand);
+    border-radius: 0 4px 4px 0;
+  }
+  .insight-quote p {
+    font-size: 22px;
+    line-height: 1.4;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+  .insight-quote p em {
+    font-style: normal;
+    color: var(--color-brand);
+    font-weight: 700;
+  }
+  .insight-quote .quote-tag {
+    display: block;
+    margin-top: var(--space-3);
+    font-size: 12px;
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+
+  /* ======== TWO-COLUMN PANELS (slide 2) ======== */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-5);
+  }
+  .panel {
+    background: var(--color-surface-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-5) var(--space-6);
+  }
+  .panel-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--color-text-tertiary);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    margin-bottom: var(--space-4);
+  }
+  .panel.accent { background: var(--color-brand-light); border-color: #d6e4ff; }
+  .panel-note {
+    margin-top: var(--space-4);
+    font-size: 12.5px;
+    color: var(--color-text-tertiary);
+    line-height: 1.5;
+  }
+  .panel-note strong { color: var(--color-text-secondary); }
+
+  /* Tags */
+  .tags {
+    display: flex; flex-wrap: wrap; gap: var(--space-2);
+  }
+  .tag {
+    font-size: 12px;
+    padding: 5px 11px;
+    background: var(--color-surface-tertiary);
+    color: var(--color-text-secondary);
+    border-radius: var(--radius-full);
+    font-weight: 500;
+  }
+  .tag.primary {
+    background: var(--color-brand);
+    color: white;
+    font-weight: 600;
+  }
+  .tag.brand-light {
+    background: var(--color-brand-light);
+    color: var(--color-brand);
+    font-weight: 600;
+  }
+
+  /* ======== TABLES ======== */
+  .table-container {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: white;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  th, td {
+    padding: var(--space-4) var(--space-5);
+    text-align: left;
+    border-bottom: 1px solid var(--color-border);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  th {
+    background: var(--color-surface-secondary);
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--color-text-tertiary);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  tr:last-child td { border-bottom: none; }
+  td.first { font-weight: 600; color: var(--color-text-primary); }
+  td.first .num {
+    color: var(--color-brand);
+    font-weight: 700;
+    margin-right: 6px;
+    font-feature-settings: "tnum";
+  }
+  td .micro-tag {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    font-size: 10.5px;
+    font-weight: 700;
+    background: var(--color-brand);
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    vertical-align: middle;
+  }
+
+  /* ======== STATUS PILLS (slide 5) ======== */
+  .status-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    background: var(--color-brand-light);
+    color: var(--color-brand);
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .status-pill.warn {
+    background: #fef3c7;
+    color: #92400e;
+  }
+  .status-pill::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: currentColor;
+  }
+
+  /* ======== ARCHITECTURE BANNER (slide 5) ======== */
+  .arch-banner {
+    background: var(--color-text-primary);
+    color: white;
+    padding: var(--space-5) var(--space-6);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-5);
+    display: flex; align-items: center; gap: var(--space-5);
+  }
+  .arch-banner-label {
+    font-size: 11px;
+    color: rgba(255,255,255,.5);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .arch-banner-text {
+    font-size: 15px;
+    color: white;
+    line-height: 1.55;
+  }
+  .arch-banner-text em {
+    font-style: normal;
+    color: #93c5fd;
+    font-weight: 700;
+  }
+
+  /* ======== DEMO STEPS (slide 4) ======== */
+  .demo-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+  }
+  .demo-step {
+    display: grid;
+    grid-template-columns: 32px 1fr;
+    gap: var(--space-4);
+    align-items: baseline;
+    padding: var(--space-4) var(--space-5);
+    background: var(--color-surface-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+  }
+  .demo-step-num {
+    width: 28px; height: 28px;
+    border-radius: var(--radius-sm);
+    background: var(--color-text-primary);
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .demo-step-name {
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: 2px;
+    line-height: 1.4;
+  }
+  .demo-step-desc {
+    font-size: 12.5px;
+    color: var(--color-text-secondary);
+    line-height: 1.45;
+  }
+
+  /* ======== TIMELINE (slide 7) ======== */
+  .timeline {
+    margin-top: var(--space-2);
+  }
+  .timeline-item {
+    display: grid;
+    grid-template-columns: 24px 1fr;
+    gap: var(--space-5);
+    padding-bottom: var(--space-6);
+    position: relative;
+  }
+  .timeline-item:last-child { padding-bottom: 0; }
+  .timeline-marker {
+    display: flex; flex-direction: column; align-items: center;
+    padding-top: 6px;
+  }
+  .timeline-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--color-text-primary);
+    flex-shrink: 0;
+  }
+  .timeline-line {
+    width: 1px;
+    background: var(--color-border);
+    flex: 1;
+    margin-top: var(--space-2);
+  }
+  .timeline-item:last-child .timeline-line { display: none; }
+  .timeline-content h5 {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: 4px;
+    letter-spacing: -0.01em;
+  }
+  .timeline-content p {
+    font-size: 13.5px;
+    color: var(--color-text-secondary);
+    line-height: 1.55;
+    max-width: 720px;
+  }
+
+  /* ======== PHASE CALLOUT (slide 6) ======== */
+  .phase-callout {
+    margin-top: var(--space-5);
+    padding: var(--space-4) var(--space-5);
+    background: var(--color-brand-light);
+    border-radius: var(--radius-md);
+    font-size: 13.5px;
+    color: var(--color-text-secondary);
+    line-height: 1.55;
+    border-left: 3px solid var(--color-brand);
+  }
+  .phase-callout strong { color: var(--color-text-primary); }
+
+  /* ======== FOOTER PER SLIDE ======== */
+  .slide-foot {
+    position: absolute;
+    bottom: 24px; left: 72px; right: 72px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 11px;
+    color: var(--color-text-tertiary);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    pointer-events: none;
+  }
+  .slide-foot .num {
+    font-feature-settings: "tnum";
+  }
+
+  /* ======== NAV / DECK CHROME ======== */
+  .progress-bar {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: 2px;
+    background: rgba(255,255,255,.06);
+    z-index: 50;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--color-brand);
+    width: 0;
+    transition: width .35s ease;
+  }
+  .nav-hint {
+    position: fixed;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255,255,255,.4);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    pointer-events: none;
+    z-index: 10;
+    font-family: var(--font-sans);
+  }
+  .nav-hint kbd {
+    background: rgba(255,255,255,.08);
+    color: rgba(255,255,255,.85);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 10.5px;
+    border: 1px solid rgba(255,255,255,.12);
+  }
+
+  /* ======== PRINT ======== */
+  @media print {
+    @page { size: 1280px 720px; margin: 0; }
+    html, body { background: white; height: auto; overflow: visible; }
+    .stage { position: relative; display: block; }
+    .deck {
+      width: 1280px; height: 720px; aspect-ratio: auto;
+      box-shadow: none; border-radius: 0;
+      page-break-after: always;
+      position: relative;
+    }
+    .slide { display: flex !important; position: absolute; inset: 0; }
+    .nav-hint, .progress-bar { display: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<!-- Tesote logo SVG (referenced via <use>) -->
+<svg width="0" height="0" style="position:absolute;">
+  <defs>
+    <symbol id="tesote-logo" viewBox="0 0 2062 461">
+      <path d="M623.852 52.492H903.332V101.962H791.132V424.282H736.052V101.962H623.852V52.492Z"/>
+      <path d="M854.282 289.642C854.282 202.432 903.242 150.922 981.272 150.922C1017.99 150.922 1047.57 161.632 1069.5 183.562C1091.43 205.492 1102.65 235.072 1102.65 272.812C1102.65 280.462 1102.14 290.152 1100.61 301.882H908.342V316.672C908.342 359.002 937.922 387.562 982.292 387.562C1017.48 387.562 1043.49 369.712 1051.65 342.682H1103.67C1092.96 395.212 1045.02 429.382 981.782 429.382C902.222 429.382 854.282 375.322 854.282 289.642ZM908.342 258.022V264.142H1049.61V255.472C1049.61 218.242 1022.07 192.742 980.762 192.742C937.922 192.742 908.342 219.262 908.342 258.022Z"/>
+      <path d="M1128.11 342.172H1180.64C1180.64 371.242 1203.59 389.602 1240.31 389.602C1274.99 389.602 1295.39 374.302 1295.39 349.312C1295.39 330.952 1284.17 319.732 1261.22 315.652L1206.65 305.452C1157.69 296.782 1133.21 272.302 1133.21 233.032C1133.21 181.522 1174.01 150.922 1237.25 150.922C1302.02 150.922 1341.8 184.072 1342.31 233.542H1290.29C1289.27 204.982 1271.42 190.702 1237.25 190.702C1204.61 190.702 1186.25 204.982 1186.25 227.932C1186.25 246.802 1200.02 258.532 1227.05 262.612L1278.05 271.792C1325.99 280.462 1349.96 304.942 1349.96 345.742C1349.96 397.252 1307.12 429.382 1240.31 429.382C1170.95 429.382 1128.11 394.702 1128.11 342.172Z"/>
+      <path d="M1371.6 290.152C1371.6 246.802 1383.33 213.142 1406.79 188.152C1430.25 163.162 1461.87 150.922 1501.65 150.922C1540.41 150.922 1571.52 163.162 1595.49 188.152C1619.46 212.632 1631.7 246.802 1631.7 290.152C1631.7 332.482 1619.97 366.652 1597.02 391.642C1574.07 416.632 1541.94 429.382 1501.65 429.382C1461.36 429.382 1429.74 417.142 1406.28 392.152C1383.33 367.162 1371.6 332.992 1371.6 290.152ZM1425.15 270.262V312.082C1425.15 359.002 1457.28 385.522 1501.65 385.522C1546.02 385.522 1577.64 358.492 1577.64 312.082V270.262C1577.64 224.872 1546.02 195.292 1501.65 195.292C1456.26 195.292 1425.15 224.872 1425.15 270.262Z"/>
+      <path d="M1794.19 199.882H1738.6V381.442H1794.19V424.282H1730.95C1701.37 424.282 1686.58 410.002 1686.58 380.932V199.882H1638.13V156.022H1686.58V68.812H1738.6V156.022H1794.19V199.882Z"/>
+      <path d="M1811.72 289.642C1811.72 202.432 1860.68 150.922 1938.71 150.922C1975.43 150.922 2005.01 161.632 2026.94 183.562C2048.87 205.492 2060.09 235.072 2060.09 272.812C2060.09 280.462 2059.58 290.152 2058.05 301.882H1865.78V316.672C1865.78 359.002 1895.36 387.562 1939.73 387.562C1974.92 387.562 2000.93 369.712 2009.09 342.682H2061.11C2050.4 395.212 2002.46 429.382 1939.22 429.382C1859.66 429.382 1811.72 375.322 1811.72 289.642ZM1865.78 258.022V264.142H2007.05V255.472C2007.05 218.242 1979.51 192.742 1938.2 192.742C1895.36 192.742 1865.78 219.262 1865.78 258.022Z"/>
+      <path d="M347.392 173.289C345.529 174.775 347.359 177.688 349.506 176.654L458.029 124.396C459.357 123.757 460.896 124.724 460.896 126.198V166.349C460.896 167.117 460.457 167.817 459.765 168.15L366.952 212.906C364.807 213.94 365.943 217.187 368.266 216.657L456.142 196.609L458.442 196.072C459.697 195.779 460.896 196.732 460.896 198.02V235.113C460.896 236.046 460.252 236.855 459.342 237.063L377.208 255.845C374.886 256.376 375.271 259.795 377.654 259.795H458.896C460.001 259.795 460.896 260.69 460.896 261.795V298C460.896 299.104 460.001 300 458.897 300L300.449 300.052V162.945C300.449 161.842 299.555 160.947 298.451 160.945L260.191 160.895L161.397 160.948V2.5C161.397 1.39543 162.293 0.5 163.397 0.5H199.602C200.706 0.5 201.602 1.39543 201.602 2.5V83.4044C201.602 85.7881 205.023 86.1726 205.552 83.8484L224.176 2.05596C224.383 1.14576 225.193 0.5 226.126 0.5H263.292C264.573 0.5 265.524 1.68824 265.243 2.9385L264.735 5.20196L244.702 93.0995C244.172 95.4235 247.422 96.5587 248.454 94.4103L282.697 23.1645L293.088 1.63086C293.421 0.939436 294.121 0.5 294.889 0.5H335.093C336.567 0.5 337.535 2.03957 336.895 3.36741L284.682 111.845C283.649 113.992 286.562 115.822 288.048 113.959L377.932 1.25298C378.312 0.777144 378.887 0.5 379.496 0.5H425.786C427.462 0.5 428.394 2.43628 427.35 3.74641L319.547 139.028C318.062 140.892 320.496 143.324 322.359 141.838L457.649 33.8402C458.959 32.7946 460.896 33.7273 460.896 35.4033V81.7949C460.896 82.4035 460.619 82.979 460.144 83.3585L347.392 173.289Z"/>
+      <path d="M300.449 300.052V458.5C300.449 459.605 299.553 460.5 298.449 460.5H262.244C261.14 460.5 260.244 459.605 260.244 458.5V377.512C260.244 375.129 256.824 374.744 256.294 377.067L237.617 458.945C237.41 459.855 236.601 460.5 235.667 460.5H198.469C197.181 460.5 196.229 459.3 196.521 458.046L197.058 455.745L217.093 367.884C217.623 365.56 214.374 364.425 213.341 366.572L168.705 459.367C168.371 460.06 167.671 460.5 166.902 460.5H126.699C125.226 460.5 124.258 458.961 124.897 457.633L177.103 349.125C178.136 346.977 175.222 345.148 173.737 347.011L83.9134 459.746C83.534 460.223 82.9582 460.5 82.3492 460.5H35.9551C34.2796 460.5 33.3468 458.563 34.3913 457.253L142.291 321.922C143.777 320.058 141.342 317.625 139.48 319.112L4.14396 427.108C2.83404 428.153 0.896484 427.221 0.896484 425.545V379.153C0.896484 378.544 1.17391 377.968 1.65015 377.589L66.9353 325.57L114.44 287.64C116.301 286.153 114.47 283.241 112.324 284.275L3.76421 336.551C2.43635 337.19 0.896484 336.223 0.896484 334.749V294.599C0.896484 293.831 1.33612 293.131 2.02779 292.797L94.8327 248.045C96.9787 247.011 95.8416 243.764 93.5189 244.294L5.70411 264.338L3.34621 264.882C2.09297 265.172 0.896484 264.22 0.896484 262.934V225.835C0.896484 224.901 1.54182 224.092 2.45161 223.885L84.5848 205.146C86.9076 204.616 86.5235 201.197 84.1409 201.196L2.89544 201.153C1.79128 201.153 0.896484 200.258 0.896484 199.153V162.948C0.896484 161.843 1.79191 160.948 2.89648 160.948L161.397 160.948V298.002C161.397 299.105 162.291 300 163.395 300.002L201.602 300.052L300.449 300.052Z"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="stage">
+  <div class="deck" id="deck">
+
+    <!-- ========== SLIDE 1 — COVER ========== -->
+    <section class="slide active" data-slide="1">
+      <svg class="brand-logo" style="margin-bottom: 32px;"><use href="#tesote-logo"/></svg>
+
+      <div class="cover-grid">
+        <div class="cover-left">
+          <div>
+            <span class="pill cover-pill">Propuesta · Portal Digital B2B</span>
+            <h1 class="cover-h1">Portal Digital B2B<br/>para <span class="highlight">CAPCA</span></h1>
+            <p class="cover-sub">Visión, alcance v1 y roadmap. Conversación con Claudia Cisneros para alinear próximas fases.</p>
+          </div>
+
+          <div class="cover-meta">
+            <div class="cover-meta-item"><div>Cliente</div><div>CAPCA · OCAAT</div></div>
+            <div class="cover-meta-item"><div>Para</div><div>Claudia Cisneros</div></div>
+            <div class="cover-meta-item"><div>Equipo Tesote</div><div>Luis Pulgar · Nicolás Rossini</div></div>
+            <div class="cover-meta-item"><div>Fecha</div><div>30 de abril de 2026</div></div>
+          </div>
+        </div>
+
+        <div class="cover-right">
+          <h3>Agenda</h3>
+          <p class="agenda-intro">La parte central de la conversación será una demo en vivo del portal funcionando.</p>
+          <ul class="agenda-list">
+            <li><span class="num">01</span><span class="label">Lo que sabemos<span class="meta">Su visión y la nuestra</span></span></li>
+            <li><span class="num">02</span><span class="label">Alcance v1<span class="meta">Qué entregamos</span></span></li>
+            <li><span class="num">03</span><span class="label">Demo en vivo<span class="meta">El portal funcionando</span></span></li>
+            <li><span class="num">04</span><span class="label">Rieles de pago<span class="meta">Cobertura bancaria</span></span></li>
+            <li><span class="num">05</span><span class="label">Alcance v2<span class="meta">Tesote Procurement</span></span></li>
+            <li><span class="num">06</span><span class="label">Próximos pasos</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== SLIDE 2 — LO QUE SABEMOS ========== -->
+    <section class="slide" data-slide="2">
+      <div class="slide-head">
+        <svg class="brand-logo"><use href="#tesote-logo"/></svg>
+        <div class="slide-section-tag"><strong>01</strong>Lo que sabemos</div>
+      </div>
+
+      <h2>Su visión y la nuestra coinciden <span class="highlight">~80%</span></h2>
+      <p class="subtitle">El documento que Rosa nos compartió valida la dirección que Tesote viene desarrollando los últimos meses.</p>
+
+      <div class="body">
+        <div class="insight-quote">
+          <p>Lo que ustedes pusieron como <em>Fase 3</em> — Pagos y Conciliación — es nuestra <em>Fase 1</em>. Empezamos donde ustedes querían terminar.</p>
+          <span class="quote-tag">El insight que nos cambió la conversación</span>
+        </div>
+
+        <div class="two-col">
+          <div class="panel">
+            <div class="panel-label">Lo que tomamos al v1</div>
+            <div class="tags">
+              <span class="tag brand-light">Smart Aging</span>
+              <span class="tag brand-light">Pago multi-factura</span>
+              <span class="tag brand-light">Conciliación SAP FI</span>
+              <span class="tag brand-light">Calculadora BCV</span>
+              <span class="tag brand-light">Trazabilidad de terceros</span>
+              <span class="tag brand-light">Estado de Cuenta</span>
+              <span class="tag brand-light">Plazos de pago</span>
+              <span class="tag brand-light">Retenciones SENIAT</span>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-label">Lo que dejamos para v2</div>
+            <div class="tags">
+              <span class="tag">Solicitudes de pedido</span>
+              <span class="tag">Precios dinámicos</span>
+              <span class="tag">Logística (cita de retiro)</span>
+              <span class="tag">Pagos parciales</span>
+            </div>
+            <div class="panel-note">Capturado como módulo de <strong>Tesote Procurement</strong> — fase posterior.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-foot"><div>Tesote × CAPCA · 30 abr 2026</div><div class="num">02 / 07</div></div>
+    </section>
+
+    <!-- ========== SLIDE 3 — ALCANCE V1 ========== -->
+    <section class="slide" data-slide="3">
+      <div class="slide-head">
+        <svg class="brand-logo"><use href="#tesote-logo"/></svg>
+        <div class="slide-section-tag"><strong>02</strong>Alcance v1</div>
+      </div>
+
+      <h2>Cinco capacidades en producción para v1</h2>
+      <p class="subtitle">Por debajo de todo: <strong>conciliación automática contra SAP FI sin intervención manual.</strong></p>
+
+      <div class="body">
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 38%;">Capacidad</th>
+                <th>Resultado para el cliente</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="first"><span class="num">01</span>Pago multi-factura consolidado</td>
+                <td>Selecciona N facturas y paga en un solo débito con un único OTP del banco.</td>
+              </tr>
+              <tr>
+                <td class="first"><span class="num">02</span>Smart Aging + Calculadora BCV</td>
+                <td>Radiografía financiera inmediata · 0–30 / 31–60 / 60+ días · tasa BCV en vivo en cada pago.</td>
+              </tr>
+              <tr>
+                <td class="first"><span class="num">03</span>Saldo Disponible para Compra <span class="micro-tag">CAPCA-only</span></td>
+                <td>Límite SAP − vencidas − por vencer = saldo disponible · alerta visual cuando esté bajo.</td>
+              </tr>
+              <tr>
+                <td class="first"><span class="num">04</span>Contraparte 360 + Estado de Cuenta</td>
+                <td>Histórico completo · descarga PDF / Excel · plazos otorgados vs. promedios reales.</td>
+              </tr>
+              <tr>
+                <td class="first"><span class="num">05</span>Plazos de pago + Retenciones SENIAT</td>
+                <td>Plazo visible por factura · comprobante con línea de retención + XML SENIAT completo.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="slide-foot"><div>Tesote × CAPCA · 30 abr 2026</div><div class="num">03 / 07</div></div>
+    </section>
+
+    <!-- ========== SLIDE 4 — DEMO ========== -->
+    <section class="slide" data-slide="4">
+      <div class="slide-head">
+        <svg class="brand-logo"><use href="#tesote-logo"/></svg>
+        <div class="slide-section-tag"><strong>03</strong>Demo en vivo</div>
+      </div>
+
+      <h2>El portal funcionando</h2>
+      <p class="subtitle">Recorrido de extremo a extremo, ≈10 minutos. Cierre breve en el workspace donde Tesorería y Finanzas monitorean conciliación y excepciones.</p>
+
+      <div class="body">
+        <div class="demo-grid">
+          <div class="demo-step">
+            <div class="demo-step-num">1</div>
+            <div>
+              <div class="demo-step-name">Email — factura llega de CAPCA al cliente</div>
+              <div class="demo-step-desc">Notificación automática con link directo al portal.</div>
+            </div>
+          </div>
+          <div class="demo-step">
+            <div class="demo-step-num">2</div>
+            <div>
+              <div class="demo-step-name">Login — modelo híbrido</div>
+              <div class="demo-step-desc">Email + OTP, código SAP visible en cada pantalla.</div>
+            </div>
+          </div>
+          <div class="demo-step">
+            <div class="demo-step-num">3</div>
+            <div>
+              <div class="demo-step-name">Inicio — Smart Aging + BCV + Saldo Disponible</div>
+              <div class="demo-step-desc">Radiografía financiera completa al primer vistazo.</div>
+            </div>
+          </div>
+          <div class="demo-step">
+            <div class="demo-step-num">4</div>
+            <div>
+              <div class="demo-step-name">Pago multi-factura → débito consolidado → OTP</div>
+              <div class="demo-step-desc">Selección de 3 facturas, un solo débito, un solo OTP.</div>
+            </div>
+          </div>
+          <div class="demo-step">
+            <div class="demo-step-num">5</div>
+            <div>
+              <div class="demo-step-name">Comprobante con retención + XML SENIAT</div>
+              <div class="demo-step-desc">Desglose por factura · línea de retención · descarga directa.</div>
+            </div>
+          </div>
+          <div class="demo-step">
+            <div class="demo-step-num">6</div>
+            <div>
+              <div class="demo-step-name">Contrapartes → CAPCA 360 → Estado de Cuenta</div>
+              <div class="demo-step-desc">Histórico completo, descarga PDF/Excel, plazos otorgados vs. promedios.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-foot"><div>Tesote × CAPCA · 30 abr 2026</div><div class="num">04 / 07</div></div>
+    </section>
+
+    <!-- ========== SLIDE 5 — RIELES DE PAGO ========== -->
+    <section class="slide" data-slide="5">
+      <div class="slide-head">
+        <svg class="brand-logo"><use href="#tesote-logo"/></svg>
+        <div class="slide-section-tag"><strong>04</strong>Rieles de pago</div>
+      </div>
+
+      <h2>Conversaciones activas con <span class="highlight">BNC, Banesco y Exterior</span></h2>
+      <p class="subtitle">Estamos confiados en habilitar la cobertura necesaria para el piloto en plazos cortos.</p>
+
+      <div class="body">
+        <div class="arch-banner">
+          <div class="arch-banner-label">Arquitectura</div>
+          <div class="arch-banner-text"><em>Débito Inmediato</em> — el cliente autoriza un débito puntual desde su cuenta hacia CAPCA, sin que CAPCA toque las credenciales del cliente.</div>
+        </div>
+
+        <div class="table-container" style="margin-bottom: var(--space-5);">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 22%;">Tipo de cuenta</th>
+                <th style="width: 38%;">Cómo funciona</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="first">Persona natural</td>
+                <td>OTP del banco emisor en cada pago</td>
+                <td><span class="status-pill">Habilitado en todos los bancos relevantes</span></td>
+              </tr>
+              <tr>
+                <td class="first">Persona jurídica</td>
+                <td>Domiciliación o OTP empresarial</td>
+                <td><span class="status-pill warn">Validando habilitación B2B banco por banco</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="two-col">
+          <div class="panel">
+            <div class="panel-label">Hoy en producción</div>
+            <div class="tags">
+              <span class="tag primary">BNC · persona y empresa</span>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-label">En conversación activa</div>
+            <div class="tags">
+              <span class="tag">Banesco</span>
+              <span class="tag">BBVA Provincial</span>
+              <span class="tag">Mercantil</span>
+              <span class="tag">Exterior</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-foot"><div>Tesote × CAPCA · 30 abr 2026</div><div class="num">05 / 07</div></div>
+    </section>
+
+    <!-- ========== SLIDE 6 — V2 PROCUREMENT ========== -->
+    <section class="slide" data-slide="6">
+      <div class="slide-head">
+        <svg class="brand-logo"><use href="#tesote-logo"/></svg>
+        <div class="slide-section-tag"><strong>05</strong>Alcance v2</div>
+      </div>
+
+      <h2>Tesote <span class="highlight">Procurement</span> — el ciclo comercial completo</h2>
+      <p class="subtitle">Su documento incluye un módulo robusto que va más allá de pagos. Lo capturamos como una fase posterior, separada del comercial actual.</p>
+
+      <div class="body">
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 36%;">Capacidad v2</th>
+                <th>Qué resuelve</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="first">Solicitudes de pedido (SAP SD)</td>
+                <td>Cliente solicita azúcar / melaza · Ventas valida y ejecuta en SAP.</td>
+              </tr>
+              <tr>
+                <td class="first">Precios dinámicos</td>
+                <td>Portal consulta SAP en tiempo real · precio personalizado por perfil de cliente.</td>
+              </tr>
+              <tr>
+                <td class="first">Bloqueo de pedidos por crédito</td>
+                <td>Si vencidas &gt; 0 → no se permite nueva solicitud. Extiende el Saldo Disponible de v1.</td>
+              </tr>
+              <tr>
+                <td class="first">Logística "Cita de Retiro"</td>
+                <td>Timeline tipo DHL · QR + chofer + placa · estatus visible al cliente.</td>
+              </tr>
+              <tr>
+                <td class="first">Pagos parciales / abonos</td>
+                <td>Estado intermedio de factura + clearing parcial en SAP FI.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="phase-callout">
+          <strong>Engagement comercial separado</strong>, posterior al milestone de Fase 1. Hoy queremos su lectura sobre prioridades dentro de v2 — qué pesa más para ustedes.
+        </div>
+      </div>
+
+      <div class="slide-foot"><div>Tesote × CAPCA · 30 abr 2026</div><div class="num">06 / 07</div></div>
+    </section>
+
+    <!-- ========== SLIDE 7 — PRÓXIMOS PASOS ========== -->
+    <section class="slide" data-slide="7">
+      <div class="slide-head">
+        <svg class="brand-logo"><use href="#tesote-logo"/></svg>
+        <div class="slide-section-tag"><strong>06</strong>Próximos pasos</div>
+      </div>
+
+      <h2>Cómo avanzamos juntos</h2>
+      <p class="subtitle">Tres conversaciones que necesitamos cerrar para entrar en ejecución.</p>
+
+      <div class="body">
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-marker">
+              <div class="timeline-dot"></div>
+              <div class="timeline-line"></div>
+            </div>
+            <div class="timeline-content">
+              <h5>Alineación de visión y alcance para las distintas fases</h5>
+              <p>v1, v2 y la transición entre ambas. Confirmar que las prioridades quedan capturadas correctamente y que no hay piezas faltantes desde la perspectiva de CAPCA.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker">
+              <div class="timeline-dot"></div>
+              <div class="timeline-line"></div>
+            </div>
+            <div class="timeline-content">
+              <h5>Definir fechas y estimados</h5>
+              <p>Milestones de v1 — fecha de arranque del piloto, criterios de salida — y propuesta de cronograma para v2.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker">
+              <div class="timeline-dot"></div>
+            </div>
+            <div class="timeline-content">
+              <h5>Propuesta de "slow roll-out"</h5>
+              <p>Piloto controlado con un grupo reducido de clientes, escalando a medida que validamos cobertura bancaria y comportamiento del flujo en producción.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-foot"><div>Tesote × CAPCA · 30 abr 2026</div><div class="num">07 / 07</div></div>
+    </section>
+
+  </div>
+</div>
+
+<div class="nav-hint">
+  <kbd>←</kbd> <kbd>→</kbd> navegar &nbsp;·&nbsp; <kbd>F</kbd> pantalla completa &nbsp;·&nbsp; <kbd>Cmd+P</kbd> imprimir / PDF
+</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total = slides.length;
+  let current = 0;
+  const progressFill = document.getElementById('progressFill');
+
+  function show(idx) {
+    if (idx < 0) idx = 0;
+    if (idx > total - 1) idx = total - 1;
+    slides[current].classList.remove('active');
+    slides[idx].classList.add('active');
+    current = idx;
+    progressFill.style.width = ((current + 1) / total * 100) + '%';
+    history.replaceState(null, '', '#' + (current + 1));
+  }
+
+  function next() { show(current + 1); }
+  function prev() { show(current - 1); }
+
+  document.addEventListener('keydown', e => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    switch (e.key) {
+      case 'ArrowRight':
+      case ' ':
+      case 'PageDown':
+      case 'n':
+      case 'j':
+        e.preventDefault(); next(); break;
+      case 'ArrowLeft':
+      case 'PageUp':
+      case 'k':
+        e.preventDefault(); prev(); break;
+      case 'Home': e.preventDefault(); show(0); break;
+      case 'End': e.preventDefault(); show(total - 1); break;
+      case 'f':
+      case 'F':
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+        else document.exitFullscreen();
+        break;
+    }
+  });
+
+  document.getElementById('deck').addEventListener('click', e => {
+    if (e.target.closest('a, button')) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    if (x < rect.width / 2) prev(); else next();
+  });
+
+  const startHash = parseInt(location.hash.replace('#', ''), 10);
+  if (!isNaN(startHash) && startHash >= 1 && startHash <= total) show(startHash - 1);
+  else { progressFill.style.width = (1 / total * 100) + '%'; }
+</script>
+
+</body>
+</html>

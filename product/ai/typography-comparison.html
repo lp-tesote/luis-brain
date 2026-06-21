@@ -1,0 +1,928 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tesote AI — Typography Comparison</title>
+
+<!-- Load all candidate faces. Each variant scopes its own family. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Geist:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  /* ─────────────────────────────────────────────────────────────────────
+     Shared tokens — Lunour palette, locked 2026-05-03.
+     Same across all three variants. ONLY typography changes between them.
+     ───────────────────────────────────────────────────────────────────── */
+  :root {
+    --white: #ffffff;
+    --gray-50: #f7f5f0;
+    --gray-100: #f0ebe0;
+    --gray-200: #e8e3da;
+    --gray-400: #b8b0a4;
+    --gray-600: #857d73;
+    --gray-1000: #12110f;
+    --brand: #1661e2;
+    --brand-soft: #eef8ff;
+
+    --bg: var(--white);
+    --surface: var(--gray-50);
+    --surface-raised: var(--white);
+    --border: var(--gray-200);
+    --text-primary: var(--gray-1000);
+    --text-secondary: var(--gray-600);
+    --text-muted: var(--gray-400);
+
+    --pill-pending: #f7edd0;
+    --pill-paid: #d6e8d5;
+    --pill-new: #e4ecf7;
+
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--gray-100);
+    color: var(--text-primary);
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────
+     Page chrome — intro + sticky variant header
+     ───────────────────────────────────────────────────────────────────── */
+  .page-header {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 48px 32px 24px;
+  }
+  .page-header h1 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 44px;
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    margin: 0 0 12px;
+    color: var(--text-primary);
+  }
+  .page-header .lede {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin: 0 0 8px;
+    max-width: 640px;
+  }
+  .page-header .meta {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 20px;
+  }
+  .squint {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 16px 32px 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--text-secondary);
+    border-top: 1px dashed var(--border);
+    padding-top: 24px;
+  }
+  .squint strong { color: var(--text-primary); font-weight: 500; }
+
+  /* ─────────────────────────────────────────────────────────────────────
+     Variant container — each section labels itself and scopes its fonts
+     ───────────────────────────────────────────────────────────────────── */
+  .variant {
+    max-width: 980px;
+    margin: 56px auto 0;
+    padding: 0 32px 56px;
+  }
+  .variant-label {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 14px 20px;
+    background: var(--gray-1000);
+    color: var(--white);
+    border-radius: 8px 8px 0 0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .variant-label .num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--gray-400);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .variant-label .title {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--white);
+  }
+  .variant-label .tag {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.1);
+    color: var(--gray-200);
+  }
+  .variant-label .tag.current { background: #6b1f1f; color: #fbd9d9; }
+  .variant-label .tag.proposed { background: #1a3d2a; color: #c8e7d4; }
+  .variant-label .tag.alt { background: #3d3220; color: #e7d8b8; }
+
+  /* The chat-pane mock — bordered card */
+  .pane-mock {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+  }
+
+  /* Three-pane mini-layout inside each variant */
+  .pane-grid {
+    display: grid;
+    grid-template-columns: 200px 1fr 240px;
+    min-height: 600px;
+  }
+
+  /* Sidenav column */
+  .sidenav {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  .brand-mark {
+    width: 22px;
+    height: 22px;
+    background: var(--text-primary);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 13px;
+  }
+  .brand-name { /* per-variant */ }
+  .brand-pill {
+    margin-left: auto;
+    padding: 2px 6px;
+    background: var(--pill-new);
+    color: var(--brand);
+    border-radius: 999px;
+    font-weight: 500;
+  }
+
+  .new-conv {
+    width: 100%;
+    text-align: left;
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: var(--text-primary);
+    cursor: pointer;
+    margin-bottom: 12px;
+  }
+  .section-eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    margin: 16px 0 6px;
+  }
+  .conv-row {
+    padding: 8px 10px;
+    border-radius: 6px;
+    color: var(--text-secondary);
+  }
+  .conv-row.active {
+    background: var(--white);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+  }
+  .conv-row .ts { color: var(--text-muted); display: block; margin-top: 2px; }
+
+  /* Chat column */
+  .chat {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+  }
+  .chat-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .chat-title { margin: 0; /* per-variant size/weight/family */ }
+  .chat-sub {
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  /* The empty-state hero — the serif moment */
+  .hero {
+    padding: 48px 24px 24px;
+    text-align: left;
+    max-width: 560px;
+  }
+  .hero h2 { margin: 0 0 12px; /* per-variant */ }
+  .hero p {
+    color: var(--text-secondary);
+    margin: 0 0 24px;
+    max-width: 460px;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .chip {
+    padding: 8px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--text-primary);
+    cursor: pointer;
+  }
+  .chip:hover { border-color: var(--gray-400); }
+
+  /* Transcript area */
+  .transcript {
+    padding: 8px 24px 24px;
+    border-top: 1px dashed var(--border);
+    margin-top: 24px;
+  }
+  .msg { margin: 16px 0; }
+  .msg-role {
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 4px;
+  }
+  .msg-body { color: var(--text-primary); }
+  .msg-body p { margin: 0 0 8px; }
+  .file-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 8px;
+    background: var(--brand-soft);
+    color: var(--brand);
+    border-radius: 6px;
+    font-family: var(--font-mono);
+  }
+
+  .tool-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 8px 0;
+  }
+  .tool-pill .tool-label { color: var(--text-primary); }
+  .tool-pill .tool-name { font-family: var(--font-mono); color: var(--text-secondary); }
+  .tool-pill .status {
+    margin-left: auto;
+    padding: 1px 8px;
+    background: var(--pill-paid);
+    color: #2a5f3f;
+    border-radius: 999px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 500;
+  }
+
+  /* Workspace pane column */
+  .workspace {
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    padding: 20px 16px;
+  }
+  .ws-section {
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    margin: 4px 0 8px;
+  }
+  .file-row {
+    padding: 6px 10px;
+    border-radius: 6px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-family: var(--font-mono);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .file-row .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gray-400);
+    flex-shrink: 0;
+  }
+  .file-row.active {
+    background: var(--white);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+  }
+  .file-row.active .dot { background: var(--brand); }
+  .ws-folder { margin-bottom: 20px; }
+
+  /* The spec card under each variant */
+  .spec {
+    padding: 20px 24px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px 24px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.55;
+  }
+  .spec dt {
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 4px;
+  }
+  .spec dd {
+    margin: 0;
+    color: var(--text-primary);
+  }
+  .spec dd .accent { color: var(--brand); }
+
+  /* ─────────────────────────────────────────────────────────────────────
+     VARIANT 1 — Current (Inter Tight, 14/1.5, weights to 700)
+     ───────────────────────────────────────────────────────────────────── */
+  .v-current {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .v-current .brand-name { font-size: 14px; font-weight: 700; letter-spacing: -0.01em; }
+  .v-current .brand-pill { font-size: 10px; font-weight: 600; }
+  .v-current .new-conv { font-size: 13px; font-weight: 500; }
+  .v-current .section-eyebrow { font-size: 10px; font-weight: 600; }
+  .v-current .conv-row { font-size: 13px; font-weight: 500; }
+  .v-current .conv-row .ts { font-size: 11px; font-weight: 400; }
+
+  .v-current .chat-title { font-size: 22px; font-weight: 700; letter-spacing: -0.01em; }
+  .v-current .chat-sub { font-size: 12px; font-weight: 500; }
+
+  .v-current .hero h2 { font-size: 22px; font-weight: 600; }
+  .v-current .hero p { font-size: 14px; }
+  .v-current .chip { font-size: 13px; font-weight: 500; }
+
+  .v-current .msg-role { font-size: 10px; font-weight: 600; }
+  .v-current .msg-body { font-size: 14px; }
+  .v-current .file-pill { font-size: 12px; font-weight: 500; }
+  .v-current .tool-pill .tool-label { font-size: 13px; font-weight: 600; }
+  .v-current .tool-pill .tool-name { font-size: 11px; }
+
+  .v-current .ws-section { font-size: 10px; font-weight: 600; }
+  .v-current .file-row { font-size: 12px; font-weight: 500; }
+
+  /* ─────────────────────────────────────────────────────────────────────
+     VARIANT 2 — Proposed (Inter + Instrument Serif, 15/1.6, weights ≤500)
+     ───────────────────────────────────────────────────────────────────── */
+  .v-proposed {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .v-proposed .brand-name { font-size: 15px; font-weight: 600; letter-spacing: -0.005em; }
+  .v-proposed .brand-pill { font-size: 11px; font-weight: 500; }
+  .v-proposed .new-conv { font-size: 14px; font-weight: 400; }
+  .v-proposed .section-eyebrow { font-size: 11px; font-weight: 500; }
+  .v-proposed .conv-row { font-size: 14px; font-weight: 400; }
+  .v-proposed .conv-row .ts { font-size: 12px; font-weight: 400; }
+
+  /* Pane title — DROPPED to 500 weight, slightly larger size to compensate */
+  .v-proposed .chat-title {
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+  }
+  .v-proposed .chat-sub { font-size: 13px; font-weight: 400; }
+
+  /* THE SERIF MOMENT — empty-state hero */
+  .v-proposed .hero h2 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 36px;
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    color: var(--text-primary);
+  }
+  .v-proposed .hero p { font-size: 15px; line-height: 1.6; }
+  .v-proposed .chip { font-size: 14px; font-weight: 400; }
+
+  .v-proposed .msg-role { font-size: 11px; font-weight: 500; }
+  .v-proposed .msg-body { font-size: 15px; line-height: 1.6; }
+  .v-proposed .file-pill { font-size: 13px; font-weight: 400; }
+  .v-proposed .tool-pill .tool-label { font-size: 14px; font-weight: 500; }
+  .v-proposed .tool-pill .tool-name { font-size: 12px; }
+
+  .v-proposed .ws-section { font-size: 11px; font-weight: 500; }
+  .v-proposed .file-row { font-size: 13px; font-weight: 400; }
+
+  /* ─────────────────────────────────────────────────────────────────────
+     VARIANT 3 — Alternative (Geist + Instrument Serif, 15/1.6, weights ≤500)
+     Same scale as Proposed; only the sans face differs.
+     ───────────────────────────────────────────────────────────────────── */
+  .v-alt {
+    font-family: 'Geist', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .v-alt .brand-name { font-size: 15px; font-weight: 600; letter-spacing: -0.005em; }
+  .v-alt .brand-pill { font-size: 11px; font-weight: 500; }
+  .v-alt .new-conv { font-size: 14px; font-weight: 400; }
+  .v-alt .section-eyebrow { font-size: 11px; font-weight: 500; }
+  .v-alt .conv-row { font-size: 14px; font-weight: 400; }
+  .v-alt .conv-row .ts { font-size: 12px; font-weight: 400; }
+
+  .v-alt .chat-title {
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+  }
+  .v-alt .chat-sub { font-size: 13px; font-weight: 400; }
+
+  .v-alt .hero h2 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 36px;
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    color: var(--text-primary);
+  }
+  .v-alt .hero p { font-size: 15px; line-height: 1.6; }
+  .v-alt .chip { font-size: 14px; font-weight: 400; }
+
+  .v-alt .msg-role { font-size: 11px; font-weight: 500; }
+  .v-alt .msg-body { font-size: 15px; line-height: 1.6; }
+  .v-alt .file-pill { font-size: 13px; font-weight: 400; }
+  .v-alt .tool-pill .tool-label { font-size: 14px; font-weight: 500; }
+  .v-alt .tool-pill .tool-name { font-size: 12px; }
+
+  .v-alt .ws-section { font-size: 11px; font-weight: 500; }
+  .v-alt .file-row { font-size: 13px; font-weight: 400; }
+
+  /* Page footer — closing note */
+  .closing {
+    max-width: 980px;
+    margin: 0 auto 80px;
+    padding: 32px;
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .closing h3 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 28px;
+    font-weight: 400;
+    margin: 0 0 12px;
+    letter-spacing: -0.01em;
+  }
+  .closing p {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin: 0 0 12px;
+    max-width: 680px;
+  }
+  .closing ul {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text-primary);
+    padding-left: 20px;
+    margin: 8px 0 0;
+  }
+  .closing ul li { margin-bottom: 4px; }
+
+  @media (max-width: 880px) {
+    .pane-grid { grid-template-columns: 1fr; }
+    .sidenav, .workspace { display: none; }
+    .spec { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <h1>Tesote AI — Typography</h1>
+  <p class="lede">
+    Three takes on the same chat pane. The content, palette, layout, and component
+    shapes are identical. <strong style="color: var(--text-primary); font-weight: 500;">Only the type system changes.</strong>
+    Scroll between them. Squint. The one that recedes is the one to ship.
+  </p>
+  <p class="meta">companion to typography-spec.md · snapshot 2026-05-20</p>
+</header>
+
+<section class="squint">
+  <p>
+    <strong>How to read this.</strong> The current build (variant 1) uses Inter Tight at 14px with weights
+    pushed to 700 on the pane title. That's the headline cut of Inter, designed for badges and chrome —
+    not for body. When you stack heavy weights on a tight cut, every surface starts leaning forward at you.
+  </p>
+  <p>
+    Variants 2 and 3 cap weight at 500, bump body to 15px, give the chat 1.6 line-height, and introduce
+    one moment of <em style="font-family: 'Instrument Serif', serif; font-style: italic; font-size: 16px;">Instrument Serif</em>
+    in the empty-state hero — the editorial gesture that signals craft without shouting. Variant 2 keeps the
+    sans on Inter (zero migration cost). Variant 3 swaps to Geist (more modernist, more "AI-native" company).
+  </p>
+</section>
+
+<!-- ═════════════════════════════════════════════════════════════════════
+     VARIANT 1 — CURRENT
+     ═════════════════════════════════════════════════════════════════════ -->
+<section class="variant v-current">
+  <div class="variant-label">
+    <span class="num">01 / current</span>
+    <span class="title">Inter Tight · 14px / 1.5 · weights to 700</span>
+    <span class="tag current">shipping today</span>
+  </div>
+
+  <div class="pane-mock">
+    <div class="pane-grid">
+
+      <!-- Sidenav -->
+      <aside class="sidenav">
+        <div class="brand">
+          <span class="brand-mark">T</span>
+          <span class="brand-name">Tesote AI</span>
+          <span class="brand-pill">Beta</span>
+        </div>
+        <button class="new-conv">+ Nueva conversación</button>
+        <div class="section-eyebrow">Conversaciones</div>
+        <div class="conv-row active">
+          Cash flow de mayo
+          <span class="ts">hace 12 min</span>
+        </div>
+        <div class="conv-row">
+          Conciliación NETUNO
+          <span class="ts">hace 2 h</span>
+        </div>
+        <div class="conv-row">
+          Facturas abiertas Banesco
+          <span class="ts">ayer</span>
+        </div>
+      </aside>
+
+      <!-- Chat -->
+      <main class="chat">
+        <div class="chat-header">
+          <h1 class="chat-title">Cash flow de mayo</h1>
+          <div class="chat-sub">12 mensajes · 3 archivos</div>
+        </div>
+
+        <div class="hero">
+          <h2>¿Qué querés ver hoy?</h2>
+          <p>
+            Soy el asistente de Tesote. Puedo analizar tus cuentas, conciliar transacciones,
+            crear reglas de categorización y guiarte por Odoo. Probá una de estas:
+          </p>
+          <div class="chips">
+            <span class="chip">Saldos por banco</span>
+            <span class="chip">Top contrapartes mayo</span>
+            <span class="chip">Facturas vencidas</span>
+            <span class="chip">Conciliar últimos 30 días</span>
+          </div>
+        </div>
+
+        <div class="transcript">
+          <div class="msg">
+            <div class="msg-role">Tú</div>
+            <div class="msg-body">
+              <p>¿cuánto facturé en mayo desglosado por categoría?</p>
+            </div>
+          </div>
+          <div class="msg">
+            <div class="msg-role">Tesote AI</div>
+            <div class="msg-body">
+              <p>
+                Armé el desglose por categoría para mayo →
+                <span class="file-pill">revenue-by-category.json</span>
+              </p>
+              <p>
+                Servicios profesionales fue el mayor con $48.230 USD (38% del total).
+                Le siguen Suscripciones SaaS y Asesoría. Decime si querés ver una contraparte específica.
+              </p>
+              <div class="tool-pill">
+                <span class="tool-label">Buscar transacciones</span>
+                <span class="tool-name">transaction.search</span>
+                <span class="status">ok</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- Workspace -->
+      <aside class="workspace">
+        <div class="ws-folder">
+          <div class="ws-section">inputs</div>
+          <div class="file-row"><span class="dot"></span>recibo-banesco-may.pdf</div>
+        </div>
+        <div class="ws-folder">
+          <div class="ws-section">working</div>
+          <div class="file-row active"><span class="dot"></span>revenue-by-category.json</div>
+          <div class="file-row"><span class="dot"></span>cashflow-may.json</div>
+        </div>
+        <div class="ws-folder">
+          <div class="ws-section">logs</div>
+          <div class="file-row"><span class="dot"></span>writes-2026-05-20.log</div>
+        </div>
+      </aside>
+    </div>
+
+    <dl class="spec">
+      <div><dt>face</dt><dd>Inter Tight</dd></div>
+      <div><dt>body</dt><dd>14px / 1.5</dd></div>
+      <div><dt>pane title</dt><dd>22px · <span class="accent">w700</span></dd></div>
+      <div><dt>hero</dt><dd>22px · <span class="accent">w600</span> sans</dd></div>
+      <div><dt>weight ceiling</dt><dd><span class="accent">700</span></dd></div>
+      <div><dt>headers</dt><dd>w600 (sans)</dd></div>
+      <div><dt>mono</dt><dd>JetBrains 11–12px</dd></div>
+      <div><dt>voice</dt><dd>control panel</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ═════════════════════════════════════════════════════════════════════
+     VARIANT 2 — PROPOSED (Inter + Instrument Serif)
+     ═════════════════════════════════════════════════════════════════════ -->
+<section class="variant v-proposed">
+  <div class="variant-label">
+    <span class="num">02 / proposed</span>
+    <span class="title">Inter · 15px / 1.6 · weights ≤500 · Instrument Serif hero</span>
+    <span class="tag proposed">recommended</span>
+  </div>
+
+  <div class="pane-mock">
+    <div class="pane-grid">
+
+      <aside class="sidenav">
+        <div class="brand">
+          <span class="brand-mark">T</span>
+          <span class="brand-name">Tesote AI</span>
+          <span class="brand-pill">Beta</span>
+        </div>
+        <button class="new-conv">+ Nueva conversación</button>
+        <div class="section-eyebrow">Conversaciones</div>
+        <div class="conv-row active">
+          Cash flow de mayo
+          <span class="ts">hace 12 min</span>
+        </div>
+        <div class="conv-row">
+          Conciliación NETUNO
+          <span class="ts">hace 2 h</span>
+        </div>
+        <div class="conv-row">
+          Facturas abiertas Banesco
+          <span class="ts">ayer</span>
+        </div>
+      </aside>
+
+      <main class="chat">
+        <div class="chat-header">
+          <h1 class="chat-title">Cash flow de mayo</h1>
+          <div class="chat-sub">12 mensajes · 3 archivos</div>
+        </div>
+
+        <div class="hero">
+          <h2>¿Qué querés ver hoy?</h2>
+          <p>
+            Soy el asistente de Tesote. Puedo analizar tus cuentas, conciliar transacciones,
+            crear reglas de categorización y guiarte por Odoo. Probá una de estas:
+          </p>
+          <div class="chips">
+            <span class="chip">Saldos por banco</span>
+            <span class="chip">Top contrapartes mayo</span>
+            <span class="chip">Facturas vencidas</span>
+            <span class="chip">Conciliar últimos 30 días</span>
+          </div>
+        </div>
+
+        <div class="transcript">
+          <div class="msg">
+            <div class="msg-role">Tú</div>
+            <div class="msg-body">
+              <p>¿cuánto facturé en mayo desglosado por categoría?</p>
+            </div>
+          </div>
+          <div class="msg">
+            <div class="msg-role">Tesote AI</div>
+            <div class="msg-body">
+              <p>
+                Armé el desglose por categoría para mayo →
+                <span class="file-pill">revenue-by-category.json</span>
+              </p>
+              <p>
+                Servicios profesionales fue el mayor con $48.230 USD (38% del total).
+                Le siguen Suscripciones SaaS y Asesoría. Decime si querés ver una contraparte específica.
+              </p>
+              <div class="tool-pill">
+                <span class="tool-label">Buscar transacciones</span>
+                <span class="tool-name">transaction.search</span>
+                <span class="status">ok</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <aside class="workspace">
+        <div class="ws-folder">
+          <div class="ws-section">inputs</div>
+          <div class="file-row"><span class="dot"></span>recibo-banesco-may.pdf</div>
+        </div>
+        <div class="ws-folder">
+          <div class="ws-section">working</div>
+          <div class="file-row active"><span class="dot"></span>revenue-by-category.json</div>
+          <div class="file-row"><span class="dot"></span>cashflow-may.json</div>
+        </div>
+        <div class="ws-folder">
+          <div class="ws-section">logs</div>
+          <div class="file-row"><span class="dot"></span>writes-2026-05-20.log</div>
+        </div>
+      </aside>
+    </div>
+
+    <dl class="spec">
+      <div><dt>face</dt><dd>Inter (default)</dd></div>
+      <div><dt>body</dt><dd>15px / 1.6</dd></div>
+      <div><dt>pane title</dt><dd>24px · <span class="accent">w500</span></dd></div>
+      <div><dt>hero</dt><dd>36px · <span class="accent">Instrument Serif</span></dd></div>
+      <div><dt>weight ceiling</dt><dd><span class="accent">500</span></dd></div>
+      <div><dt>headers</dt><dd>w500 (sans)</dd></div>
+      <div><dt>mono</dt><dd>JetBrains 12–13px</dd></div>
+      <div><dt>voice</dt><dd>editorial collaborator</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ═════════════════════════════════════════════════════════════════════
+     VARIANT 3 — ALTERNATIVE (Geist + Instrument Serif)
+     ═════════════════════════════════════════════════════════════════════ -->
+<section class="variant v-alt">
+  <div class="variant-label">
+    <span class="num">03 / alternative</span>
+    <span class="title">Geist · 15px / 1.6 · weights ≤500 · Instrument Serif hero</span>
+    <span class="tag alt">if you want more character</span>
+  </div>
+
+  <div class="pane-mock">
+    <div class="pane-grid">
+
+      <aside class="sidenav">
+        <div class="brand">
+          <span class="brand-mark">T</span>
+          <span class="brand-name">Tesote AI</span>
+          <span class="brand-pill">Beta</span>
+        </div>
+        <button class="new-conv">+ Nueva conversación</button>
+        <div class="section-eyebrow">Conversaciones</div>
+        <div class="conv-row active">
+          Cash flow de mayo
+          <span class="ts">hace 12 min</span>
+        </div>
+        <div class="conv-row">
+          Conciliación NETUNO
+          <span class="ts">hace 2 h</span>
+        </div>
+        <div class="conv-row">
+          Facturas abiertas Banesco
+          <span class="ts">ayer</span>
+        </div>
+      </aside>
+
+      <main class="chat">
+        <div class="chat-header">
+          <h1 class="chat-title">Cash flow de mayo</h1>
+          <div class="chat-sub">12 mensajes · 3 archivos</div>
+        </div>
+
+        <div class="hero">
+          <h2>¿Qué querés ver hoy?</h2>
+          <p>
+            Soy el asistente de Tesote. Puedo analizar tus cuentas, conciliar transacciones,
+            crear reglas de categorización y guiarte por Odoo. Probá una de estas:
+          </p>
+          <div class="chips">
+            <span class="chip">Saldos por banco</span>
+            <span class="chip">Top contrapartes mayo</span>
+            <span class="chip">Facturas vencidas</span>
+            <span class="chip">Conciliar últimos 30 días</span>
+          </div>
+        </div>
+
+        <div class="transcript">
+          <div class="msg">
+            <div class="msg-role">Tú</div>
+            <div class="msg-body">
+              <p>¿cuánto facturé en mayo desglosado por categoría?</p>
+            </div>
+          </div>
+          <div class="msg">
+            <div class="msg-role">Tesote AI</div>
+            <div class="msg-body">
+              <p>
+                Armé el desglose por categoría para mayo →
+                <span class="file-pill">revenue-by-category.json</span>
+              </p>
+              <p>
+                Servicios profesionales fue el mayor con $48.230 USD (38% del total).
+                Le siguen Suscripciones SaaS y Asesoría. Decime si querés ver una contraparte específica.
+              </p>
+              <div class="tool-pill">
+                <span class="tool-label">Buscar transacciones</span>
+                <span class="tool-name">transaction.search</span>
+                <span class="status">ok</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <aside class="workspace">
+        <div class="ws-folder">
+          <div class="ws-section">inputs</div>
+          <div class="file-row"><span class="dot"></span>recibo-banesco-may.pdf</div>
+        </div>
+        <div class="ws-folder">
+          <div class="ws-section">working</div>
+          <div class="file-row active"><span class="dot"></span>revenue-by-category.json</div>
+          <div class="file-row"><span class="dot"></span>cashflow-may.json</div>
+        </div>
+        <div class="ws-folder">
+          <div class="ws-section">logs</div>
+          <div class="file-row"><span class="dot"></span>writes-2026-05-20.log</div>
+        </div>
+      </aside>
+    </div>
+
+    <dl class="spec">
+      <div><dt>face</dt><dd>Geist</dd></div>
+      <div><dt>body</dt><dd>15px / 1.6</dd></div>
+      <div><dt>pane title</dt><dd>24px · <span class="accent">w500</span></dd></div>
+      <div><dt>hero</dt><dd>36px · <span class="accent">Instrument Serif</span></dd></div>
+      <div><dt>weight ceiling</dt><dd><span class="accent">500</span></dd></div>
+      <div><dt>headers</dt><dd>w500 (sans)</dd></div>
+      <div><dt>mono</dt><dd>JetBrains 12–13px</dd></div>
+      <div><dt>voice</dt><dd>AI-native, modernist</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- Closing -->
+<section class="closing">
+  <h3>The squint test</h3>
+  <p>
+    Scroll to the top. Squint at variant 1, then variant 2, then variant 3. Look for these signals:
+  </p>
+  <ul>
+    <li><strong style="font-weight: 500;">Variant 1 stays sharp.</strong> Inter Tight at body size plus 600/700 headers keep every surface "active." The chat fights for your eye.</li>
+    <li><strong style="font-weight: 500;">Variant 2 blurs into something quiet.</strong> Same content, but the chat recedes. The serif moment in the hero is the only place that asserts. This is the move.</li>
+    <li><strong style="font-weight: 500;">Variant 3 has more personality.</strong> Geist's geometric character makes it feel more "made by an AI company." Slightly less safe than Inter, slightly more differentiated from Mercury/Stripe/Brex.</li>
+  </ul>
+  <p style="margin-top: 16px;">
+    The biggest single lever is dropping <em>Tight</em> and capping at weight 500. That alone is ~80% of the perceived shift.
+    Bumping body to 15px and adding the serif moment carry the rest. Total CSS delta to ship: ~50 lines.
+  </p>
+</section>
+
+</body>
+</html>

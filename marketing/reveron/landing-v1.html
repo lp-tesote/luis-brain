@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Reverón · por Tesote AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --canvas: #FBFAF6;        /* warm white — Reverón's canvas */
+    --light:  #FFF6E6;        /* dawn light */
+    --ink:    #1A1612;        /* warm near-black */
+    --muted:  #8C8478;        /* warm grey */
+    --hair:   #E7E2D8;        /* hairlines */
+    --gold:   #B8924E;        /* the light, used sparingly */
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--canvas);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  /* ——— the light ——— */
+  .glow {
+    position: fixed;
+    top: -28vh;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 130vw;
+    height: 110vh;
+    background: radial-gradient(ellipse at center,
+      var(--light) 0%,
+      rgba(255, 246, 230, 0.55) 26%,
+      rgba(255, 246, 230, 0.0) 62%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  main { position: relative; z-index: 1; }
+
+  /* ——— hero ——— */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 6vh 7vw;
+  }
+
+  .wordmark {
+    font-family: 'Instrument Serif', serif;
+    font-weight: 400;
+    font-size: clamp(5.5rem, 19vw, 15rem);
+    line-height: 0.9;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+
+  .endorsement {
+    margin-top: 1.8rem;
+    font-size: 0.74rem;
+    font-weight: 400;
+    letter-spacing: 0.42em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding-left: 0.42em; /* optical balance for tracking */
+  }
+
+  .tagline {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: clamp(1.6rem, 3.4vw, 2.6rem);
+    line-height: 1.25;
+    color: var(--ink);
+    margin-top: 4.5rem;
+    max-width: 18ch;
+  }
+
+  .sub {
+    margin-top: 1.5rem;
+    font-size: clamp(0.98rem, 1.5vw, 1.12rem);
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--muted);
+    max-width: 42ch;
+  }
+
+  .cta {
+    margin-top: 3.4rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.95rem;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+    text-decoration: none;
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid var(--ink);
+    transition: color 0.35s ease, border-color 0.35s ease, gap 0.35s ease;
+  }
+  .cta:hover {
+    color: var(--gold);
+    border-color: var(--gold);
+    gap: 0.95rem;
+  }
+  .cta svg { width: 14px; height: 14px; }
+
+  /* ——— manifesto ——— */
+  .manifesto {
+    min-height: 92vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 14vh 8vw;
+    gap: 2.4rem;
+  }
+
+  .manifesto p {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(1.5rem, 3.2vw, 2.45rem);
+    line-height: 1.3;
+    max-width: 22ch;
+    color: var(--ink);
+  }
+  .manifesto p.dim { color: var(--muted); }
+  .manifesto p .em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .rule {
+    width: 1px;
+    height: 64px;
+    background: linear-gradient(to bottom, transparent, var(--hair), transparent);
+  }
+
+  /* ——— footer ——— */
+  footer {
+    padding: 5vh 7vw 7vh;
+    text-align: center;
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  footer .dot { margin: 0 0.7em; opacity: 0.5; }
+
+  @media (max-width: 600px) {
+    .endorsement { letter-spacing: 0.3em; }
+    .tagline { margin-top: 3rem; }
+  }
+</style>
+</head>
+<body>
+  <div class="glow"></div>
+
+  <main>
+    <section class="hero">
+      <h1 class="wordmark">Reverón</h1>
+      <div class="endorsement">por Tesote&nbsp;AI</div>
+
+      <p class="tagline">La claridad, vuelta obsesión.</p>
+      <p class="sub">El agente de IA que mira tu caja, tus bancos y tu día — y te muestra, con precisión, dónde estás parado.</p>
+
+      <a class="cta" href="#acceso">
+        Solicitar acceso
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </section>
+
+    <section class="manifesto">
+      <p>Armando Reverón persiguió la luz venezolana hasta enceguecer.</p>
+      <div class="rule"></div>
+      <p class="dim">Lo llamaron loco. En realidad, veía lo que <span class="em">nadie</span> más podía ver.</p>
+      <div class="rule"></div>
+      <p>Heredamos su obsesión — y la pusimos a ver tus finanzas.</p>
+    </section>
+
+    <footer id="acceso">
+      Reverón <span class="dot">·</span> por Tesote AI <span class="dot">·</span> 2026
+    </footer>
+  </main>
+</body>
+</html>

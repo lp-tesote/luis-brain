@@ -1,0 +1,3552 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tesote Negocios — Claim Flow (PRO-112 · A.1 → A.4)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --primary-50: #f5f8ff;
+      --text: #0f172a;
+      --text-2: #475569;
+      --text-3: #94a3b8;
+      --text-4: #cbd5e1;
+      --border: #e8e9ee;
+      --border-2: #eef0f4;
+      --bg-sidebar: #f6f6f8;
+      --bg-main: #ffffff;
+      --bg-soft: #fafafb;
+      --bg: #f9fafb;
+      --white: #ffffff;
+      --hover: #ededf1;
+      --active: #e4e5eb;
+      --green: #059669;
+      --green-bg: #d1fae5;
+      --yellow: #b45309;
+      --yellow-bg: #fef3c7;
+      --red: #dc2626;
+      --red-bg: #fee2e2;
+      --violet: #7c3aed;
+      --violet-bg: #f3e8ff;
+      --radius: 10px;
+      --radius-lg: 14px;
+      --radius-sm: 6px;
+      --shadow-xs: 0 1px 2px rgba(10, 13, 18, 0.04);
+      --shadow: 0 1px 3px rgba(10, 13, 18, 0.06), 0 1px 2px rgba(10, 13, 18, 0.04);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -1px rgba(0,0,0,.06);
+      --shadow-lg: 0 10px 24px -6px rgba(10, 13, 18, 0.10), 0 4px 8px -4px rgba(10, 13, 18, 0.06);
+    }
+
+    body { font-family: 'Inter', sans-serif; font-size: 14px; background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; }
+
+    /* ───── Flow switcher (dev-only, top strip) ───── */
+    .flow-strip {
+      position: sticky; top: 0; z-index: 100; background: #0f0f10;
+      display: flex; align-items: center; gap: 4px; padding: 10px 18px;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .flow-strip-label {
+      font-size: 11px; font-weight: 600; letter-spacing: .06em;
+      text-transform: uppercase; color: #9ca3af; margin-right: 12px;
+    }
+    .flow-tab {
+      padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 500;
+      color: #9ca3af; cursor: pointer; transition: all .15s; background: transparent;
+      border: none; font-family: inherit;
+    }
+    .flow-tab:hover { background: rgba(255,255,255,.06); color: #e5e7eb; }
+    .flow-tab.active { background: rgba(255,255,255,.1); color: white; }
+    .payer-state-group {
+      margin-left: auto; display: flex; align-items: center; gap: 4px;
+      padding-left: 14px; border-left: 1px solid rgba(255,255,255,.08);
+    }
+    .payer-state-label {
+      font-size: 11px; font-weight: 600; letter-spacing: .06em;
+      text-transform: uppercase; color: #9ca3af; margin-right: 6px;
+    }
+    .payer-tab {
+      padding: 5px 10px; border-radius: 6px; font-size: 11px; font-weight: 500;
+      color: #9ca3af; cursor: pointer; transition: all .15s; background: transparent;
+      border: 1px solid rgba(255,255,255,.08); font-family: inherit;
+    }
+    .payer-tab:hover { background: rgba(255,255,255,.06); color: #e5e7eb; }
+    .payer-tab.active { background: rgba(255,255,255,.14); color: white; border-color: transparent; }
+    .flow-note { font-size: 11px; color: #6b7280; padding-left: 12px; }
+
+    /* Payer-state visibility: first-time vs returning blocks inside screen-landing */
+    body[data-payer="first-time"] [data-show-payer="returning"] { display: none !important; }
+    body[data-payer="returning"]   [data-show-payer="first-time"] { display: none !important; }
+
+    /* ───── Screens ───── */
+    .screen { display: none; min-height: calc(100vh - 44px); }
+    .screen.active { display: block; }
+
+    /* ─────────────────────────────────────────────
+       SCREEN 1 — GMAIL INBOX + EMAIL
+    ───────────────────────────────────────────── */
+    .gmail-shell {
+      max-width: 1100px; margin: 0 auto; padding: 24px 16px 60px;
+    }
+    .gmail-chrome {
+      display: flex; align-items: center; gap: 12px; padding: 10px 14px;
+      background: white; border: 1px solid var(--border); border-radius: 10px 10px 0 0;
+      border-bottom: none;
+    }
+    .gmail-dot { width: 10px; height: 10px; border-radius: 50%; background: #e5e7eb; }
+    .gmail-dot.r { background: #ef4444; }
+    .gmail-dot.y { background: #f59e0b; }
+    .gmail-dot.g { background: #10b981; }
+    .gmail-url {
+      flex: 1; background: var(--bg); border-radius: 6px; padding: 5px 10px;
+      font-size: 12px; color: var(--text-2); font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    .gmail-body {
+      background: white; border: 1px solid var(--border); border-radius: 0 0 10px 10px;
+      overflow: hidden;
+    }
+    .gmail-header {
+      display: flex; align-items: center; gap: 16px; padding: 12px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .gmail-logo {
+      width: 36px; height: 36px; border-radius: 50%; background: var(--primary-light);
+      display: flex; align-items: center; justify-content: center; color: var(--primary);
+      font-weight: 700; font-size: 14px;
+    }
+    .gmail-search {
+      flex: 1; max-width: 480px; background: var(--bg); border-radius: 999px;
+      padding: 8px 16px; font-size: 13px; color: var(--text-3);
+    }
+    .gmail-layout {
+      display: grid; grid-template-columns: 180px 1fr; min-height: 640px;
+    }
+    .gmail-sidebar {
+      padding: 16px 12px; border-right: 1px solid var(--border);
+    }
+    .gmail-side-item {
+      display: flex; align-items: center; gap: 10px; padding: 8px 12px;
+      border-radius: 999px; font-size: 13px; color: var(--text-2); cursor: pointer;
+    }
+    .gmail-side-item.active { background: #fce8e6; color: #d93025; font-weight: 600; }
+    .gmail-side-item .count { margin-left: auto; font-size: 11px; }
+    .gmail-compose {
+      display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px;
+      background: #c2e7ff; border-radius: 14px; font-size: 13px; font-weight: 500;
+      color: #001d35; margin-bottom: 18px; cursor: pointer;
+    }
+
+    .gmail-main { padding: 0; }
+    .gmail-email-header {
+      padding: 20px 32px 16px; border-bottom: 1px solid var(--border);
+    }
+    .gmail-subject {
+      font-size: 20px; font-weight: 400; color: var(--text); margin-bottom: 4px;
+    }
+    .gmail-labels {
+      display: inline-flex; gap: 6px; margin-left: 10px; vertical-align: middle;
+    }
+    .gmail-label-pill {
+      font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 500;
+      background: var(--bg); color: var(--text-2); border: 1px solid var(--border);
+    }
+    .gmail-from-row {
+      display: flex; align-items: flex-start; gap: 14px; padding: 16px 32px;
+    }
+    .gmail-sender-avatar {
+      width: 40px; height: 40px; border-radius: 50%; background: #dbeafe;
+      color: var(--primary); font-weight: 600; font-size: 15px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .gmail-sender-info { flex: 1; }
+    .gmail-sender-name { font-size: 14px; font-weight: 600; color: var(--text); }
+    .gmail-sender-to { font-size: 12px; color: var(--text-2); margin-top: 2px; }
+    .gmail-sender-time { font-size: 12px; color: var(--text-2); }
+
+    /* The email body itself — designed to render in any client */
+    .email-content { padding: 8px 32px 32px; }
+    .email-card {
+      max-width: 560px; margin: 0 auto; background: white;
+      border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .email-brand {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 22px 28px 4px;
+    }
+    .email-brand-mark {
+      width: 28px; height: 28px; border-radius: 6px;
+      background: var(--text); display: flex; align-items: center; justify-content: center;
+    }
+    .email-brand-mark svg { width: 16px; height: 16px; }
+    .email-brand-name { font-size: 14px; font-weight: 700; color: var(--text); letter-spacing: -.01em; }
+
+    .email-headline {
+      text-align: center; padding: 18px 40px 10px;
+      font-size: 22px; font-weight: 700; color: var(--text); line-height: 1.25;
+    }
+    .email-sub {
+      text-align: center; padding: 0 40px 24px;
+      font-size: 14px; color: var(--text-2); line-height: 1.5;
+    }
+
+    .email-invoice-block {
+      margin: 0 28px; border: 1px solid var(--border); border-radius: 10px;
+      padding: 18px 22px; background: var(--bg);
+    }
+    .email-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 6px 0; font-size: 13px;
+    }
+    .email-row .k { color: var(--text-2); }
+    .email-row .v { color: var(--text); font-weight: 500; }
+    .email-row .v-lg { color: var(--text); font-weight: 700; font-size: 15px; }
+    .email-divider { height: 1px; background: var(--border); margin: 8px 0; }
+
+    .email-cta-wrap { padding: 24px 28px 10px; text-align: center; }
+    .email-cta {
+      display: inline-block; padding: 14px 28px; background: var(--primary);
+      color: white; text-decoration: none; border-radius: 8px;
+      font-size: 14px; font-weight: 600; letter-spacing: -.01em;
+    }
+    .email-cta:hover { background: var(--primary-hover); }
+    .email-cta-help {
+      text-align: center; font-size: 12px; color: var(--text-3);
+      padding: 8px 40px 22px; line-height: 1.5;
+    }
+
+    .email-about {
+      margin: 0 28px 24px; padding: 16px 20px; background: #fafafa;
+      border: 1px solid var(--border); border-radius: 10px;
+      font-size: 12px; color: var(--text-2); line-height: 1.55;
+    }
+    .email-about strong { color: var(--text); font-weight: 600; }
+
+    .email-footer {
+      text-align: center; padding: 18px 28px 24px; font-size: 11px;
+      color: var(--text-3); line-height: 1.6;
+    }
+    .email-footer a { color: var(--text-2); text-decoration: none; }
+
+    /* ─────────────────────────────────────────────
+       SCREENS 2–5 — STANDALONE PORTAL / CLAIM
+    ───────────────────────────────────────────── */
+    .auth-top {
+      background: white; border-bottom: 1px solid var(--border);
+      padding: 14px 24px; display: flex; align-items: center; gap: 10px;
+    }
+    .auth-brand {
+      display: flex; align-items: center; gap: 8px; color: var(--text);
+      font-weight: 700; font-size: 15px; letter-spacing: -.01em;
+    }
+    .auth-brand-mark {
+      width: 26px; height: 26px; border-radius: 6px; background: var(--text);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .auth-brand-mark svg { width: 14px; height: 14px; }
+    .auth-host {
+      margin-left: auto; font-size: 12px; color: var(--text-3);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    .auth-wrap {
+      max-width: 900px; margin: 0 auto; padding: 48px 20px 60px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start;
+    }
+    .auth-wrap-single { grid-template-columns: 1fr; max-width: 460px; }
+
+    .auth-card {
+      background: white; border: 1px solid var(--border); border-radius: 14px;
+      overflow: hidden; box-shadow: var(--shadow-lg);
+    }
+    .auth-card-header {
+      padding: 28px 30px 6px; border-bottom: 1px solid var(--border);
+    }
+    .auth-step { font-size: 11px; font-weight: 600; letter-spacing: .06em;
+      text-transform: uppercase; color: var(--text-3); margin-bottom: 6px; }
+    .auth-title { font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: -.01em; }
+    .auth-subtitle { font-size: 13px; color: var(--text-2); margin-top: 6px; line-height: 1.55; padding-bottom: 20px; }
+    .auth-body { padding: 22px 30px; }
+    .auth-footer { padding: 16px 30px 24px; }
+
+    .field-label { font-size: 12px; font-weight: 500; color: var(--text-2); margin-bottom: 6px; display: block; }
+    .field-input {
+      width: 100%; padding: 11px 14px; border: 1px solid var(--border);
+      border-radius: 8px; font-size: 14px; font-family: inherit; color: var(--text);
+      background: white; transition: all .15s;
+    }
+    .field-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
+    .field-help { font-size: 12px; color: var(--text-3); margin-top: 6px; line-height: 1.5; }
+
+    .otp-row { display: flex; gap: 8px; justify-content: center; margin: 8px 0 4px; }
+    .otp-cell {
+      width: 44px; height: 52px; border: 1px solid var(--border); border-radius: 8px;
+      font-size: 20px; font-weight: 600; text-align: center; font-family: inherit;
+      color: var(--text); background: white;
+    }
+    .otp-cell:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
+    .otp-cell.filled { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+
+    .btn {
+      width: 100%; padding: 12px 16px; border-radius: 8px; font-size: 14px;
+      font-weight: 600; font-family: inherit; cursor: pointer; border: none; transition: all .15s;
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-ghost { background: transparent; color: var(--text-2); font-weight: 500; }
+    .btn-ghost:hover { color: var(--text); }
+
+    .aside {
+      padding: 36px 8px;
+    }
+    .aside-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+      color: var(--primary); background: var(--primary-light); padding: 4px 10px;
+      border-radius: 999px; margin-bottom: 14px;
+    }
+    .aside-title { font-size: 22px; font-weight: 700; color: var(--text); letter-spacing: -.01em; line-height: 1.25; margin-bottom: 8px; }
+    .aside-sub { font-size: 14px; color: var(--text-2); line-height: 1.6; margin-bottom: 22px; }
+
+    .aside-invoice {
+      border: 1px solid var(--border); border-radius: 12px; background: white;
+      padding: 16px 18px; box-shadow: var(--shadow);
+    }
+    .aside-inv-label { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); margin-bottom: 10px; }
+    .aside-inv-from {
+      display: flex; align-items: center; gap: 10px; padding-bottom: 12px;
+      border-bottom: 1px solid var(--border); margin-bottom: 12px;
+    }
+    .aside-inv-avatar {
+      width: 34px; height: 34px; border-radius: 8px; background: #dbeafe;
+      color: var(--primary); font-weight: 600; font-size: 13px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .aside-inv-name { font-size: 13px; font-weight: 600; color: var(--text); }
+    .aside-inv-rif { font-size: 12px; color: var(--text-2); margin-top: 2px; }
+    .aside-inv-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 13px; }
+    .aside-inv-row .k { color: var(--text-2); }
+    .aside-inv-row .v { color: var(--text); font-weight: 500; }
+    .aside-inv-amount { font-size: 22px; font-weight: 700; color: var(--text); margin-top: 10px; }
+    .aside-inv-amount-label { font-size: 12px; color: var(--text-2); }
+
+    /* ─────────────────────────────────────────────
+       SCREEN 5 — PORTAL HOME (slim rendition of future.html)
+    ───────────────────────────────────────────── */
+    .portal-nav {
+      background: white; border-bottom: 1px solid var(--border);
+      padding: 12px 28px; display: flex; align-items: center; gap: 20px;
+    }
+    .portal-logo { display: flex; align-items: center; gap: 10px; }
+    .portal-logo-mark {
+      width: 26px; height: 26px; border-radius: 6px; background: var(--text);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .portal-logo-mark svg { width: 14px; height: 14px; }
+    .portal-logo-name { font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: -.01em; }
+    .portal-nav-links { display: flex; gap: 2px; }
+    .portal-nav-link {
+      padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 500;
+      color: var(--text-2); cursor: pointer;
+    }
+    .portal-nav-link:hover { background: var(--bg); color: var(--text); }
+    .portal-nav-link.active { background: var(--bg); color: var(--text); }
+    .portal-account {
+      margin-left: auto; display: flex; align-items: center; gap: 8px;
+      padding: 4px 10px 4px 4px; border-radius: 8px; cursor: pointer;
+    }
+    .portal-account:hover { background: var(--bg); }
+    .portal-account-avatar {
+      width: 28px; height: 28px; border-radius: 6px; background: #1e40af;
+      color: white; font-size: 12px; font-weight: 600;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .portal-account-name { font-size: 13px; font-weight: 500; color: var(--text); }
+
+    .portal-main { max-width: 960px; margin: 0 auto; padding: 32px 40px; }
+    .portal-welcome {
+      background: linear-gradient(135deg, #eff6ff 0%, #f9fafb 100%);
+      border: 1px solid var(--border); border-radius: 12px; padding: 22px 24px;
+      margin-bottom: 24px;
+    }
+    .portal-welcome-title { font-size: 16px; font-weight: 700; color: var(--text); letter-spacing: -.01em; }
+    .portal-welcome-sub { font-size: 13px; color: var(--text-2); margin-top: 4px; line-height: 1.5; }
+
+    .portal-header {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;
+    }
+    .portal-h1 { font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: -.01em; }
+    .portal-h-sub { font-size: 13px; color: var(--text-2); margin-top: 2px; }
+
+    .portal-summary {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+      background: white; margin-bottom: 24px;
+    }
+    .portal-sum-card { padding: 18px 22px; }
+    .portal-sum-card:not(:last-child) { border-right: 1px solid var(--border); }
+    .portal-sum-value { font-size: 22px; font-weight: 700; color: var(--text); line-height: 1; }
+    .portal-sum-label { font-size: 12px; color: var(--text-2); margin-top: 6px; }
+    .portal-sum-sub { font-size: 11px; color: var(--text-3); margin-top: 3px; }
+
+    .portal-table-wrap {
+      background: white; border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+    }
+    .portal-table { width: 100%; border-collapse: collapse; }
+    .portal-table th {
+      text-align: left; padding: 10px 16px; font-size: 12px; font-weight: 500;
+      color: var(--text-2); border-bottom: 1px solid var(--border); background: white;
+    }
+    .portal-table th:last-child { text-align: right; }
+    .portal-table td {
+      padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text);
+    }
+    .portal-table tr:last-child td { border-bottom: none; }
+    .portal-table td:last-child { text-align: right; }
+    .portal-vendor {
+      display: inline-flex; align-items: center; gap: 10px;
+    }
+    .portal-vendor-avatar {
+      width: 28px; height: 28px; border-radius: 6px; background: #dbeafe;
+      color: var(--primary); font-size: 11px; font-weight: 600;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .portal-amount { font-weight: 600; color: var(--text); }
+    /* Status pills — Mercury-style: filled pastel background, no border, dark text */
+    .pill {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 96px; padding: 3px 10px; border-radius: 5px;
+      font-size: 11px; font-weight: 500;
+      color: var(--text);
+      background: var(--bg-soft);
+      border: none;
+      line-height: 1.5;
+      white-space: nowrap;
+    }
+    .pill-dot { display: none; }
+    .pill-new     { background: #e4e8f7; }
+    .pill-pending { background: #fdefce; }
+    .pill-overdue { background: #fddcc5; }
+
+    .portal-table-action {
+      background: var(--text); color: white; padding: 6px 12px; border-radius: 6px;
+      font-size: 12px; font-weight: 500; border: none; cursor: pointer; font-family: inherit;
+    }
+    .portal-table-action:hover { background: #374151; }
+
+    /* ══════════════════════════════════════════════════════
+       SCREEN: PORTAL-APP (chassis — same pattern as workspace-shell)
+       Adapted for Contraparte Activa — most products locked.
+    ══════════════════════════════════════════════════════ */
+    #screen-portal-app { min-height: calc(100vh - 44px); display: block; }
+    #screen-portal-app.screen { display: none; }
+    #screen-portal-app.screen.active { display: block; }
+    .cp-app {
+      display: grid; grid-template-columns: 224px 1fr;
+      min-height: calc(100vh - 44px);
+      background: var(--bg-main); color: var(--text);
+    }
+
+    /* ─ Sidebar ─ */
+    .cp-sidebar {
+      background: var(--bg-sidebar); border-right: 1px solid var(--border);
+      padding: 0; display: flex; flex-direction: column; min-height: 0; overflow-y: auto;
+    }
+    .sb-top { display: flex; align-items: center; gap: 8px; padding: 14px 14px 10px; }
+    .sb-brand { display: flex; align-items: center; gap: 9px; font-size: 14px; font-weight: 600; color: var(--text); letter-spacing: -.01em; }
+    .sb-logo { width: 24px; height: 24px; border-radius: 6px; background: var(--text); display: flex; align-items: center; justify-content: center; }
+    .sb-logo svg { width: 14px; height: 14px; }
+    .sb-pro { font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 4px; background: var(--text); color: white; letter-spacing: .03em; }
+
+    .sb-search {
+      margin: 0 10px 8px; display: flex; align-items: center; gap: 8px;
+      padding: 7px 10px; border-radius: 7px; background: var(--bg-main);
+      border: 1px solid var(--border); cursor: pointer; color: var(--text-3); font-size: 13px;
+    }
+    .sb-search svg { width: 14px; height: 14px; }
+    .sb-search .kbd {
+      margin-left: auto; font-size: 10px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      padding: 1px 5px; border-radius: 3px; background: var(--bg-soft); border: 1px solid var(--border); color: var(--text-3);
+    }
+
+    .sb-section { padding: 4px 10px 2px; }
+    .sb-section-label {
+      padding: 10px 10px 6px; font-size: 10.5px; font-weight: 600;
+      letter-spacing: .08em; text-transform: uppercase; color: var(--text-3);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .sb-section-label .tag {
+      margin-left: auto; font-size: 9px; font-weight: 600; padding: 1px 6px;
+      border-radius: 4px; letter-spacing: .02em; text-transform: none;
+    }
+    .tag-soon { background: var(--bg-main); color: var(--text-3); border: 1px solid var(--border); }
+    .tag-beta { background: var(--violet-bg); color: var(--violet); }
+    .tag-lock { background: var(--bg-main); color: var(--text-3); border: 1px solid var(--border); }
+
+    .sb-item {
+      display: flex; align-items: center; gap: 9px; padding: 6px 10px;
+      border-radius: 7px; font-size: 13px; color: var(--text-2); cursor: pointer;
+      transition: background .12s, color .12s; position: relative;
+    }
+    .sb-item:hover { background: var(--hover); color: var(--text); }
+    .sb-item.active { background: var(--active); color: var(--text); font-weight: 500; }
+    .sb-item svg { width: 15px; height: 15px; flex-shrink: 0; color: var(--text-3); }
+    .sb-item.active svg { color: var(--text-2); }
+    .sb-item-count {
+      margin-left: auto; font-size: 11px; font-weight: 500; color: var(--text-3);
+      background: var(--bg-main); padding: 1px 6px; border-radius: 10px; border: 1px solid var(--border);
+    }
+    .sb-item-count.urgent { background: var(--red-bg); color: var(--red); border-color: transparent; }
+    .sb-item.locked { color: var(--text-3); cursor: not-allowed; }
+    .sb-item.locked:hover { background: var(--bg-sidebar); }
+    .sb-item.locked .lock { margin-left: auto; color: var(--text-3); display: flex; align-items: center; }
+    .sb-item.locked .lock svg { width: 12px; height: 12px; }
+
+    .sb-bottom { margin-top: auto; padding: 10px; border-top: 1px solid var(--border); }
+    .sb-user { display: flex; align-items: center; gap: 10px; padding: 7px 8px; border-radius: 8px; cursor: pointer; }
+    .sb-user:hover { background: var(--hover); }
+    .sb-user-avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--primary); color: white; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; }
+    .sb-user-name { font-size: 13px; font-weight: 500; color: var(--text); }
+    .sb-user-sub { font-size: 11px; color: var(--text-3); }
+
+    /* ─ Main ─ */
+    .cp-main { display: flex; flex-direction: column; min-width: 0; background: var(--bg-main); }
+    .cp-topbar {
+      height: 52px; padding: 0 22px; display: flex; align-items: center; gap: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .cp-topbar-spacer { flex: 1; }
+    .cp-btn {
+      display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px;
+      border-radius: 7px; font-size: 13px; font-weight: 500; color: var(--text-2);
+      background: transparent; border: 1px solid transparent; cursor: pointer;
+      font-family: inherit; transition: all .12s;
+    }
+    .cp-btn:hover { background: var(--hover); color: var(--text); }
+    .cp-btn svg { width: 15px; height: 15px; }
+    .cp-btn-primary { background: var(--primary); color: white; border-color: var(--primary); }
+    .cp-btn-primary:hover { background: var(--primary-hover); color: white; border-color: var(--primary-hover); }
+    .cp-btn-dark { background: var(--text); color: white; }
+    .cp-btn-dark:hover { background: #1e293b; color: white; }
+    .cp-topbar-icon {
+      width: 32px; height: 32px; border-radius: 7px; display: flex; align-items: center;
+      justify-content: center; cursor: pointer; color: var(--text-2);
+    }
+    .cp-topbar-icon:hover { background: var(--hover); }
+    .cp-topbar-icon svg { width: 16px; height: 16px; }
+
+    .cp-content { flex: 1; overflow-y: auto; }
+    .cp-content-inner { max-width: 1080px; margin: 0 auto; padding: 28px 32px 60px; }
+
+    /* ─ Page header ─ */
+    .cp-page-head { margin-bottom: 22px; }
+    .cp-page-head-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .cp-page-title { font-size: 26px; font-weight: 700; letter-spacing: -.02em; color: var(--text); }
+    .cp-page-sub { font-size: 13px; color: var(--text-2); margin-top: 4px; }
+
+    /* ─ Welcome banner (first-session nudge) ─ */
+    .cp-welcome {
+      display: flex; align-items: center; gap: 14px; padding: 14px 18px;
+      background: linear-gradient(90deg, var(--primary-50) 0%, var(--bg-soft) 100%);
+      border: 1px solid #dbe4ff; border-radius: var(--radius-lg);
+      margin-bottom: 18px;
+    }
+    .cp-welcome-icon {
+      width: 34px; height: 34px; border-radius: 8px; background: white;
+      display: flex; align-items: center; justify-content: center;
+      border: 1px solid var(--border); flex-shrink: 0; color: var(--primary);
+    }
+    .cp-welcome-text { flex: 1; font-size: 12.5px; color: var(--text); line-height: 1.5; }
+    .cp-welcome-text strong { font-weight: 600; }
+    .cp-welcome-text .muted { color: var(--text-2); }
+
+    /* ─ Summary cards ─ */
+    .cp-summary {
+      display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 22px; background: white;
+    }
+    .cp-sum-card { padding: 18px 22px; border-right: 1px solid var(--border); }
+    .cp-sum-card:last-child { border-right: none; }
+    .cp-sum-value { font-size: 22px; font-weight: 700; color: var(--text); letter-spacing: -.02em; font-variant-numeric: tabular-nums; line-height: 1; }
+    .cp-sum-value.red { color: var(--red); }
+    .cp-sum-label { font-size: 12px; color: var(--text-2); margin-top: 6px; }
+    .cp-sum-sub { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+
+    /* ─ Tabs ─ */
+    .cp-tabs {
+      display: flex; align-items: center; gap: 4px; margin-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .cp-tab-btn {
+      padding: 8px 14px; font-size: 13px; font-weight: 500; color: var(--text-2);
+      background: transparent; border: none; cursor: pointer; font-family: inherit;
+      border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all .12s;
+    }
+    .cp-tab-btn:hover { color: var(--text); }
+    .cp-tab-btn.active { color: var(--text); border-bottom-color: var(--text); font-weight: 600; }
+    .cp-tab-count { color: var(--text-3); font-size: 11px; margin-left: 6px; font-weight: 500; }
+
+    /* ─ Table ─ */
+    .cp-table-wrap { background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow-x: auto; }
+    .cp-table { width: 100%; border-collapse: collapse; }
+    .cp-table th {
+      text-align: left; padding: 11px 18px; font-size: 11.5px; font-weight: 500;
+      color: var(--text-2); border-bottom: 1px solid var(--border); background: white;
+      white-space: nowrap;
+    }
+    .cp-table th:last-child { text-align: center; white-space: nowrap; padding-right: 20px; }
+    /* Date + Plazo columns stay on a single line.
+       Pagos table column order (with multi-pay checkbox + Plazo):
+       1 cb · 2 Proveedor · 3 Factura · 4 Concepto · 5 Monto · 6 Emitida · 7 Vence · 8 Plazo · 9 Estado · 10 Acción
+       Contrapartes table doesn't use checkbox/Plazo so its date column is at index 5 (Última actividad). */
+    .cp-table td:nth-child(5),
+    .cp-table td:nth-child(6),
+    .cp-table td:nth-child(7),
+    .cp-table td:nth-child(8) { white-space: nowrap; }
+    .cp-table td {
+      padding: 14px 18px; border-bottom: 1px solid var(--border-2); font-size: 13px;
+      color: var(--text); vertical-align: middle;
+    }
+    .cp-table tr:last-child td { border-bottom: none; }
+    .cp-table tr { cursor: pointer; }
+    .cp-table tbody tr:hover { background: var(--bg-soft); }
+    .cp-table td:last-child { text-align: center; white-space: nowrap; padding-right: 20px; }
+    .cp-vendor-name { font-weight: 500; }
+    .cp-vendor-sub { font-size: 10.5px; color: var(--text-3); margin-top: 1px; }
+    .cp-amount { font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .cp-fact-cell { white-space: nowrap; color: var(--text-2); font-variant-numeric: tabular-nums; }
+
+    .pill-paid    { background: #d8e9de; }
+    .pill-draft   { background: #eef1f4; color: var(--text-2); }
+
+    /* Uniform Acción-column button — same 96px box as Estado pill */
+    .cp-action-btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+      width: 96px; padding: 3px 8px;
+      border-radius: 6px; font-size: 11px; font-weight: 500; cursor: pointer;
+      font-family: inherit; border: none; white-space: nowrap;
+      line-height: 1.5;
+    }
+    .cp-action-btn svg { width: 11px; height: 11px; flex-shrink: 0; }
+    .cp-action-btn.primary { background: var(--primary); color: white; }
+    .cp-action-btn.primary:hover { background: var(--primary-hover); }
+    .cp-action-btn.urgent { background: var(--red); color: white; }
+    .cp-action-btn.urgent:hover { background: #b91c1c; }
+    .cp-action-btn.ghost { background: transparent; color: var(--text-2); border: 1px solid var(--border); }
+    .cp-action-btn.ghost:hover { background: var(--bg-soft); color: var(--text); border-color: var(--text-4); }
+
+    /* ─ Multi-pay: checkbox column + sticky action bar (cross-client) ─ */
+    #cpInvoiceSelectAll, .cp-inv-cb {
+      width: 16px; height: 16px; margin: 0; cursor: pointer; accent-color: var(--primary);
+    }
+    .cp-multipay-bar {
+      position: sticky; bottom: 16px; margin-top: 14px;
+      display: none; align-items: center; gap: 16px;
+      padding: 12px 16px 12px 18px;
+      background: var(--text); color: white; border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.15);
+      z-index: 50;
+    }
+    .cp-multipay-bar.open { display: flex; }
+    .cp-multipay-summary { flex: 1; display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; font-size: 13px; }
+    .cp-multipay-summary strong { font-weight: 600; }
+    .cp-multipay-total { color: rgba(255,255,255,.7); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+    .cp-multipay-total strong { color: white; font-weight: 600; }
+    .cp-multipay-cta {
+      background: var(--primary); color: white; border: none;
+      font-size: 13px; font-weight: 600; padding: 9px 16px; border-radius: 6px;
+      cursor: pointer; font-family: inherit; min-width: 96px;
+      transition: background .12s;
+    }
+    .cp-multipay-cta:hover { background: var(--primary-hover); }
+
+    /* Multi-pay: stacked invoice list inside step-1 hero card */
+    .cp-multi-list {
+      display: flex; flex-direction: column; gap: 6px;
+      padding-top: 10px; border-top: 1px solid var(--border);
+    }
+    .cp-multi-list-row {
+      display: grid; grid-template-columns: auto 1fr auto;
+      column-gap: 12px; align-items: baseline;
+      font-size: 12.5px; padding: 4px 0;
+    }
+    .cp-multi-list-row .k { color: var(--text-2); font-variant-numeric: tabular-nums; }
+    .cp-multi-list-row .lbl { color: var(--text); font-weight: 500; }
+    .cp-multi-list-row .v { color: var(--text); font-weight: 500; font-variant-numeric: tabular-nums; }
+    .cp-multi-list-foot {
+      display: grid; grid-template-columns: 1fr auto;
+      padding: 8px 0 0; margin-top: 4px;
+      border-top: 1.5px solid var(--text);
+      font-size: 13px; font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ─ Contraparte 360 — full detail screen (cross-client) ─ */
+    .cp-cp360-back-row { margin-bottom: 14px; }
+    .cp-cp360-back {
+      background: none; border: none; color: var(--text-2); font-size: 13px;
+      font-weight: 500; cursor: pointer; padding: 4px 0; font-family: inherit;
+    }
+    .cp-cp360-back:hover { color: var(--text); }
+    .cp-cp360-header {
+      display: flex; align-items: center; gap: 14px; padding: 16px 18px; margin-bottom: 14px;
+      background: var(--bg-soft); border: 1px solid var(--border); border-radius: 10px;
+    }
+    .cp-cp360-logo {
+      width: 48px; height: 48px; border-radius: 10px; flex-shrink: 0;
+      background: linear-gradient(135deg, #c7d2fe, #a5b4fc); color: #312e81;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 700; letter-spacing: -.02em;
+    }
+    .cp-cp360-name { font-size: 17px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 10px; }
+    .cp-cp360-net { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; color: var(--green, #059669); background: var(--green-bg, #d1fae5); padding: 3px 8px; border-radius: 4px; }
+    .cp-cp360-rif { font-size: 12.5px; color: var(--text-2); margin-top: 2px; }
+    .cp-cp360-section {
+      background: white; border: 1px solid var(--border); border-radius: 10px;
+      padding: 16px 18px; margin-bottom: 14px;
+    }
+    .cp-cp360-section-label {
+      font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+      color: var(--text-3); margin-bottom: 12px;
+    }
+    .cp-cp360-section-label-row { display: flex; align-items: center; justify-content: space-between; }
+    .cp-cp360-resumen-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px 24px;
+    }
+    .cp-cp360-stat-label { font-size: 11.5px; color: var(--text-3); }
+    .cp-cp360-stat-value { font-size: 18px; font-weight: 600; color: var(--text); margin-top: 2px; font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+    .cp-cp360-chart { width: 100%; height: 140px; display: block; margin: 6px 0 6px; }
+    .cp-cp360-chart-legend {
+      display: flex; gap: 16px; font-size: 11px; color: var(--text-2); margin-bottom: 4px;
+    }
+    .cp-cp360-legend-dot { display: inline-block; width: 8px; height: 8px; border-radius: 2px; vertical-align: middle; margin-right: 4px; }
+    .cp-cp360-chart-xaxis {
+      display: grid; grid-template-columns: repeat(12, 1fr); font-size: 10px; color: var(--text-3); text-align: center;
+    }
+    .cp-cp360-filters { display: flex; gap: 8px; }
+    .cp-cp360-filter {
+      font-size: 11.5px; color: var(--text-2); padding: 4px 8px; border-radius: 4px;
+      border: 1px solid var(--border); background: white; font-family: inherit; cursor: pointer;
+    }
+    /* Estado de cuenta download cards — two-card grid; escapes the 96px button constraint deliberately (download CTA, not a row action) */
+    .cp-cp360-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .cp-cp360-action-card {
+      display: grid; grid-template-columns: auto 1fr; column-gap: 12px; row-gap: 4px;
+      align-items: start; text-align: left; cursor: pointer;
+      padding: 14px 16px; background: white;
+      border: 1px solid var(--border); border-radius: 8px;
+      font-family: inherit; transition: all .12s;
+    }
+    .cp-cp360-action-card:hover { border-color: var(--primary); transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,.04); }
+    .cp-cp360-action-icon {
+      grid-row: 1 / span 2;
+      width: 32px; height: 32px; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .cp-cp360-action-icon svg { width: 18px; height: 18px; }
+    .cp-cp360-action-icon.pdf { background: #fef2f2; color: #b91c1c; }
+    .cp-cp360-action-icon.xls { background: #ecfdf5; color: #047857; }
+    .cp-cp360-action-title { font-size: 13px; font-weight: 600; color: var(--text); }
+    .cp-cp360-action-sub { font-size: 11.5px; color: var(--text-2); line-height: 1.5; }
+
+    /* ─ Side panel (invoice detail) ─ */
+    .cp-panel-backdrop {
+      position: fixed; inset: 0; background: rgba(10, 13, 18, 0.18);
+      z-index: 300; opacity: 0; pointer-events: none; transition: opacity .2s;
+    }
+    .cp-panel-backdrop.open { opacity: 1; pointer-events: auto; }
+    .cp-side-panel {
+      position: fixed; top: 0; right: 0; bottom: 0; width: 460px;
+      background: white; z-index: 310;
+      box-shadow: -12px 0 32px rgba(10, 13, 18, .06), -1px 0 0 var(--border);
+      transform: translateX(100%); transition: transform .22s ease-out;
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+    .cp-side-panel.open { transform: translateX(0); }
+
+    .cp-panel-head { padding: 20px 22px 16px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .cp-panel-head-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .cp-panel-vendor-name { font-size: 14px; font-weight: 500; color: var(--text-2); line-height: 1.3; }
+    .cp-panel-amount {
+      font-size: 26px; font-weight: 700; color: var(--text); letter-spacing: -.02em;
+      font-variant-numeric: tabular-nums; margin-top: 4px;
+    }
+    .cp-panel-amount .cents { font-size: 16px; color: var(--text-2); font-weight: 600; }
+    .cp-panel-close {
+      width: 30px; height: 30px; border-radius: 7px; border: none; background: transparent;
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+      color: var(--text-2); flex-shrink: 0;
+    }
+    .cp-panel-close:hover { background: var(--hover); color: var(--text); }
+    .cp-panel-close svg { width: 16px; height: 16px; }
+    .cp-panel-meta-row { display: flex; align-items: center; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+    .cp-origin-chip {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 10px; font-weight: 500; color: var(--text-2);
+      padding: 1px 6px; border-radius: 4px; background: var(--bg-soft);
+      border: 1px solid var(--border); white-space: nowrap;
+    }
+
+    .cp-panel-body { flex: 1; overflow-y: auto; padding: 0; }
+    .cp-panel-section { padding: 18px 22px; border-bottom: 1px solid var(--border-2); }
+    .cp-panel-section-label {
+      font-size: 10.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+      color: var(--text-3); margin-bottom: 12px;
+    }
+    .cp-panel-row {
+      display: grid; grid-template-columns: 130px 1fr; gap: 12px; padding: 6px 0; font-size: 13px;
+    }
+    .cp-panel-row-k { color: var(--text-2); }
+    .cp-panel-row-v { color: var(--text); font-weight: 500; overflow-wrap: anywhere; }
+
+    .cp-panel-state-banner {
+      margin: 14px 18px 0; padding: 12px 14px; border-radius: 10px;
+      display: flex; align-items: flex-start; gap: 10px;
+    }
+    .cp-panel-state-banner svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 1px; }
+    .cp-panel-state-banner .txt { flex: 1; font-size: 12.5px; line-height: 1.5; }
+    .cp-panel-state-banner .txt strong { font-weight: 600; }
+    .cp-panel-state-banner.warn  { background: var(--yellow-bg); border: 1px solid #fde68a; color: var(--yellow); }
+    .cp-panel-state-banner.success { background: var(--green-bg); border: 1px solid #a7f3d0; color: var(--green); }
+    .cp-panel-state-banner.muted { background: var(--bg-soft); border: 1px solid var(--border); color: var(--text-2); }
+
+    .cp-panel-footer {
+      display: flex; align-items: center; gap: 8px; padding: 14px 18px;
+      border-top: 1px solid var(--border); background: var(--bg-soft); flex-shrink: 0;
+    }
+    .cp-panel-footer-btn {
+      padding: 9px 14px; border-radius: 8px; font-size: 13px; font-weight: 500;
+      cursor: pointer; font-family: inherit;
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      border: 1px solid transparent; flex: 1;
+    }
+    .cp-panel-footer-btn svg { width: 13px; height: 13px; }
+    .cp-panel-footer-btn.primary { background: var(--primary); color: white; }
+    .cp-panel-footer-btn.primary:hover { background: var(--primary-hover); }
+    .cp-panel-footer-btn.urgent { background: var(--red); color: white; }
+    .cp-panel-footer-btn.urgent:hover { background: #b91c1c; }
+    .cp-panel-footer-btn.ghost { background: transparent; color: var(--text-2); border-color: var(--border); flex: 0 0 auto; }
+    .cp-panel-footer-btn.ghost:hover { background: var(--bg-main); color: var(--text); border-color: var(--text-4); }
+
+    /* Timeline (same pattern as workspace-shell) */
+    .cp-timeline { padding: 0; }
+    .cp-timeline-item {
+      display: flex; align-items: flex-start; gap: 12px; padding: 8px 0; position: relative;
+    }
+    .cp-timeline-item:not(:last-child)::after {
+      content: ""; position: absolute; left: 9px; top: 24px; bottom: 0;
+      width: 2px; background: var(--border);
+    }
+    .cp-timeline-dot {
+      width: 20px; height: 20px; border-radius: 50%; background: white;
+      border: 2px solid var(--border); display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; z-index: 1; position: relative;
+    }
+    .cp-timeline-item.done .cp-timeline-dot { background: var(--green); border-color: var(--green); color: white; }
+    .cp-timeline-item.done .cp-timeline-dot svg { width: 10px; height: 10px; }
+    .cp-timeline-item.active .cp-timeline-dot { background: white; border-color: var(--primary); }
+    .cp-timeline-item.active .cp-timeline-dot::after {
+      content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--primary);
+    }
+    .cp-timeline-item.active .cp-timeline-label { color: var(--primary); font-weight: 600; }
+    .cp-timeline-item.done:not(:last-child)::after { background: var(--green); }
+    .cp-timeline-content { padding-top: 1px; }
+    .cp-timeline-label { font-size: 13px; font-weight: 500; color: var(--text); }
+    .cp-timeline-item.pending .cp-timeline-label { color: var(--text-3); }
+    .cp-timeline-meta { font-size: 11px; color: var(--text-3); margin-top: 1px; }
+
+    /* Toast (top-centered) */
+    .cp-toast-host {
+      position: fixed; top: 56px; left: 50%; transform: translateX(-50%);
+      z-index: 600; pointer-events: none;
+    }
+    .cp-toast {
+      background: var(--text); color: white; padding: 10px 16px; border-radius: 999px;
+      font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 8px;
+      opacity: 0; transform: translateY(-6px); transition: all .18s;
+      pointer-events: auto; box-shadow: var(--shadow-lg);
+    }
+    .cp-toast.show { opacity: 1; transform: translateY(0); }
+    .cp-toast-icon {
+      width: 16px; height: 16px; border-radius: 50%; background: #34d399;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .cp-toast-icon svg { width: 10px; height: 10px; color: var(--text); }
+
+    /* ─ Multi-screen main content ─ */
+    .cp-screen { display: none; }
+    .cp-screen.active { display: block; }
+
+    /* ─ Quick actions row (Inicio) ─ */
+    .cp-qaction-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 14px; }
+    .cp-qaction {
+      display: inline-flex; align-items: center; gap: 7px; padding: 8px 14px;
+      border-radius: 999px; font-size: 13px; font-weight: 500;
+      background: var(--bg-soft); border: 1px solid var(--border); color: var(--text);
+      cursor: pointer; transition: all .12s; font-family: inherit;
+    }
+    .cp-qaction:hover { background: var(--hover); border-color: var(--text-4); }
+    .cp-qaction svg { width: 14px; height: 14px; }
+    .cp-qaction.primary { background: var(--primary); color: white; border-color: var(--primary); }
+    .cp-qaction.primary:hover { background: var(--primary-hover); border-color: var(--primary-hover); }
+
+    /* ─ Card grid ─ */
+    .cp-grid { display: grid; gap: 16px; }
+    .cp-grid-2 { grid-template-columns: 1fr 1fr; }
+    .cp-grid-rows { row-gap: 16px; }
+
+    .cp-card {
+      background: white; border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; transition: box-shadow .15s, border-color .15s;
+    }
+    .cp-card:hover { box-shadow: var(--shadow); }
+    .cp-card-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px 10px;
+    }
+    .cp-card-title { font-size: 14px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 8px; }
+    .cp-card-title-badge {
+      font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 4px;
+      background: var(--primary-light); color: var(--primary); letter-spacing: .02em;
+    }
+    .cp-card-cta {
+      display: inline-flex; align-items: center; gap: 4px; font-size: 12.5px;
+      color: var(--text-3); background: transparent; border: none; cursor: pointer;
+      font-family: inherit; padding: 4px 8px; border-radius: 6px;
+    }
+    .cp-card-cta:hover { background: var(--hover); color: var(--text); }
+
+    /* ─ Negocios card stats (pagos split) ─ */
+    .cp-pagos-stats {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border-2);
+    }
+    .cp-pagos-stat { padding: 14px 20px; background: white; }
+    .cp-pagos-stat-value { font-size: 20px; font-weight: 700; color: var(--text); line-height: 1.1; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+    .cp-pagos-stat-value.red { color: var(--red); }
+    .cp-pagos-stat-label { font-size: 11.5px; color: var(--text-2); margin-top: 4px; }
+    .cp-pagos-stat-sub { font-size: 10.5px; color: var(--text-3); margin-top: 2px; }
+    .cp-pagos-preview { padding: 0; }
+    .cp-pagos-preview-row {
+      display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+      border-top: 1px solid var(--border-2); cursor: pointer;
+    }
+    .cp-pagos-preview-row:hover { background: var(--bg-soft); }
+    .cp-pagos-preview-name { font-size: 12.5px; font-weight: 500; color: var(--text); }
+    .cp-pagos-preview-meta { font-size: 10.5px; color: var(--text-3); margin-top: 1px; }
+    .cp-pagos-preview-amount { font-size: 12.5px; font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
+
+    /* ─ Locked cards (Connect / Auto / Capital / IA teasers on Inicio) ─ */
+    .cp-locked-card {
+      background: var(--bg-soft); border: 1px dashed var(--border);
+      border-radius: var(--radius-lg); padding: 20px; position: relative;
+    }
+    .cp-locked-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .cp-locked-icon {
+      width: 28px; height: 28px; border-radius: 7px; background: white;
+      display: flex; align-items: center; justify-content: center;
+      border: 1px solid var(--border); color: var(--text-3);
+    }
+    .cp-locked-icon svg { width: 14px; height: 14px; }
+    .cp-locked-title { font-size: 13px; font-weight: 600; color: var(--text-2); }
+    .cp-locked-tag {
+      margin-left: auto; font-size: 10px; font-weight: 600; letter-spacing: .03em;
+      padding: 2px 7px; border-radius: 4px; background: white; color: var(--text-3);
+      border: 1px solid var(--border);
+    }
+    .cp-locked-sub { font-size: 12px; color: var(--text-2); line-height: 1.5; margin-bottom: 12px; }
+    .cp-locked-cta {
+      display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px;
+      font-weight: 500; color: var(--text-2); padding: 5px 10px; border-radius: 6px;
+      background: white; border: 1px solid var(--border); cursor: pointer; font-family: inherit;
+    }
+    .cp-locked-cta:hover { border-color: var(--text-4); color: var(--text); }
+    .cp-locked-cta svg { width: 12px; height: 12px; }
+
+    /* ─ Contrapartes page ─ */
+    .cp-contra-net-tag {
+      display: inline-flex; align-items: center; gap: 4px; margin-left: 6px;
+      font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 4px;
+      background: var(--primary-light); color: var(--primary); vertical-align: middle;
+    }
+    .cp-contra-net-tag.invite { background: var(--bg-soft); color: var(--text-2); border: 1px solid var(--border); }
+    .cp-contra-type-pill {
+      display: inline-flex; padding: 3px 9px; border-radius: 999px;
+      background: #f0f6ff; color: var(--primary); font-size: 11px; font-weight: 500;
+    }
+
+    /* ─ Inicio preview row avatars ─ */
+    .cp-preview-avatar {
+      width: 28px; height: 28px; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; flex-shrink: 0;
+    }
+    .cp-preview-avatar.apb      { background: #dbeafe; color: var(--primary); }
+    .cp-preview-avatar.canguro  { background: #fef3c7; color: #b45309; }
+    .cp-preview-avatar.marcas   { background: #fee2e2; color: #b91c1c; }
+
+    /* Personalizar button (top-right of Inicio page head) */
+    .cp-customize-btn {
+      display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px;
+      font-size: 12px; color: var(--text-3); background: transparent;
+      border: none; border-radius: 6px; cursor: pointer; font-family: inherit;
+    }
+    .cp-customize-btn:hover { background: var(--hover); color: var(--text-2); }
+    .cp-customize-btn svg { width: 13px; height: 13px; }
+
+    /* ═══════════════════════════════════════════
+       PAY FLOW — full-screen overlay (4 steps)
+    ═══════════════════════════════════════════ */
+    .cp-fs-overlay {
+      position: fixed; inset: 0; background: var(--bg-main); z-index: 500;
+      display: none; flex-direction: column; overflow: hidden;
+    }
+    .cp-fs-overlay.open { display: flex; }
+
+    .cp-fs-topbar {
+      height: 56px; padding: 0 22px; display: flex; align-items: center;
+      justify-content: space-between; border-bottom: 1px solid var(--border);
+      background: white; flex-shrink: 0;
+    }
+    .cp-fs-topbar-left { display: flex; align-items: center; gap: 10px; }
+    .cp-fs-topbar-logo {
+      width: 26px; height: 26px; border-radius: 6px; background: var(--text);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .cp-fs-topbar-logo svg { width: 14px; height: 14px; }
+    .cp-fs-topbar-ws { font-size: 14px; font-weight: 600; color: var(--text); }
+    .cp-fs-topbar-breadcrumb { font-size: 12px; color: var(--text-3); margin-left: 8px; }
+    .cp-fs-close {
+      width: 32px; height: 32px; border-radius: 7px; border: none; background: transparent;
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+      color: var(--text-2);
+    }
+    .cp-fs-close:hover { background: var(--hover); color: var(--text); }
+    .cp-fs-close svg { width: 16px; height: 16px; }
+
+    .cp-fs-body { flex: 1; overflow-y: auto; padding: 28px 20px 100px; }
+    .cp-fs-container { max-width: 520px; margin: 0 auto; }
+
+    /* Step indicator */
+    .cp-wz-steps {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      margin-bottom: 28px;
+    }
+    .cp-wz-step { display: flex; align-items: center; gap: 8px; }
+    .cp-wz-step-dot {
+      width: 22px; height: 22px; border-radius: 50%; background: white;
+      border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 600; color: var(--text-3); flex-shrink: 0;
+    }
+    .cp-wz-step.active .cp-wz-step-dot { background: var(--primary); border-color: var(--primary); color: white; }
+    .cp-wz-step.done .cp-wz-step-dot { background: var(--green); border-color: var(--green); color: white; }
+    .cp-wz-step.done .cp-wz-step-dot svg { width: 10px; height: 10px; }
+    .cp-wz-step-label { font-size: 12px; color: var(--text-3); font-weight: 500; }
+    .cp-wz-step.active .cp-wz-step-label { color: var(--text); font-weight: 600; }
+    .cp-wz-step.done .cp-wz-step-label { color: var(--text-2); }
+    .cp-wz-step-connector { width: 28px; height: 1.5px; background: var(--border); }
+    .cp-wz-step.done + .cp-wz-step-connector { background: var(--green); }
+
+    /* Step content title/subtitle */
+    .cp-pay-title {
+      font-size: 22px; font-weight: 700; color: var(--text);
+      letter-spacing: -.02em; margin-bottom: 6px;
+    }
+    .cp-pay-sub { font-size: 13.5px; color: var(--text-2); margin-bottom: 22px; line-height: 1.55; }
+
+    /* Section blocks */
+    .cp-pay-section {
+      background: white; border: 1px solid var(--border); border-radius: 12px;
+      padding: 18px 20px; margin-bottom: 14px;
+    }
+    .cp-pay-section-label {
+      font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+      color: var(--text-3); margin-bottom: 12px;
+    }
+
+    /* Invoice summary card (step 1) */
+    .cp-inv-summary {
+      background: var(--bg-soft); border: 1px solid var(--border); border-radius: 10px;
+      padding: 16px 18px; margin-bottom: 14px;
+    }
+    .cp-inv-summary-vendor { font-size: 12.5px; color: var(--text-2); font-weight: 500; }
+    .cp-inv-summary-amount {
+      font-size: 28px; font-weight: 700; color: var(--text); letter-spacing: -.02em;
+      font-variant-numeric: tabular-nums; margin: 4px 0 10px;
+    }
+    .cp-inv-summary-amount .cents { font-size: 18px; color: var(--text-2); font-weight: 600; }
+    .cp-inv-summary-rows { display: grid; grid-template-columns: auto 1fr; column-gap: 14px; row-gap: 5px; font-size: 12.5px; }
+    .cp-inv-summary-rows .k { color: var(--text-2); }
+    .cp-inv-summary-rows .v { color: var(--text); font-weight: 500; }
+
+    /* Account radio cards */
+    .cp-acct-list { display: flex; flex-direction: column; gap: 8px; }
+    .cp-acct-card {
+      display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+      background: white; border: 1.5px solid var(--border); border-radius: 10px;
+      cursor: pointer; transition: all .12s;
+    }
+    .cp-acct-card:hover { border-color: var(--text-4); }
+    .cp-acct-card.selected { border-color: var(--primary); background: var(--primary-50); }
+    .cp-acct-card.add-new { border-style: dashed; color: var(--text-2); justify-content: center; font-size: 12.5px; font-weight: 500; }
+    .cp-acct-card.add-new:hover { color: var(--text); }
+    .cp-acct-logo {
+      width: 32px; height: 32px; border-radius: 7px; background: #fff4f4; color: #c53b3b;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 11px; flex-shrink: 0;
+    }
+    .cp-acct-body { flex: 1; min-width: 0; }
+    .cp-acct-name { font-size: 13.5px; font-weight: 500; color: var(--text); }
+    .cp-acct-meta { font-size: 11.5px; color: var(--text-3); margin-top: 1px; }
+    .cp-acct-radio {
+      width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--border);
+      flex-shrink: 0; position: relative; background: white;
+    }
+    .cp-acct-card.selected .cp-acct-radio { border-color: var(--primary); }
+    .cp-acct-card.selected .cp-acct-radio::after {
+      content: ""; position: absolute; inset: 3px; border-radius: 50%; background: var(--primary);
+    }
+
+    /* Account-type toggle (Empresa / Persona) */
+    .cp-acct-type {
+      display: inline-flex; gap: 2px; padding: 3px; background: var(--bg-soft);
+      border: 1px solid var(--border); border-radius: 8px; margin-bottom: 12px;
+    }
+    .cp-acct-type-btn {
+      padding: 6px 14px; font-size: 12px; font-weight: 500; background: transparent;
+      color: var(--text-2); border: none; border-radius: 6px; cursor: pointer;
+      font-family: inherit; transition: all .12s;
+    }
+    .cp-acct-type-btn:hover { color: var(--text); }
+    .cp-acct-type-btn.active { background: white; color: var(--text); box-shadow: var(--shadow-xs); font-weight: 600; }
+
+    /* Bank auto-detect indicator (below account number) */
+    .cp-bank-detect {
+      display: flex; align-items: center; gap: 7px;
+      margin-top: 6px; padding: 8px 11px; border-radius: 7px;
+      font-size: 11.5px; line-height: 1.4;
+    }
+    .cp-bank-detect svg { width: 13px; height: 13px; flex-shrink: 0; }
+    .cp-bank-detect.empty    { background: var(--bg-soft); color: var(--text-3); }
+    .cp-bank-detect.detected { background: var(--primary-50); color: var(--text); }
+    .cp-bank-detect.detected strong { color: var(--primary); font-weight: 600; }
+    .cp-bank-detect.invalid  { background: #fef2f2; color: var(--red); border: 1px solid #fecaca; }
+    .cp-bank-detect.invalid strong { color: var(--text); font-weight: 600; }
+
+    /* Kept for backward-compat in case any other surface uses it */
+    .cp-coverage-note {
+      display: flex; align-items: flex-start; gap: 8px;
+      margin-top: 8px; padding: 9px 12px;
+      background: var(--primary-50); border: 1px solid #dbe4ff; border-radius: 7px;
+      font-size: 11.5px; color: var(--text-2); line-height: 1.5;
+    }
+    .cp-coverage-note svg { width: 13px; height: 13px; color: var(--primary); flex-shrink: 0; margin-top: 2px; }
+    .cp-coverage-note strong { color: var(--text); font-weight: 600; }
+
+    /* Small type-tag on saved-account cards */
+    .cp-acct-type-tag {
+      display: inline-block; margin-left: 6px; font-size: 10px; font-weight: 600;
+      padding: 1px 6px; border-radius: 4px; background: var(--bg-soft);
+      border: 1px solid var(--border); color: var(--text-2);
+      letter-spacing: .02em;
+    }
+
+    /* Inline bank entry form */
+    .cp-bank-entry { padding: 6px 2px; }
+    .cp-bank-field { margin-bottom: 12px; }
+    .cp-bank-field:last-child { margin-bottom: 0; }
+    .cp-bank-label {
+      font-size: 12px; font-weight: 500; color: var(--text-2);
+      margin-bottom: 5px; display: block;
+    }
+    .cp-bank-input {
+      width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 7px;
+      font-size: 13.5px; font-family: inherit; color: var(--text); background: white;
+      transition: all .12s;
+    }
+    .cp-bank-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
+    .cp-bank-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    /* Trust / reassurance strip */
+    .cp-trust-strip {
+      display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+      background: var(--bg-soft); border: 1px solid var(--border-2); border-radius: 8px;
+      margin-top: 12px;
+      font-size: 11.5px; color: var(--text-2); line-height: 1.5;
+    }
+    .cp-trust-strip svg { width: 14px; height: 14px; flex-shrink: 0; color: var(--green); }
+    .cp-trust-strip strong { color: var(--text); font-weight: 600; }
+
+    /* OTP row (reuse existing .otp-cell) */
+    .cp-otp-row { display: flex; gap: 8px; justify-content: center; margin: 10px 0 18px; }
+    .cp-otp-helper { text-align: center; font-size: 12px; color: var(--text-3); line-height: 1.55; }
+    .cp-otp-helper a { color: var(--primary); text-decoration: none; font-weight: 500; }
+    .cp-otp-helper a:hover { text-decoration: underline; }
+
+    /* Standing auth toggle */
+    .cp-standing-auth {
+      display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+      background: var(--bg-soft); border: 1px solid var(--border); border-radius: 10px;
+      margin-top: 16px; cursor: pointer;
+    }
+    .cp-standing-auth:hover { background: var(--hover); }
+    .cp-sa-check {
+      width: 18px; height: 18px; border-radius: 4px; border: 1.5px solid var(--border);
+      background: white; flex-shrink: 0; position: relative;
+    }
+    .cp-standing-auth.on .cp-sa-check { border-color: var(--primary); background: var(--primary); }
+    .cp-standing-auth.on .cp-sa-check::after {
+      content: ""; position: absolute; left: 4px; top: 1px; width: 6px; height: 10px;
+      border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg);
+    }
+    .cp-sa-body { flex: 1; }
+    .cp-sa-title { font-size: 13px; font-weight: 600; color: var(--text); }
+    .cp-sa-sub { font-size: 11.5px; color: var(--text-2); margin-top: 2px; line-height: 1.45; }
+
+    /* Processing state (step 3) */
+    .cp-proc {
+      text-align: center; padding: 40px 20px;
+    }
+    .cp-proc-spinner {
+      width: 52px; height: 52px; border-radius: 50%;
+      border: 4px solid var(--border); border-top-color: var(--primary);
+      margin: 0 auto 20px;
+      animation: cpSpin 0.9s linear infinite;
+    }
+    @keyframes cpSpin { to { transform: rotate(360deg); } }
+    .cp-proc-title { font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+    .cp-proc-sub { font-size: 13px; color: var(--text-2); }
+
+    /* Success state (step 4) — animated thin draw-in */
+    .cp-pay-success-icon {
+      width: 80px; height: 80px; margin: 6px auto 22px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .cp-success-svg { width: 80px; height: 80px; overflow: visible; }
+    .cp-success-circle {
+      stroke: var(--green); stroke-width: 2; fill: none;
+      stroke-dasharray: 152; stroke-dashoffset: 152;
+      transform-origin: center; transform: rotate(-90deg);
+    }
+    .cp-success-check {
+      stroke: var(--green); stroke-width: 2.6; fill: none;
+      stroke-linecap: round; stroke-linejoin: round;
+      stroke-dasharray: 36; stroke-dashoffset: 36;
+    }
+    .cp-pay-success-icon.animate .cp-success-circle {
+      animation: cpSuccessCircle 0.55s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    }
+    .cp-pay-success-icon.animate .cp-success-check {
+      animation: cpSuccessCheck 0.35s cubic-bezier(0.65, 0, 0.45, 1) 0.4s forwards;
+    }
+    @keyframes cpSuccessCircle { to { stroke-dashoffset: 0; } }
+    @keyframes cpSuccessCheck  { to { stroke-dashoffset: 0; } }
+    .cp-pay-success-title {
+      font-size: 24px; font-weight: 700; letter-spacing: -.02em; color: var(--text);
+      text-align: center; margin-bottom: 8px;
+    }
+    .cp-pay-success-sub { font-size: 14px; color: var(--text-2); text-align: center; line-height: 1.55; margin-bottom: 24px; }
+    .cp-pay-success-sub strong { color: var(--text); font-weight: 600; }
+    .cp-comprobante {
+      background: white; border: 1px solid var(--border); border-radius: 12px;
+      padding: 16px 18px; text-align: left; margin-bottom: 20px;
+    }
+    .cp-comprobante-label {
+      font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+      color: var(--text-3); margin-bottom: 12px;
+    }
+    .cp-comprobante-rows { display: grid; grid-template-columns: 110px 1fr; row-gap: 6px; font-size: 13px; }
+    .cp-comprobante-rows .k { color: var(--text-2); }
+    .cp-comprobante-rows .v { color: var(--text); font-weight: 500; font-variant-numeric: tabular-nums; }
+
+    /* Sticky footer */
+    .cp-fs-footer {
+      position: fixed; bottom: 0; left: 0; right: 0; padding: 14px 20px;
+      background: white; border-top: 1px solid var(--border);
+      display: flex; gap: 8px; justify-content: center;
+      z-index: 2;
+    }
+    .cp-fs-footer-inner { max-width: 520px; margin: 0 auto; width: 100%; display: flex; gap: 8px; justify-content: flex-end; }
+    .cp-fs-btn {
+      padding: 10px 18px; border-radius: 8px; font-size: 13.5px; font-weight: 500;
+      cursor: pointer; font-family: inherit; border: 1px solid transparent; transition: all .12s;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .cp-fs-btn svg { width: 13px; height: 13px; }
+    .cp-fs-btn.ghost { background: transparent; color: var(--text-2); }
+    .cp-fs-btn.ghost:hover { background: var(--hover); color: var(--text); }
+    .cp-fs-btn.secondary { background: white; color: var(--text); border-color: var(--border); }
+    .cp-fs-btn.secondary:hover { background: var(--bg-soft); border-color: var(--text-4); }
+    .cp-fs-btn.primary { background: var(--primary); color: white; }
+    .cp-fs-btn.primary:hover { background: var(--primary-hover); }
+    .cp-fs-btn.primary:disabled { opacity: .45; cursor: not-allowed; }
+    .cp-fs-btn.urgent { background: var(--red); color: white; }
+    .cp-fs-btn.urgent:hover { background: #b91c1c; }
+
+    /* Pay-flow confirm-exit modal (reuse simple modal pattern) */
+    .cp-exit-modal-backdrop {
+      position: fixed; inset: 0; background: rgba(10,13,18,.32);
+      z-index: 510; display: none; align-items: center; justify-content: center; padding: 20px;
+    }
+    .cp-exit-modal-backdrop.open { display: flex; }
+    .cp-exit-modal {
+      background: white; border-radius: 14px; box-shadow: var(--shadow-lg);
+      width: 420px; max-width: 100%; overflow: hidden;
+    }
+    .cp-exit-modal-head { padding: 20px 22px 14px; border-bottom: 1px solid var(--border-2); }
+    .cp-exit-modal-title { font-size: 16px; font-weight: 600; color: var(--text); }
+    .cp-exit-modal-sub { font-size: 13px; color: var(--text-2); margin-top: 4px; line-height: 1.55; }
+    .cp-exit-modal-footer {
+      display: flex; gap: 8px; justify-content: flex-end; padding: 12px 18px;
+      background: var(--bg-soft); border-top: 1px solid var(--border-2);
+    }
+    .cp-exit-modal-btn {
+      padding: 8px 14px; border-radius: 7px; font-size: 13px; font-weight: 500;
+      cursor: pointer; font-family: inherit; border: 1px solid transparent;
+    }
+    .cp-exit-modal-btn.ghost { background: transparent; color: var(--text-2); }
+    .cp-exit-modal-btn.ghost:hover { background: var(--hover); color: var(--text); }
+    .cp-exit-modal-btn.danger { background: var(--red); color: white; }
+    .cp-exit-modal-btn.danger:hover { background: #b91c1c; }
+
+    /* Dev-strip extra button */
+    .flow-reset-btn {
+      padding: 5px 11px; border-radius: 6px; font-size: 11px; font-weight: 500;
+      color: #e5e7eb; cursor: pointer; transition: all .15s;
+      background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1);
+      font-family: inherit; margin-left: 12px;
+    }
+    .flow-reset-btn:hover { background: rgba(255,255,255,.12); color: white; }
+  </style>
+</head>
+<body data-payer="first-time">
+
+  <!-- DEV-ONLY: switcher between screens -->
+  <div class="flow-strip">
+    <span class="flow-strip-label">Flow · PRO-112 · A.1 → A.4</span>
+    <button class="flow-tab active" data-screen="email">1 · Email</button>
+    <button class="flow-tab" data-screen="landing">2 · Login</button>
+    <button class="flow-tab" data-screen="login-otp">2b · Verificar correo</button>
+    <button class="flow-tab" data-screen="phone">3 · Phone (first run)</button>
+    <button class="flow-tab" data-screen="portal-app">4 · Portal app</button>
+    <button class="flow-reset-btn" id="cpPayerReset" title="Borra las cuentas guardadas en el perfil del pagador · útil para demostrar el flujo primera-vez">↺ Reset payer profile</button>
+    <span class="payer-state-group">
+      <span class="payer-state-label">Payer:</span>
+      <button class="payer-tab active" data-payer="first-time">First-time</button>
+      <button class="payer-tab" data-payer="returning">Returning</button>
+    </span>
+    <span class="flow-note">Draft · not a final design</span>
+  </div>
+
+  <!-- ─────────────────────────────────────────────
+       SCREEN 1 — Gmail inbox rendering of the email
+       ───────────────────────────────────────────── -->
+  <div class="screen active" id="screen-email">
+    <div class="gmail-shell">
+      <div class="gmail-chrome">
+        <div class="gmail-dot r"></div>
+        <div class="gmail-dot y"></div>
+        <div class="gmail-dot g"></div>
+        <div class="gmail-url">mail.google.com/mail/u/0/#inbox/CJkNbsFSnCkvldFsqxdvZwjWgCBnb</div>
+      </div>
+      <div class="gmail-body">
+        <div class="gmail-header">
+          <div class="gmail-logo">M</div>
+          <div class="gmail-search">Buscar en el correo</div>
+        </div>
+        <div class="gmail-layout">
+          <div class="gmail-sidebar">
+            <div class="gmail-compose">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              Redactar
+            </div>
+            <div class="gmail-side-item active">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16v10H4z"/><path d="M4 7l8 6 8-6"/></svg>
+              Recibidos <span class="count">128</span>
+            </div>
+            <div class="gmail-side-item">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15 8.5 22 9.3 17 14 18.3 21 12 17.7 5.7 21 7 14 2 9.3 9 8.5 12 2"/></svg>
+              Destacados
+            </div>
+            <div class="gmail-side-item">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              Enviados
+            </div>
+          </div>
+
+          <div class="gmail-main">
+            <div class="gmail-email-header">
+              <div class="gmail-subject">
+                APB Group te envió una factura por Bs. 18.450,00
+                <span class="gmail-labels"><span class="gmail-label-pill">Recibidos</span></span>
+              </div>
+            </div>
+            <div class="gmail-from-row">
+              <div class="gmail-sender-avatar">T</div>
+              <div class="gmail-sender-info">
+                <div class="gmail-sender-name">Tesote Negocios <span style="font-weight:400;color:var(--text-2);">&lt;facturas@tesotenegocios.com&gt;</span></div>
+                <div class="gmail-sender-to">para mí</div>
+              </div>
+              <div class="gmail-sender-time">10:42 (hace 3 min)</div>
+            </div>
+
+            <div class="email-content">
+              <!-- THE ACTUAL EMAIL BODY (designed to render in any client) -->
+              <div class="email-card">
+                <div class="email-brand">
+                  <div class="email-brand-mark">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M4 12h16M12 4v16"/></svg>
+                  </div>
+                  <div class="email-brand-name">Tesote Negocios</div>
+                </div>
+
+                <div class="email-headline">APB Group te envió una factura</div>
+                <div class="email-sub">Revisa los detalles y paga de forma segura desde tu portal de cliente.</div>
+
+                <div class="email-invoice-block">
+                  <div class="email-row"><span class="k">De</span><span class="v">APB Group, C.A.</span></div>
+                  <div class="email-row"><span class="k">Factura</span><span class="v">#F-2026-04210</span></div>
+                  <div class="email-row"><span class="k">Concepto</span><span class="v">Servicios abril 2026</span></div>
+                  <div class="email-row"><span class="k">Vence</span><span class="v">8 de mayo</span></div>
+                  <div class="email-divider"></div>
+                  <div class="email-row"><span class="k">Total</span><span class="v-lg">Bs. 18.450,00</span></div>
+                </div>
+
+                <div class="email-cta-wrap">
+                  <a href="#" class="email-cta" data-screen-link="landing">Ver factura →</a>
+                </div>
+                <div class="email-cta-help">
+                  O copia este enlace en tu navegador:<br/>
+                  <span style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--text-2);">tesotenegocios.com/i/a72b9c4d</span>
+                </div>
+
+                <div class="email-about">
+                  <strong>Tesote Negocios</strong> es la red donde las empresas se conectan, se facturan y se pagan entre sí. Ve todas las facturas de tus proveedores y clientes en un solo lugar.
+                </div>
+
+                <div class="email-footer">
+                  Tesote · Venezuela<br/>
+                  <a href="#">Ayuda</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────
+       SCREEN 2 — Landing after clicking "Ver factura"
+       Email-only sign in / register
+       ───────────────────────────────────────────── -->
+  <div class="screen" id="screen-landing">
+    <div class="auth-top">
+      <div class="auth-brand">
+        <div class="auth-brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M4 12h16M12 4v16"/></svg></div>
+        Tesote Negocios
+      </div>
+      <div class="auth-host">tesotenegocios.com/i/a72b9c4d</div>
+    </div>
+
+    <!-- First-time payer: aside + email-only sign-up -->
+    <div class="auth-wrap" data-show-payer="first-time">
+      <div class="aside">
+        <div class="aside-tag">
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--primary);"></span>
+          Tienes una factura nueva
+        </div>
+        <div class="aside-title">Revisa, aprueba y paga desde un solo lugar.</div>
+        <div class="aside-sub">
+          Tesote Negocios es la red donde las empresas se conectan, se facturan y se pagan entre sí. Ingresa con tu correo para ver esta factura y todas las que tus proveedores y clientes te envían por aquí.
+        </div>
+      </div>
+
+      <div class="auth-card">
+        <div class="auth-card-header">
+          <div class="auth-title">Ingresa para ver tu factura</div>
+        </div>
+        <div class="auth-body">
+          <label class="field-label">Correo electrónico</label>
+          <input type="email" class="field-input" value="pagos@kaizen.com.ve" />
+          <div class="field-help">Usa el correo donde recibes las facturas de tus proveedores.</div>
+        </div>
+        <div class="auth-footer">
+          <button class="btn btn-primary" data-screen-link="phone">Continuar →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Returning payer: standard Tesote sign-in framing → email OTP next -->
+    <div class="auth-wrap auth-wrap-single" data-show-payer="returning">
+      <div class="auth-card">
+        <div class="auth-card-header">
+          <div class="auth-step">Bienvenido de vuelta</div>
+          <div class="auth-title">Inicia sesión en Tesote</div>
+          <div class="auth-subtitle">Te enviaremos un código de 6 dígitos a tu correo. Sin contraseñas — los pagadores no necesitan crear una cuenta de Tesote.</div>
+        </div>
+        <div class="auth-body">
+          <label class="field-label">Correo electrónico</label>
+          <input type="email" class="field-input" id="returning-email" value="pagos@kaizen.com.ve" />
+          <div class="field-help">Usa el mismo correo donde recibes tus facturas.</div>
+        </div>
+        <div class="auth-footer">
+          <button class="btn btn-primary" data-screen-link="login-otp">Enviar código →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────
+       SCREEN 2b — Email OTP confirmation (returning payer)
+       Replaces password since payers don't have a Tesote account.
+       ───────────────────────────────────────────── -->
+  <div class="screen" id="screen-login-otp">
+    <div class="auth-top">
+      <div class="auth-brand">
+        <div class="auth-brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M4 12h16M12 4v16"/></svg></div>
+        Tesote Negocios
+      </div>
+      <div class="auth-host">tesotenegocios.com/login</div>
+    </div>
+
+    <div class="auth-wrap auth-wrap-single">
+      <div class="auth-card">
+        <div class="auth-card-header">
+          <div class="auth-step">Verificación</div>
+          <div class="auth-title">Ingresa el código que enviamos a tu correo</div>
+          <div class="auth-subtitle">Te enviamos un código de 6 dígitos a <span id="otp-email-target" style="color:var(--text);font-weight:500;">pagos@kaizen.com.ve</span>. Caduca en 10 minutos.</div>
+        </div>
+        <div class="auth-body">
+          <div class="otp-row" id="login-otp-row">
+            <input type="text" inputmode="numeric" maxlength="1" class="otp-cell" />
+            <input type="text" inputmode="numeric" maxlength="1" class="otp-cell" />
+            <input type="text" inputmode="numeric" maxlength="1" class="otp-cell" />
+            <input type="text" inputmode="numeric" maxlength="1" class="otp-cell" />
+            <input type="text" inputmode="numeric" maxlength="1" class="otp-cell" />
+            <input type="text" inputmode="numeric" maxlength="1" class="otp-cell" />
+          </div>
+          <div class="field-help" style="text-align:center;margin-top:14px;">
+            <a href="#" id="login-otp-resend" style="color:var(--primary);text-decoration:none;font-weight:500;">Reenviar código</a>
+            &nbsp;·&nbsp;
+            <a href="#" data-screen-link="landing" style="color:var(--text-2);text-decoration:none;font-weight:500;">Cambiar correo</a>
+          </div>
+        </div>
+        <div class="auth-footer">
+          <button class="btn btn-primary" id="login-otp-verify" data-screen-link="portal-app">Verificar →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────
+       SCREEN 3 — First-run phone capture (skippable)
+       ───────────────────────────────────────────── -->
+  <div class="screen" id="screen-phone">
+    <div class="auth-top">
+      <div class="auth-brand">
+        <div class="auth-brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M4 12h16M12 4v16"/></svg></div>
+        Tesote Negocios
+      </div>
+      <div class="auth-host">tesotenegocios.com/bienvenido</div>
+    </div>
+
+    <div class="auth-wrap auth-wrap-single">
+      <div class="auth-card">
+        <div class="auth-card-header">
+          <div class="auth-step" style="color:var(--green);">✓ Todo listo</div>
+          <div class="auth-title">¿Te avisamos cuando lleguen facturas nuevas?</div>
+          <div class="auth-subtitle">Déjanos tu número de WhatsApp y te mandamos un aviso cuando tus proveedores o clientes te envíen una factura o comprobante. Puedes saltarte este paso.</div>
+        </div>
+        <div class="auth-body">
+          <label class="field-label">Teléfono (WhatsApp)</label>
+          <div style="display:flex;gap:8px;">
+            <div style="padding:11px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;color:var(--text-2);background:var(--bg);flex-shrink:0;">🇻🇪 +58</div>
+            <input type="tel" class="field-input" placeholder="412 555 0199" style="flex:1;" />
+          </div>
+        </div>
+        <div class="auth-footer" style="gap:4px;">
+          <button class="btn btn-primary" data-screen-link="portal-app">Guardar y continuar →</button>
+          <button class="btn btn-ghost" data-screen-link="portal-app">Saltar por ahora</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════════════════════════════════════════════════════════
+       SCREEN 4 — PORTAL APP (chassis · counterparty)
+       ═════════════════════════════════════════════════════════ -->
+  <div class="screen" id="screen-portal-app">
+    <div class="cp-app">
+
+      <!-- ─── SIDEBAR ─── -->
+      <aside class="cp-sidebar">
+        <div class="sb-top">
+          <div class="sb-brand">
+            <div class="sb-logo">
+              <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M4 12h16M12 4v16"/></svg>
+            </div>
+            Tesote
+          </div>
+          <span class="sb-pro">Pro</span>
+        </div>
+
+        <div class="sb-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+          Buscar
+          <span class="kbd">⌘K</span>
+        </div>
+
+        <!-- Core -->
+        <div class="sb-section">
+          <div class="sb-item active" data-cp-nav="inicio">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1V9.5z"/></svg>
+            Inicio
+          </div>
+        </div>
+
+        <!-- Tesote Connect · locked -->
+        <div class="sb-section">
+          <div class="sb-section-label">Tesote Connect <span class="tag tag-lock">Bloqueado</span></div>
+          <div class="sb-item locked">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
+            Saldos
+            <span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+          </div>
+          <div class="sb-item locked">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3l4 4-4 4"/><path d="M3 7h18"/><path d="M7 21l-4-4 4-4"/><path d="M21 17H3"/></svg>
+            Transacciones
+            <span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+          </div>
+          <div class="sb-item locked">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>
+            Conexiones bancarias
+            <span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+          </div>
+        </div>
+
+        <!-- Tesote Automatizaciones · locked -->
+        <div class="sb-section">
+          <div class="sb-section-label">Tesote Automatizaciones <span class="tag tag-lock">Bloqueado</span></div>
+          <div class="sb-item locked">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            Contabilidad
+            <span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+          </div>
+          <div class="sb-item locked">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            Reportes
+            <span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+          </div>
+        </div>
+
+        <!-- Tesote Negocios · Pagos + Contrapartes active; Cobros locked -->
+        <div class="sb-section">
+          <div class="sb-section-label">Tesote Negocios</div>
+          <div class="sb-item" data-cp-nav="pagar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+            Pagos
+            <span class="sb-item-count">4</span>
+          </div>
+          <div class="sb-item locked">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M19 12l-7 7-7-7"/></svg>
+            Cobros
+            <span class="lock" title="Actualiza tu cuenta para enviar cobros"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+          </div>
+          <div class="sb-item" data-cp-nav="contrapartes">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Contrapartes
+          </div>
+        </div>
+
+        <!-- Tesote Capital · próximamente -->
+        <div class="sb-section">
+          <div class="sb-section-label">Tesote Capital <span class="tag tag-soon">Próximamente</span></div>
+          <div class="sb-item locked">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 1 0 0 7h5a3.5 3.5 0 1 1 0 7H6"/></svg>
+            Línea de crédito
+            <span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+          </div>
+        </div>
+
+        <!-- Tesote IA · beta -->
+        <div class="sb-section">
+          <div class="sb-section-label">Tesote IA <span class="tag tag-beta">Beta</span></div>
+          <div class="sb-item locked">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/></svg>
+            Asistente
+            <span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="11" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+          </div>
+        </div>
+
+        <!-- Espacio de Trabajo · locked (admin doesn't apply to payers) -->
+        <div class="sb-section">
+          <div class="sb-section-label">Espacio de Trabajo <span class="tag tag-lock">Bloqueado</span></div>
+          <div class="sb-item locked">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 21a8 8 0 0 0-16 0"/><circle cx="10" cy="8" r="5"/><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/></svg>
+            Mi equipo
+            <span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+          </div>
+          <div class="sb-item locked">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            Permisos
+            <span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+          </div>
+          <div class="sb-item locked">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Configuración
+            <span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+          </div>
+        </div>
+
+        <!-- Bottom user -->
+        <div class="sb-bottom">
+          <div class="sb-user">
+            <div class="sb-user-avatar">K</div>
+            <div>
+              <div class="sb-user-name">Kaizen Logística</div>
+              <div class="sb-user-sub">pagos@kaizen.com.ve</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ─── MAIN ─── -->
+      <main class="cp-main">
+        <div class="cp-topbar">
+          <div class="cp-topbar-spacer"></div>
+          <button class="cp-btn cp-btn-primary" id="cpConnectBankBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            Habla con ventas
+          </button>
+          <div class="cp-topbar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+          <div class="cp-topbar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+          <div class="cp-topbar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+        </div>
+
+        <div class="cp-content">
+          <div class="cp-content-inner">
+
+            <!-- ═════════════ SCREEN: INICIO ═════════════ -->
+            <div class="cp-screen active" data-cp-screen="inicio">
+              <div class="cp-page-head">
+                <div class="cp-page-head-row">
+                  <div>
+                    <div class="cp-page-title">Hola, Kaizen Logística</div>
+                    <div class="cp-page-sub">Tus facturas y proveedores, en un lugar.</div>
+                  </div>
+                  <button class="cp-customize-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+                    Personalizar
+                  </button>
+                </div>
+                <div class="cp-qaction-row">
+                  <button class="cp-qaction primary" data-cp-nav="pagar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+                    Pagar factura
+                  </button>
+                  <button class="cp-qaction" id="cpConnectBankInicio">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    Habla con ventas
+                  </button>
+                </div>
+              </div>
+
+              <!-- Negocios card: facturas por pagar — grid-2, card left, right empty (matches screenshot) -->
+              <div class="cp-grid cp-grid-2 cp-grid-rows" style="margin-bottom:16px;">
+                <div class="cp-card">
+                  <div class="cp-card-head">
+                    <div class="cp-card-title">
+                      Facturas por pagar <span class="cp-card-title-badge">Tesote Negocios</span>
+                    </div>
+                    <button class="cp-card-cta" data-cp-nav="pagar">Ver todo →</button>
+                  </div>
+                  <div class="cp-pagos-stats">
+                    <div class="cp-pagos-stat">
+                      <div class="cp-pagos-stat-value">Bs. 42.890</div>
+                      <div class="cp-pagos-stat-label">Total por pagar</div>
+                      <div class="cp-pagos-stat-sub">3 facturas</div>
+                    </div>
+                    <div class="cp-pagos-stat">
+                      <div class="cp-pagos-stat-value red">Bs. 12.200</div>
+                      <div class="cp-pagos-stat-label">Vencido</div>
+                      <div class="cp-pagos-stat-sub">1 factura · MARCAS PROPIAS</div>
+                    </div>
+                  </div>
+                  <div class="cp-pagos-preview">
+                    <div class="cp-pagos-preview-row" data-cp-preview="apb">
+                      <div class="cp-preview-avatar apb">AP</div>
+                      <div style="flex:1;">
+                        <div class="cp-pagos-preview-name">APB Group, C.A.</div>
+                        <div class="cp-pagos-preview-meta">Nueva · vence 8 may</div>
+                      </div>
+                      <div class="cp-pagos-preview-amount">Bs. 18.450</div>
+                    </div>
+                    <div class="cp-pagos-preview-row" data-cp-preview="canguro">
+                      <div class="cp-preview-avatar canguro">CA</div>
+                      <div style="flex:1;">
+                        <div class="cp-pagos-preview-name">Canguro Venezuela</div>
+                        <div class="cp-pagos-preview-meta">Pendiente · vence 30 abr</div>
+                      </div>
+                      <div class="cp-pagos-preview-amount">Bs. 12.240</div>
+                    </div>
+                    <div class="cp-pagos-preview-row" data-cp-preview="marcas">
+                      <div class="cp-preview-avatar marcas">MP</div>
+                      <div style="flex:1;">
+                        <div class="cp-pagos-preview-name">MARCAS PROPIAS</div>
+                        <div class="cp-pagos-preview-meta" style="color:var(--red);">Vencida hace 8 días</div>
+                      </div>
+                      <div class="cp-pagos-preview-amount">Bs. 12.200</div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Empty right column (per screenshot) -->
+                <div></div>
+              </div>
+
+              <!-- 4 locked cards: Connect, Automatizaciones, Capital, IA -->
+              <div class="cp-grid cp-grid-2 cp-grid-rows">
+                <div class="cp-locked-card">
+                  <div class="cp-locked-head">
+                    <div class="cp-locked-icon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
+                    </div>
+                    <div class="cp-locked-title">Tesote Connect</div>
+                    <span class="cp-locked-tag">Bloqueado</span>
+                  </div>
+                  <div class="cp-locked-sub">Conecta tu cuenta BNC para ver saldos en tiempo real y pagar tus facturas en 1 clic.</div>
+                  <button class="cp-locked-cta" id="cpConnectBankCard">Habla con ventas <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+                </div>
+
+                <div class="cp-locked-card">
+                  <div class="cp-locked-head">
+                    <div class="cp-locked-icon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    </div>
+                    <div class="cp-locked-title">Tesote Automatizaciones</div>
+                    <span class="cp-locked-tag">Bloqueado</span>
+                  </div>
+                  <div class="cp-locked-sub">Automatiza retenciones, comprobantes y conciliación contable. Disponible al actualizar a Tesote completo.</div>
+                  <button class="cp-locked-cta">Ver qué incluye <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+                </div>
+
+                <div class="cp-locked-card">
+                  <div class="cp-locked-head">
+                    <div class="cp-locked-icon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 1 0 0 7h5a3.5 3.5 0 1 1 0 7H6"/></svg>
+                    </div>
+                    <div class="cp-locked-title">Tesote Capital</div>
+                    <span class="cp-locked-tag">Próximamente</span>
+                  </div>
+                  <div class="cp-locked-sub">Adelanta tus cobros al instante. Desbloquea al activar Tesote Connect.</div>
+                  <button class="cp-locked-cta" disabled style="opacity:.55;cursor:default;">Pronto</button>
+                </div>
+
+                <div class="cp-locked-card">
+                  <div class="cp-locked-head">
+                    <div class="cp-locked-icon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/></svg>
+                    </div>
+                    <div class="cp-locked-title">Tesote IA</div>
+                    <span class="cp-locked-tag" style="background:var(--violet-bg);color:var(--violet);border-color:transparent;">Beta</span>
+                  </div>
+                  <div class="cp-locked-sub">Pregúntale a tu tesorería. Disponible al actualizar a Tesote completo.</div>
+                  <button class="cp-locked-cta">Unirme a la beta <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+                </div>
+              </div>
+            </div><!-- /inicio -->
+
+            <!-- ═════════════ SCREEN: PAGAR ═════════════ -->
+            <div class="cp-screen" data-cp-screen="pagar">
+              <div class="cp-page-head">
+                <div class="cp-page-head-row">
+                  <div>
+                    <div class="cp-page-title">Pagos</div>
+                    <div class="cp-page-sub">Facturas que te enviaron tus proveedores a través de Tesote.</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Welcome banner (connect bank nudge) -->
+              <div class="cp-welcome">
+                <div class="cp-welcome-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/></svg>
+                </div>
+                <div class="cp-welcome-text">
+                  <strong>Conecta tu cuenta BNC para pagar en 1 clic.</strong> <span class="muted">Recibe comprobantes automáticos, conciliación instantánea y evita reingresar datos en cada pago.</span>
+                </div>
+                <button class="cp-btn" style="border:1px solid #dbe4ff;background:white;color:var(--primary);">Activar →</button>
+              </div>
+
+              <!-- Summary cards -->
+              <div class="cp-summary">
+              <div class="cp-sum-card">
+                <div class="cp-sum-value">Bs. 57.290</div>
+                <div class="cp-sum-label">Total por pagar</div>
+                <div class="cp-sum-sub">3 facturas abiertas</div>
+              </div>
+              <div class="cp-sum-card">
+                <div class="cp-sum-value red">Bs. 12.200</div>
+                <div class="cp-sum-label">Vencido</div>
+                <div class="cp-sum-sub">1 factura · MARCAS PROPIAS</div>
+              </div>
+              <div class="cp-sum-card">
+                <div class="cp-sum-value">Bs. 18.450</div>
+                <div class="cp-sum-label">Próximo vencimiento</div>
+                <div class="cp-sum-sub">8 may · APB Group</div>
+              </div>
+              <div class="cp-sum-card">
+                <div class="cp-sum-value">Bs. 14.400</div>
+                <div class="cp-sum-label">Pagado este mes</div>
+                <div class="cp-sum-sub">1 factura · ASOPORTUGUESA</div>
+              </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="cp-tabs">
+              <button class="cp-tab-btn active">Todas<span class="cp-tab-count">4</span></button>
+              <button class="cp-tab-btn">Pendientes<span class="cp-tab-count">2</span></button>
+              <button class="cp-tab-btn">Vencidas<span class="cp-tab-count">1</span></button>
+              <button class="cp-tab-btn">Pagadas<span class="cp-tab-count">1</span></button>
+              <button class="cp-tab-btn">Disputadas<span class="cp-tab-count">0</span></button>
+            </div>
+
+            <!-- Invoice table -->
+            <div class="cp-table-wrap">
+              <table class="cp-table">
+                <thead>
+                  <tr>
+                    <th style="width:32px;"><input type="checkbox" id="cpInvoiceSelectAll" aria-label="Seleccionar todas" /></th>
+                    <th style="width:24%;">Proveedor</th>
+                    <th>Factura</th>
+                    <th>Concepto</th>
+                    <th>Monto</th>
+                    <th>Emitida</th>
+                    <th>Vence</th>
+                    <th>Plazo</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                  </tr>
+                </thead>
+                <tbody id="cpInvoiceTbody">
+                  <tr data-cp-invoice="apb">
+                    <td><input type="checkbox" class="cp-inv-cb" data-key="apb" data-amount="18450" aria-label="Seleccionar factura" /></td>
+                    <td>
+                      <div class="cp-vendor-name">APB Group, C.A.</div>
+                      <div class="cp-vendor-sub">J-40012345-6</div>
+                    </td>
+                    <td class="cp-fact-cell">F-2026-04210</td>
+                    <td>Servicios abril 2026</td>
+                    <td class="cp-amount">Bs. 18.450,00</td>
+                    <td>20 abr</td>
+                    <td>8 may</td>
+                    <td>30 días</td>
+                    <td><span class="pill pill-new"><span class="pill-dot"></span>Nueva</span></td>
+                    <td><button class="cp-action-btn primary">Pagar</button></td>
+                  </tr>
+                  <tr data-cp-invoice="canguro">
+                    <td><input type="checkbox" class="cp-inv-cb" data-key="canguro" data-amount="12240" aria-label="Seleccionar factura" /></td>
+                    <td>
+                      <div class="cp-vendor-name">Canguro Venezuela</div>
+                      <div class="cp-vendor-sub">J-30129984-1</div>
+                    </td>
+                    <td class="cp-fact-cell">INV-0882</td>
+                    <td>Logística marzo 2026</td>
+                    <td class="cp-amount">Bs. 12.240,00</td>
+                    <td>15 abr</td>
+                    <td>30 abr</td>
+                    <td>15 días</td>
+                    <td><span class="pill pill-pending"><span class="pill-dot"></span>Pendiente</span></td>
+                    <td><button class="cp-action-btn primary">Pagar</button></td>
+                  </tr>
+                  <tr data-cp-invoice="marcas">
+                    <td><input type="checkbox" class="cp-inv-cb" data-key="marcas" data-amount="12200" aria-label="Seleccionar factura" /></td>
+                    <td>
+                      <div class="cp-vendor-name">MARCAS PROPIAS</div>
+                      <div class="cp-vendor-sub">J-20114488-3</div>
+                    </td>
+                    <td class="cp-fact-cell">F-00124</td>
+                    <td>Inventario febrero</td>
+                    <td class="cp-amount">Bs. 12.200,00</td>
+                    <td>1 abr</td>
+                    <td>15 abr</td>
+                    <td>14 días</td>
+                    <td><span class="pill pill-overdue"><span class="pill-dot"></span>Vencida</span></td>
+                    <td><button class="cp-action-btn urgent">Pagar ahora</button></td>
+                  </tr>
+                  <tr data-cp-invoice="tesote-ventas">
+                    <td><input type="checkbox" class="cp-inv-cb" data-key="tesote-ventas" data-amount="14400" aria-label="Seleccionar factura" /></td>
+                    <td>
+                      <div class="cp-vendor-name">Tesote Ventas</div>
+                      <div class="cp-vendor-sub">J-40553322-4</div>
+                    </td>
+                    <td class="cp-fact-cell">F-2026-0033</td>
+                    <td>Desarrollo marzo</td>
+                    <td class="cp-amount">Bs. 14.400,00</td>
+                    <td>25 mar</td>
+                    <td>10 abr</td>
+                    <td>15 días</td>
+                    <td><span class="pill pill-pending"><span class="pill-dot"></span>Aprobada</span></td>
+                    <td><button class="cp-action-btn ghost">Esperando</button></td>
+                  </tr>
+                  <tr data-cp-invoice="aso" style="opacity:.78;">
+                    <td><!-- pagada — no checkbox --></td>
+                    <td>
+                      <div class="cp-vendor-name">ALMACENADORA ASOPORTUGUESA</div>
+                      <div class="cp-vendor-sub">J-30998877-2</div>
+                    </td>
+                    <td class="cp-fact-cell">F-0091</td>
+                    <td>Almacenaje marzo</td>
+                    <td class="cp-amount">Bs. 14.400,00</td>
+                    <td>28 mar</td>
+                    <td>12 abr</td>
+                    <td>15 días</td>
+                    <td><span class="pill pill-paid"><span class="pill-dot"></span>Pagada</span></td>
+                    <td><button class="cp-action-btn ghost">Ver comprobante</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Multi-pay sticky bar — appears when ≥1 invoice is selected -->
+            <div class="cp-multipay-bar" id="cpMultipayBar" role="region" aria-live="polite">
+              <div class="cp-multipay-summary">
+                <strong id="cpMultipayCount">0 facturas seleccionadas</strong>
+                <span class="cp-multipay-total">Total <strong id="cpMultipayTotal">Bs. 0,00</strong></span>
+              </div>
+              <button class="cp-multipay-cta" type="button" id="cpMultipayPay">Pagar seleccionadas →</button>
+            </div>
+            </div><!-- /pagar -->
+
+            <!-- ═════════════ SCREEN: CONTRAPARTES ═════════════ -->
+            <div class="cp-screen" data-cp-screen="contrapartes">
+              <div class="cp-page-head">
+                <div class="cp-page-head-row">
+                  <div>
+                    <div class="cp-page-title">Contrapartes</div>
+                    <div class="cp-page-sub">Los proveedores y clientes con los que transaccionas a través de Tesote.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="cp-summary">
+                <div class="cp-sum-card">
+                  <div class="cp-sum-value">5</div>
+                  <div class="cp-sum-label">Total contrapartes</div>
+                </div>
+                <div class="cp-sum-card">
+                  <div class="cp-sum-value">3</div>
+                  <div class="cp-sum-label">En red Tesote</div>
+                </div>
+                <div class="cp-sum-card">
+                  <div class="cp-sum-value">Bs. 57.290</div>
+                  <div class="cp-sum-label">Por pagar</div>
+                  <div class="cp-sum-sub">a 3 proveedores</div>
+                </div>
+                <div class="cp-sum-card">
+                  <div class="cp-sum-value">Bs. 92.480</div>
+                  <div class="cp-sum-label">Pagado (YTD)</div>
+                  <div class="cp-sum-sub">sobre 5 facturas</div>
+                </div>
+              </div>
+
+              <div class="cp-tabs">
+                <button class="cp-tab-btn active">Todos<span class="cp-tab-count">5</span></button>
+                <button class="cp-tab-btn">Proveedores<span class="cp-tab-count">5</span></button>
+                <button class="cp-tab-btn">Clientes<span class="cp-tab-count">0</span></button>
+              </div>
+
+              <div class="cp-table-wrap">
+                <table class="cp-table">
+                  <thead>
+                    <tr>
+                      <th style="width:34%;">Nombre</th>
+                      <th>Tipo</th>
+                      <th>Por pagar</th>
+                      <th>Pagado (YTD)</th>
+                      <th>Última actividad</th>
+                      <th>Acción</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr data-cp-nav="contraparte-detail" data-cp-contra="apb">
+                      <td>
+                        <div class="cp-vendor-name">APB Group, C.A.</div>
+                        <div class="cp-vendor-sub">J-40012345-6 · finanzas@apb.com</div>
+                      </td>
+                      <td><span class="cp-contra-type-pill">Proveedor</span></td>
+                      <td class="cp-amount">Bs. 18.450,00</td>
+                      <td class="cp-amount">—</td>
+                      <td>hoy</td>
+                      <td><button class="cp-action-btn ghost" data-cp-nav="contraparte-detail" data-cp-contra="apb">Ver →</button></td>
+                    </tr>
+                    <tr data-cp-nav="contraparte-detail" data-cp-contra="canguro">
+                      <td>
+                        <div class="cp-vendor-name">Canguro Venezuela</div>
+                        <div class="cp-vendor-sub">J-30129984-1 · tesoreria@canguro.ve</div>
+                      </td>
+                      <td><span class="cp-contra-type-pill">Proveedor</span></td>
+                      <td class="cp-amount">Bs. 12.240,00</td>
+                      <td class="cp-amount">—</td>
+                      <td>15 abr</td>
+                      <td><button class="cp-action-btn ghost" data-cp-nav="contraparte-detail" data-cp-contra="canguro">Ver →</button></td>
+                    </tr>
+                    <tr data-cp-nav="contraparte-detail" data-cp-contra="marcas">
+                      <td>
+                        <div class="cp-vendor-name">MARCAS PROPIAS</div>
+                        <div class="cp-vendor-sub">J-20114488-3 · ap@marcaspropias.com</div>
+                      </td>
+                      <td><span class="cp-contra-type-pill">Proveedor</span></td>
+                      <td class="cp-amount">Bs. 12.200,00</td>
+                      <td class="cp-amount">—</td>
+                      <td>1 abr</td>
+                      <td><button class="cp-action-btn ghost" data-cp-nav="contraparte-detail" data-cp-contra="marcas">Ver →</button></td>
+                    </tr>
+                    <tr data-cp-nav="contraparte-detail" data-cp-contra="tesote-ventas">
+                      <td>
+                        <div class="cp-vendor-name">Tesote Ventas</div>
+                        <div class="cp-vendor-sub">J-40553322-4 · pagos@tesoteventas.com</div>
+                      </td>
+                      <td><span class="cp-contra-type-pill">Proveedor</span></td>
+                      <td class="cp-amount">Bs. 14.400,00</td>
+                      <td class="cp-amount">—</td>
+                      <td>25 mar</td>
+                      <td><button class="cp-action-btn ghost" data-cp-nav="contraparte-detail" data-cp-contra="tesote-ventas">Ver →</button></td>
+                    </tr>
+                    <tr data-cp-nav="contraparte-detail" data-cp-contra="aso">
+                      <td>
+                        <div class="cp-vendor-name">ALMACENADORA ASOPORTUGUESA</div>
+                        <div class="cp-vendor-sub">J-30998877-2 · admin@aso.com.ve</div>
+                      </td>
+                      <td><span class="cp-contra-type-pill">Proveedor</span></td>
+                      <td class="cp-amount">—</td>
+                      <td class="cp-amount">Bs. 14.400,00</td>
+                      <td>5 abr</td>
+                      <td><button class="cp-action-btn ghost" data-cp-nav="contraparte-detail" data-cp-contra="aso">Ver →</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div><!-- /contrapartes -->
+
+            <!-- ═════════════ SCREEN: CONTRAPARTE DETAIL (360) ═════════════ -->
+            <!-- Stub data is hardcoded (APB Group). Production will populate per data-cp-contra key. -->
+            <div class="cp-screen" data-cp-screen="contraparte-detail">
+              <div class="cp-cp360-back-row">
+                <button class="cp-cp360-back" type="button" data-cp-nav="contrapartes">← Contrapartes</button>
+              </div>
+
+              <!-- Header -->
+              <div class="cp-cp360-header">
+                <div class="cp-cp360-logo" id="cpCp360Logo">AP</div>
+                <div class="cp-cp360-id">
+                  <div class="cp-cp360-name" id="cpCp360Name">APB Group, C.A. <span class="cp-cp360-net" title="En red Tesote"><svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14"><circle cx="8" cy="8" r="8"/><polyline points="5 8.5 7 10.5 11 6" fill="none" stroke="white" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg> En red Tesote</span></div>
+                  <div class="cp-cp360-rif" id="cpCp360Rif">J-40012345-6 · finanzas@apb.com</div>
+                </div>
+              </div>
+
+              <!-- Resumen card -->
+              <div class="cp-cp360-section">
+                <div class="cp-cp360-section-label">Resumen</div>
+                <div class="cp-cp360-resumen-grid">
+                  <div class="cp-cp360-stat"><div class="cp-cp360-stat-label">Total facturado YTD</div><div class="cp-cp360-stat-value">Bs. 84.520</div></div>
+                  <div class="cp-cp360-stat"><div class="cp-cp360-stat-label">Total pagado YTD</div><div class="cp-cp360-stat-value">Bs. 66.070</div></div>
+                  <div class="cp-cp360-stat"><div class="cp-cp360-stat-label">Deuda actual</div><div class="cp-cp360-stat-value">Bs. 18.450</div></div>
+                  <div class="cp-cp360-stat"><div class="cp-cp360-stat-label">Plazo otorgado</div><div class="cp-cp360-stat-value">30 días</div></div>
+                  <div class="cp-cp360-stat"><div class="cp-cp360-stat-label">Plazo promedio de pago</div><div class="cp-cp360-stat-value">28 días</div></div>
+                  <div class="cp-cp360-stat"><div class="cp-cp360-stat-label">Facturas activas</div><div class="cp-cp360-stat-value">1</div></div>
+                </div>
+              </div>
+
+              <!-- Pago / facturación timeline (last 12 months) -->
+              <div class="cp-cp360-section">
+                <div class="cp-cp360-section-label">Pagos y facturación · últimos 12 meses</div>
+                <div class="cp-cp360-chart-legend">
+                  <span><span class="cp-cp360-legend-dot" style="background:#c7d2fe;"></span> Facturado</span>
+                  <span><span class="cp-cp360-legend-dot" style="background:#1e293b;"></span> Pagado</span>
+                </div>
+                <svg class="cp-cp360-chart" viewBox="0 0 480 140" preserveAspectRatio="none" aria-label="Pagos y facturación últimos 12 meses">
+                  <g>
+                    <rect x="6"   y="96"  width="14" height="34"  fill="#c7d2fe"/><rect x="22"  y="106" width="14" height="24"  fill="#1e293b"/>
+                    <rect x="46"  y="88"  width="14" height="42"  fill="#c7d2fe"/><rect x="62"  y="100" width="14" height="30"  fill="#1e293b"/>
+                    <rect x="86"  y="78"  width="14" height="52"  fill="#c7d2fe"/><rect x="102" y="92"  width="14" height="38"  fill="#1e293b"/>
+                    <rect x="126" y="68"  width="14" height="62"  fill="#c7d2fe"/><rect x="142" y="84"  width="14" height="46"  fill="#1e293b"/>
+                    <rect x="166" y="72"  width="14" height="58"  fill="#c7d2fe"/><rect x="182" y="86"  width="14" height="44"  fill="#1e293b"/>
+                    <rect x="206" y="58"  width="14" height="72"  fill="#c7d2fe"/><rect x="222" y="72"  width="14" height="58"  fill="#1e293b"/>
+                    <rect x="246" y="64"  width="14" height="66"  fill="#c7d2fe"/><rect x="262" y="76"  width="14" height="54"  fill="#1e293b"/>
+                    <rect x="286" y="50"  width="14" height="80"  fill="#c7d2fe"/><rect x="302" y="64"  width="14" height="66"  fill="#1e293b"/>
+                    <rect x="326" y="44"  width="14" height="86"  fill="#c7d2fe"/><rect x="342" y="60"  width="14" height="70"  fill="#1e293b"/>
+                    <rect x="366" y="32"  width="14" height="98"  fill="#c7d2fe"/><rect x="382" y="56"  width="14" height="74"  fill="#1e293b"/>
+                    <rect x="406" y="36"  width="14" height="94"  fill="#c7d2fe"/><rect x="422" y="68"  width="14" height="62"  fill="#1e293b"/>
+                    <rect x="446" y="48"  width="14" height="82"  fill="#c7d2fe"/>
+                  </g>
+                </svg>
+                <div class="cp-cp360-chart-xaxis">
+                  <span>may</span><span>jun</span><span>jul</span><span>ago</span><span>sep</span><span>oct</span><span>nov</span><span>dic</span><span>ene</span><span>feb</span><span>mar</span><span>abr</span>
+                </div>
+              </div>
+
+              <!-- Historial de facturas -->
+              <div class="cp-cp360-section">
+                <div class="cp-cp360-section-label-row">
+                  <span class="cp-cp360-section-label">Historial de facturas</span>
+                  <div class="cp-cp360-filters">
+                    <select class="cp-cp360-filter"><option>Año: 2026</option><option>Año: 2025</option></select>
+                    <select class="cp-cp360-filter"><option>Estado: Todos</option><option>Pendientes</option><option>Pagadas</option><option>Vencidas</option></select>
+                  </div>
+                </div>
+                <table class="cp-table" style="margin-top:8px;">
+                  <thead>
+                    <tr>
+                      <th>Factura</th>
+                      <th>Concepto</th>
+                      <th>Monto</th>
+                      <th>Emitida</th>
+                      <th>Vence</th>
+                      <th>Estado</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td class="cp-fact-cell">F-2026-04210</td><td>Servicios abril 2026</td><td class="cp-amount">Bs. 18.450,00</td><td>20 abr</td><td>8 may</td><td><span class="pill pill-new"><span class="pill-dot"></span>Nueva</span></td></tr>
+                    <tr><td class="cp-fact-cell">F-2026-03108</td><td>Servicios marzo 2026</td><td class="cp-amount">Bs. 22.180,00</td><td>20 mar</td><td>5 abr</td><td><span class="pill pill-paid"><span class="pill-dot"></span>Pagada</span></td></tr>
+                    <tr><td class="cp-fact-cell">F-2026-02041</td><td>Servicios febrero 2026</td><td class="cp-amount">Bs. 21.430,00</td><td>20 feb</td><td>7 mar</td><td><span class="pill pill-paid"><span class="pill-dot"></span>Pagada</span></td></tr>
+                    <tr><td class="cp-fact-cell">F-2026-01017</td><td>Servicios enero 2026</td><td class="cp-amount">Bs. 22.460,00</td><td>20 ene</td><td>5 feb</td><td><span class="pill pill-paid"><span class="pill-dot"></span>Pagada</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Acciones — Estado de cuenta downloads (PDF / Excel stubs) -->
+              <div class="cp-cp360-section">
+                <div class="cp-cp360-section-label">Estado de cuenta</div>
+                <div class="cp-cp360-actions">
+                  <button class="cp-cp360-action-card" type="button" data-cp-action="download-statement-pdf">
+                    <span class="cp-cp360-action-icon pdf">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/><line x1="9" y1="11" x2="15" y2="11"/></svg>
+                    </span>
+                    <span class="cp-cp360-action-title">Descargar PDF</span>
+                    <span class="cp-cp360-action-sub">Resumen acumulado · facturas, pagos y retenciones · YTD</span>
+                  </button>
+                  <button class="cp-cp360-action-card" type="button" data-cp-action="download-statement-excel">
+                    <span class="cp-cp360-action-icon xls">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/><line x1="12" y1="13" x2="12" y2="20"/></svg>
+                    </span>
+                    <span class="cp-cp360-action-title">Descargar Excel</span>
+                    <span class="cp-cp360-action-sub">Hoja editable con todas las transacciones · YTD</span>
+                  </button>
+                </div>
+              </div>
+            </div><!-- /contraparte-detail -->
+
+          </div>
+        </div>
+      </main>
+
+    </div><!-- /.cp-app -->
+  </div><!-- /#screen-portal-app -->
+
+  <!-- ═════════ CP SIDE PANEL (invoice detail) ═════════ -->
+  <div class="cp-panel-backdrop" id="cpPanelBackdrop"></div>
+  <aside class="cp-side-panel" id="cpSidePanel">
+    <div class="cp-panel-head">
+      <div class="cp-panel-head-top">
+        <div>
+          <div class="cp-panel-vendor-name" id="cpPanelVendor">—</div>
+          <div class="cp-panel-amount" id="cpPanelAmount">—</div>
+        </div>
+        <button class="cp-panel-close" id="cpPanelClose">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="cp-panel-meta-row" id="cpPanelMeta"></div>
+    </div>
+    <div class="cp-panel-body" id="cpPanelBody"></div>
+    <div class="cp-panel-footer" id="cpPanelFooter"></div>
+  </aside>
+
+  <!-- ═════════════ PAY FLOW (full-screen overlay, 4 steps) ═════════════ -->
+  <div class="cp-fs-overlay" id="cpPayOverlay">
+    <div class="cp-fs-topbar">
+      <div class="cp-fs-topbar-left">
+        <div class="cp-fs-topbar-logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M4 12h16M12 4v16"/></svg>
+        </div>
+        <span class="cp-fs-topbar-ws">Kaizen Logística</span>
+        <span class="cp-fs-topbar-breadcrumb">· Pagar factura</span>
+      </div>
+      <button class="cp-fs-close" id="cpPayClose" title="Cerrar · ESC">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <div class="cp-fs-body">
+      <div class="cp-fs-container">
+
+        <!-- Step indicator (hidden on step 4 success) -->
+        <div class="cp-wz-steps" id="cpPayStepIndicator">
+          <div class="cp-wz-step active" data-pay-step-ind="1"><div class="cp-wz-step-dot">1</div><div class="cp-wz-step-label">Revisar</div></div>
+          <div class="cp-wz-step-connector"></div>
+          <div class="cp-wz-step" data-pay-step-ind="2"><div class="cp-wz-step-dot">2</div><div class="cp-wz-step-label">Código del banco</div></div>
+          <div class="cp-wz-step-connector"></div>
+          <div class="cp-wz-step" data-pay-step-ind="3"><div class="cp-wz-step-dot">3</div><div class="cp-wz-step-label">Procesar</div></div>
+          <div class="cp-wz-step-connector"></div>
+          <div class="cp-wz-step" data-pay-step-ind="4"><div class="cp-wz-step-dot">4</div><div class="cp-wz-step-label">Listo</div></div>
+        </div>
+
+        <!-- STEP 1 : Revisar y elegir cuenta -->
+        <div data-pay-step="1">
+          <div class="cp-pay-title">Revisa y elige cómo pagar</div>
+          <div class="cp-pay-sub">Confirma los detalles de la factura. Cuando apruebes, tu banco te enviará un código para autorizar el débito.</div>
+
+          <!-- Invoice summary (single-mode hero) -->
+          <div class="cp-inv-summary" id="cpPaySingleSummary">
+            <div class="cp-inv-summary-vendor" id="cpPayInvVendor">—</div>
+            <div class="cp-inv-summary-amount" id="cpPayInvAmount">—</div>
+            <div class="cp-inv-summary-rows">
+              <span class="k">Factura</span><span class="v" id="cpPayInvFactura">—</span>
+              <span class="k">Concepto</span><span class="v" id="cpPayInvConcept">—</span>
+              <span class="k">Vence</span><span class="v" id="cpPayInvDue">—</span>
+            </div>
+          </div>
+
+          <!-- Multi-mode hero (stacked list of selected invoices, shown when ≥2 selected) -->
+          <div class="cp-inv-summary" id="cpPayMultiSummary" style="display:none;">
+            <div class="cp-inv-summary-vendor" id="cpPayMultiVendor">—</div>
+            <div class="cp-inv-summary-amount" id="cpPayMultiAmount">—</div>
+            <div id="cpPayMultiList" class="cp-multi-list"></div>
+          </div>
+
+          <!-- Account selector: Returning path -->
+          <div class="cp-pay-section" id="cpPaySavedAccounts" style="display:none;">
+            <div class="cp-pay-section-label">Cuenta para el débito</div>
+            <div class="cp-acct-list" id="cpPayAcctList"></div>
+          </div>
+
+          <!-- Account selector: First-time inline entry -->
+          <div class="cp-pay-section" id="cpPayBankEntry" style="display:none;">
+            <div class="cp-pay-section-label">Tipo de cuenta</div>
+
+            <div class="cp-acct-type" id="cpPayAcctType">
+              <button class="cp-acct-type-btn active" type="button" data-acct-type="empresa">Empresa (RIF)</button>
+              <button class="cp-acct-type-btn" type="button" data-acct-type="persona">Persona (Cédula)</button>
+            </div>
+
+            <div class="cp-bank-entry">
+              <div class="cp-bank-field">
+                <label class="cp-bank-label">Número de cuenta</label>
+                <input type="text" class="cp-bank-input" id="cpPayAccountNum" inputmode="numeric" maxlength="24" placeholder="0000 0000 0000 0000 0000" />
+                <div class="cp-bank-detect empty" id="cpBankDetect">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                  <span id="cpBankDetectText">Reconocemos tu banco por los primeros 4 dígitos. Ingresa 20 dígitos en total.</span>
+                </div>
+              </div>
+              <div class="cp-bank-row">
+                <div class="cp-bank-field">
+                  <label class="cp-bank-label" id="cpPayHolderIdLabel">RIF</label>
+                  <input type="text" class="cp-bank-input" id="cpPayHolderRif" placeholder="J-00000000-0" />
+                </div>
+                <div class="cp-bank-field">
+                  <label class="cp-bank-label">Teléfono</label>
+                  <input type="tel" class="cp-bank-input" id="cpPayPhone" inputmode="numeric" maxlength="16" placeholder="0412 555 0199" />
+                </div>
+              </div>
+              <div class="cp-bank-field">
+                <label class="cp-bank-label" id="cpPayHolderLabel">Nombre legal del titular</label>
+                <input type="text" class="cp-bank-input" id="cpPayHolder" placeholder="Kaizen Logística, C.A." />
+              </div>
+            </div>
+          </div>
+
+          <div class="cp-trust-strip">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <div><strong>Débito seguro vía BNC.</strong> Tu banco recibe la orden de débito — Tesote nunca almacena tu contraseña. Solo los últimos 4 dígitos de tu cuenta bancaria para reconocerla en próximos pagos.</div>
+          </div>
+        </div>
+
+        <!-- STEP 2 : OTP del banco — PER transaction, always -->
+        <div data-pay-step="2" style="display:none;">
+          <div class="cp-pay-title">Código de tu banco</div>
+          <div class="cp-pay-sub">Tu banco te envió un código de 6 dígitos al teléfono registrado en la cuenta. Ingrésalo para autorizar este débito.<br/><span style="font-size:12px;color:var(--text-3);">Cada pago requiere un código nuevo — es por tu seguridad.</span></div>
+
+          <div class="cp-pay-section">
+            <div class="cp-otp-row">
+              <input class="otp-cell" maxlength="1" inputmode="numeric" />
+              <input class="otp-cell" maxlength="1" inputmode="numeric" />
+              <input class="otp-cell" maxlength="1" inputmode="numeric" />
+              <input class="otp-cell" maxlength="1" inputmode="numeric" />
+              <input class="otp-cell" maxlength="1" inputmode="numeric" />
+              <input class="otp-cell" maxlength="1" inputmode="numeric" />
+            </div>
+            <div class="cp-otp-helper">¿No llegó? <a href="#" id="cpPayResendOtp">Reenviar código</a> · <a href="#" id="cpPayChangeAccount">Cambiar cuenta</a></div>
+          </div>
+        </div>
+
+        <!-- STEP 3 : Procesando -->
+        <div data-pay-step="3" style="display:none;">
+          <div class="cp-proc">
+            <div class="cp-proc-spinner"></div>
+            <div class="cp-proc-title">Procesando con BNC…</div>
+            <div class="cp-proc-sub">Enviando la orden de débito. Esto tarda unos segundos.</div>
+          </div>
+        </div>
+
+        <!-- STEP 4 : Éxito -->
+        <div data-pay-step="4" style="display:none;">
+          <div class="cp-pay-success-icon" id="cpPaySuccessIcon">
+            <svg viewBox="0 0 52 52" class="cp-success-svg" aria-hidden="true">
+              <circle class="cp-success-circle" cx="26" cy="26" r="24"/>
+              <path class="cp-success-check" d="M14.5 26.5l8 8 15-16"/>
+            </svg>
+          </div>
+          <div class="cp-pay-success-title">¡Pagado!</div>
+          <div class="cp-pay-success-sub">Pagaste <strong id="cpPaySuccessAmount">—</strong> a <strong id="cpPaySuccessVendor">—</strong>. Le notificamos del pago a tu proveedor y te enviamos el comprobante por correo.</div>
+
+          <div class="cp-comprobante">
+            <div class="cp-comprobante-label">Comprobante</div>
+            <div class="cp-comprobante-rows">
+              <span class="k">Referencia</span><span class="v" id="cpPaySuccessTxRef">—</span>
+              <span class="k">Fecha</span><span class="v" id="cpPaySuccessTxDate">—</span>
+              <span class="k">Método</span><span class="v" id="cpPaySuccessTxMethod">—</span>
+              <span class="k">Factura</span><span class="v" id="cpPaySuccessTxInvoice">—</span>
+              <span class="k">Concepto</span><span class="v" id="cpPaySuccessTxConcept">—</span>
+              <span class="k">Monto</span><span class="v" id="cpPaySuccessTxAmount">—</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Sticky footer (buttons swap per step) -->
+    <div class="cp-fs-footer" id="cpPayFooter">
+      <div class="cp-fs-footer-inner">
+        <!-- Populated by JS per step -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Exit-confirm modal (shown when user tries to cancel after step 1) -->
+  <div class="cp-exit-modal-backdrop" id="cpPayExitModal">
+    <div class="cp-exit-modal">
+      <div class="cp-exit-modal-head">
+        <div class="cp-exit-modal-title">¿Cancelar el pago?</div>
+        <div class="cp-exit-modal-sub">La operación no se procesará y la factura quedará pendiente. Puedes volver a pagar en cualquier momento.</div>
+      </div>
+      <div class="cp-exit-modal-footer">
+        <button class="cp-exit-modal-btn ghost" id="cpPayExitCancel">Seguir pagando</button>
+        <button class="cp-exit-modal-btn danger" id="cpPayExitConfirm">Cancelar pago</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast host -->
+  <div class="cp-toast-host" id="cpToastHost"></div>
+
+  <script>
+    // ==========================================================
+    //   Flow switcher (dev-only top strip)
+    // ==========================================================
+    document.querySelectorAll('.flow-tab').forEach(tab => {
+      tab.addEventListener('click', () => showScreen(tab.dataset.screen));
+    });
+    document.querySelectorAll('[data-screen-link]').forEach(el => {
+      el.addEventListener('click', e => {
+        e.preventDefault();
+        showScreen(el.dataset.screenLink);
+      });
+    });
+    function showScreen(name) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.flow-tab').forEach(t => t.classList.remove('active'));
+      const target = document.getElementById('screen-' + name);
+      if (target) target.classList.add('active');
+      const tab = document.querySelector('.flow-tab[data-screen="' + name + '"]');
+      if (tab) tab.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+
+    // ==========================================================
+    //   Payer-state toggle (dev-strip) — first-time vs returning
+    // ==========================================================
+    document.querySelectorAll('.payer-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.payer-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        document.body.dataset.payer = tab.dataset.payer;
+        // If sitting on the OTP screen but switched back to first-time,
+        // jump to landing so the visible state stays coherent.
+        if (tab.dataset.payer === 'first-time' &&
+            document.getElementById('screen-login-otp').classList.contains('active')) {
+          showScreen('landing');
+        }
+      });
+    });
+
+    // ==========================================================
+    //   Email OTP (returning sign-in) — auto-advance + Enter to verify
+    // ==========================================================
+    (function () {
+      const row = document.getElementById('login-otp-row');
+      if (!row) return;
+      const cells = Array.from(row.querySelectorAll('.otp-cell'));
+      const verifyBtn = document.getElementById('login-otp-verify');
+
+      cells.forEach((cell, i) => {
+        cell.addEventListener('input', () => {
+          cell.value = cell.value.replace(/\D/g, '').slice(0, 1);
+          cell.classList.toggle('filled', !!cell.value);
+          if (cell.value && i < cells.length - 1) cells[i + 1].focus();
+        });
+        cell.addEventListener('keydown', e => {
+          if (e.key === 'Backspace' && !cell.value && i > 0) cells[i - 1].focus();
+          if (e.key === 'Enter') verifyBtn.click();
+        });
+      });
+
+      // Mirror entered email from landing into the OTP subtitle
+      const returningEmail = document.getElementById('returning-email');
+      const otpEmailTarget = document.getElementById('otp-email-target');
+      if (returningEmail && otpEmailTarget) {
+        returningEmail.addEventListener('input', () => {
+          if (returningEmail.value.trim()) otpEmailTarget.textContent = returningEmail.value.trim();
+        });
+      }
+
+      const resend = document.getElementById('login-otp-resend');
+      if (resend) {
+        resend.addEventListener('click', e => {
+          e.preventDefault();
+          resend.textContent = 'Código reenviado ✓';
+          resend.style.pointerEvents = 'none';
+          setTimeout(() => {
+            resend.textContent = 'Reenviar código';
+            resend.style.pointerEvents = '';
+          }, 2400);
+        });
+      }
+    })();
+
+    // ==========================================================
+    //   PORTAL APP — data, panel rendering, actions
+    // ==========================================================
+    const SVG_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>';
+    const SVG_WARN  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+    const SVG_PLUS  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M4 12h16M12 4v16"/></svg>';
+
+    // Payment-terms (display-only flavor per spec): paymentTermsLabel is a snapshot taken
+    // at issuance (so it's immutable per invoice — see spec entity additions). paymentTermsNote
+    // is a free-text qualifier shown next to the value in the side panel.
+    const CP_INVOICES = {
+      apb: {
+        vendor: 'APB Group, C.A.', vendorRif: 'J-40012345-6', vendorEmail: 'finanzas@apb.com',
+        invoice: 'F-2026-04210', concept: 'Servicios abril 2026',
+        amount: '18.450', cents: '00',
+        issued: '20 abr 2026', due: '8 may 2026',
+        paymentTermsLabel: '30 días', paymentTermsNote: 'crédito otorgado por APB',
+        payToAccount: 'BNC ••••9041 · APB Group',
+        origin: 'Tesote Negocios',
+        state: 'nueva', // nueva | pendiente | aprobada | pagada | vencida | disputada
+        sentAt: '20 abr 10:14', openedAt: null, approvedAt: null, paidAt: null,
+      },
+      canguro: {
+        vendor: 'Canguro Venezuela', vendorRif: 'J-30129984-1', vendorEmail: 'tesoreria@canguro.ve',
+        invoice: 'INV-0882', concept: 'Logística marzo 2026',
+        amount: '12.240', cents: '00',
+        issued: '15 abr 2026', due: '30 abr 2026',
+        paymentTermsLabel: '15 días', paymentTermsNote: 'crédito otorgado por Canguro',
+        payToAccount: 'BNC ••••1139 · Canguro',
+        origin: 'Tesote Negocios',
+        state: 'pendiente',
+        sentAt: '15 abr 08:30', openedAt: '17 abr 14:22', approvedAt: null, paidAt: null,
+      },
+      marcas: {
+        vendor: 'MARCAS PROPIAS', vendorRif: 'J-20114488-3', vendorEmail: 'ap@marcaspropias.com',
+        invoice: 'F-00124', concept: 'Inventario febrero 2026',
+        amount: '12.200', cents: '00',
+        issued: '1 abr 2026', due: '15 abr 2026',
+        paymentTermsLabel: '14 días', paymentTermsNote: 'crédito otorgado por MARCAS PROPIAS',
+        payToAccount: 'BNC ••••8422 · MARCAS',
+        origin: 'Tesote Negocios',
+        state: 'vencida',
+        sentAt: '1 abr 11:20', openedAt: '2 abr 15:10', approvedAt: null, paidAt: null,
+      },
+      'tesote-ventas': {
+        vendor: 'Tesote Ventas', vendorRif: 'J-40553322-4', vendorEmail: 'pagos@tesoteventas.com',
+        invoice: 'F-2026-0033', concept: 'Desarrollo marzo',
+        amount: '14.400', cents: '00',
+        issued: '25 mar 2026', due: '10 abr 2026',
+        paymentTermsLabel: '15 días', paymentTermsNote: 'crédito otorgado por Tesote Ventas',
+        payToAccount: 'BNC ••••7760 · Tesote Ventas',
+        origin: 'Tesote Negocios',
+        state: 'aprobada',
+        sentAt: '25 mar 10:00', openedAt: '26 mar 11:30', approvedAt: '28 mar 09:15', paidAt: null,
+      },
+      aso: {
+        vendor: 'ALMACENADORA ASOPORTUGUESA', vendorRif: 'J-30998877-2', vendorEmail: 'admin@aso.com.ve',
+        invoice: 'F-0091', concept: 'Almacenaje marzo',
+        amount: '14.400', cents: '00',
+        issued: '28 mar 2026', due: '12 abr 2026',
+        paymentTermsLabel: '15 días', paymentTermsNote: 'crédito otorgado por ASOPORTUGUESA',
+        payToAccount: 'BNC ••••5544 · ASOPORTUGUESA',
+        origin: 'Tesote Negocios',
+        state: 'pagada',
+        sentAt: '28 mar 16:00', openedAt: '29 mar 09:00', approvedAt: '1 abr 10:00', paidAt: '5 abr 10:22',
+      },
+    };
+
+    const CP_STATE_META = {
+      nueva:     { pill: 'pill-new',     label: 'Nueva' },
+      pendiente: { pill: 'pill-pending', label: 'Pendiente' },
+      aprobada:  { pill: 'pill-pending', label: 'Aprobada' },
+      pagada:    { pill: 'pill-paid',    label: 'Pagada' },
+      vencida:   { pill: 'pill-overdue', label: 'Vencida' },
+      disputada: { pill: 'pill-overdue', label: 'Disputada' },
+    };
+
+    // --- Side panel ---
+    const cpPanel = document.getElementById('cpSidePanel');
+    const cpBackdrop = document.getElementById('cpPanelBackdrop');
+    const cpPanelVendor = document.getElementById('cpPanelVendor');
+    const cpPanelAmount = document.getElementById('cpPanelAmount');
+    const cpPanelMeta = document.getElementById('cpPanelMeta');
+    const cpPanelBody = document.getElementById('cpPanelBody');
+    const cpPanelFooter = document.getElementById('cpPanelFooter');
+    let cpCurrentInvoice = null;
+
+    function openCpPanel() { cpPanel.classList.add('open'); cpBackdrop.classList.add('open'); }
+    function closeCpPanel() { cpPanel.classList.remove('open'); cpBackdrop.classList.remove('open'); cpCurrentInvoice = null; }
+    document.getElementById('cpPanelClose').addEventListener('click', closeCpPanel);
+    cpBackdrop.addEventListener('click', closeCpPanel);
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && cpPanel.classList.contains('open')) closeCpPanel();
+    });
+
+    function renderCpPanel(key) {
+      const inv = CP_INVOICES[key];
+      if (!inv) return;
+      cpCurrentInvoice = key;
+      cpPanelVendor.textContent = inv.vendor;
+      cpPanelAmount.innerHTML = `Bs. ${inv.amount}<span class="cents">,${inv.cents}</span>`;
+      const sm = CP_STATE_META[inv.state];
+      cpPanelMeta.innerHTML = `
+        <span class="pill ${sm.pill}"><span class="pill-dot"></span>${sm.label}</span>
+        <span class="cp-origin-chip">${SVG_PLUS}${inv.origin}</span>
+      `;
+
+      // State banner
+      let banner = '';
+      if (inv.state === 'vencida') {
+        banner = `<div class="cp-panel-state-banner warn">${SVG_WARN}<div class="txt"><strong>Factura vencida hace 8 días.</strong> Paga ahora para evitar recargos de tu proveedor.</div></div>`;
+      } else if (inv.state === 'aprobada') {
+        banner = `<div class="cp-panel-state-banner muted">${SVG_WARN}<div class="txt"><strong>Pago aprobado.</strong> Esperando que tu banco procese el débito. Te avisaremos cuando se confirme.</div></div>`;
+      } else if (inv.state === 'pagada') {
+        banner = `<div class="cp-panel-state-banner success">${SVG_CHECK}<div class="txt"><strong>Pagado el ${inv.paidAt}.</strong> El comprobante se envió a ${inv.vendorEmail}.</div></div>`;
+      }
+
+      // Body sections
+      // Payment-terms line: only render when the invoice has terms data on file (display-only flavor a per spec)
+      const termsLine = inv.paymentTermsLabel
+        ? `<div class="cp-panel-row"><div class="cp-panel-row-k">Términos de pago</div><div class="cp-panel-row-v">${inv.paymentTermsLabel}${inv.paymentTermsNote ? ` <span style="color:var(--text-3);font-size:11px;">· ${inv.paymentTermsNote}</span>` : ''}</div></div>`
+        : '';
+      const detailsHtml = `
+        <div class="cp-panel-section">
+          <div class="cp-panel-section-label">Detalles de la factura</div>
+          <div class="cp-panel-row"><div class="cp-panel-row-k">Factura</div><div class="cp-panel-row-v">#${inv.invoice}</div></div>
+          <div class="cp-panel-row"><div class="cp-panel-row-k">Concepto</div><div class="cp-panel-row-v">${inv.concept}</div></div>
+          <div class="cp-panel-row"><div class="cp-panel-row-k">Monto</div><div class="cp-panel-row-v">Bs. ${inv.amount},${inv.cents}</div></div>
+          <div class="cp-panel-row"><div class="cp-panel-row-k">Emitida</div><div class="cp-panel-row-v">${inv.issued}</div></div>
+          <div class="cp-panel-row"><div class="cp-panel-row-k">Vence</div><div class="cp-panel-row-v">${inv.due}</div></div>
+          ${termsLine}
+          <div class="cp-panel-row"><div class="cp-panel-row-k">Cuenta destino</div><div class="cp-panel-row-v">${inv.payToAccount}</div></div>
+        </div>`;
+      const vendorHtml = `
+        <div class="cp-panel-section">
+          <div class="cp-panel-section-label">Proveedor</div>
+          <div class="cp-panel-row"><div class="cp-panel-row-k">Razón social</div><div class="cp-panel-row-v">${inv.vendor}</div></div>
+          <div class="cp-panel-row"><div class="cp-panel-row-k">RIF</div><div class="cp-panel-row-v">${inv.vendorRif}</div></div>
+          <div class="cp-panel-row"><div class="cp-panel-row-k">Contacto</div><div class="cp-panel-row-v">${inv.vendorEmail}</div></div>
+        </div>`;
+      const timelineHtml = buildCpTimeline(inv);
+
+      cpPanelBody.innerHTML = banner + detailsHtml + vendorHtml + timelineHtml;
+
+      // Footer per state
+      cpPanelFooter.innerHTML = footerForState(inv);
+      cpPanelFooter.querySelectorAll('[data-cp-action]').forEach(btn => {
+        btn.addEventListener('click', () => handleCpAction(btn.dataset.cpAction, key));
+      });
+    }
+
+    function buildCpTimeline(inv) {
+      const items = [];
+      items.push({ status: 'done', label: `Recibida de ${inv.vendor.split(',')[0]}`, meta: inv.issued });
+      if (inv.sentAt) items.push({ status: 'done', label: 'Enlace recibido por email', meta: inv.sentAt });
+      if (inv.openedAt) items.push({ status: 'done', label: 'Abriste el enlace', meta: inv.openedAt });
+      else if (['nueva','pendiente','vencida'].includes(inv.state)) items.push({ status: 'active', label: 'Revisar y aprobar' });
+      if (inv.approvedAt) items.push({ status: 'done', label: 'Aprobaste el pago', meta: inv.approvedAt });
+      else if (inv.openedAt && ['pendiente','vencida','nueva'].includes(inv.state)) items.push({ status: 'pending', label: 'Aprobar pago' });
+      if (inv.state === 'aprobada') items.push({ status: 'active', label: 'Esperando confirmación del banco' });
+      if (inv.paidAt) items.push({ status: 'done', label: 'Pagada', meta: inv.paidAt });
+      else if (inv.state !== 'pagada' && inv.approvedAt) items.push({ status: 'pending', label: 'Pagada' });
+      if (inv.state === 'vencida') items.push({ status: 'active', label: 'Factura vencida — paga ahora' });
+
+      const itemsHtml = items.map(it => `
+        <div class="cp-timeline-item ${it.status}">
+          <div class="cp-timeline-dot">${it.status === 'done' ? SVG_CHECK : ''}</div>
+          <div class="cp-timeline-content">
+            <div class="cp-timeline-label">${it.label}</div>
+            ${it.meta ? `<div class="cp-timeline-meta">${it.meta}</div>` : ''}
+          </div>
+        </div>`).join('');
+
+      return `
+        <div class="cp-panel-section">
+          <div class="cp-panel-section-label">Historial</div>
+          <div class="cp-timeline">${itemsHtml}</div>
+        </div>`;
+    }
+
+    function footerForState(inv) {
+      switch (inv.state) {
+        case 'nueva':
+        case 'pendiente':
+          return `
+            <button class="cp-panel-footer-btn ghost" data-cp-action="dispute">Disputar</button>
+            <button class="cp-panel-footer-btn primary" data-cp-action="pay">Aprobar y pagar</button>`;
+        case 'vencida':
+          return `
+            <button class="cp-panel-footer-btn ghost" data-cp-action="dispute">Disputar</button>
+            <button class="cp-panel-footer-btn urgent" data-cp-action="pay">Pagar ahora</button>`;
+        case 'aprobada':
+          return `<button class="cp-panel-footer-btn ghost" style="flex:1;" disabled>Procesando en tu banco…</button>`;
+        case 'pagada':
+          return `
+            <button class="cp-panel-footer-btn ghost" data-cp-action="receipt">Comprobante</button>
+            <button class="cp-panel-footer-btn primary" data-cp-action="share">Compartir</button>`;
+        default:
+          return `<button class="cp-panel-footer-btn ghost" style="flex:1;">Ver</button>`;
+      }
+    }
+
+    function handleCpAction(action, key) {
+      const inv = CP_INVOICES[key]; if (!inv) return;
+      if (action === 'pay') {
+        // v0 prototype: simple confirmation toast. Real BNC flow is a follow-up phase.
+        cpToast(`Conecta tu banco BNC para pagar con 1 clic`);
+        // For demo: also pulse the top-bar "Conectar mi banco" button
+        const btn = document.getElementById('cpConnectBankBtn');
+        if (btn) {
+          btn.style.transition = 'transform .15s';
+          btn.style.transform = 'scale(1.06)';
+          setTimeout(() => btn.style.transform = '', 300);
+        }
+        return;
+      }
+      if (action === 'dispute') {
+        cpToast(`Función de disputa próximamente`);
+        return;
+      }
+      if (action === 'receipt') {
+        cpToast(`Comprobante descargado (demo)`);
+        return;
+      }
+      if (action === 'share') {
+        cpToast(`Enlace de comprobante copiado`);
+        return;
+      }
+    }
+
+    // Row clicks open the panel for that invoice
+    document.querySelectorAll('[data-cp-invoice]').forEach(row => {
+      row.addEventListener('click', e => {
+        // Let button clicks in the row trigger actions without opening the panel first
+        if (e.target.closest('button.cp-action-btn')) return;
+        const key = row.dataset.cpInvoice;
+        renderCpPanel(key);
+        openCpPanel();
+      });
+    });
+    // Row-action buttons
+    document.querySelectorAll('.cp-action-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        const row = btn.closest('[data-cp-invoice]'); if (!row) return;
+        const key = row.dataset.cpInvoice;
+        const inv = CP_INVOICES[key]; if (!inv) return;
+        if (inv.state === 'pagada') {
+          cpToast(`Comprobante descargado (demo)`);
+        } else if (inv.state === 'aprobada') {
+          cpToast(`Pago en proceso con tu banco`);
+        } else {
+          renderCpPanel(key);
+          openCpPanel();
+        }
+      });
+    });
+
+    // Top-bar / Inicio / locked-card CTAs — all route to "Habla con ventas"
+    function triggerConnectBank() {
+      cpToast(`Recibimos tu interés. Un asesor de ventas te contactará pronto.`);
+    }
+    document.getElementById('cpConnectBankBtn').addEventListener('click', triggerConnectBank);
+    const cpConnectInicio = document.getElementById('cpConnectBankInicio');
+    if (cpConnectInicio) cpConnectInicio.addEventListener('click', triggerConnectBank);
+    const cpConnectCard = document.getElementById('cpConnectBankCard');
+    if (cpConnectCard) cpConnectCard.addEventListener('click', triggerConnectBank);
+
+    // Inicio → preview row → open the right invoice panel
+    document.querySelectorAll('[data-cp-preview]').forEach(row => {
+      row.addEventListener('click', () => {
+        const key = row.dataset.cpPreview;
+        renderCpPanel(key);
+        openCpPanel();
+      });
+    });
+
+    // ---------- Sidebar / quick-action navigation ----------
+    function cpShowScreen(name) {
+      document.querySelectorAll('[data-cp-screen]').forEach(s => {
+        s.classList.toggle('active', s.dataset.cpScreen === name);
+      });
+      document.querySelectorAll('.sb-item[data-cp-nav]').forEach(i => {
+        i.classList.toggle('active', i.dataset.cpNav === name);
+      });
+      // Close side panel when switching screens
+      closeCpPanel();
+      // Scroll top
+      const content = document.querySelector('.cp-content');
+      if (content) content.scrollTo({ top: 0, behavior: 'instant' });
+    }
+    document.querySelectorAll('[data-cp-nav]').forEach(el => {
+      el.addEventListener('click', e => {
+        if (el.classList.contains('locked')) return;
+        e.stopPropagation();
+        cpShowScreen(el.dataset.cpNav);
+      });
+    });
+
+    // Toast helper
+    const cpToastHost = document.getElementById('cpToastHost');
+    function cpToast(message) {
+      cpToastHost.innerHTML = `<div class="cp-toast"><span class="cp-toast-icon">${SVG_CHECK}</span>${message}</div>`;
+      const t = cpToastHost.querySelector('.cp-toast');
+      requestAnimationFrame(() => t.classList.add('show'));
+      setTimeout(() => {
+        t.classList.remove('show');
+        setTimeout(() => cpToastHost.innerHTML = '', 250);
+      }, 3200);
+    }
+
+    // ======================================================
+    //   PAY FLOW — 4 steps, guest-checkout + returning paths
+    // ======================================================
+    const PAYER_PROFILE = { accounts: [] };   // accumulates as the user pays invoices
+
+    // Venezuelan bank codes — first 4 digits of every account number
+    const BANK_PREFIXES = {
+      '0102': 'Banco de Venezuela',
+      '0104': 'Venezolano de Crédito',
+      '0105': 'Mercantil',
+      '0108': 'BBVA Provincial',
+      '0114': 'Bancaribe',
+      '0115': 'Exterior',
+      '0116': 'BOD',
+      '0128': 'Banco Caroní',
+      '0134': 'Banesco',
+      '0137': 'Sofitasa',
+      '0138': 'Banco Plaza',
+      '0151': 'BFC Banco Fondo Común',
+      '0156': '100% Banco',
+      '0157': 'DelSur',
+      '0163': 'Banco del Tesoro',
+      '0168': 'Bancamiga',
+      '0171': 'Banco Activo',
+      '0174': 'Banplus',
+      '0175': 'Banco Bicentenario',
+      '0191': 'BNC',
+    };
+    function detectBankFromAccount(val) {
+      const digits = (val || '').replace(/\D/g, '');
+      if (digits.length < 4) return null;
+      return BANK_PREFIXES[digits.slice(0, 4)] || 'unknown';
+    }
+    function normalizeRifCedula(val) {
+      // Accept J-40012345-6 · j40012345-6 · J40012345.6 · etc. → J400123456
+      return (val || '').replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+    }
+    function normalizePhone(val) {
+      return (val || '').replace(/\D/g, '');
+    }
+
+    const payOverlay = document.getElementById('cpPayOverlay');
+    const payExitModal = document.getElementById('cpPayExitModal');
+    const payFooterInner = document.querySelector('#cpPayFooter .cp-fs-footer-inner');
+    let payCurrentStep = 1;
+    let payCurrentKey = null;
+    let paySelectedAccount = null;   // reference to a PAYER_PROFILE.accounts item or the first-time synthetic
+    let payAccountType = 'empresa';  // 'empresa' | 'persona'
+
+    function stampShort() {
+      const m = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+      const d = new Date();
+      return `${d.getDate()} ${m[d.getMonth()]} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    }
+    function stampFullDate() {
+      const m = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+      const d = new Date();
+      return `${d.getDate()} ${m[d.getMonth()]} ${d.getFullYear()} · ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    }
+    function randomTxRef() {
+      return 'TX-' + String(Math.floor(Math.random() * 1e10)).padStart(10, '0');
+    }
+
+    // ─── Multi-pay helpers ────────────────────────────────────────────
+    // Invoice amounts in CP_INVOICES are stored as display strings ("18.450" + "00"),
+    // not raw cents. Convert via these helpers so totals are correct.
+    function invToCents(inv) {
+      const intPart = parseInt(String(inv.amount).replace(/\./g, ''), 10) || 0;
+      const cents = parseInt(String(inv.cents || '00').padEnd(2, '0').slice(0, 2), 10) || 0;
+      return intPart * 100 + cents;
+    }
+    function centsToBsString(totalCents) {
+      const intPart = Math.floor(totalCents / 100);
+      const cents = String(totalCents % 100).padStart(2, '0');
+      // Venezuelan formatting: thousands separator = '.', decimal = ','
+      const intStr = intPart.toLocaleString('es-VE');
+      return `${intStr},${cents}`;
+    }
+    function renderMultiPaySummary(keys) {
+      let totalCents = 0;
+      const rows = keys.map(k => {
+        const inv = CP_INVOICES[k];
+        if (!inv) return '';
+        const c = invToCents(inv);
+        totalCents += c;
+        return `<div class="cp-multi-list-row">
+          <span class="k">#${inv.invoice}</span>
+          <span class="lbl">${inv.concept}</span>
+          <span class="v">Bs. ${centsToBsString(c)}</span>
+        </div>`;
+      }).join('');
+      const totalStr = centsToBsString(totalCents);
+      // Use the FIRST invoice's vendor; in v1 multi-pay is intended for a single counterparty
+      // (the only sensible bundle). If keys span multiple vendors, the label still reads from
+      // the first one — refine in v1.1 if cross-vendor bundles surface.
+      const firstInv = CP_INVOICES[keys[0]];
+      const vendorLabel = firstInv ? firstInv.vendor : '—';
+      document.getElementById('cpPayMultiVendor').textContent = `${vendorLabel} · ${keys.length} facturas`;
+      const [intPart, centsPart] = totalStr.split(',');
+      document.getElementById('cpPayMultiAmount').innerHTML = `Bs. ${intPart}<span class="cents">,${centsPart}</span>`;
+      document.getElementById('cpPayMultiList').innerHTML =
+        rows + `<div class="cp-multi-list-foot"><span>Total · ${keys.length} facturas</span><span>Bs. ${totalStr}</span></div>`;
+    }
+
+    // Sync labels/placeholders to the current account type. Bank is auto-detected from account number.
+    function applyAccountTypeUi() {
+      const holderIdLbl = document.getElementById('cpPayHolderIdLabel');
+      const holderIdInput = document.getElementById('cpPayHolderRif');
+      const holderLbl = document.getElementById('cpPayHolderLabel');
+      const holderInput = document.getElementById('cpPayHolder');
+
+      document.querySelectorAll('#cpPayAcctType [data-acct-type]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.acctType === payAccountType);
+      });
+
+      if (payAccountType === 'empresa') {
+        holderIdLbl.textContent = 'RIF';
+        holderIdInput.placeholder = 'J-00000000-0';
+        holderLbl.textContent = 'Nombre legal del titular';
+        holderInput.placeholder = 'Kaizen Logística, C.A.';
+      } else {
+        holderIdLbl.textContent = 'Cédula';
+        holderIdInput.placeholder = 'V-00000000';
+        holderLbl.textContent = 'Nombre completo del titular';
+        holderInput.placeholder = 'María Pérez González';
+      }
+      // Reflect type constraints in the bank-detect indicator
+      updateBankDetect();
+    }
+    document.querySelectorAll('#cpPayAcctType [data-acct-type]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        payAccountType = btn.dataset.acctType;
+        applyAccountTypeUi();
+      });
+    });
+
+    // Bank auto-detect as user types the account number
+    function updateBankDetect() {
+      const input = document.getElementById('cpPayAccountNum');
+      const el = document.getElementById('cpBankDetect');
+      const text = document.getElementById('cpBankDetectText');
+      if (!input || !el || !text) return;
+      const digits = input.value.replace(/\D/g, '');
+      if (digits.length < 4) {
+        el.className = 'cp-bank-detect empty';
+        text.textContent = 'Reconocemos tu banco por los primeros 4 dígitos. Ingresa 20 dígitos en total.';
+        return;
+      }
+      const bank = detectBankFromAccount(input.value);
+      if (!bank || bank === 'unknown') {
+        el.className = 'cp-bank-detect invalid';
+        text.innerHTML = 'No reconocemos este banco por los primeros 4 dígitos. Revisa el número.';
+        return;
+      }
+      if (payAccountType === 'empresa' && bank !== 'BNC') {
+        el.className = 'cp-bank-detect invalid';
+        text.innerHTML = `Detectamos <strong>${bank}</strong>. Las cuentas empresa solo funcionan con <strong>BNC</strong> por ahora. Usa una cuenta personal o cambia a una cuenta BNC.`;
+        return;
+      }
+      const ok = digits.length === 20;
+      el.className = 'cp-bank-detect detected';
+      text.innerHTML = `Banco: <strong>${bank}</strong>${ok ? '' : ` · faltan ${20 - digits.length} dígitos`}`;
+    }
+    document.getElementById('cpPayAccountNum').addEventListener('input', updateBankDetect);
+
+    // Multi-pay state — `payIsMulti=true` and `payMultiKeys` set when caller passes an array.
+    let payIsMulti = false;
+    let payMultiKeys = [];
+
+    function openPayFlow(keyOrKeys) {
+      // Accept either a single string key (single-pay) or an array of keys (multi-pay).
+      const isArr = Array.isArray(keyOrKeys);
+      const keys = isArr ? keyOrKeys.slice() : [keyOrKeys];
+      payIsMulti = keys.length > 1;
+      payMultiKeys = payIsMulti ? keys : [];
+      const key = keys[0];
+      const inv = CP_INVOICES[key];
+      if (!inv) return;
+      if (!payIsMulti && inv.state === 'pagada') { cpToast('Esta factura ya está pagada'); return; }
+      payCurrentKey = key;
+      payCurrentStep = 1;
+      paySelectedAccount = null;
+
+      // Toggle single-mode vs multi-mode hero card
+      const singleSummary = document.getElementById('cpPaySingleSummary');
+      const multiSummary = document.getElementById('cpPayMultiSummary');
+      if (payIsMulti) {
+        singleSummary.style.display = 'none';
+        multiSummary.style.display = '';
+        renderMultiPaySummary(keys);
+      } else {
+        singleSummary.style.display = '';
+        multiSummary.style.display = 'none';
+      }
+
+      // Default account type: empresa if the logged-in counterparty is a company (RIF), persona otherwise.
+      // We infer from Kaizen's RIF in the sidebar user chip (J- prefix = empresa).
+      payAccountType = 'empresa';  // Kaizen Logística → empresa default
+      applyAccountTypeUi();
+
+      // Pre-fill the account-number, RIF, phone, holder fields (editable).
+      // The workspace-customer filled out the counterparty's name when creating the invoice — pre-fill it here.
+      const isEmpresa = payAccountType === 'empresa';
+      document.getElementById('cpPayAccountNum').value = '';
+      document.getElementById('cpPayHolderRif').value = isEmpresa ? 'J-40882311-9' : '';
+      document.getElementById('cpPayPhone').value = '';
+      document.getElementById('cpPayHolder').value = 'Kaizen Logística, C.A.';
+      updateBankDetect();
+
+      // Fill step-1 summary (single-mode fields; multi-mode is filled by renderMultiPaySummary above)
+      document.getElementById('cpPayInvVendor').textContent = inv.vendor;
+      document.getElementById('cpPayInvAmount').innerHTML = `Bs. ${inv.amount}<span class="cents">,${inv.cents}</span>`;
+      document.getElementById('cpPayInvFactura').textContent = `#${inv.invoice}`;
+      document.getElementById('cpPayInvConcept').textContent = inv.concept;
+      document.getElementById('cpPayInvDue').textContent = inv.due;
+
+      // Decide: returning (saved accounts) or first-time (inline entry)
+      const savedEl = document.getElementById('cpPaySavedAccounts');
+      const entryEl = document.getElementById('cpPayBankEntry');
+      if (PAYER_PROFILE.accounts.length > 0) {
+        // Render saved accounts; pre-select the most-recent one
+        const listEl = document.getElementById('cpPayAcctList');
+        listEl.innerHTML = PAYER_PROFILE.accounts.map((a, i) => {
+          const typeTag = a.accountType === 'persona' ? 'Persona' : 'Empresa';
+          return `
+          <div class="cp-acct-card ${i === PAYER_PROFILE.accounts.length - 1 ? 'selected' : ''}" data-pay-acct="${i}">
+            <div class="cp-acct-logo">${a.bank === 'BNC' ? 'BNC' : a.bank.slice(0,3).toUpperCase()}</div>
+            <div class="cp-acct-body">
+              <div class="cp-acct-name">${a.holder}<span class="cp-acct-type-tag">${typeTag}</span></div>
+              <div class="cp-acct-meta">${a.bank} · ••${a.last4}</div>
+            </div>
+            <div class="cp-acct-radio"></div>
+          </div>`;
+        }).join('') +
+          `<div class="cp-acct-card add-new" data-pay-acct="new">+ Usar otra cuenta</div>`;
+        // wire
+        listEl.querySelectorAll('[data-pay-acct]').forEach(card => {
+          card.addEventListener('click', () => {
+            const idx = card.dataset.payAcct;
+            if (idx === 'new') {
+              // swap to first-time form
+              savedEl.style.display = 'none';
+              entryEl.style.display = 'block';
+              paySelectedAccount = null;
+              return;
+            }
+            listEl.querySelectorAll('[data-pay-acct]').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            paySelectedAccount = PAYER_PROFILE.accounts[parseInt(idx, 10)];
+          });
+        });
+        paySelectedAccount = PAYER_PROFILE.accounts[PAYER_PROFILE.accounts.length - 1];
+        savedEl.style.display = 'block';
+        entryEl.style.display = 'none';
+      } else {
+        savedEl.style.display = 'none';
+        entryEl.style.display = 'block';
+        paySelectedAccount = null;
+      }
+
+      // Reset the OTP inputs
+      document.querySelectorAll('#cpPayOverlay .otp-cell').forEach(c => { c.value = ''; c.classList.remove('filled'); });
+
+      renderPayStep();
+      payOverlay.classList.add('open');
+    }
+
+    function closePayFlow(force) {
+      // If past step 1 (authorization given) and not forced, ask for confirm
+      if (!force && payCurrentStep === 2) {
+        payExitModal.classList.add('open');
+        return;
+      }
+      payOverlay.classList.remove('open');
+      payCurrentKey = null;
+      payCurrentStep = 1;
+    }
+
+    function renderPayStep() {
+      // Show the current step's content, hide others
+      document.querySelectorAll('[data-pay-step]').forEach(el => {
+        el.style.display = (parseInt(el.dataset.payStep, 10) === payCurrentStep) ? 'block' : 'none';
+      });
+      // Replay success-icon draw-in every time we land on step 4
+      if (payCurrentStep === 4) {
+        const icon = document.getElementById('cpPaySuccessIcon');
+        if (icon) {
+          icon.classList.remove('animate');
+          // Force reflow so the next class add restarts the keyframes.
+          void icon.offsetWidth;
+          icon.classList.add('animate');
+        }
+      }
+      // Update step indicator
+      const indicator = document.getElementById('cpPayStepIndicator');
+      indicator.style.display = payCurrentStep === 4 ? 'none' : 'flex';
+      document.querySelectorAll('[data-pay-step-ind]').forEach(el => {
+        const n = parseInt(el.dataset.payStepInd, 10);
+        el.classList.remove('active', 'done');
+        if (n < payCurrentStep) { el.classList.add('done'); el.querySelector('.cp-wz-step-dot').innerHTML = SVG_CHECK; }
+        else if (n === payCurrentStep) { el.classList.add('active'); el.querySelector('.cp-wz-step-dot').textContent = String(n); }
+        else { el.querySelector('.cp-wz-step-dot').textContent = String(n); }
+      });
+
+      // Footer per step
+      const inv = CP_INVOICES[payCurrentKey];
+      if (payCurrentStep === 1) {
+        // Aprobar label reflects single-invoice amount or the multi-pay batch total.
+        let approveAmtLabel = inv ? inv.amount : '0';
+        if (payIsMulti) {
+          const total = payMultiKeys.reduce((acc, k) => acc + (CP_INVOICES[k] ? invToCents(CP_INVOICES[k]) : 0), 0);
+          approveAmtLabel = centsToBsString(total).split(',')[0];
+        }
+        payFooterInner.innerHTML = `
+          <button class="cp-fs-btn ghost" data-pay-action="close">Cancelar</button>
+          <button class="cp-fs-btn primary" data-pay-action="approve">
+            Aprobar Bs. ${approveAmtLabel}
+          </button>`;
+      } else if (payCurrentStep === 2) {
+        payFooterInner.innerHTML = `
+          <button class="cp-fs-btn ghost" data-pay-action="back">← Volver</button>
+          <button class="cp-fs-btn primary" data-pay-action="confirm" disabled>Confirmar pago</button>`;
+      } else if (payCurrentStep === 3) {
+        payFooterInner.innerHTML = '';  // no buttons during processing
+      } else if (payCurrentStep === 4) {
+        payFooterInner.innerHTML = `
+          <button class="cp-fs-btn secondary" data-pay-action="receipt">Descargar comprobante</button>
+          <button class="cp-fs-btn primary" data-pay-action="done">Volver al portal</button>`;
+      }
+      // Wire footer actions
+      payFooterInner.querySelectorAll('[data-pay-action]').forEach(b => {
+        b.addEventListener('click', () => handlePayFooter(b.dataset.payAction));
+      });
+
+    }
+
+    function handlePayFooter(action) {
+      if (action === 'close') {
+        // On step 1 nothing is committed, no confirm
+        closePayFlow(true);
+        return;
+      }
+      if (action === 'back') {
+        payCurrentStep = 1;
+        renderPayStep();
+        return;
+      }
+      if (action === 'approve') {
+        // If a saved account is selected, go straight to Layer 2 (OTP required per transaction, always).
+        if (PAYER_PROFILE.accounts.length > 0 && paySelectedAccount) {
+          payCurrentStep = 2;
+          renderPayStep();
+          setTimeout(() => {
+            const first = document.querySelector('#cpPayOverlay .otp-cell');
+            if (first) first.focus();
+          }, 60);
+          return;
+        }
+        // Inline-entry path — validate + normalize
+        const numEl = document.getElementById('cpPayAccountNum');
+        const rifEl = document.getElementById('cpPayHolderRif');
+        const phoneEl = document.getElementById('cpPayPhone');
+        const holderEl = document.getElementById('cpPayHolder');
+        const accountDigits = numEl.value.replace(/\D/g, '');
+        const phoneDigits = normalizePhone(phoneEl.value);
+        const rifNorm = normalizeRifCedula(rifEl.value);
+        const holder = holderEl.value.trim();
+        const detectedBank = detectBankFromAccount(numEl.value);
+        const isEmpresa = payAccountType === 'empresa';
+
+        // Validation
+        if (accountDigits.length !== 20) {
+          numEl.focus();
+          cpToast('El número de cuenta debe tener 20 dígitos');
+          return;
+        }
+        if (!detectedBank || detectedBank === 'unknown') {
+          numEl.focus();
+          cpToast('No reconocemos el banco por los primeros 4 dígitos. Revisa el número.');
+          return;
+        }
+        if (isEmpresa && detectedBank !== 'BNC') {
+          cpToast('Cuentas empresa solo funcionan con BNC. Usa una cuenta personal o cambia el número.');
+          return;
+        }
+        if (rifNorm.length < 6) {
+          rifEl.focus();
+          cpToast(`Ingresa un ${isEmpresa ? 'RIF' : 'cédula'} válido`);
+          return;
+        }
+        if (phoneDigits.length !== 11) {
+          phoneEl.focus();
+          cpToast('El teléfono debe tener 11 dígitos (04XX XXX XXXX)');
+          return;
+        }
+        if (!holder) {
+          holderEl.focus();
+          cpToast('Ingresa el nombre del titular');
+          return;
+        }
+
+        paySelectedAccount = {
+          bank: detectedBank,
+          accountNumber: accountDigits,
+          last4: accountDigits.slice(-4),
+          holder,
+          rif: rifNorm,
+          phone: phoneDigits,
+          accountType: payAccountType,
+        };
+
+        payCurrentStep = 2;
+        renderPayStep();
+        setTimeout(() => {
+          const first = document.querySelector('#cpPayOverlay .otp-cell');
+          if (first) first.focus();
+        }, 60);
+        return;
+      }
+      if (action === 'confirm') {
+        // Per-transaction OTP — no standing-auth skip; just advance
+        payCurrentStep = 3;
+        renderPayStep();
+        runProcessingAndFinish();
+        return;
+      }
+      if (action === 'done') {
+        finishAndClose();
+        return;
+      }
+      if (action === 'receipt') {
+        cpToast('Comprobante descargado (demo)');
+        return;
+      }
+    }
+
+    function runProcessingAndFinish() {
+      setTimeout(() => {
+        // Save account to PAYER_PROFILE (idempotent by last4 + bank). Always stored; no standing-auth.
+        const existing = PAYER_PROFILE.accounts.find(a =>
+          a.bank === paySelectedAccount.bank && a.last4 === paySelectedAccount.last4
+        );
+        if (!existing) PAYER_PROFILE.accounts.push(paySelectedAccount);
+
+        const comprobanteRowsEl = document.querySelector('#cpPayOverlay .cp-comprobante-rows');
+
+        if (payIsMulti) {
+          // Multi-pay: mark all selected invoices paid, render aggregate comprobante.
+          // One BNC debit on the backend; surface a single referencia (batchRef).
+          // In production, every Cobro in this batch shares a `payment_batch_id` (see PRD §Data model).
+          // The prototype doesn't persist the batch id — the in-memory comprobante carries it via batchRef.
+          const batchRef = randomTxRef();
+          const stamp = stampFullDate();
+          let totalCents = 0;
+          const lines = [];
+          payMultiKeys.forEach(k => {
+            const inv = CP_INVOICES[k];
+            if (!inv) return;
+            inv.state = 'pagada';
+            inv.paidAt = stampShort();
+            inv.approvedAt = inv.approvedAt || stampShort();
+            const c = invToCents(inv);
+            totalCents += c;
+            lines.push({ inv, cents: c });
+          });
+          const firstInv = CP_INVOICES[payMultiKeys[0]];
+          document.getElementById('cpPaySuccessAmount').textContent = `Bs. ${centsToBsString(totalCents)}`;
+          document.getElementById('cpPaySuccessVendor').textContent = firstInv ? firstInv.vendor : '—';
+          if (comprobanteRowsEl) {
+            const linesHtml = lines.map(({inv, cents}) =>
+              `<span class="k">${inv.invoice}</span><span class="v">${inv.concept} · Bs. ${centsToBsString(cents)}</span>`
+            ).join('');
+            comprobanteRowsEl.innerHTML = `
+              <span class="k">Referencia</span><span class="v">${batchRef}</span>
+              <span class="k">Fecha</span><span class="v">${stamp}</span>
+              <span class="k">Método</span><span class="v">Débito Inmediato · ${paySelectedAccount.bank} ••${paySelectedAccount.last4}</span>
+              <span class="k">Lote</span><span class="v">${payMultiKeys.length} facturas · 1 débito BNC</span>
+              ${linesHtml}
+              <span class="k" style="font-weight:600;">Total pagado</span><span class="v" style="font-weight:700;">Bs. ${centsToBsString(totalCents)}</span>`;
+          }
+          // Advance to step 4
+          payCurrentStep = 4;
+          renderPayStep();
+          // Mutate rows
+          payMultiKeys.forEach(k => updateInvoiceRowDom(k));
+          // Clear selection state on the Pagos table
+          if (typeof resetMultipaySelection === 'function') resetMultipaySelection();
+          return;
+        }
+
+        // Single-pay path
+        const key = payCurrentKey;
+        const inv = CP_INVOICES[key];
+        if (!inv) return;
+        inv.state = 'pagada';
+        inv.paidAt = stampShort();
+        inv.approvedAt = inv.approvedAt || stampShort();
+
+        // Restore single-mode comprobante row layout (multi-pay rewrites it via innerHTML above).
+        if (comprobanteRowsEl) {
+          comprobanteRowsEl.innerHTML = `
+              <span class="k">Referencia</span><span class="v" id="cpPaySuccessTxRef">${randomTxRef()}</span>
+              <span class="k">Fecha</span><span class="v" id="cpPaySuccessTxDate">${stampFullDate()}</span>
+              <span class="k">Método</span><span class="v" id="cpPaySuccessTxMethod">Débito Inmediato · ${paySelectedAccount.bank} ••${paySelectedAccount.last4}</span>
+              <span class="k">Factura</span><span class="v" id="cpPaySuccessTxInvoice">#${inv.invoice}</span>
+              <span class="k">Concepto</span><span class="v" id="cpPaySuccessTxConcept">${inv.concept}</span>
+              <span class="k">Monto</span><span class="v" id="cpPaySuccessTxAmount">Bs. ${inv.amount},${inv.cents}</span>`;
+        }
+        // Fill the title sub-line
+        document.getElementById('cpPaySuccessAmount').textContent = `Bs. ${inv.amount},${inv.cents}`;
+        document.getElementById('cpPaySuccessVendor').textContent = inv.vendor;
+
+        // Advance to step 4
+        payCurrentStep = 4;
+        renderPayStep();
+
+        // Mutate the row in the Pagar table + side panel if open
+        updateInvoiceRowDom(key);
+      }, 1800);
+    }
+
+    function finishAndClose() {
+      const inv = CP_INVOICES[payCurrentKey];
+      const amount = inv ? `Bs. ${inv.amount},${inv.cents}` : '';
+      const vendor = inv ? inv.vendor : '';
+      closePayFlow(true);
+      if (amount && vendor) cpToast(`Pagaste ${amount} a ${vendor}`);
+      // Ensure user lands on Pagar screen with row visible
+      cpShowScreen('pagar');
+    }
+
+    function updateInvoiceRowDom(key) {
+      const row = document.querySelector(`[data-cp-invoice="${key}"]`);
+      if (!row) return;
+      const tds = row.children;
+      // Pagos table column order (10 cells with multi-pay checkbox + Plazo):
+      // 0 cb · 1 Proveedor · 2 Factura · 3 Concepto · 4 Monto · 5 Emitida · 6 Vence · 7 Plazo · 8 Estado · 9 Acción
+      if (tds[0]) tds[0].innerHTML = '<!-- pagada — checkbox removed -->';  // strip checkbox so paid rows can't be re-selected
+      if (tds[8]) tds[8].innerHTML = `<span class="pill pill-paid">Pagada</span>`;
+      if (tds[9]) {
+        tds[9].innerHTML = `<button class="cp-action-btn ghost">Ver comprobante</button>`;
+        const verBtn = tds[9].querySelector('.cp-action-btn');
+        if (verBtn) {
+          verBtn.addEventListener('click', e => {
+            e.stopPropagation();
+            cpToast('Comprobante descargado (demo)');
+          });
+        }
+      }
+      row.style.opacity = '.78';
+      // Re-render side panel if it's showing the same invoice
+      if (cpCurrentInvoice === key && cpPanel.classList.contains('open')) {
+        renderCpPanel(key);
+      }
+    }
+
+    // Close / cancel / modal wiring
+    document.getElementById('cpPayClose').addEventListener('click', () => closePayFlow(false));
+    document.getElementById('cpPayExitCancel').addEventListener('click', () => payExitModal.classList.remove('open'));
+    document.getElementById('cpPayExitConfirm').addEventListener('click', () => {
+      payExitModal.classList.remove('open');
+      closePayFlow(true);
+    });
+    payExitModal.addEventListener('click', e => { if (e.target === payExitModal) payExitModal.classList.remove('open'); });
+    document.addEventListener('keydown', e => {
+      if (e.key !== 'Escape') return;
+      if (payExitModal.classList.contains('open')) { payExitModal.classList.remove('open'); return; }
+      if (payOverlay.classList.contains('open')) { e.stopPropagation(); closePayFlow(false); }
+    }, true);
+
+    // OTP input: auto-advance + enable Confirm when 6 digits entered
+    document.querySelectorAll('#cpPayOverlay .otp-cell').forEach((cell, idx, all) => {
+      cell.addEventListener('input', () => {
+        cell.value = cell.value.replace(/\D/g, '').slice(0, 1);
+        cell.classList.toggle('filled', !!cell.value);
+        if (cell.value && idx < all.length - 1) all[idx + 1].focus();
+        const filled = Array.from(all).every(c => c.value);
+        const confirmBtn = payFooterInner.querySelector('[data-pay-action="confirm"]');
+        if (confirmBtn) confirmBtn.disabled = !filled;
+      });
+      cell.addEventListener('keydown', e => {
+        if (e.key === 'Backspace' && !cell.value && idx > 0) all[idx - 1].focus();
+        if (e.key === 'Enter') {
+          const confirmBtn = payFooterInner.querySelector('[data-pay-action="confirm"]');
+          if (confirmBtn && !confirmBtn.disabled) confirmBtn.click();
+        }
+      });
+    });
+
+    // OTP helper links
+    document.getElementById('cpPayResendOtp').addEventListener('click', e => {
+      e.preventDefault();
+      cpToast('Código reenviado');
+    });
+    document.getElementById('cpPayChangeAccount').addEventListener('click', e => {
+      e.preventDefault();
+      payCurrentStep = 1;
+      renderPayStep();
+    });
+
+    // Dev-strip reset: clears saved accounts, lets you demo first-time path again
+    document.getElementById('cpPayerReset').addEventListener('click', () => {
+      PAYER_PROFILE.accounts.length = 0;
+      cpToast('Perfil del pagador reiniciado · todas las cuentas borradas');
+    });
+
+    // Rewire row-level Pagar buttons to open the real pay flow
+    document.querySelectorAll('.cp-action-btn.primary, .cp-action-btn.urgent').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopImmediatePropagation();  // prevent the generic .cp-action-btn handler from also firing
+        const row = btn.closest('[data-cp-invoice]');
+        if (!row) return;
+        openPayFlow(row.dataset.cpInvoice);
+      }, true);
+    });
+
+    // Rewire the side-panel handleCpAction('pay', key) to open the flow instead of toasting
+    // We replace the previous handler entirely
+    const _originalHandleCpAction = handleCpAction;
+    handleCpAction = function(action, key) {
+      if (action === 'pay') { openPayFlow(key); return; }
+      return _originalHandleCpAction(action, key);
+    };
+
+    // ==========================================================
+    //   Multi-pay — checkbox selection + sticky bar + bundle pay
+    // ==========================================================
+    let resetMultipaySelection;
+    (function () {
+      const checkboxes = () => Array.from(document.querySelectorAll('.cp-inv-cb'));
+      const selectAll = document.getElementById('cpInvoiceSelectAll');
+      const bar = document.getElementById('cpMultipayBar');
+      const countEl = document.getElementById('cpMultipayCount');
+      const totalEl = document.getElementById('cpMultipayTotal');
+      const payBtn = document.getElementById('cpMultipayPay');
+      if (!bar || !payBtn) return;
+
+      function updateBar() {
+        const cbs = checkboxes();
+        const selected = cbs.filter(cb => cb.checked);
+        const n = selected.length;
+        if (n === 0) {
+          bar.classList.remove('open');
+          if (selectAll) { selectAll.checked = false; selectAll.indeterminate = false; }
+          return;
+        }
+        bar.classList.add('open');
+        countEl.textContent = `${n} factura${n === 1 ? '' : 's'} seleccionada${n === 1 ? '' : 's'}`;
+        // data-amount on each cb is the integer Bs amount (no cents) — sufficient for the bar preview.
+        const total = selected.reduce((acc, cb) => acc + parseInt(cb.dataset.amount, 10), 0);
+        totalEl.textContent = `Bs. ${total.toLocaleString('es-VE', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+        if (selectAll) {
+          selectAll.checked = (n === cbs.length);
+          selectAll.indeterminate = (n > 0 && n < cbs.length);
+        }
+      }
+
+      // Per-row checkbox: prevent row-click propagation (so clicking the cb doesn't open the side panel),
+      // recompute on change.
+      checkboxes().forEach(cb => {
+        cb.addEventListener('click', e => e.stopPropagation());
+        cb.addEventListener('change', updateBar);
+      });
+
+      // Header select-all
+      if (selectAll) {
+        selectAll.addEventListener('click', e => e.stopPropagation());
+        selectAll.addEventListener('change', () => {
+          checkboxes().forEach(cb => { cb.checked = selectAll.checked; });
+          updateBar();
+        });
+      }
+
+      // Pay seleccionadas → multi-pay flow (single key if only one selected)
+      payBtn.addEventListener('click', () => {
+        const selectedKeys = checkboxes().filter(cb => cb.checked).map(cb => cb.dataset.key);
+        if (selectedKeys.length === 0) return;
+        if (selectedKeys.length === 1) { openPayFlow(selectedKeys[0]); return; }
+        openPayFlow(selectedKeys);
+      });
+
+      // Expose a reset for runProcessingAndFinish to call after success
+      resetMultipaySelection = function () {
+        checkboxes().forEach(cb => { cb.checked = false; });
+        updateBar();
+      };
+    })();
+
+    // ==========================================================
+    //   Contraparte 360 — estado de cuenta download stubs
+    //   Real PDF/Excel generation is engineering work; v1 prototype just toasts.
+    // ==========================================================
+    (function () {
+      document.querySelectorAll('[data-cp-action="download-statement-pdf"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          cpToast('Generando estado de cuenta…');
+          setTimeout(() => cpToast('Estado de cuenta descargado (PDF)'), 1100);
+        });
+      });
+      document.querySelectorAll('[data-cp-action="download-statement-excel"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          cpToast('Generando estado de cuenta…');
+          setTimeout(() => cpToast('Estado de cuenta descargado (Excel)'), 1100);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
